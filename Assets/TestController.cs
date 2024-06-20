@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Unity.VisualStudio.Editor;
@@ -13,6 +14,7 @@ public class TestController : MonoBehaviour
     private Vector2 topEyelidPosition, bottomEyelidPosition;
     private bool isBlink = false;
     public bool isEyeOpen = true;
+    private float mouseDirectionValue;
 
     private readonly float TopMaxY = 1080f;
     private readonly float TopMinY = 180f;
@@ -25,7 +27,16 @@ public class TestController : MonoBehaviour
 
     private Vector3 lastMousePosition;
     private float mHorizontalSpeed, mVerticalSpeed;
+    public Animator animator;
+    
+    public bool isMoving = false;
 
+    public enum State {
+        isMiddle,
+        isLeft,
+        isRight
+    }
+    public State currentState;
 
     void Start() 
     {
@@ -36,13 +47,17 @@ public class TestController : MonoBehaviour
         postProcessVolume.profile.TryGetSettings(out depthOfField);
 
         lastMousePosition = Input.mousePosition;
+
+        currentState = State.isMiddle;
     }
 
     void Update()
     {
+        IsMovingCheck();
         AdjustMousePosition();
         AdjustEyelids();
         AdjustPostProcessVolume();
+        AdjustHeadTurn();
     }
 
     void AdjustEyelids() 
@@ -52,7 +67,7 @@ public class TestController : MonoBehaviour
         if(topEyelidPosition.y <= TopMinY && bottomEyelidPosition.y >= BottomMinY) isEyeOpen = false;
         else isEyeOpen = true;
 
-        if (Input.GetMouseButtonDown(2) && !isBlink) // 마우스 휠
+        if (Input.GetMouseButtonDown(2) && !isBlink)
         {
             StartCoroutine(BlinkCoroutine());
             return;
@@ -119,27 +134,102 @@ public class TestController : MonoBehaviour
     void AdjustMousePosition() 
     {
         Vector3 currentMousePosition = Input.mousePosition;
-
-        if(currentMousePosition == null) return;
+        mouseDirectionValue = currentMousePosition.x - lastMousePosition.x;
 
         mHorizontalSpeed = (currentMousePosition.x - lastMousePosition.x) / Time.deltaTime;
         mVerticalSpeed = (currentMousePosition.y - lastMousePosition.y) / Time.deltaTime;
         lastMousePosition = currentMousePosition;
 
-        Vector3 currentRotation = gameObject.transform.eulerAngles;
+        Vector3 currentRotation = gameObject.transform.localEulerAngles;
+        float currentRotationX = (currentRotation.x >= 180) ? currentRotation.x - 360 : currentRotation.x;
+        float currentRotationY = (currentRotation.y >= 180) ? currentRotation.y - 360 : currentRotation.y;
 
-        float newXRotation = currentRotation.x + mVerticalSpeed * 0.0003f;
-        float newYRotation = currentRotation.y + mHorizontalSpeed * 0.0003f;
+        float newXRotation = currentRotationX + mVerticalSpeed * 0.0003f;
+        float newYRotation = currentRotationY + mHorizontalSpeed * 0.0003f;
 
-        newXRotation = (newXRotation > 180) ? newXRotation - 360 : newXRotation;
-        newYRotation = (newYRotation > 180) ? newYRotation - 360 : newYRotation;
-
-        newXRotation = Mathf.Clamp(newXRotation, -13f, 23f);
-        newYRotation = Mathf.Clamp(newYRotation, -55f, 55f);
+        newXRotation = Mathf.Clamp(newXRotation, -10f, 10f);
+        newYRotation = Mathf.Clamp(newYRotation, -30f, 30f);
 
         float maxZRotation = 10f;
         float newZRotation = maxZRotation * Mathf.Sin(Mathf.Deg2Rad * newYRotation);
 
-        gameObject.transform.eulerAngles = new Vector3(newXRotation, newYRotation, newZRotation); 
+        gameObject.transform.localEulerAngles = new Vector3(newXRotation, newYRotation, newZRotation); 
+    }
+
+
+    void AdjustHeadTurn() {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if(stateInfo.normalizedTime < 0.8f) return;
+
+        if (Math.Abs(mHorizontalSpeed) > 5500f) { // 이건 마우스 속도
+            switch(currentState) 
+            {
+                case State.isMiddle: {
+                    if(mouseDirectionValue < -30)
+                    {
+                        Debug.Log("중간에서 왼쪽");
+                        ChangeAnimation(State.isLeft);
+                    }
+
+                    if(mouseDirectionValue > 30) 
+                    {
+                        Debug.Log("중간에서 오른쪽");
+                        ChangeAnimation(State.isRight);
+                    }   
+                    break;
+                }
+                case State.isRight: {
+                    if(mouseDirectionValue < -30) 
+                    {
+                        Debug.Log("오른쪽에서 중간");
+                        ChangeAnimation(State.isMiddle);
+                    }
+                    break;
+                }
+                case State.isLeft: {
+                    if(mouseDirectionValue > 30) 
+                    {
+                        Debug.Log("왼쪽에서 중간");
+                        ChangeAnimation(State.isMiddle);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    void ChangeAnimation(State _changeState) {
+        switch(_changeState) 
+        {
+            case State.isMiddle: {
+                if(currentState == State.isLeft) 
+                    animator.Play("LeftToMiddle");
+                if(currentState == State.isRight) 
+                    animator.Play("RightToMiddle");
+                break;
+            }
+            case State.isRight: {
+                animator.Play("MddileToRight");
+                break;
+            }
+            case State.isLeft: {
+                animator.Play("MiddleToLeft");
+                break;
+            }
+        }
+        currentState = _changeState;
+    }
+
+    void IsMovingCheck() {
+        AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (currentAnimatorStateInfo.IsName("LeftToMiddle") ||
+            currentAnimatorStateInfo.IsName("RightToMiddle") ||
+            currentAnimatorStateInfo.IsName("MddileToRight") ||
+            currentAnimatorStateInfo.IsName("MiddleToLeft") &&
+            currentAnimatorStateInfo.normalizedTime < 0.8f )
+        {
+            isMoving = true;
+        }
+        else isMoving = false;
     }
 }
