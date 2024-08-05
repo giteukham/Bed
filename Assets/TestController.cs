@@ -1,25 +1,22 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
 public class TestController : MonoBehaviour
 {
     public RectTransform topEyelid, bottomEyelid;
-    private int scrollSpeed = 1800;
-    private const float scrollThreshold = 0.1f;
+    private const int SCROLL_SPEED = 1800;
+    private const float SCROLL_THRESHOLD = 0.1f;
     private Vector2 topEyelidPosition, bottomEyelidPosition;
     private bool isBlink = false;
     public bool isEyeOpen = true;
     private float mouseDirectionValue;
 
-    private readonly float TopMaxY = 1080f;
-    private readonly float TopMinY = 180f;
-    private readonly float BottomMaxY = -1080f;
-    private readonly float BottomMinY = -180f;
+    private readonly float TOP_MAX_Y = 1080f;
+    private readonly float TOP_MIN_Y = 180f;
+    private readonly float BOTTOM_MAX_Y = -1080f;
+    private readonly float BOTTOM_MIN_Y = -180f;
     
     public PostProcessVolume postProcessVolume;
     private Vignette vignette;
@@ -32,9 +29,9 @@ public class TestController : MonoBehaviour
     public bool isMoving = false;
 
     public enum State {
-        isMiddle,
-        isLeft,
-        isRight
+        Middle,
+        Left,
+        Right
     }
     public State currentState;
 
@@ -48,12 +45,12 @@ public class TestController : MonoBehaviour
 
         lastMousePosition = Input.mousePosition;
 
-        currentState = State.isMiddle;
+        currentState = State.Middle;
     }
 
     void Update()
     {
-        IsMovingCheck();
+        CheckMovement();
         AdjustMousePosition();
         AdjustEyelids();
         AdjustPostProcessVolume();
@@ -62,10 +59,10 @@ public class TestController : MonoBehaviour
 
     void AdjustEyelids() 
     {
-        float scrollInput = Mathf.Clamp(Input.GetAxis("Mouse ScrollWheel"), -scrollThreshold, scrollThreshold);
+        float scrollInput = Mathf.Clamp(Input.GetAxis("Mouse ScrollWheel"), -SCROLL_THRESHOLD, SCROLL_THRESHOLD);
  
-        if(topEyelidPosition.y <= TopMinY && bottomEyelidPosition.y >= BottomMinY) isEyeOpen = false;
-        else isEyeOpen = true;
+ 
+        isEyeOpen = !(topEyelidPosition.y <= TOP_MIN_Y && bottomEyelidPosition.y >= BOTTOM_MIN_Y);
 
         if (Input.GetMouseButtonDown(2) && !isBlink)
         {
@@ -75,55 +72,56 @@ public class TestController : MonoBehaviour
 
         if(scrollInput == 0 || isBlink) return;
 
-        if(topEyelidPosition.y >= TopMaxY && bottomEyelidPosition.y <= BottomMaxY && scrollInput > 0) scrollInput = 0;
-        if(topEyelidPosition.y <= TopMinY && bottomEyelidPosition.y >= BottomMinY && scrollInput < 0) scrollInput = 0; 
+        if ((topEyelidPosition.y >= TOP_MAX_Y && bottomEyelidPosition.y <= BOTTOM_MAX_Y && scrollInput > 0) ||
+            (topEyelidPosition.y <= TOP_MIN_Y && bottomEyelidPosition.y >= BOTTOM_MIN_Y && scrollInput < 0)) 
+            scrollInput = 0;
 
-        topEyelidPosition.y += scrollInput * scrollSpeed;
-        bottomEyelidPosition.y -= scrollInput * scrollSpeed;
+        topEyelidPosition.y += scrollInput * SCROLL_SPEED;
+        bottomEyelidPosition.y -= scrollInput * SCROLL_SPEED;
 
         topEyelid.offsetMin = topEyelidPosition;
         bottomEyelid.offsetMax = bottomEyelidPosition;
+    }
 
-        IEnumerator BlinkCoroutine()
+     IEnumerator BlinkCoroutine()
+    {
+        isBlink = true;
+        float blinkSpeed = 300f; 
+        Vector2 originalTopPosition = topEyelidPosition;
+        Vector2 originalBottomPosition = bottomEyelidPosition;
+        
+        while (topEyelidPosition.y > TOP_MIN_Y && bottomEyelidPosition.y < BOTTOM_MIN_Y)
         {
-            isBlink = true;
-            float blinkSpeed = 300f; 
-            Vector2 originalTopPosition = topEyelidPosition;
-            Vector2 originalBottomPosition = bottomEyelidPosition;
+            topEyelidPosition.y -= blinkSpeed;
+            bottomEyelidPosition.y += blinkSpeed;
             
-            while (topEyelidPosition.y > TopMinY && bottomEyelidPosition.y < BottomMinY)
-            {
-                topEyelidPosition.y -= blinkSpeed;
-                bottomEyelidPosition.y += blinkSpeed;
-                
-                topEyelid.offsetMin = topEyelidPosition;
-                bottomEyelid.offsetMax = bottomEyelidPosition;
+            topEyelid.offsetMin = topEyelidPosition;
+            bottomEyelid.offsetMax = bottomEyelidPosition;
 
-                yield return new WaitForSeconds(0.02f);
-            }
-
-            yield return new WaitForSeconds(0.15f);
-
-            while (topEyelidPosition.y < originalTopPosition.y && bottomEyelidPosition.y > originalBottomPosition.y)
-            {
-                topEyelidPosition.y += blinkSpeed;
-                bottomEyelidPosition.y -= blinkSpeed;
-
-                topEyelid.offsetMin = topEyelidPosition;
-                bottomEyelid.offsetMax = bottomEyelidPosition;
-
-                yield return new WaitForSeconds(0.02f);
-            }
-            isBlink = false;
+            yield return new WaitForSeconds(0.02f);
         }
+
+        yield return new WaitForSeconds(0.15f);
+
+        while (topEyelidPosition.y < originalTopPosition.y && bottomEyelidPosition.y > originalBottomPosition.y)
+        {
+            topEyelidPosition.y += blinkSpeed;
+            bottomEyelidPosition.y -= blinkSpeed;
+
+            topEyelid.offsetMin = topEyelidPosition;
+            bottomEyelid.offsetMax = bottomEyelidPosition;
+
+            yield return new WaitForSeconds(0.02f);
+        }
+        isBlink = false;
     }
 
     void AdjustPostProcessVolume()
     {
         if (vignette != null && depthOfField != null)
         {
-            float topLidNormalized = Mathf.InverseLerp(TopMinY, TopMaxY, topEyelidPosition.y);
-            float bottomLidNormalized = Mathf.InverseLerp(BottomMinY, BottomMaxY, bottomEyelidPosition.y);
+            float topLidNormalized = Mathf.InverseLerp(TOP_MIN_Y, TOP_MAX_Y, topEyelidPosition.y);
+            float bottomLidNormalized = Mathf.InverseLerp(BOTTOM_MIN_Y, BOTTOM_MAX_Y, bottomEyelidPosition.y);
             float eyelidClosure = 1.0f - Mathf.Min(topLidNormalized, bottomLidNormalized);
 
             vignette.intensity.value = Mathf.Lerp(0.19f, 1.0f, eyelidClosure);
@@ -164,36 +162,16 @@ public class TestController : MonoBehaviour
         if (Math.Abs(mHorizontalSpeed) > 5500f) { // 이건 마우스 속도
             switch(currentState) 
             {
-                case State.isMiddle: {
-                    if(mouseDirectionValue < -30)
-                    {
-                        Debug.Log("중간에서 왼쪽");
-                        ChangeAnimation(State.isLeft);
-                    }
-
-                    if(mouseDirectionValue > 30) 
-                    {
-                        Debug.Log("중간에서 오른쪽");
-                        ChangeAnimation(State.isRight);
-                    }   
+                case State.Middle:
+                    if(mouseDirectionValue < -30) ChangeAnimation(State.Left);
+                    if(mouseDirectionValue > 30) ChangeAnimation(State.Right);
                     break;
-                }
-                case State.isRight: {
-                    if(mouseDirectionValue < -30) 
-                    {
-                        Debug.Log("오른쪽에서 중간");
-                        ChangeAnimation(State.isMiddle);
-                    }
+                case State.Right: 
+                    if(mouseDirectionValue < -30) ChangeAnimation(State.Middle);
                     break;
-                }
-                case State.isLeft: {
-                    if(mouseDirectionValue > 30) 
-                    {
-                        Debug.Log("왼쪽에서 중간");
-                        ChangeAnimation(State.isMiddle);
-                    }
+                case State.Left: 
+                    if(mouseDirectionValue > 30) ChangeAnimation(State.Middle);
                     break;
-                }
             }
         }
     }
@@ -201,18 +179,18 @@ public class TestController : MonoBehaviour
     void ChangeAnimation(State _changeState) {
         switch(_changeState) 
         {
-            case State.isMiddle: {
-                if(currentState == State.isLeft) 
+            case State.Middle: {
+                if(currentState == State.Left) 
                     animator.Play("LeftToMiddle");
-                if(currentState == State.isRight) 
+                if(currentState == State.Right) 
                     animator.Play("RightToMiddle");
                 break;
             }
-            case State.isRight: {
+            case State.Right: {
                 animator.Play("MddileToRight");
                 break;
             }
-            case State.isLeft: {
+            case State.Left: {
                 animator.Play("MiddleToLeft");
                 break;
             }
@@ -220,16 +198,12 @@ public class TestController : MonoBehaviour
         currentState = _changeState;
     }
 
-    void IsMovingCheck() {
+    void CheckMovement() {
         AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        if (currentAnimatorStateInfo.IsName("LeftToMiddle") ||
-            currentAnimatorStateInfo.IsName("RightToMiddle") ||
-            currentAnimatorStateInfo.IsName("MddileToRight") ||
-            currentAnimatorStateInfo.IsName("MiddleToLeft") &&
-            currentAnimatorStateInfo.normalizedTime < 0.8f )
-        {
-            isMoving = true;
-        }
-        else isMoving = false;
+        isMoving =  currentAnimatorStateInfo.IsName("LeftToMiddle") ||
+                    currentAnimatorStateInfo.IsName("RightToMiddle") ||
+                    currentAnimatorStateInfo.IsName("MddileToRight") ||
+                    currentAnimatorStateInfo.IsName("MiddleToLeft") &&
+                    currentAnimatorStateInfo.normalizedTime < 0.8f;
     }
 }
