@@ -6,14 +6,14 @@ using GimmickInterface;
 public class GimmickManager : MonoBehaviour
 {
     //다른 리스트 3개를 관리함(전체 관리 리스트)
-    List<List<IGimmick>> GimmickList = new List<List<IGimmick>>();
+    private List<List<IGimmick>> GimmickList = new List<List<IGimmick>>();
 
     //비현실 기믹 리스트
-    List<IGimmick> UnrealList = new List<IGimmick>();
+    private List<IGimmick> UnrealList = new List<IGimmick>();
     //사람 기믹 리스트
-    List<IGimmick> HumanList = new List<IGimmick>();
+    private List<IGimmick> HumanList = new List<IGimmick>();
     //사물 기믹 리스트
-    List<IGimmick> ObjectList = new List<IGimmick>();
+    private List<IGimmick> ObjectList = new List<IGimmick>();
 
     private void Awake()
     {
@@ -26,6 +26,43 @@ public class GimmickManager : MonoBehaviour
         UnrealList.Add(gameObject.GetComponent<IGimmick>());
     }
 
+    //기믹 종류에 따라 GimmickList에 추가함
+    public void ListInsert(ListGroup listGroup)
+    {
+        switch (listGroup)
+        {
+            case ListGroup.Unreal:
+                GimmickList.Add(UnrealList);
+                break;
+            case ListGroup.Human:
+                GimmickList.Add(HumanList);
+                break;
+            case ListGroup.Object:
+                GimmickList.Add(ObjectList);
+                break;
+            default:
+                break;
+        }
+    }
+
+    //기믹 종류에 따라 GimickList에서 삭제함
+    public void ListDelete(ListGroup listGroup)
+    {
+        switch (listGroup)
+        {
+            case ListGroup.Unreal:
+                GimmickList.Remove(UnrealList);
+                break;
+            case ListGroup.Human:
+                GimmickList.Remove(HumanList);
+                break;
+            case ListGroup.Object:
+                GimmickList.Remove(ObjectList);
+                break;
+            default:
+                break;
+        }
+    }
 
 
 }

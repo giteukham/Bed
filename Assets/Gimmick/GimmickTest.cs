@@ -8,6 +8,11 @@ public class GimmickTest : MonoBehaviour, IGimmick
     //자신이 어느 리스트에 속해있는지 초기값 바로 지정
     public ListGroup myGroup { get; set; } = ListGroup.Human;
 
+    //일단 인스펙터 창에서 기믹매니저 오브젝트 넣는걸로 설정했음
+    //추후에 기믹매니저 하위로 넣든지 말든지는 나중에 정할거임
+    [SerializeField]
+    private GimmickManager gimmickManager;
+
     private void Awake()
     {
         //위에 적은 초기값 바로 지정하는 방식 오류 없으면 이거 그냥 지워도 무관
@@ -20,13 +25,17 @@ public class GimmickTest : MonoBehaviour, IGimmick
     {
         //GimmickManager 쪽에 끝났다는 신호주고 제외 되었던 본인소속 리스트를
         //다시 GimmickList에 넣어야 함
+        gimmickManager.ListInsert(myGroup);
     }
 
     //기믹이 처음 시작할 때
     public void OnStart()
     {
-     //이건 외부 접근해서 OnStart가 실행되게 하거나
-     //아니면 OnEnable같은거로 실행시켜도 될 듯
+        //이건 외부 접근해서 OnStart가 실행되게 하거나
+        //아니면 OnEnable같은거로 실행시켜도 될 듯
+
+        //GimmickList에서 본인 소속 리스트 삭제
+        gimmickManager.ListDelete(myGroup);
     }
 
     //기믹이 시작하고 있는 도중에
