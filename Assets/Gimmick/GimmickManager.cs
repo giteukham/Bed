@@ -15,7 +15,17 @@ public class GimmickManager : MonoBehaviour
     //사물 기믹 리스트
     List<IGimmick> ObjectList = new List<IGimmick>();
 
+    private void Awake()
+    {
+        //일단 모든 종류의 기믹을 리스트에 넣음
+        GimmickList.Add(UnrealList);
+        GimmickList.Add(HumanList);
+        GimmickList.Add(ObjectList);
+
+        //이런식으로 오브젝트에서 찾아서 기믹 넣어주면 됨(예시코드)
+        UnrealList.Add(gameObject.GetComponent<IGimmick>());
+    }
 
 
-    
+
 }
