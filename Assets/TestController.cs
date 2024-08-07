@@ -34,7 +34,12 @@ public class TestController : MonoBehaviour
         Right
     }
     public State currentState;
-
+    private void Awake()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+    
     void Start() 
     {
         topEyelidPosition = topEyelid.offsetMin;

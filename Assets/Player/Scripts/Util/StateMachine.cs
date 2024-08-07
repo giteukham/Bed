@@ -1,0 +1,48 @@
+using UnityEngine;
+
+public class StateMachine : MonoBehaviour
+{
+    private IState currentState, prevState;
+    
+    public void ChangeState(IState toState)
+    {
+        if (currentState == toState)
+        {
+            Debug.LogWarning($"이미 {currentState?.GetType().Name} 상태입니다.");
+            return;            
+        }
+        
+        prevState = currentState ?? null;
+        currentState?.Exit();
+        
+        currentState = toState;
+        currentState.Enter();
+    }
+    
+    /// <summary>
+    /// 이전 상태로 돌아가는 함수
+    /// </summary>
+    public void RevertState()
+    {
+        if (prevState == null)
+        {
+            Debug.LogWarning("이전 상태가 없습니다.");
+            return;
+        }
+        
+        currentState?.Exit();
+        
+        currentState = prevState;
+        currentState.Enter();
+    }
+    
+    private void Update()
+    {
+        currentState?.Execute();
+    }
+
+    public override string ToString()
+    {
+        return $"Current State: {currentState?.GetType().Name}";
+    }
+}
