@@ -20,7 +20,7 @@ namespace GimmickInterface
         int percent { get; set; }
 
         //플레이어 스크립트 접근을 위한 변수(ExPlayer는 다른걸로 교체될거임)
-        ExPlayer player { get; set; }
+        ExPlayer Player { get; set; }
 
         //플레이어 쪽에 다른 스크립트에도 접근할 일 생기면 그냥 이렇게 게임오브젝트 형식으로 참조해도 괜찮을듯
         //GameObject e {  get; set; }

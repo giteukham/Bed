@@ -15,11 +15,15 @@ public class ExPlayer : MonoBehaviour
     //이렇게 되면 GimmickTest의 percent 변수 조절 가능
 
     //가상 수치들(마우스 움직임, 눈깜빡임 등등...)
-    int num1 = 0;
-    int num2 = 0;
+    int mouseMove = 0;
+    int eyeBlink = 0;
+
+    //많이 움직였는지, 눈 깜빡거렸는지 여부(안쓸수도 있음)
+    bool manyMousemove = false;
+    bool manyEyeBlink = false;
 
     //이벤트 변수 선언
-    public event Action<int, int> percentEventHandler;
+    public event Action<int, int> percentEvent;
 
     private void Awake()
     {
@@ -31,7 +35,7 @@ public class ExPlayer : MonoBehaviour
     private void ExcuteEvent()
     {
         //이벤트 구독한 모든 메소드에게 수치 넘김
-        percentEventHandler?.Invoke(num1, num2);
+        percentEvent?.Invoke(mouseMove, eyeBlink);
     }
 
     //3초마다 1회 실행되는 코루틴
@@ -54,5 +58,6 @@ public class ExPlayer : MonoBehaviour
     private void UserTendencyAnalysis()
     {
         //대충 마우스 움직임, 눈깜빡임 변수들 더하고 빼는 메소드
+        print("사용자 성향 분석");
     }
 }
