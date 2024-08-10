@@ -31,7 +31,7 @@ public class GimmickTest : MonoBehaviour, IGimmick
         Player = player;
 
         //이벤트 구독(플레이어보다 빨라서 Awake로 하면 오류남, Start로 해도 오류남)
-        Player.percentEvent += PercentRedefine;
+        Player.TendencyDataEvent += PercentRedefine;
         gimmickManager.randomGimmickEvent += InsertIntoListUsingPercent;
 
         //본인 타입에 맞는 리스트에 기믹 넣음
@@ -77,21 +77,24 @@ public class GimmickTest : MonoBehaviour, IGimmick
         //OnEnd();
     }
 
-    //플레이어 스크립트에 있는 percentEvent 이벤트 실행시 자동 실행될 메소드(percent 프로퍼티 값 변경)
+    //플레이어 스크립트에 있는 TendencyDataEvent 이벤트 실행시 자동 실행될 메소드(percent 프로퍼티 값 변경)
     //즉, 이 기믹이 등장할 확률을 정하는 메소드임
-    public void PercentRedefine(int mouseMove, int eyeBlink)
+    public void PercentRedefine(bool mouseMove, bool eyeBlink)
     {
         print("퍼센트 리디파인");
         //현재 이 기믹에 있는 등장확률 퍼센트 변수를 매개변수를 이용하여 수치 조정
-        //대충 이런식으로
         //조건문의 조건은 기믹 별로 다름
-        if (true)
+
+        //현재기믹은 파훼법이 가만히 있어야 피해지는 기믹이라고 가정
+        //그러므로 플레이어가 마우스를 많이 움직였을 때 등장 확률 증가
+
+        if (mouseMove == true)
         {
-            percent += 3;
+            percent += 5;
         }
-        else if(true)
+        else
         {
-            percent -= 3;
+            percent -= 5;
         }
 
         //percent가 1에서 100의 값을 유지하도록함

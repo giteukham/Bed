@@ -32,7 +32,7 @@ namespace GimmickInterface
         void OnEnd();
 
         //이벤트 구독용 메서드
-        void PercentRedefine(int num1, int num2);
+        void PercentRedefine(bool data1, bool data2);
     }
 }
 
