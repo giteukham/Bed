@@ -30,7 +30,6 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
                         print("Created new instance of " + typeof(T).Name + " as a singleton.");
                     }
                 }
-                print("Returning instance of " + typeof(T).Name + " as a singleton.");
                 return instance;
             }
         }
