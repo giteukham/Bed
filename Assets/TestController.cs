@@ -195,6 +195,7 @@ public class TestController : MonoBehaviour
                 break;
             }
         }
+        AudioManager.instance.PlayOneShot(AudioManager.instance.blanketMoving, this.transform.position);
         currentState = _changeState;
     }
 
