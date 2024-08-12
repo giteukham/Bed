@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 //°¡³ª´Ù¶ó¸¶¹Ù»ç¾Æ ´ß ºµ º× ”î
+//”î —Í ´ß ˆ¦ ´â ˆ£ Ä
 public class ExPlayer : MonoBehaviour
 {
     /// <summary>
