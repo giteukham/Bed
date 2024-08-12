@@ -84,5 +84,5 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-    
+    // Å×½ºÆ®
 }
