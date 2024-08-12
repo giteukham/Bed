@@ -14,7 +14,7 @@ public class CatAudioTest : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(3);
-            AudioManager.instance.PlayOneShot(FMODEvents.instance.catMeow, this.transform.position);
+            AudioManager.instance.PlayOneShot(AudioManager.instance.catMeow, this.transform.position);
         }
     }
 }

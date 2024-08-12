@@ -5259,6 +5259,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4c9bbfeb7e657943afa70cafacef243, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <catMeow>k__BackingField:
+    Guid:
+      Data1: 1619198893
+      Data2: 1283878485
+      Data3: 816481715
+      Data4: -1974117964
+    Path: event:/CatMeow
+  <blanketMoving>k__BackingField:
+    Guid:
+      Data1: -273215972
+      Data2: 1249766749
+      Data3: -428047218
+      Data4: -1633766913
+    Path: event:/BlanketMoving
 --- !u!1 &1392201384
 GameObject:
   m_ObjectHideFlags: 0
@@ -7466,7 +7480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1188391647442722779, guid: 632eddd00ed7aba4f83990ea0ac08681, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6336258653376800476, guid: 632eddd00ed7aba4f83990ea0ac08681, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7664,20 +7678,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 875d26c38bcc1f34b91dfc0dcbb11035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <catMeow>k__BackingField:
-    Guid:
-      Data1: 1619198893
-      Data2: 1283878485
-      Data3: 816481715
-      Data4: -1974117964
-    Path: event:/CatMeow
-  <blanketMoving>k__BackingField:
-    Guid:
-      Data1: -273215972
-      Data2: 1249766749
-      Data3: -428047218
-      Data4: -1633766913
-    Path: event:/BlanketMoving
 --- !u!1 &1924873971
 GameObject:
   m_ObjectHideFlags: 0
