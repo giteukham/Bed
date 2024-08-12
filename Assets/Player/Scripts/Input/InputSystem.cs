@@ -13,18 +13,24 @@ public class InputSystem : MonoBehaviour
         private set { mouseDeltaX = value; }
     }
 
+    public static event Action OnMouseWheelClickEvent; 
+    public static event Action<int> OnMouseScrollEvent; // 마우스 휠. 위로는 120, 아래로는 -120
+
     private void OnMouseDelta(InputValue value)
     {
-        MouseDeltaX = value.Get<Vector2>().x * Time.deltaTime;
+        MouseDeltaX = value.Get<Vector2>().x;
     }
 
     private void OnMouseScroll(InputValue value)
     {
-        Debug.Log(value.Get<Vector2>().y);
+        OnMouseScrollEvent?.Invoke(Convert.ToInt32(value.Get<Vector2>().y));
     }
     
     private void OnMouseWheelClick(InputValue value)
     {
-        Debug.Log("Wheel Click" + value.isPressed);
+        if (value.isPressed)
+        {
+            OnMouseWheelClickEvent?.Invoke();
+        }
     }
 }

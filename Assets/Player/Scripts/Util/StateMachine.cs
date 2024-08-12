@@ -4,14 +4,14 @@ public class StateMachine : MonoBehaviour
 {
     private IState currentState, prevState;
     
-    public void ChangeState(IState toState)
+    public void ChangeState(IState toState, bool canPrevOverlap = false)
     {
-        if (currentState == toState)
+        if (currentState == toState && !canPrevOverlap)
         {
             Debug.LogWarning($"이미 {currentState?.GetType().Name} 상태입니다.");
             return;            
         }
-        
+
         prevState = currentState ?? null;
         currentState?.Exit();
         

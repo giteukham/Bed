@@ -5,39 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1fcfbd98-c863-4ab0-a550-bb8889065656" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Input.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Input/InputSystem.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Input/InputSystem.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/Player.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/Player.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerAnimation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerAnimation.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionControl.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionStates.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerEyeStates.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerEyeStates.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/IPlayerControl.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/IPlayerControl.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerEyeControl.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerEyeControl.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Animation/Player Animator.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Animation/Player Animator.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerTurnControl.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerTurnControl.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionControl.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/TurnState.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/TurnState.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionStates.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/TurnStateBase.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/TurnStateBase.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Util/MonoSingleton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Util/MonoSingleton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Input/InputSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Input/InputSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/Player.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionControl.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionStates.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerDirectionStates.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerEyeStates.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Player/PlayerEyeStates.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Player/Scripts/Util/StateMachine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Player/Scripts/Util/StateMachine.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/PlyaerAnimationTest/LeftToMiddle.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PlyaerAnimationTest/LeftToMiddle.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/PlyaerAnimationTest/Player.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PlyaerAnimationTest/Player.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Jin.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Jin.unity.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Player Test Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Player Test Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/test1_Profiles/Post Process Volume Profile.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/test1_Profiles/Post Process Volume Profile.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TestController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/InputManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/InputManager.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,10 +84,10 @@
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <method v="2" />
     </configuration>
-    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="20732">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" />
+      <option name="pid" value="20732" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -147,7 +127,10 @@
       <workItem from="1723269522580" duration="33000" />
       <workItem from="1723269762011" duration="7254000" />
       <workItem from="1723296282684" duration="4317000" />
-      <workItem from="1723343141238" duration="4068000" />
+      <workItem from="1723343141238" duration="10817000" />
+      <workItem from="1723375681026" duration="3320000" />
+      <workItem from="1723383226465" duration="8932000" />
+      <workItem from="1723427681768" duration="3170000" />
     </task>
     <servers />
   </component>

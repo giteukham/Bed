@@ -9,25 +9,39 @@ public enum PlayerDirectionStateTypes
     Switching
 }
 
+public enum PlayerEyeStateTypes
+{
+    Open,
+    Opening,
+    Close,
+    Closing,
+    Blink
+}
+
 public class Player : MonoBehaviour
 {
     // 갱신 단위 3초
     
-    #region State Machine
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
-    #endregion
+    [SerializeField] private StateMachine playerEyeStateMachine;
     
-    #region Camera
     [Header("Camera")]
     [SerializeField] private CinemachineVirtualCamera playerCamera;
     private CinemachinePOV povCamera;
-    #endregion
     
     [Header("Player Animation")]
     [SerializeField] private PlayerAnimation playerAnimation;
+    
+    [Header("Input System")]
+    [SerializeField] private InputSystem inputSystem;
 
+    [Header("Player Eyelid UI")]
+    [SerializeField] private RectTransform topEyelid; 
+    [SerializeField] private RectTransform bottomEyelid;
+    
     private PlayerDirectionControl playerDirectionControl;
+    private PlayerEyeControl playerEyeControl;
     
     private float stressGauge = 0f, fearGauge = 0f;
     private float stressGaugeMax = 100f, fearGaugeMax = 100f;
@@ -42,7 +56,10 @@ public class Player : MonoBehaviour
     private void Start()
     {
         povCamera = playerCamera.GetCinemachineComponent<CinemachinePOV>();
-        playerDirectionControl = new PlayerDirectionControl(ref playerDirectionStateMachine, ref povCamera);
+        
+        playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine, ref povCamera);
+        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, topEyelid, bottomEyelid);
+        playerEyeControl.SubscribeToEvents();
     }
 
     /// <summary>

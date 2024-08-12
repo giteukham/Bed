@@ -1,7 +1,5 @@
 using Cinemachine;
 
-// Turn할 때 마우스 Delta X값이 3이상이면 Right State로, -3이하이면 Left State로 변경
-
 public class PlayerDirectionStates
 {
     public class LeftDirectionState : IState
