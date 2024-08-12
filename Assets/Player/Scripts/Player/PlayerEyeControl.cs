@@ -12,12 +12,11 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Closing, new PlayerEyeStates.ClosingEyeState() },
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
-    public static Dictionary<PlayerEyeStateTypes, IState> EyeStates => eyeStates;
     
     private int prevEyeLittleBlinkCount = 0;
     private int eyeLittleBlinkCount = 0;    // TODO: ´« Á¶±Ý °¨±ä È½¼ö? ÀÌ¸§ Á» »ý°¢ÇØ ºÁ¾ß ÇÒ µí.
     
-    public const int LITTLE_BLINK_COUNT_MIN = 0, LITTLE_BLINK_COUNT_MAX = 6;   // ´« Á¶±Ý °¨´Â È½¼ö
+    public const int LITTLE_BLINK_COUNT_MIN = 0, LITTLE_BLINK_COUNT_MAX = 18;   // ´« Á¶±Ý °¨´Â È½¼ö
     public const int MOUSE_SCROLL_VALUE = 120;    // ¸¶¿ì½º ÈÙ °ª
     public const float EYE_POSITION_MAX_Y = 1080f;
     
@@ -96,6 +95,11 @@ public class PlayerEyeControl : IPlayerControl
     public float GetChangedEyePosition()
     {
         return EYE_POSITION_MAX_Y - (EYE_POSITION_MAX_Y / LITTLE_BLINK_COUNT_MAX * eyeLittleBlinkCount);
+    }
+    
+    public void ChangeState(PlayerEyeStateTypes stateType)
+    {
+        playerEyeStateMachine.ChangeState(eyeStates[stateType]);
     }
     
     public void UnsubscribeToEvents()

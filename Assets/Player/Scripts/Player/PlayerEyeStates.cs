@@ -109,21 +109,24 @@ public class PlayerEyeStates
                 topEyelid.offsetMin = topEyelidPosition;
                 bottomEyelid.offsetMax = bottomEyelidPosition;
                 
-                await UniTask.Delay(200);
-                
+                await UniTask.Delay(7);
+                eyePositionY = topEyelidPosition.y;
             } while (topEyelidPosition.y != 0f && bottomEyelidPosition.y != 0f);
             
-            await UniTask.Delay(150);
+            await UniTask.Delay(3);
             
             do
             {
-                eyePositionY = playerEyeControl.GetChangedEyePosition();
-                topEyelidPosition.y = eyePositionY - blinkUpdateValue;
-                bottomEyelidPosition.y = -eyePositionY + blinkUpdateValue;
+                topEyelidPosition.y = eyePositionY + blinkUpdateValue;
+                bottomEyelidPosition.y = -eyePositionY - blinkUpdateValue;
                 topEyelid.offsetMin = topEyelidPosition;
                 bottomEyelid.offsetMax = bottomEyelidPosition;
-                await UniTask.Delay(200);
+                
+                await UniTask.Delay(7);
+                eyePositionY = topEyelidPosition.y;
             } while (topEyelidPosition.y != PlayerEyeControl.EYE_POSITION_MAX_Y && bottomEyelidPosition.y != PlayerEyeControl.EYE_POSITION_MAX_Y);
+            
+            playerEyeControl.ChangeState(PlayerEyeStateTypes.Open);
         }
 
         public void Execute()
