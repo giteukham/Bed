@@ -15,7 +15,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake() 
     {
-        if (instance != null) Debug.LogError("Audio Manager°¡ ÀÌ¹Ì Á¸Àç");
+        if (instance != null) Debug.LogError("Audio Managerï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½");
         instance = this;
     }
 
@@ -23,4 +23,5 @@ public class AudioManager : MonoBehaviour
     {
         RuntimeManager.PlayOneShot(_sound, _pos);
     }
+    //ë¹„ë‘˜ê¸° ê½ˆë§¤ê¸° ê°€ì˜¤ë¦¬ ì™œê°€ë¦¬
 }
