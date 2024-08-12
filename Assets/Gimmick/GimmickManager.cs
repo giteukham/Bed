@@ -6,21 +6,21 @@ using System;
 
 public class GimmickManager : MonoBehaviour
 {
-    //´Ù¸¥ ¸®½ºÆ® 3°³¸¦ °ü¸®ÇÔ(ÀüÃ¼ °ü¸® ¸®½ºÆ®)
-    //¿ø·¡ privateÀÓ
+    //ë‹¤ë¥¸ ë¦¬ìŠ¤íŠ¸ 3ê°œë¥¼ ê´€ë¦¬í•¨(ì „ì²´ ê´€ë¦¬ ë¦¬ìŠ¤íŠ¸)
+    //ì›ë˜ privateì„
     public List<List<IGimmick>> TotalList = new List<List<IGimmick>>();
 
-    //ºñÇö½Ç ±â¹Í ¸®½ºÆ®
+    //ë¹„í˜„ì‹¤ ê¸°ë¯¹ ë¦¬ìŠ¤íŠ¸
     private List<IGimmick> UnrealList = new List<IGimmick>();
-    //»ç¶÷ ±â¹Í ¸®½ºÆ®
+    //ì‚¬ëŒ ê¸°ë¯¹ ë¦¬ìŠ¤íŠ¸
     private List<IGimmick> HumanList = new List<IGimmick>();
-    //»ç¹° ±â¹Í ¸®½ºÆ®
+    //ì‚¬ë¬¼ ê¸°ë¯¹ ë¦¬ìŠ¤íŠ¸
     private List<IGimmick> ObjectList = new List<IGimmick>();
 
-    //·£´ıÀ¸·Î ±â¹Í »ÌÀ»¶§ ½ÇÇàÇÒ ±â¹Í ¸®½ºÆ® ÀçºĞ·ù ÀÌº¥Æ®
+    //ëœë¤ìœ¼ë¡œ ê¸°ë¯¹ ë½‘ì„ë•Œ ì‹¤í–‰í•  ê¸°ë¯¹ ë¦¬ìŠ¤íŠ¸ ì¬ë¶„ë¥˜ ì´ë²¤íŠ¸
     public event Action<int> randomGimmickEvent;
 
-    //·£´ı ±â¹Í »ÌÀ» ¶§ ÇÊ¿äÇÑ º¯¼ö
+    //ëœë¤ ê¸°ë¯¹ ë½‘ì„ ë•Œ í•„ìš”í•œ ë³€ìˆ˜
     private int randomNum = 0;
     private List<IGimmick> TempList = new List<IGimmick>();
 
@@ -28,22 +28,22 @@ public class GimmickManager : MonoBehaviour
 
     private void Awake()
     {
-        //ÀÏ´Ü ¸ğµç Á¾·ùÀÇ ±â¹ÍÀ» ¸®½ºÆ®¿¡ ³ÖÀ½
+        //ì¼ë‹¨ ëª¨ë“  ì¢…ë¥˜ì˜ ê¸°ë¯¹ì„ ë¦¬ìŠ¤íŠ¸ì— ë„£ìŒ
         //TotalList.Add(UnrealList);
         TotalList.Add(HumanList);
         //TotalList.Add(ObjectList);
 
-        //ÀÌ·±½ÄÀ¸·Î ¿ÀºêÁ§Æ®¿¡¼­ Ã£¾Æ¼­ ±â¹Í ³Ö¾îÁÖ¸é µÊ(¿¹½ÃÄÚµå)
+        //ì´ëŸ°ì‹ìœ¼ë¡œ ì˜¤ë¸Œì íŠ¸ì—ì„œ ì°¾ì•„ì„œ ê¸°ë¯¹ ë„£ì–´ì£¼ë©´ ë¨(ì˜ˆì‹œì½”ë“œ)
         //UnrealList.Add(gameObject.GetComponent<IGimmick>());
 
-        //±â¹Í ·£´ı ½ÇÇà ÄÚ·çÆ¾ 1È¸ ½ÇÇà
+        //ê¸°ë¯¹ ëœë¤ ì‹¤í–‰ ì½”ë£¨í‹´ 1íšŒ ì‹¤í–‰
         StartCoroutine(RandomGimmick());
     }
 
-    //±â¹Í Á¾·ù¿¡ µû¶ó TotalList(ÀüÃ¼ ±â¹Í °ü¸® ¸®½ºÆ®)¿¡ Ãß°¡ÇÔ
+    //ê¸°ë¯¹ ì¢…ë¥˜ì— ë”°ë¼ TotalList(ì „ì²´ ê¸°ë¯¹ ê´€ë¦¬ ë¦¬ìŠ¤íŠ¸)ì— ì¶”ê°€í•¨
     public void TotalListInsert(ListGroup listGroup)
     {
-        print("ÅäÅ»¸®½ºÆ® ÀÎ¼³Æ®");
+        print("í† íƒˆë¦¬ìŠ¤íŠ¸ ì¸ì„¤íŠ¸");
         switch (listGroup)
         {
             case ListGroup.Unreal:
@@ -60,10 +60,10 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //±â¹Í Á¾·ù¿¡ µû¶ó TotalList(ÀüÃ¼ ±â¹Í °ü¸® ¸®½ºÆ®)¿¡¼­ »èÁ¦ÇÔ
+    //ê¸°ë¯¹ ì¢…ë¥˜ì— ë”°ë¼ TotalList(ì „ì²´ ê¸°ë¯¹ ê´€ë¦¬ ë¦¬ìŠ¤íŠ¸)ì—ì„œ ì‚­ì œí•¨
     public void TotalListDelete(ListGroup listGroup)
     {
-        print("ÅäÅ»¸®½ºÆ® µô¸®Æ®");
+        print("í† íƒˆë¦¬ìŠ¤íŠ¸ ë”œë¦¬íŠ¸");
         switch (listGroup)
         {
             case ListGroup.Unreal:
@@ -80,10 +80,10 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //3Á¾·ù ±â¹Í ¸®½ºÆ®¿¡ ºĞ·ùÇØ¼­ Ãß°¡ÇÔ
+    //3ì¢…ë¥˜ ê¸°ë¯¹ ë¦¬ìŠ¤íŠ¸ì— ë¶„ë¥˜í•´ì„œ ì¶”ê°€í•¨
     public void TypeListInsert(ListGroup listGroup, IGimmick gimmick)
     {
-        print("Å¸ÀÔ¸®½ºÆ® ÀÎ¼³Æ®");
+        print("íƒ€ì…ë¦¬ìŠ¤íŠ¸ ì¸ì„¤íŠ¸");
         switch (listGroup)
         {
             case ListGroup.Unreal:
@@ -100,10 +100,10 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //3Á¾·ù ±â¹Í ¸®½ºÆ®¿¡ ºĞ·ùÇØ¼­ »èÁ¦ÇÔ(º°·Î ¾²Áø ¾ÊÀ» °Í °°Àºµ¥ ÀÏ´Ü ¸¸µé¾úÀ½)
+    //3ì¢…ë¥˜ ê¸°ë¯¹ ë¦¬ìŠ¤íŠ¸ì— ë¶„ë¥˜í•´ì„œ ì‚­ì œí•¨(ë³„ë¡œ ì“°ì§„ ì•Šì„ ê²ƒ ê°™ì€ë° ì¼ë‹¨ ë§Œë“¤ì—ˆìŒ)
     public void TypeListDelete(ListGroup listGroup, IGimmick gimmick)
     {
-        print("Å¸ÀÔ¸®½ºÆ® µô¸®Æ®");
+        print("íƒ€ì…ë¦¬ìŠ¤íŠ¸ ë”œë¦¬íŠ¸");
         switch (listGroup)
         {
             case ListGroup.Unreal:
@@ -122,9 +122,9 @@ public class GimmickManager : MonoBehaviour
 
     IEnumerator RandomGimmick()
     {
-        print("·£´ı±â¹Í ÄÚ·çÆ¾ 1È¸ ½ÃÀÛ");
-        //while Á¶°ÇÀ¸·Î ³ªÁß¿¡ GameManager °°Àº°Å ÀÛ¼ºÇØ¼­ ±× ¾È¿¡¼­ °ÔÀÓ ³¡³­´ÂÁö ¿©ºÎ ¾Ë·ÁÁÖ´Â º¯¼ö °¡Á®¿Ã °Í
-        //°ÔÀÓ ³¡³ª¸é ´õ ÀÌ»ó ¹İº¹µÇÁö ¾Êµµ·Ï
+        print("ëœë¤ê¸°ë¯¹ ì½”ë£¨í‹´ 1íšŒ ì‹œì‘");
+        //while ì¡°ê±´ìœ¼ë¡œ ë‚˜ì¤‘ì— GameManager ê°™ì€ê±° ì‘ì„±í•´ì„œ ê·¸ ì•ˆì—ì„œ ê²Œì„ ëë‚œëŠ”ì§€ ì—¬ë¶€ ì•Œë ¤ì£¼ëŠ” ë³€ìˆ˜ ê°€ì ¸ì˜¬ ê²ƒ
+        //ê²Œì„ ëë‚˜ë©´ ë” ì´ìƒ ë°˜ë³µë˜ì§€ ì•Šë„ë¡
         while (true)
         {
             yield return new WaitForSeconds(3);
@@ -132,43 +132,43 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //Å¸ÀÔº° ¸®½ºÆ® ÀçÁ¤ÀÇ, ÀÌÈÄ ±â¹Í ÇÏ³ª ·£´ıÀ¸·Î(È®·üÀ» ÀÌ¿ëÇØ¼­) ¼±ÅÃ
+    //íƒ€ì…ë³„ ë¦¬ìŠ¤íŠ¸ ì¬ì •ì˜, ì´í›„ ê¸°ë¯¹ í•˜ë‚˜ ëœë¤ìœ¼ë¡œ(í™•ë¥ ì„ ì´ìš©í•´ì„œ) ì„ íƒ
     private void ChoiceGimmick()
     {
-        print("ÃÊÀÌ½º ±â¹Í");
-        print("¸®½ºÆ® Ä«¿îÆ® : " + TotalList.Count);
+        print("ì´ˆì´ìŠ¤ ê¸°ë¯¹");
+        print("ë¦¬ìŠ¤íŠ¸ ì¹´ìš´íŠ¸ : " + TotalList.Count);
 
-        //ÇöÀç ¸ğµç Á¾·ùÀÇ ±â¹ÍÀÌ ½ÇÇàµÇ°í ÀÖ´Ù¸é ´õ ÀÌ»ó ±â¹Í ½ÇÇà ¾ÈÇÔ(ÃÖ´ë 3°³)
+        //í˜„ì¬ ëª¨ë“  ì¢…ë¥˜ì˜ ê¸°ë¯¹ì´ ì‹¤í–‰ë˜ê³  ìˆë‹¤ë©´ ë” ì´ìƒ ê¸°ë¯¹ ì‹¤í–‰ ì•ˆí•¨(ìµœëŒ€ 3ê°œ)
         if (TotalList.Count <= 0)
         {
             return;
         }
-        print("ÃÊÀÌ½º ±â¹Í Åë°ú");
+        print("ì´ˆì´ìŠ¤ ê¸°ë¯¹ í†µê³¼");
 
-        //Á¾·ùº° ¸®½ºÆ® ÃÊ±âÈ­
+        //ì¢…ë¥˜ë³„ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
         UnrealList.Clear();
         HumanList.Clear();
         ObjectList.Clear();
 
-        //±â¹Íº° È®·ü¿¡ µû¶ó Á¾·ùº°·Î ¸®½ºÆ®¿¡ »ğÀÔ(randomNum ÀÌ»óÀÇ percent°ªÀ» °¡Áö°í ÀÖ¾î¾ß »ğÀÔ °¡´É)
+        //ê¸°ë¯¹ë³„ í™•ë¥ ì— ë”°ë¼ ì¢…ë¥˜ë³„ë¡œ ë¦¬ìŠ¤íŠ¸ì— ì‚½ì…(randomNum ì´ìƒì˜ percentê°’ì„ ê°€ì§€ê³  ìˆì–´ì•¼ ì‚½ì… ê°€ëŠ¥)
         randomNum = UnityEngine.Random.Range(1, 101);
         randomGimmickEvent?.Invoke(randomNum);
 
-        //Á¾·ùº° ¸®½ºÆ® 3°³ Áß ÇöÀç ½ÇÇàµÇ°í ÀÖÁö ¾ÊÀº Á¾·ù ¸®½ºÆ® 1°³¸¦ »ÌÀ½
+        //ì¢…ë¥˜ë³„ ë¦¬ìŠ¤íŠ¸ 3ê°œ ì¤‘ í˜„ì¬ ì‹¤í–‰ë˜ê³  ìˆì§€ ì•Šì€ ì¢…ë¥˜ ë¦¬ìŠ¤íŠ¸ 1ê°œë¥¼ ë½‘ìŒ
         randomNum = UnityEngine.Random.Range(0, TotalList.Count);
         TempList = TotalList[randomNum];
 
-        //Å×½ºÆ®¸¦ À§ÇØ ÈŞ¸Õ¸®½ºÆ®·Î °íÁ¤************
+        //í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•´ íœ´ë¨¼ë¦¬ìŠ¤íŠ¸ë¡œ ê³ ì •************
         //TempList = TotalList[TotalList.IndexOf(HumanList)];
 
-        //±× ¸®½ºÆ® ¾È¿¡¼­ ¶Ç ·£´ıÀ¸·Î ±â¹Í »ÌÀ½
+        //ê·¸ ë¦¬ìŠ¤íŠ¸ ì•ˆì—ì„œ ë˜ ëœë¤ìœ¼ë¡œ ê¸°ë¯¹ ë½‘ìŒ
         randomNum = UnityEngine.Random.Range(0, TempList.Count);
         nowGimmick = TempList[randomNum];
 
-        //Å×½ºÆ®¸¦ À§ÇØ ÇöÀç´Â ÈŞ¸Õ¸®½ºÆ®·Î °íÁ¤(³ªÁß¿¡ ÄÚµå »èÁ¦ÇÒ °Í)
+        //í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•´ í˜„ì¬ëŠ” íœ´ë¨¼ë¦¬ìŠ¤íŠ¸ë¡œ ê³ ì •(ë‚˜ì¤‘ì— ì½”ë“œ ì‚­ì œí•  ê²ƒ)
         //nowGimmick = HumanList[randomNum];
 
-        //»õ ±â¹Í ½ÃÀÛ
+        //ìƒˆ ê¸°ë¯¹ ì‹œì‘
         nowGimmick.OnStart();
 
     }

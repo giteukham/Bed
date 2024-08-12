@@ -14,7 +14,7 @@ public class PlayerEyeStates
         PlayerEyeStates.bottomEyelid = bottomEyelid;
     }
     
-    public class OpenEyeState : IState      // ´«À» ¿ÏÀüÈ÷ ¶á »óÅÂ
+    public class OpenEyeState : IState      // ëˆˆì„ ì™„ì „íˆ ëœ¬ ìƒíƒœ
     {
         public void Enter()
         {
@@ -34,7 +34,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class OpeningEyeState : IState // ´«À» Á¶±İ¾¿ ¶ß´Â »óÅÂ
+    public class OpeningEyeState : IState // ëˆˆì„ ì¡°ê¸ˆì”© ëœ¨ëŠ” ìƒíƒœ
     {
         public void Enter()
         {
@@ -55,7 +55,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class CloseEyeState : IState     // ´«À» ¿ÏÀüÈ÷ °¨Àº »óÅÂ
+    public class CloseEyeState : IState     // ëˆˆì„ ì™„ì „íˆ ê°ì€ ìƒíƒœ
     {
         public void Enter()
         {
@@ -74,7 +74,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class ClosingEyeState : IState // ´«À» Á¶±İ¾¿ °¨´Â »óÅÂ
+    public class ClosingEyeState : IState // ëˆˆì„ ì¡°ê¸ˆì”© ê°ëŠ” ìƒíƒœ
     {
         public void Enter()
         {
@@ -95,7 +95,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class BlinkEyeState : IState     // ¸¶¿ì½º ÈÙÀ» ´©¸£¸é ´«À» °¨¾Ò´Ù°¡ ¶ß´Â »óÅÂ
+    public class BlinkEyeState : IState     // ë§ˆìš°ìŠ¤ íœ ì„ ëˆ„ë¥´ë©´ ëˆˆì„ ê°ì•˜ë‹¤ê°€ ëœ¨ëŠ” ìƒíƒœ
     {
         public async void Enter()
         {

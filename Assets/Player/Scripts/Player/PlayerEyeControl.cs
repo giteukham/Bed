@@ -14,10 +14,10 @@ public class PlayerEyeControl : IPlayerControl
     };
     
     private int prevEyeLittleBlinkCount = 0;
-    private int eyeLittleBlinkCount = 0;    // TODO: ´« Á¶±İ °¨±ä È½¼ö? ÀÌ¸§ Á» »ı°¢ÇØ ºÁ¾ß ÇÒ µí.
+    private int eyeLittleBlinkCount = 0;    // TODO: ëˆˆ ì¡°ê¸ˆ ê°ê¸´ íšŸìˆ˜? ì´ë¦„ ì¢€ ìƒê°í•´ ë´ì•¼ í•  ë“¯.
     
-    public const int LITTLE_BLINK_COUNT_MIN = 0, LITTLE_BLINK_COUNT_MAX = 18;   // ´« Á¶±İ °¨´Â È½¼ö
-    public const int MOUSE_SCROLL_VALUE = 120;    // ¸¶¿ì½º ÈÙ °ª
+    public const int LITTLE_BLINK_COUNT_MIN = 0, LITTLE_BLINK_COUNT_MAX = 18;   // ëˆˆ ì¡°ê¸ˆ ê°ëŠ” íšŸìˆ˜
+    public const int MOUSE_SCROLL_VALUE = 120;    // ë§ˆìš°ìŠ¤ íœ  ê°’
     public const float EYE_POSITION_MAX_Y = 1080f;
     
     private StateMachine playerEyeStateMachine;
@@ -49,27 +49,27 @@ public class PlayerEyeControl : IPlayerControl
     }
 
     /// <summary>
-    /// ¸¶¿ì½º ÈÙÀ» ¾Æ·¡·Î -> eyeLittleBlinkCount Áõ°¡
-    /// ¸¶¿ì½º ÈÙÀ» À§·Î -> eyeLittleBlinkCount °¨¼Ò
+    /// ë§ˆìš°ìŠ¤ íœ ì„ ì•„ë˜ë¡œ -> eyeLittleBlinkCount ì¦ê°€
+    /// ë§ˆìš°ìŠ¤ íœ ì„ ìœ„ë¡œ -> eyeLittleBlinkCount ê°ì†Œ
     /// </summary>
     /// <param name="mouseScrollValue"></param>
     private void UpdateBlinkCount(int mouseScrollValue)
     {
-        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && eyeLittleBlinkCount < LITTLE_BLINK_COUNT_MAX)    // ¸¶¿ì½º ÈÙÀ» ¾Æ·¡·Î ³»·ÈÀ» ¶§
+        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && eyeLittleBlinkCount < LITTLE_BLINK_COUNT_MAX)    // ë§ˆìš°ìŠ¤ íœ ì„ ì•„ë˜ë¡œ ë‚´ë ¸ì„ ë•Œ
         {
-            eyeLittleBlinkCount += Mathf.Abs(mouseScrollValue / MOUSE_SCROLL_VALUE);                    // eyeLittleBlinkCount 1¾¿ Áõ°¡
+            eyeLittleBlinkCount += Mathf.Abs(mouseScrollValue / MOUSE_SCROLL_VALUE);                    // eyeLittleBlinkCount 1ì”© ì¦ê°€
         }
-        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && eyeLittleBlinkCount > LITTLE_BLINK_COUNT_MIN)    // ¸¶¿ì½º ÈÙÀ» À§·Î ¿Ã·ÈÀ» ¶§
+        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && eyeLittleBlinkCount > LITTLE_BLINK_COUNT_MIN)    // ë§ˆìš°ìŠ¤ íœ ì„ ìœ„ë¡œ ì˜¬ë ¸ì„ ë•Œ
         {
-            eyeLittleBlinkCount -= (mouseScrollValue / MOUSE_SCROLL_VALUE);                                // eyeLittleBlinkCount 1¾¿ °¨¼Ò
+            eyeLittleBlinkCount -= (mouseScrollValue / MOUSE_SCROLL_VALUE);                                // eyeLittleBlinkCount 1ì”© ê°ì†Œ
         }
     }
 
     /// <summary>
-    /// eyeLittleBlinkCount°¡ LITTLE_BLINK_COUNT_MINÀÌ¸é ¿ÏÀüÈ÷ ´« ¶á »óÅÂ·Î º¯°æ
-    /// eyeLittleBlinkCount°¡ LITTLE_BLINK_COUNT_MAXÀÌ¸é ¿ÏÀüÈ÷ ´« °¨Àº »óÅÂ·Î º¯°æ
-    /// eyeLittleBlinkCount°¡ Áõ°¡ -> ´«ÀÌ Á¡Á¡ °¨°Ü°¨
-    /// eyeLittleBlinkCount°¡ °¨¼Ò -> ´«ÀÌ Á¡Á¡ ¶°Áü
+    /// eyeLittleBlinkCountê°€ LITTLE_BLINK_COUNT_MINì´ë©´ ì™„ì „íˆ ëˆˆ ëœ¬ ìƒíƒœë¡œ ë³€ê²½
+    /// eyeLittleBlinkCountê°€ LITTLE_BLINK_COUNT_MAXì´ë©´ ì™„ì „íˆ ëˆˆ ê°ì€ ìƒíƒœë¡œ ë³€ê²½
+    /// eyeLittleBlinkCountê°€ ì¦ê°€ -> ëˆˆì´ ì ì  ê°ê²¨ê°
+    /// eyeLittleBlinkCountê°€ ê°ì†Œ -> ëˆˆì´ ì ì  ë– ì§
     /// </summary>
     private void UpdateEyeState()
     {

@@ -2,80 +2,80 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//°¡³ª´Ù¶ó¸¶¹Ù»ç¾Æ ´ß ºµ º× ”î
-//”î —Í ´ß ˆ¦ ´â ˆ£ Ä
+//ê°€ë‚˜ë‹¤ë¼ë§ˆë°”ì‚¬ì•„ ë‹­ ë³• ë¶“ Â”
+//Â” Â— ë‹­ Âˆ ë‹³ Âˆ Â
 public class ExPlayer : MonoBehaviour
 {
     /// <summary>
-    /// °¡»ó ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ®
+    /// ê°€ìƒ í”Œë ˆì´ì–´ ìŠ¤í¬ë¦½íŠ¸
     /// </summary>
      
 
-    //¿©±â¿¡ ÀÌº¥Æ® ¸¸µé°í GimmickTestÂÊ¿¡¼­ ÀÌº¥Æ® ±¸µ¶ÇÒ°ÅÀÓ
-    //ÄÚ·çÆ¾À¸·Î 3ÃÊ¸¶´Ù ÀÌº¥Æ® ¹ßµ¿¿¹Á¤
-    //ÀÌ·¸°Ô µÇ¸é GimmickTestÀÇ percent º¯¼ö Á¶Àý °¡´É
+    //ì—¬ê¸°ì— ì´ë²¤íŠ¸ ë§Œë“¤ê³  GimmickTestìª½ì—ì„œ ì´ë²¤íŠ¸ êµ¬ë…í• ê±°ìž„
+    //ì½”ë£¨í‹´ìœ¼ë¡œ 3ì´ˆë§ˆë‹¤ ì´ë²¤íŠ¸ ë°œë™ì˜ˆì •
+    //ì´ë ‡ê²Œ ë˜ë©´ GimmickTestì˜ percent ë³€ìˆ˜ ì¡°ì ˆ ê°€ëŠ¥
 
-    //°¡»ó ¼öÄ¡µé(¸¶¿ì½º ¿òÁ÷ÀÓ, ´«±ôºýÀÓ µîµî...)
+    //ê°€ìƒ ìˆ˜ì¹˜ë“¤(ë§ˆìš°ìŠ¤ ì›€ì§ìž„, ëˆˆê¹œë¹¡ìž„ ë“±ë“±...)
     int mouseMove = 0;
     int eyeBlink = 0;
 
-    //¸¹ÀÌ ¿òÁ÷¿´´ÂÁö, ´« ±ôºý°Å·È´ÂÁö ¿©ºÎ(¾È¾µ¼öµµ ÀÖÀ½)
-    //Áö±Ý boolº¯¼ö·Î Âü, °ÅÁþ 2°¡Áö °ª¸¸À¸·Î ±â¹Í µîÀå È®·ü¿¡ ¿µÇâÁÖ´Âµ¥
-    //»óÈ²¿¡ µû¶ó¼­ Áß°£°ªµµ ÇÊ¿äÇØº¸ÀÓ
-    //enum º¯¼ö ÇÏ³ª ¸¸µé¾î¼­ ¾²´Â°Íµµ ³ª»ÚÁö ¾Ê¾Æº¸ÀÓ
+    //ë§Žì´ ì›€ì§ì˜€ëŠ”ì§€, ëˆˆ ê¹œë¹¡ê±°ë ¸ëŠ”ì§€ ì—¬ë¶€(ì•ˆì“¸ìˆ˜ë„ ìžˆìŒ)
+    //ì§€ê¸ˆ boolë³€ìˆ˜ë¡œ ì°¸, ê±°ì§“ 2ê°€ì§€ ê°’ë§Œìœ¼ë¡œ ê¸°ë¯¹ ë“±ìž¥ í™•ë¥ ì— ì˜í–¥ì£¼ëŠ”ë°
+    //ìƒí™©ì— ë”°ë¼ì„œ ì¤‘ê°„ê°’ë„ í•„ìš”í•´ë³´ìž„
+    //enum ë³€ìˆ˜ í•˜ë‚˜ ë§Œë“¤ì–´ì„œ ì“°ëŠ”ê²ƒë„ ë‚˜ì˜ì§€ ì•Šì•„ë³´ìž„
     bool manyMousemove = false;
     bool manyEyeBlink = false;
 
-    //ÀÌº¥Æ® º¯¼ö ¼±¾ð
+    //ì´ë²¤íŠ¸ ë³€ìˆ˜ ì„ ì–¸
     public event Action<bool, bool> TendencyDataEvent;
 
     private void Awake()
     {
-        //°ÔÀÓ ½ÃÀÛ½Ã ÄÚ·çÆ¾ 1È¸ ½ÇÇà ÀÌÈÄ ¹Ýº¹
+        //ê²Œìž„ ì‹œìž‘ì‹œ ì½”ë£¨í‹´ 1íšŒ ì‹¤í–‰ ì´í›„ ë°˜ë³µ
         StartCoroutine(EventCouroutine());
     }
 
     private void Update()
     {
-        //´ëÃæ ¸¶¿ì½º ÈÙÅ° Å¬¸¯, ¸¶¿ì½º ¿òÁ÷ÀÓ ¹Þ¾Æ¼­ º¯¼ö¿¡ ³Ö´Â ÄÚµå
-        //ÈÙÅ° ´©¸¦¶§¸¶´Ù eyeBlink º¯¼ö¿¡ ³Ö°í(È¤Àº ÈÙ ½ºÅ©·Ñ ÇßÀ»¶§µµ)
+        //ëŒ€ì¶© ë§ˆìš°ìŠ¤ íœ í‚¤ í´ë¦­, ë§ˆìš°ìŠ¤ ì›€ì§ìž„ ë°›ì•„ì„œ ë³€ìˆ˜ì— ë„£ëŠ” ì½”ë“œ
+        //íœ í‚¤ ëˆ„ë¥¼ë•Œë§ˆë‹¤ eyeBlink ë³€ìˆ˜ì— ë„£ê³ (í˜¹ì€ íœ  ìŠ¤í¬ë¡¤ í–ˆì„ë•Œë„)
 
-        //¸¶¿ì½º ÁÂÇ¥¸¦ ÀÌÀü À§Ä¡¿Í ºñ±³ÇÏ¿© ¾ó¸¶³ª ¿òÁ÷¿´´ÂÁö È¤Àº xÁÂÇ¥¿Í yÁÂÇ¥¿Í ÀÌÀü ÁÂÇ¥¿Í ¹Ý´ë ¹æÇâÀÌ µÇ¾îÀÖ´ÂÁö
-        //¿©ºÎ ÆÇ´ÜÇÏ¿© mouseMove¿¡ ÀúÀå(¾Æ´Ï¸é ´Ù¸¥ ¹æ½ÄÀ» ½áµµ µÊ)
+        //ë§ˆìš°ìŠ¤ ì¢Œí‘œë¥¼ ì´ì „ ìœ„ì¹˜ì™€ ë¹„êµí•˜ì—¬ ì–¼ë§ˆë‚˜ ì›€ì§ì˜€ëŠ”ì§€ í˜¹ì€ xì¢Œí‘œì™€ yì¢Œí‘œì™€ ì´ì „ ì¢Œí‘œì™€ ë°˜ëŒ€ ë°©í–¥ì´ ë˜ì–´ìžˆëŠ”ì§€
+        //ì—¬ë¶€ íŒë‹¨í•˜ì—¬ mouseMoveì— ì €ìž¥(ì•„ë‹ˆë©´ ë‹¤ë¥¸ ë°©ì‹ì„ ì¨ë„ ë¨)
     }
 
-    //ÀÌº¥Æ® ½ÇÇà ¸Þ¼Òµå
+    //ì´ë²¤íŠ¸ ì‹¤í–‰ ë©”ì†Œë“œ
     private void ThrowTendencyData()
     {
-        //ÀÌº¥Æ® ±¸µ¶ÇÑ ¸ðµç ¸Þ¼Òµå¿¡°Ô ¼öÄ¡ ³Ñ±è
+        //ì´ë²¤íŠ¸ êµ¬ë…í•œ ëª¨ë“  ë©”ì†Œë“œì—ê²Œ ìˆ˜ì¹˜ ë„˜ê¹€
         TendencyDataEvent?.Invoke(manyMousemove, manyEyeBlink);
     }
 
-    //3ÃÊ¸¶´Ù 1È¸ ½ÇÇàµÇ´Â ÄÚ·çÆ¾
+    //3ì´ˆë§ˆë‹¤ 1íšŒ ì‹¤í–‰ë˜ëŠ” ì½”ë£¨í‹´
     IEnumerator EventCouroutine()
     {
-        //¹«ÇÑ¹Ýº¹
+        //ë¬´í•œë°˜ë³µ
         while (true)
         {
-            //3ÃÊ¸¶´Ù ½ÇÇà
+            //3ì´ˆë§ˆë‹¤ ì‹¤í–‰
             yield return new WaitForSeconds(3);
-            //»ç¿ëÀÚ ¼ºÇâ ºÐ¼®(¸¶¿ì½º °ü·Ã ¿òÁ÷ÀÓ º¯¼ö Áõ°¨)
+            //ì‚¬ìš©ìž ì„±í–¥ ë¶„ì„(ë§ˆìš°ìŠ¤ ê´€ë ¨ ì›€ì§ìž„ ë³€ìˆ˜ ì¦ê°)
             UserTendencyAnalysis(mouseMove, eyeBlink);
-            //¼ºÇâ °ü·Ã º¯¼ö ³Ñ±è(±â¹ÍµéÀº ±â¹Í º»ÀÎÀÇ µîÀåÈ®·üÀ» ÀçÁ¤ÀÇ ÇÏ°ÔµÊ)
+            //ì„±í–¥ ê´€ë ¨ ë³€ìˆ˜ ë„˜ê¹€(ê¸°ë¯¹ë“¤ì€ ê¸°ë¯¹ ë³¸ì¸ì˜ ë“±ìž¥í™•ë¥ ì„ ìž¬ì •ì˜ í•˜ê²Œë¨)
             ThrowTendencyData();
         }
 
     }
 
-    ///»ç¿ëÀÚ ¼ºÇâ ºÐ¼® ¸Þ¼Òµå
+    ///ì‚¬ìš©ìž ì„±í–¥ ë¶„ì„ ë©”ì†Œë“œ
     private void UserTendencyAnalysis(int mouseMove, int eyeBlink)
     {
-        //´ëÃæ ¸¶¿ì½º ¿òÁ÷ÀÓ, ´«±ôºýÀÓ º¯¼öµé ´õÇÏ°í »©´Â ¸Þ¼Òµå
-        print("»ç¿ëÀÚ ¼ºÇâ ºÐ¼®");
+        //ëŒ€ì¶© ë§ˆìš°ìŠ¤ ì›€ì§ìž„, ëˆˆê¹œë¹¡ìž„ ë³€ìˆ˜ë“¤ ë”í•˜ê³  ë¹¼ëŠ” ë©”ì†Œë“œ
+        print("ì‚¬ìš©ìž ì„±í–¥ ë¶„ì„");
 
-        //ÀÏ´Ü ±âÁØ¼öÄ¡ 50À¸·Î µ×À½, 3ÃÊ¸¶´Ù Ã¼Å©ÇÏ´Â°Å¶ó ½ÇÁ¦·Î´Â °ªÀÌ ´õ ÀûÀ»°ÅÀÓ
-        //¾Æ´Ï¸é 30ÃÊ¸¶´Ù Ã¼Å©ÇÏ°Å³ª
-        //»ç¿ëÀÚ ¿òÁ÷ÀÓ, Å¬¸¯ ±âÁØ Æò±ÕÄ¡ ³»¼­ ±âÁØ¼öÄ¡ Á¤ÇÏ´Â °Íµµ ±¦Âú¾Æº¸ÀÓ
+        //ì¼ë‹¨ ê¸°ì¤€ìˆ˜ì¹˜ 50ìœ¼ë¡œ ë’€ìŒ, 3ì´ˆë§ˆë‹¤ ì²´í¬í•˜ëŠ”ê±°ë¼ ì‹¤ì œë¡œëŠ” ê°’ì´ ë” ì ì„ê±°ìž„
+        //ì•„ë‹ˆë©´ 30ì´ˆë§ˆë‹¤ ì²´í¬í•˜ê±°ë‚˜
+        //ì‚¬ìš©ìž ì›€ì§ìž„, í´ë¦­ ê¸°ì¤€ í‰ê· ì¹˜ ë‚´ì„œ ê¸°ì¤€ìˆ˜ì¹˜ ì •í•˜ëŠ” ê²ƒë„ ê´œì°®ì•„ë³´ìž„
         if (mouseMove > 50)
         {
             manyMousemove = true;

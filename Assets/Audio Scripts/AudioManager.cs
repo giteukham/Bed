@@ -15,7 +15,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake() 
     {
-        if (instance != null) Debug.LogError("Audio Manager�� �̹� ����");
+        if (instance != null) Debug.LogError("Audio Manager?? ??? ????");
         instance = this;
     }
 

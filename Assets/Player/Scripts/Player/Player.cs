@@ -20,7 +20,7 @@ public enum PlayerEyeStateTypes
 
 public class Player : MonoBehaviour
 {
-    // °»½Å ´ÜÀ§ 3ÃÊ
+    // ê°±ì‹  ë‹¨ìœ„ 3ì´ˆ
     
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
     private float stressGauge = 0f, fearGauge = 0f;
     private float stressGaugeMax = 100f, fearGaugeMax = 100f;
     
-    // TODO: ³ªÁß¿¡ Cursor Á¶Á¤À» GameManager·Î ¿Å°Ü¾ß ÇÔ.
+    // TODO: ë‚˜ì¤‘ì— Cursor ì¡°ì •ì„ GameManagerë¡œ ì˜®ê²¨ì•¼ í•¨.
     private void Awake()
     {
         Cursor.visible = false;
@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®¿¡¼­ ¾²´Â State º¯°æ ÇÔ¼ö.
+    /// ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ì—ì„œ ì“°ëŠ” State ë³€ê²½ í•¨ìˆ˜.
     /// </summary>
     /// <param name="toState"></param>
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -84,5 +84,4 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-    // Å×½ºÆ®
 }
