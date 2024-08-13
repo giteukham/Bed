@@ -4,9 +4,9 @@ public class StateMachine : MonoBehaviour
 {
     private IState currentState, prevState;
     
-    public void ChangeState(IState toState, bool canPrevOverlap = false)
+    public void ChangeState(IState toState, bool canStateOverlap = false)
     {
-        if (currentState == toState && !canPrevOverlap)
+        if (currentState == toState && !canStateOverlap)
         {
             Debug.LogWarning($"이미 {currentState?.GetType().Name} 상태입니다.");
             return;            

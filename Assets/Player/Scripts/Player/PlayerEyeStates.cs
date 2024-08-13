@@ -14,14 +14,19 @@ public class PlayerEyeStates
         PlayerEyeStates.bottomEyelid = bottomEyelid;
     }
     
+    private static void ChangeEyePosition(float eyePositionY)
+    {
+        topEyelidPosition.y = eyePositionY;
+        bottomEyelidPosition.y = -eyePositionY;
+        topEyelid.offsetMin = topEyelidPosition;
+        bottomEyelid.offsetMax = bottomEyelidPosition;
+    }
+    
     public class OpenEyeState : IState      // ´«À» ¿ÏÀüÈ÷ ¶á »óÅÂ
     {
         public void Enter()
         {
-            topEyelidPosition.y = PlayerEyeControl.EYE_POSITION_MAX_Y;
-            bottomEyelidPosition.y = -PlayerEyeControl.EYE_POSITION_MAX_Y;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
+            ChangeEyePosition(PlayerEyeControl.EYE_POSITION_MAX_Y);
         }
 
         public void Execute()
@@ -38,12 +43,7 @@ public class PlayerEyeStates
     {
         public void Enter()
         {
-            float eyePositionY = playerEyeControl.GetChangedEyePosition();
-            
-            topEyelidPosition.y = eyePositionY;
-            bottomEyelidPosition.y = -eyePositionY;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
+            ChangeEyePosition(playerEyeControl.GetChangedEyePosition());
         }
 
         public void Execute()
@@ -59,10 +59,7 @@ public class PlayerEyeStates
     {
         public void Enter()
         {
-            topEyelidPosition.y = 0f;
-            bottomEyelidPosition.y = 0f;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
+            ChangeEyePosition(0f);
         }
 
         public void Execute()
@@ -78,12 +75,7 @@ public class PlayerEyeStates
     {
         public void Enter()
         {
-            float eyePositionY = playerEyeControl.GetChangedEyePosition();
-            
-            topEyelidPosition.y = eyePositionY;
-            bottomEyelidPosition.y = -eyePositionY;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
+            ChangeEyePosition(playerEyeControl.GetChangedEyePosition());
         }
 
         public void Execute()
@@ -99,34 +91,25 @@ public class PlayerEyeStates
     {
         public async void Enter()
         {
-            float eyePositionY = playerEyeControl.GetChangedEyePosition();
-            float blinkUpdateValue = PlayerEyeControl.EYE_POSITION_MAX_Y / PlayerEyeControl.LITTLE_BLINK_COUNT_MAX;
-            
+            int blinkDelay = 7;
+
             do
             {
-                topEyelidPosition.y = eyePositionY - blinkUpdateValue;
-                bottomEyelidPosition.y = -eyePositionY + blinkUpdateValue;
-                topEyelid.offsetMin = topEyelidPosition;
-                bottomEyelid.offsetMax = bottomEyelidPosition;
-                
-                await UniTask.Delay(7);
-                eyePositionY = topEyelidPosition.y;
-            } while (topEyelidPosition.y != 0f && bottomEyelidPosition.y != 0f);
+                playerEyeControl.UpdateBlinkCount(true);
+                ChangeEyePosition(playerEyeControl.GetChangedEyePosition());
+                await UniTask.Delay(blinkDelay);
+            } while (playerEyeControl.GetEyeLittleBlinkCount() != PlayerEyeControl.LITTLE_BLINK_COUNT_MAX);
             
             await UniTask.Delay(3);
             
             do
             {
-                topEyelidPosition.y = eyePositionY + blinkUpdateValue;
-                bottomEyelidPosition.y = -eyePositionY - blinkUpdateValue;
-                topEyelid.offsetMin = topEyelidPosition;
-                bottomEyelid.offsetMax = bottomEyelidPosition;
-                
-                await UniTask.Delay(7);
-                eyePositionY = topEyelidPosition.y;
-            } while (topEyelidPosition.y != PlayerEyeControl.EYE_POSITION_MAX_Y && bottomEyelidPosition.y != PlayerEyeControl.EYE_POSITION_MAX_Y);
+                playerEyeControl.UpdateBlinkCount(false);
+                ChangeEyePosition(playerEyeControl.GetChangedEyePosition());
+                await UniTask.Delay(blinkDelay);
+            } while (playerEyeControl.GetEyeLittleBlinkCount() != PlayerEyeControl.LITTLE_BLINK_COUNT_MIN);
             
-            playerEyeControl.ChangeState(PlayerEyeStateTypes.Open);
+            playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Open);
         }
 
         public void Execute()
