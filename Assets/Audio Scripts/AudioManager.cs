@@ -27,6 +27,17 @@ public class AudioManager : MonoBehaviour
     [field: Header("Hand Clap SFX")]
     [field: SerializeField] public EventReference handClap {get; private set;}
 
+
+    [field: Header("Hand Cover SFX")]
+    [field: SerializeField] public EventReference handCover {get; private set;}
+
+
+    [field: Header("Rough Breath SFX")]
+    [field: SerializeField] public EventReference roughBreath {get; private set;}
+
+    [field: Header("Hand Cover Off SFX")]
+    [field: SerializeField] public EventReference handCoverOff {get; private set;}
+
     private void Awake() 
     {
         if (instance != null) Debug.LogError("Audio Manager?? ??? ????");
