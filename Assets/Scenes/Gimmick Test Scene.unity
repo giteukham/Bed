@@ -3222,9 +3222,9 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 1, g: 0.6916588, b: 0.66172504, a: 1}
+  m_Color: {r: 0.6765498, g: 0.43310127, b: 0.48692676, a: 1}
   m_Intensity: 0.59
-  m_Range: 11.36
+  m_Range: 16
   m_SpotAngle: 90.17963
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -5548,6 +5548,27 @@ MonoBehaviour:
       Data3: -428047218
       Data4: -1633766913
     Path: event:/BlanketMoving
+  <switchOn>k__BackingField:
+    Guid:
+      Data1: 1220503684
+      Data2: 1173879494
+      Data3: -2115559773
+      Data4: 1513127990
+    Path: event:/SwitchOn
+  <switchOff>k__BackingField:
+    Guid:
+      Data1: 902070337
+      Data2: 1223120481
+      Data3: -1726651233
+      Data4: 277808860
+    Path: event:/SwitchOff
+  <handClap>k__BackingField:
+    Guid:
+      Data1: -1832842744
+      Data2: 1125613889
+      Data3: 147655308
+      Data4: 451895025
+    Path: event:/HandClap
 --- !u!1 &1392201384
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
+using Unity.VisualScripting;
 
 public class AudioManager : MonoBehaviour
 {
@@ -10,8 +11,21 @@ public class AudioManager : MonoBehaviour
     [field: Header("Cat SFX")]
     [field: SerializeField] public EventReference catMeow {get; private set;}
 
+
     [field: Header("Player SFX")]
     [field: SerializeField] public EventReference blanketMoving {get; private set;}
+
+
+    [field: Header("Light Switch On SFX")]
+    [field: SerializeField] public EventReference switchOn {get; private set;}
+
+    
+    [field: Header("Light Switch Off SFX")]
+    [field: SerializeField] public EventReference switchOff {get; private set;}
+    
+
+    [field: Header("Hand Clap SFX")]
+    [field: SerializeField] public EventReference handClap {get; private set;}
 
     private void Awake() 
     {
@@ -23,5 +37,4 @@ public class AudioManager : MonoBehaviour
     {
         RuntimeManager.PlayOneShot(_sound, _pos);
     }
-    //비둘기 꽈매기 가오리 왜가리
 }

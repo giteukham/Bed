@@ -6,7 +6,6 @@ using System;
 
 public class ClapGimcikTest : MonoBehaviour, IGimmick
 {
-    //자신이 어느 리스트에 속해있는지 초기값 바로 지정
     public ListGroup myGroup { get; set; } = ListGroup.Unreal;
 
     public int percent { get; set; } = 100;
@@ -82,6 +81,9 @@ public class ClapGimcikTest : MonoBehaviour, IGimmick
 
         yield return new WaitForSeconds(3.2f);
         houseLight.enabled = true;
+        
+        AudioManager.instance.PlayOneShot(AudioManager.instance.switchOn, this.transform.position);
+        // 스위치 키는 소리
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -89,15 +91,21 @@ public class ClapGimcikTest : MonoBehaviour, IGimmick
         yield return new WaitForSeconds(1.5f);
         animator.Play("ClapOff");
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.4f);
         houseLight.enabled = false;
+
+        AudioManager.instance.PlayOneShot(AudioManager.instance.switchOff, this.transform.position);
+        // 스위치 끄는 소리
+
         OnEnd();
 
         print("ClapGimcikTest End !!");
+    }
 
-        // if (currentAnimatorStateInfo.IsName("Clapping") && currentAnimatorStateInfo.normalizedTime <= 0.1f) 
-        // {
-            
-        // }
+    private void ClapSoundPlay()
+    {
+        // 박수 소리는 애니메이션 이벤트로 실행( 타이밍을 자연스럽게 하기 위해 ~ )
+        AudioManager.instance.PlayOneShot(AudioManager.instance.handClap, this.transform.position);
+        Debug.Log("clap");
     }
 }

@@ -69,10 +69,16 @@ public class CoverGimcikTest : MonoBehaviour, IGimmick
     private IEnumerator TestCode()
     {
         print("CoverGimcikTest Start !");
+        // 见家府
+
         yield return new WaitForSeconds(4);
         animator.Play("CoverEye");
+        // 乔何 厚厚绰 家府
+
         yield return new WaitForSeconds(3);
         animator.Play("CoverOffEye");
+        // 眶澜 家府
+
         yield return new WaitForSeconds(0.15f);
         OnEnd();
 
