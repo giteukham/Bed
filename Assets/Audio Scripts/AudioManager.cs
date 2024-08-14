@@ -31,12 +31,23 @@ public class AudioManager : MonoBehaviour
     [field: Header("Hand Cover SFX")]
     [field: SerializeField] public EventReference handCover {get; private set;}
 
-
     [field: Header("Rough Breath SFX")]
     [field: SerializeField] public EventReference roughBreath {get; private set;}
 
     [field: Header("Hand Cover Off SFX")]
     [field: SerializeField] public EventReference handCoverOff {get; private set;}
+
+    [field: Header("WindowOpenClose SFX")]
+    [field: SerializeField] public EventReference windowOpenClose {get; private set;}
+
+    [field: Header("PantRustle SFX")]
+    [field: SerializeField] public EventReference pantRustle {get; private set;}
+
+    [field: Header("Rapist4Phase SFX")]
+    [field: SerializeField] public EventReference rapist4Phase {get; private set;}
+
+    [field: Header("Horny Breath SFX")]
+    [field: SerializeField] public EventReference hornyBreath {get; private set;}
 
     private void Awake() 
     {

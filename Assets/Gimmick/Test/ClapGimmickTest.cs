@@ -16,13 +16,6 @@ public class ClapGimcikTest : MonoBehaviour, IGimmick
 
     public Animator animator;
 
-    private AnimatorStateInfo currentAnimatorStateInfo;
-
-    private void Start() 
-    {
-        currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-    }
-
     //기믹 끝났을 때 맨 마지막 마무리
     public void OnEnd()
     {
@@ -104,8 +97,7 @@ public class ClapGimcikTest : MonoBehaviour, IGimmick
 
     private void ClapSoundPlay()
     {
-        // 박수 소리는 애니메이션 이벤트로 실행( 타이밍을 자연스럽게 하기 위해 ~ )
+        // 박수 소리는 애니메이션 이벤트로 실행
         AudioManager.instance.PlayOneShot(AudioManager.instance.handClap, this.transform.position);
-        Debug.Log("clap");
     }
 }
