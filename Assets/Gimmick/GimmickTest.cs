@@ -21,6 +21,8 @@ public class GimmickTest : MonoBehaviour, IGimmick
     //플레이어 마우스 움직임, 눈깜빡임 접근을 위한 변수
     public ExPlayer Player { get; set; }
 
+    public GameObject gimmickObject { get; set; }
+
     //일단 인스펙터 창에서 기믹매니저 오브젝트 넣는걸로 설정했음
     //추후에 기믹매니저 하위로 넣든지 말든지는 나중에 정할거임
     [SerializeField]
@@ -29,6 +31,7 @@ public class GimmickTest : MonoBehaviour, IGimmick
     private void Awake()
     {
         Player = player;
+        gimmickObject = gameObject;
 
         //이벤트 구독(플레이어보다 빨라서 Awake로 하면 오류남, Start로 해도 오류남)
         Player.TendencyDataEvent += PercentRedefine;
@@ -37,6 +40,7 @@ public class GimmickTest : MonoBehaviour, IGimmick
         //본인 타입에 맞는 리스트에 기믹 넣음
         gimmickManager.TypeListInsert(myGroup, this);
 
+        gimmickObject = gameObject;
         
     }
 
@@ -56,7 +60,7 @@ public class GimmickTest : MonoBehaviour, IGimmick
         //이건 외부 접근해서 OnStart가 실행되게 하거나
         //아니면 OnEnable같은거로 실행시켜도 될 듯
 
-        //GimmickList에서 본인 소속 리스트 삭제
+        //TotalList에서 본인 소속 리스트 삭제
         gimmickManager.TotalListDelete(myGroup);
         print("토탈리스트 수 : " + gimmickManager.TotalList.Count);
 

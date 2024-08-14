@@ -13,6 +13,9 @@ public class AudioManager : MonoBehaviour
     [field: Header("Player SFX")]
     [field: SerializeField] public EventReference blanketMoving {get; private set;}
 
+    [field: Header("radio SFX")]
+    [field: SerializeField] public EventReference radio { get; private set; }
+
     private void Awake() 
     {
         if (instance != null) Debug.LogError("Audio Manager?? ??? ????");

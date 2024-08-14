@@ -30,8 +30,8 @@ public class GimmickManager : MonoBehaviour
     {
         //일단 모든 종류의 기믹을 리스트에 넣음
         //TotalList.Add(UnrealList);
-        TotalList.Add(HumanList);
-        //TotalList.Add(ObjectList);
+        //TotalList.Add(HumanList);
+        TotalList.Add(ObjectList);
 
         //이런식으로 오브젝트에서 찾아서 기믹 넣어주면 됨(예시코드)
         //UnrealList.Add(gameObject.GetComponent<IGimmick>());
@@ -169,7 +169,9 @@ public class GimmickManager : MonoBehaviour
         //nowGimmick = HumanList[randomNum];
 
         //새 기믹 시작
-        nowGimmick.OnStart();
+        //nowGimmick.OnStart();
+        nowGimmick.gimmickObject.SetActive(true);
+        print(nowGimmick.gimmickObject.name);
 
     }
 

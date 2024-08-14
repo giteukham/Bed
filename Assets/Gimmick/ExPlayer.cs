@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//가나다라마바사아 닭 볕 붓 
-//  닭  닳  
+
 public class ExPlayer : MonoBehaviour
 {
     /// <summary>
