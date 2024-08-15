@@ -70,7 +70,6 @@ public class ExPlayer : MonoBehaviour
     private void UserTendencyAnalysis(int mouseMove, int eyeBlink)
     {
         //대충 마우스 움직임, 눈깜빡임 변수들 더하고 빼는 메소드
-        print("사용자 성향 분석");
 
         //일단 기준수치 50으로 뒀음, 3초마다 체크하는거라 실제로는 값이 더 적을거임
         //아니면 30초마다 체크하거나

@@ -47,22 +47,20 @@ public class GimmickTest : MonoBehaviour, IGimmick
     //기믹 끝났을 때 맨 마지막 마무리
     public void OnEnd()
     {
-        print("기믹테스트 온엔드");
         //GimmickManager 쪽에 끝났다는 신호주고 제외 되었던 본인소속 리스트를
         //다시 GimmickList에 넣어야 함
         gimmickManager.TotalListInsert(myGroup);
+        print("테스트 기믹 끝");
     }
 
     //기믹이 처음 시작할 때
     public void OnStart()
     {
-        print("기믹테스트 온스타트");
         //이건 외부 접근해서 OnStart가 실행되게 하거나
         //아니면 OnEnable같은거로 실행시켜도 될 듯
 
         //TotalList에서 본인 소속 리스트 삭제
         gimmickManager.TotalListDelete(myGroup);
-        print("토탈리스트 수 : " + gimmickManager.TotalList.Count);
 
         //메인 기믹 코드 실행
         OnUpdate();
@@ -72,7 +70,6 @@ public class GimmickTest : MonoBehaviour, IGimmick
     public void OnUpdate()
     {
         //메인코드~
-        print("기믹테스트 온업데이트");
         StartCoroutine(TestCode());
         //메인코드~
 
@@ -85,7 +82,6 @@ public class GimmickTest : MonoBehaviour, IGimmick
     //즉, 이 기믹이 등장할 확률을 정하는 메소드임
     public void PercentRedefine(bool mouseMove, bool eyeBlink)
     {
-        print("퍼센트 리디파인");
         //현재 이 기믹에 있는 등장확률 퍼센트 변수를 매개변수를 이용하여 수치 조정
         //조건문의 조건은 기믹 별로 다름
 
@@ -114,7 +110,7 @@ public class GimmickTest : MonoBehaviour, IGimmick
 
     //기믹매니저에 있는 randomGimmickEvent 이벤트가 실행되면 자동 실행될 메소드
     //randomNum와 비교해서 percent 값이 같거나 크면 리스트에 넣음
-    private void InsertIntoListUsingPercent(int randomNum)
+    public void InsertIntoListUsingPercent(int randomNum)
     {
         print("인설트 인투 리스트 유징 퍼센트");
         if (randomNum <= percent)
@@ -126,10 +122,8 @@ public class GimmickTest : MonoBehaviour, IGimmick
 
     private IEnumerator TestCode()
     {
-        print("메인 코드 시작");
-        yield return new WaitForSeconds(9);
+        yield return new WaitForSeconds(3);
         OnEnd();
-        print("메인 코드 끝");
     }
 
 }

@@ -26,6 +26,8 @@ public class RadioGimmick : MonoBehaviour, IGimmick
         Player = player;
         gimmickObject = gameObject;
 
+        //아래 두 코드 모두 기믹 매니저에서 하도록 바꿀 것
+        //그럼 이벤트 2개는 필요없어짐
         Player.TendencyDataEvent += PercentRedefine;
         gimmickManager.randomGimmickEvent += InsertIntoListUsingPercent;
 
@@ -36,7 +38,7 @@ public class RadioGimmick : MonoBehaviour, IGimmick
 
         co = MainCode();
 
-        //기본적인 구성후에 오브젝트 바로 끔
+        //기본적인 구성후에 오브젝트 바로 끔(바로 끄기 때문에 OnEnable 실행되지 않음)
         gameObject.SetActive(false);
     }
 
@@ -60,6 +62,12 @@ public class RadioGimmick : MonoBehaviour, IGimmick
     {
         //코루틴 종료(그냥 SetActive(false)만 해도 자동종료되기는 함)
         StopCoroutine(co);
+        //코루틴 변수로 쓸거면 재할당 해줘야 정상작동 함
+        co = MainCode();
+        //TotalList에서 본인 소속 리스트 추가
+        print("라디오기믹 토탈리스트 인서트 실행");
+        gimmickManager.TotalListInsert(myGroup);
+
         gameObject.SetActive(false);
     }
 
@@ -80,9 +88,9 @@ public class RadioGimmick : MonoBehaviour, IGimmick
 
     }
 
-    private void InsertIntoListUsingPercent(int randomNum)
+    public void InsertIntoListUsingPercent(int randomNum)
     {
-        print("인설트 인투 리스트 유징 퍼센트");
+        print("인설트 인투 리스트 유징 퍼센트 : 라디오");
         if (randomNum <= percent)
         {
             //이 기믹을 타입에 맞는 리스트에 삽입함
@@ -92,6 +100,7 @@ public class RadioGimmick : MonoBehaviour, IGimmick
 
     private IEnumerator MainCode()
     {
+        print("라디오기믹 메인코드 실행");
         while (gimmickTime < 10)
         {
             yield return new WaitForSeconds(0.1f);

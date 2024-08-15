@@ -3187,7 +3187,7 @@ GameObject:
   - component: {fileID: 683734160}
   m_Layer: 0
   m_Name: TestGimmick
-  m_TagString: Untagged
+  m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3334,6 +3334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a75ec3352a12b04ab081c0f98ebba0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playGimmickCount: 0
 --- !u!4 &798141818
 Transform:
   m_ObjectHideFlags: 0
@@ -8350,7 +8351,7 @@ GameObject:
   - component: {fileID: 8762502604956028675}
   m_Layer: 0
   m_Name: RadioGimmick
-  m_TagString: Untagged
+  m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9453,8 +9454,8 @@ SceneRoots:
   - {fileID: 74860840}
   - {fileID: 1792191510}
   - {fileID: 1361670965}
-  - {fileID: 683734161}
-  - {fileID: 798141818}
-  - {fileID: 404673577}
   - {fileID: 1493441102}
+  - {fileID: 404673577}
+  - {fileID: 798141818}
+  - {fileID: 683734161}
   - {fileID: 8762502604956028674}

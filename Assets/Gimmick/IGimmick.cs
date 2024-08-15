@@ -33,6 +33,8 @@ namespace GimmickInterface
 
         //이벤트 구독용 메서드
         void PercentRedefine(bool mouseMove, bool eyeBlink);
+
+        void InsertIntoListUsingPercent(int randomNum);
     }
 }
 
