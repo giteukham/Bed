@@ -13,7 +13,8 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
 
     public GameObject hand, houseLight;
 
-    private bool onePhase, twoPhase, threePhase, fourPhase = false;
+    [SerializeField]
+    private bool zeroPahse, onePhase, twoPhase, threePhase, fourPhase = false;
 
     private Animator animator;
 
@@ -24,9 +25,15 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
 
     private void Update() 
     {
+        if (zeroPahse)
+        {
+            animator.Play("Phase 0");
+        }
         if (onePhase)
         {
             animator.Play("Phase 1");
+            if (houseLight.activeSelf == false)
+                houseLight.SetActive(true);
         }
 
         if (twoPhase)
@@ -99,17 +106,22 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
     private IEnumerator TestCode()
     {
         print("RapistGimmickTest Start !!");
+        if (zeroPahse == false) 
+            zeroPahse = true;
+
+        yield return new WaitForSeconds(3f);
         //1페이즈
-        if (onePhase == false)
+        zeroPahse = false;
+        if (onePhase == false) 
             onePhase = true;
-        houseLight.SetActive(true);
 
         //2페이즈
         yield return new WaitForSeconds(3f);
         onePhase = false;
         if (twoPhase == false)
             twoPhase = true;
-        houseLight.SetActive(false);
+        if (houseLight.activeSelf == true)
+            houseLight.SetActive(false);
         AudioManager.instance.PlayOneShot(AudioManager.instance.hornyBreath, this.transform.position);
         AudioManager.instance.PlayOneShot(AudioManager.instance.pantRustle, this.transform.position);
 
@@ -139,6 +151,7 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
 
     private void RustleSoundPlay()
     {
+        // 애니메이션 이벤트로 실행
         AudioManager.instance.PlayOneShot(AudioManager.instance.pantRustle, this.transform.position);
     }
 }
