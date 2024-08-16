@@ -6,62 +6,65 @@ using System;
 
 public class GimmickTest : MonoBehaviour, IGimmick
 {
-    //자신이 어느 리스트에 속해있는지 초기값 바로 지정
+    //기믹 소속 그룹 표기 변수
     public ListGroup myGroup { get; set; } = ListGroup.Human;
-
-    //이 기믹이 추후에 등장할 확률
-    //기믹 회피 성공방식에 반하는 행동을 할 수록 수치가 올라감(즉, 플레이어 현재 방식에 어려운 기믹일수록 등장확률 증가)
-    //플레이어 쪽에서 코루틴으로 3초마다 이벤트 걸어서 기믹들 퍼센트 수치조정 이벤트 실행시키면 괜찮을거 같음
+    //등장 확률 변수
     public int percent { get; set; } = 100;
+    //플레이어 접근할때 쓸 변수
+    public ExPlayer Player { get; set; }
+    //자신의 게임 오브젝트를 나타낼 변수
+    public GameObject gimmickObject { get; set; }
 
     //Player 프로퍼티의 백킹 변수
     [SerializeField]
     private ExPlayer player;
 
-    //플레이어 마우스 움직임, 눈깜빡임 접근을 위한 변수
-    public ExPlayer Player { get; set; }
-
-    public GameObject gimmickObject { get; set; }
-
-    //일단 인스펙터 창에서 기믹매니저 오브젝트 넣는걸로 설정했음
-    //추후에 기믹매니저 하위로 넣든지 말든지는 나중에 정할거임
+    //기믹 매니저 참조할 변수
     [SerializeField]
     private GimmickManager gimmickManager;
+
+    private float timeLimit = 0;
 
     private void Awake()
     {
         Player = player;
         gimmickObject = gameObject;
 
-        //이벤트 구독(플레이어보다 빨라서 Awake로 하면 오류남, Start로 해도 오류남)
-        Player.TendencyDataEvent += PercentRedefine;
-        gimmickManager.randomGimmickEvent += InsertIntoListUsingPercent;
-
         //본인 타입에 맞는 리스트에 기믹 넣음
         gimmickManager.TypeListInsert(myGroup, this);
 
-        gimmickObject = gameObject;
-        
+        //기본적인 구성후에 오브젝트 바로 끔(바로 끄기 때문에 OnEnable 실행되지 않음)
+        gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        //TotalList에서 본인 소속 리스트 삭제
+        gimmickManager.TotalListDelete(myGroup);
+
+        //경과시간 초기화
+        timeLimit = 0;
+
+        OnStart();
+    }
+
+    private void Update()
+    {
+        timeLimit += Time.deltaTime;
     }
 
     //기믹 끝났을 때 맨 마지막 마무리
     public void OnEnd()
     {
-        //GimmickManager 쪽에 끝났다는 신호주고 제외 되었던 본인소속 리스트를
-        //다시 GimmickList에 넣어야 함
+        //TotalList에서 본인 소속 리스트 추가
         gimmickManager.TotalListInsert(myGroup);
-        print("테스트 기믹 끝");
+
+        gameObject.SetActive(false);
     }
 
     //기믹이 처음 시작할 때
     public void OnStart()
     {
-        //이건 외부 접근해서 OnStart가 실행되게 하거나
-        //아니면 OnEnable같은거로 실행시켜도 될 듯
-
-        //TotalList에서 본인 소속 리스트 삭제
-        gimmickManager.TotalListDelete(myGroup);
-
         //메인 기믹 코드 실행
         OnUpdate();
     }
@@ -69,25 +72,16 @@ public class GimmickTest : MonoBehaviour, IGimmick
     //기믹이 시작하고 있는 도중에
     public void OnUpdate()
     {
-        //메인코드~
-        StartCoroutine(TestCode());
-        //메인코드~
-
-        //모든 코드 다 실행되면 OnEnd 실행
-        //현재 코루틴인 TestCode에서 마지막에 실행함
-        //OnEnd();
+        //메인코드 실행
+        StartCoroutine(MainCode());
     }
 
-    //플레이어 스크립트에 있는 TendencyDataEvent 이벤트 실행시 자동 실행될 메소드(percent 프로퍼티 값 변경)
-    //즉, 이 기믹이 등장할 확률을 정하는 메소드임
+    //이 기믹이 등장할 확률을 정하는 메소드
     public void PercentRedefine(bool mouseMove, bool eyeBlink)
     {
         //현재 이 기믹에 있는 등장확률 퍼센트 변수를 매개변수를 이용하여 수치 조정
         //조건문의 조건은 기믹 별로 다름
-
-        //현재기믹은 파훼법이 가만히 있어야 피해지는 기믹이라고 가정
-        //그러므로 플레이어가 마우스를 많이 움직였을 때 등장 확률 증가
-
+        
         if (mouseMove == true)
         {
             percent += 5;
@@ -120,9 +114,23 @@ public class GimmickTest : MonoBehaviour, IGimmick
         }
     }
 
-    private IEnumerator TestCode()
+    private IEnumerator MainCode()
     {
-        yield return new WaitForSeconds(3);
+        //기믹 파훼 제한시간 15초
+        while (timeLimit < 15)
+        {
+            yield return new WaitForSeconds(0.1f);
+            //기믹 파훼 성공시
+            if (false)
+            {
+                //플레이어에게 데미지 주는거 없이 바로 OnEnd로 넘어감
+                OnEnd();
+            }
+        }
+
+        //15초 지나서 기믹 파훼 실패 했을 때
+        //스트레스 지수 혹은 공포 지수를 플레이어에게 접근해서 올림
+        //이후 OnEnd 실행
         OnEnd();
     }
 

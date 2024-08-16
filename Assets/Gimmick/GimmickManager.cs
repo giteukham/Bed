@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 
 public class GimmickManager : MonoBehaviour
 {
-    GameObject[] gimmickObjects;
+    public GameObject[] gimmickObjects;
     public List<IGimmick> allGimmicks = new List<IGimmick>();
 
     //다른 리스트 3개를 관리함(전체 관리 리스트)
@@ -45,7 +45,9 @@ public class GimmickManager : MonoBehaviour
 
         //allGimmicks.Add(GameObject.FindWithTag("Gimmick").GetComponent<IGimmick>());
 
-        gimmickObjects = GameObject.FindGameObjectsWithTag("Gimmick");
+        //gimmickObjects = GameObject.FindGameObjectsWithTag("Gimmick");
+
+        print("기믹 오브젝트 길이 : " + gimmickObjects.Length);
 
         foreach (GameObject gimmickObject in gimmickObjects)
         {

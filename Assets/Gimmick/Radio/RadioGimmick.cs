@@ -14,10 +14,12 @@ public class RadioGimmick : MonoBehaviour, IGimmick
     [SerializeField]
     private ExPlayer player;
 
+    //기믹 매니저 참조할 변수
     [SerializeField]
     private GimmickManager gimmickManager;
 
-    private float gimmickTime = 0;
+    //기믹 시작후 경과 시간
+    private float timeLimit = 0;
 
     private IEnumerator co;
 
@@ -26,14 +28,7 @@ public class RadioGimmick : MonoBehaviour, IGimmick
         Player = player;
         gimmickObject = gameObject;
 
-        //아래 두 코드 모두 기믹 매니저에서 하도록 바꿀 것
-        //그럼 이벤트 2개는 필요없어짐
-        Player.TendencyDataEvent += PercentRedefine;
-        gimmickManager.randomGimmickEvent += InsertIntoListUsingPercent;
-
-        //본인 타입에 맞는 리스트에 기믹 넣음
-        //처음에 비활성화 되어있는데 이러면 애초에 리스트에 들어가 있지도 않을거임
-        //다른 방법이 필요함
+        //본인 타입에 맞는 리스트에 기믹 넣음(의미 없는 코드임 어치피 기믹매니저에서 Clear 시키고 확률보고 다시 타입 리스트에 널흠)
         gimmickManager.TypeListInsert(myGroup, this);
 
         co = MainCode();
@@ -48,14 +43,14 @@ public class RadioGimmick : MonoBehaviour, IGimmick
         gimmickManager.TotalListDelete(myGroup);
 
         //경과시간 초기화
-        gimmickTime = 0;
+        timeLimit = 0;
 
         OnStart();
     }
 
     private void Update()
     {
-        gimmickTime += Time.deltaTime;
+        timeLimit += Time.deltaTime;
     }
 
     public void OnEnd()
@@ -69,6 +64,11 @@ public class RadioGimmick : MonoBehaviour, IGimmick
         gimmickManager.TotalListInsert(myGroup);
 
         gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        print("라디오 디스에이블");
     }
 
     public void OnStart()
@@ -101,7 +101,7 @@ public class RadioGimmick : MonoBehaviour, IGimmick
     private IEnumerator MainCode()
     {
         print("라디오기믹 메인코드 실행");
-        while (gimmickTime < 10)
+        while (timeLimit < 10)
         {
             yield return new WaitForSeconds(0.1f);
             //기믹 파훼 성공시
