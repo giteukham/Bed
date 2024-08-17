@@ -1,21 +1,21 @@
-using GimmickInterface;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GimmickInterface;
+using System;
 
-public class RadioGimmick : Gimmick
+public class TestGimmick : Gimmick
 {
-
-    //±â¹Í ¸Å´ÏÀú ÂüÁ¶ÇÒ º¯¼ö
+    //ê¸°ë¯¹ ë§¤ë‹ˆì € ì°¸ì¡°í•  ë³€ìˆ˜
     [SerializeField]
     private NewGimmickManager gimmickManager;
 
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
+    public override GimmickType Type { get; protected set; } = GimmickType.Human;
     public override float Probability { get; set; } = 100;
 
     private void Awake()
     {
-        //±âº»ÀûÀÎ ±¸¼ºÈÄ¿¡ ¿ÀºêÁ§Æ® ¹Ù·Î ²û(¹Ù·Î ²ô±â ¶§¹®¿¡ OnEnable ½ÇÇàµÇÁö ¾ÊÀ½)
+        //ê¸°ë³¸ì ì¸ êµ¬ì„±í›„ì— ì˜¤ë¸Œì íŠ¸ ë°”ë¡œ ë”
         gameObject.SetActive(false);
     }
 
@@ -26,7 +26,7 @@ public class RadioGimmick : Gimmick
 
     public override void Activate()
     {
-        print("¶óµğ¿À±â¹Í ½ÇÇà");
+        print("í…ŒìŠ¤íŠ¸ê¸°ë¯¹ ì‹¤í–‰");
         gameObject.SetActive(true);
         timeLimit = 0;
         StartCoroutine(MainCode());
@@ -34,35 +34,33 @@ public class RadioGimmick : Gimmick
 
     public override void Deactivate()
     {
-        gimmickManager.objectGimmick = null;
+        gimmickManager.humanGimmick = null;
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability(ExPlayer player)
     {
-        //Probability¿¡ ´ëÇÑ °è»ê½Ä
+        //Probabilityì— ëŒ€í•œ ê³„ì‚°ì‹
         Probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlayOneShot(AudioManager.instance.radio, transform.position);
-        while (timeLimit < 10)
+        //ê¸°ë¯¹ íŒŒí›¼ ì œí•œì‹œê°„ 15ì´ˆ
+        while (timeLimit < 15)
         {
             yield return new WaitForSeconds(0.1f);
-            //±â¹Í ÆÄÈÑ ¼º°ø½Ã
+            //ê¸°ë¯¹ íŒŒí›¼ ì„±ê³µì‹œ
             if (false)
             {
+                //í”Œë ˆì´ì–´ì—ê²Œ ë°ë¯¸ì§€ ì£¼ëŠ”ê±° ì—†ì´ ë°”ë¡œ Deactivateë¡œ ë„˜ì–´ê°
                 Deactivate();
             }
         }
 
-        //10ÃÊ Áö³ª¼­ ±â¹Í ÆÄÈÑ ½ÇÆĞ ÇßÀ» ¶§
-
-        //´ëÃæ ±â¹ÍÆÄÈÑ ½ÇÆĞ½Ã ÇÃ·¹ÀÌ¾î ½ºÆ®·¹½º Áö¼ö ¿Ã¸®´Â ÄÚµå
-
-        //ÀÌÈÄ OnEnd ½ÇÇà
+        //15ì´ˆ ì§€ë‚˜ì„œ ê¸°ë¯¹ íŒŒí›¼ ì‹¤íŒ¨ í–ˆì„ ë•Œ
+        //ìŠ¤íŠ¸ë ˆìŠ¤ ì§€ìˆ˜ í˜¹ì€ ê³µí¬ ì§€ìˆ˜ë¥¼ í”Œë ˆì´ì–´ì—ê²Œ ì ‘ê·¼í•´ì„œ ì˜¬ë¦¼
+        //ì´í›„ Deactivate ì‹¤í–‰
         Deactivate();
-
     }
 }

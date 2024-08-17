@@ -8,67 +8,57 @@ using Unity.VisualScripting;
 public class GimmickManager : MonoBehaviour
 {
     public GameObject[] gimmickObjects;
-    public List<IGimmick> allGimmicks = new List<IGimmick>();
+    public List<Gimmick> allGimmicks = new List<Gimmick>();
 
     //다른 리스트 3개를 관리함(전체 관리 리스트)
     //원래 private임
-    public List<List<IGimmick>> TotalList = new List<List<IGimmick>>();
+    public List<List<Gimmick>> TotalList = new List<List<Gimmick>>();
 
     //비현실 기믹 리스트
-    private List<IGimmick> UnrealList = new List<IGimmick>();
+    private List<Gimmick> UnrealList = new List<Gimmick>();
     //사람 기믹 리스트
-    private List<IGimmick> HumanList = new List<IGimmick>();
+    private List<Gimmick> HumanList = new List<Gimmick>();
     //사물 기믹 리스트
-    private List<IGimmick> ObjectList = new List<IGimmick>();
-
-    //랜덤으로 기믹 뽑을때 실행할 기믹 리스트 재분류 이벤트
-    public event Action<int> randomGimmickEvent;
+    private List<Gimmick> ObjectList = new List<Gimmick>();
 
     //랜덤 기믹 뽑을 때 필요한 변수
     private int randomNum = 0;
-    private List<IGimmick> TempList = new List<IGimmick>();
+    private List<Gimmick> TempList = new List<Gimmick>();
 
-    private IGimmick nowGimmick = null;
+    private Gimmick nowGimmick = null;
 
     private void Awake()
     {
         //일단 모든 종류의 기믹을 리스트에 넣음
-        //TotalList.Add(UnrealList);
+        TotalList.Add(UnrealList);
         TotalList.Add(HumanList);
         TotalList.Add(ObjectList);
 
-        //이런식으로 오브젝트에서 찾아서 기믹 넣어주면 됨(예시코드)
-        //UnrealList.Add(gameObject.GetComponent<IGimmick>());
-
         //기믹 랜덤 실행 코루틴 1회 실행
         StartCoroutine(RandomGimmick());
-
-        //allGimmicks.Add(GameObject.FindWithTag("Gimmick").GetComponent<IGimmick>());
-
-        //gimmickObjects = GameObject.FindGameObjectsWithTag("Gimmick");
 
         print("기믹 오브젝트 길이 : " + gimmickObjects.Length);
 
         foreach (GameObject gimmickObject in gimmickObjects)
         {
-            allGimmicks.Add(gimmickObject.GetComponent<IGimmick>());
+            allGimmicks.Add(gimmickObject.GetComponent<Gimmick>());
         }
 
         print("allGimmicks 길이 : " + allGimmicks.Count);
     }
 
     //기믹 종류에 따라 TotalList(전체 기믹 관리 리스트)에 추가함
-    public void TotalListInsert(ListGroup listGroup)
+    public void TotalListInsert(GimmickType listGroup)
     {
         switch (listGroup)
         {
-            case ListGroup.Unreal:
+            case GimmickType.Unreal:
                 TotalList.Add(UnrealList);
                 break;
-            case ListGroup.Human:
+            case GimmickType.Human:
                 TotalList.Add(HumanList);
                 break;
-            case ListGroup.Object:
+            case GimmickType.Object:
                 TotalList.Add(ObjectList);
                 break;
             default:
@@ -77,17 +67,17 @@ public class GimmickManager : MonoBehaviour
     }
 
     //기믹 종류에 따라 TotalList(전체 기믹 관리 리스트)에서 삭제함
-    public void TotalListDelete(ListGroup listGroup)
+    public void TotalListDelete(GimmickType listGroup)
     {
         switch (listGroup)
         {
-            case ListGroup.Unreal:
+            case GimmickType.Unreal:
                 TotalList.Remove(UnrealList);
                 break;
-            case ListGroup.Human:
+            case GimmickType.Human:
                 TotalList.Remove(HumanList);
                 break;
-            case ListGroup.Object:
+            case GimmickType.Object:
                 TotalList.Remove(ObjectList);
                 break;
             default:
@@ -96,17 +86,17 @@ public class GimmickManager : MonoBehaviour
     }
 
     //3종류 기믹 리스트에 분류해서 추가함
-    public void TypeListInsert(ListGroup listGroup, IGimmick gimmick)
+    public void TypeListInsert(GimmickType listGroup, Gimmick gimmick)
     {
         switch (listGroup)
         {
-            case ListGroup.Unreal:
+            case GimmickType.Unreal:
                 UnrealList.Add(gimmick);
                 break;
-            case ListGroup.Human:
+            case GimmickType.Human:
                 HumanList.Add(gimmick);
                 break;
-            case ListGroup.Object:
+            case GimmickType.Object:
                 ObjectList.Add(gimmick);
                 break;
             default:
@@ -115,17 +105,17 @@ public class GimmickManager : MonoBehaviour
     }
 
     //3종류 기믹 리스트에 분류해서 삭제함(별로 쓰진 않을 것 같은데 일단 만들었음)
-    public void TypeListDelete(ListGroup listGroup, IGimmick gimmick)
+    public void TypeListDelete(GimmickType listGroup, Gimmick gimmick)
     {
         switch (listGroup)
         {
-            case ListGroup.Unreal:
+            case GimmickType.Unreal:
                 UnrealList.Remove(gimmick);
                 break;
-            case ListGroup.Human:
+            case GimmickType.Human:
                 HumanList.Remove(gimmick);
                 break;
-            case ListGroup.Object:
+            case GimmickType.Object:
                 ObjectList.Remove(gimmick);
                 break;
             default:
@@ -163,36 +153,28 @@ public class GimmickManager : MonoBehaviour
         HumanList.Clear();
         ObjectList.Clear();
 
-        //기믹별 확률에 따라 종류별로 리스트에 삽입(randomNum 이상의 percent값을 가지고 있어야 삽입 가능)
+        //기믹별 확률에 따라 종류별로 리스트에 삽입(randomNum1 이상의 percent값을 가지고 있어야 삽입 가능)
         randomNum = UnityEngine.Random.Range(1, 101);
-        //randomGimmickEvent?.Invoke(randomNum);
+        //randomGimmickEvent?.Invoke(randomNum1);
         //위의 이벤트 대신에 아래 for문을 대신 사용
         for (int i = 0; i < allGimmicks.Count; i++)
         {
             //아래 PercentRedefine코드는 Player에게서 매개변수 받아서 넘겨줄 것
             //아니면 불규칙적이라도 그냥 Player 스크립트에서 실행시키던가
-            allGimmicks[i].PercentRedefine(true, true);
-            allGimmicks[i].InsertIntoListUsingPercent(randomNum);
+            //allGimmicks[i].PercentRedefine(true, true);
+            //allGimmicks[i].InsertIntoListUsingPercent(randomNum1);
         }
 
         //종류별 리스트 3개 중 현재 실행되고 있지 않은 종류 리스트 1개를 뽑음
         randomNum = UnityEngine.Random.Range(0, TotalList.Count);
         TempList = TotalList[randomNum];
 
-        //테스트를 위해 휴먼리스트로 고정************
-        //TempList = TotalList[TotalList.IndexOf(HumanList)];
-
         //그 리스트 안에서 또 랜덤으로 기믹 뽑음
         randomNum = UnityEngine.Random.Range(0, TempList.Count);
         nowGimmick = TempList[randomNum];
 
-        //테스트를 위해 현재는 휴먼리스트로 고정(나중에 코드 삭제할 것)
-        //nowGimmick = HumanList[randomNum];
-
         //새 기믹 시작
-        //nowGimmick.OnStart();
-        nowGimmick.gimmickObject.SetActive(true);
-        print(nowGimmick.gimmickObject.name);
+        //nowGimmick.gimmickObject.SetActive(true);
 
     }
 
