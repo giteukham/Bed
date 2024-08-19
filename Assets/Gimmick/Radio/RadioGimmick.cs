@@ -1,4 +1,4 @@
-using GimmickInterface;
+using AbstractGimmick;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,13 +27,13 @@ public class RadioGimmick : Gimmick
     public override void Activate()
     {
         print("라디오기믹 실행");
-        gameObject.SetActive(true);
-        timeLimit = 0;
+        SettingVariables();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
+        gimmickManager.LowerProbability(this);
         gimmickManager.objectGimmick = null;
         gameObject.SetActive(false);
     }
@@ -49,7 +49,7 @@ public class RadioGimmick : Gimmick
         AudioManager.instance.PlayOneShot(AudioManager.instance.radio, transform.position);
         while (timeLimit < 10)
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
             //기믹 파훼 성공시
             if (false)
             {
@@ -61,7 +61,7 @@ public class RadioGimmick : Gimmick
 
         //대충 기믹파훼 실패시 플레이어 스트레스 지수 올리는 코드
 
-        //이후 OnEnd 실행
+        //이후 Deactivate 실행
         Deactivate();
 
     }

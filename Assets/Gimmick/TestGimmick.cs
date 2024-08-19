@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GimmickInterface;
+using AbstractGimmick;
 using System;
 
 public class TestGimmick : Gimmick
@@ -27,13 +27,13 @@ public class TestGimmick : Gimmick
     public override void Activate()
     {
         print("테스트기믹 실행");
-        gameObject.SetActive(true);
-        timeLimit = 0;
+        SettingVariables();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
+        gimmickManager.LowerProbability(this);
         gimmickManager.humanGimmick = null;
         gameObject.SetActive(false);
     }

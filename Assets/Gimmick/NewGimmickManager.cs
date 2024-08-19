@@ -1,4 +1,4 @@
-using GimmickInterface;
+using AbstractGimmick;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -126,5 +126,13 @@ public class NewGimmickManager : MonoBehaviour
         allGimicks[randomNum1] = allGimicks[randomNum2];
 
         allGimicks[randomNum2] = temp;
+    }
+
+    //등장확률 낮추는 메소드
+    public void LowerProbability(Gimmick gimmick)
+    {
+        allGimicks.Remove(gimmick);
+        allGimicks.Add(gimmick);
+        gimmick.Probability = 0;
     }
 }
