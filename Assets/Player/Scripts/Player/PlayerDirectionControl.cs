@@ -20,14 +20,11 @@ public class PlayerDirectionControl : IPlayerControl
     public static Dictionary<PlayerDirectionStateTypes, IState> DirectionStates => directionStates;
     
     public const float TURN_RIGHT_DELTA_POWER = 50f, TURN_LEFT_DELTA_POWER = -50f;  // 마우스 Delta X값이 50이상이면 Right State로, -50이하이면 Left State로 변경
-    public const float LEFT_LIMIT_ANGLE = 140f, RIGHT_LIMIT_ANGLE = 235f;           // 왼쪽으로 돌릴 때 최대 각도, 오른쪽으로 돌릴 때 최대 각도
     
     private StateMachine playerDirectionStateMachine;
     
-    public PlayerDirectionControl(StateMachine playerDirectionStateMachine, ref CinemachinePOV povCamera)
+    public PlayerDirectionControl(StateMachine playerDirectionStateMachine)
     {
-        povCamera.m_HorizontalAxis.m_MinValue = LEFT_LIMIT_ANGLE;
-        povCamera.m_HorizontalAxis.m_MaxValue = RIGHT_LIMIT_ANGLE;
         playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
     }
 

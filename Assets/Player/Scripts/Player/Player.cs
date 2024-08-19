@@ -1,5 +1,9 @@
+using Bed.PostProcessing;
 using Cinemachine;
+using Cinemachine.PostFX;
+using System;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public enum PlayerDirectionStateTypes
 {
@@ -18,35 +22,33 @@ public enum PlayerEyeStateTypes
     Blink
 }
 
+[RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
 {
-    // ∞ªΩ≈ ¥‹¿ß 3√ 
-    
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
     [SerializeField] private StateMachine playerEyeStateMachine;
     
+    #region Player Components
     [Header("Camera")]
     [SerializeField] private CinemachineVirtualCamera playerCamera;
-    private CinemachinePOV povCamera;
     
-    [Header("Player Animation")]
-    [SerializeField] private PlayerAnimation playerAnimation;
+    private PlayerAnimation playerAnimation;
     
     [Header("Input System")]
     [SerializeField] private InputSystem inputSystem;
-
-    [Header("Player Eyelid UI")]
-    [SerializeField] private RectTransform topEyelid; 
-    [SerializeField] private RectTransform bottomEyelid;
     
+    [Header("Post Processing")]
+    [SerializeField] private PostProcessProfile postProcessingProfile;
+    private CustomVignette customVignette;
+    #endregion
+    
+    #region Player Control Classes
     private PlayerDirectionControl playerDirectionControl;
     private PlayerEyeControl playerEyeControl;
+    #endregion
     
-    private float stressGauge = 0f, fearGauge = 0f;
-    private float stressGaugeMax = 100f, fearGaugeMax = 100f;
-    
-    // TODO: ≥™¡ﬂø° Cursor ¡∂¡§¿ª GameManager∑Œ ø≈∞‹æﬂ «‘.
+    //TODO: ÎÇòÏ§ëÏóê Game ManagerÎ°ú ÏòÆÍ≤®Ïïº Ìï®
     private void Awake()
     {
         Cursor.visible = false;
@@ -55,17 +57,15 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        povCamera = playerCamera.GetCinemachineComponent<CinemachinePOV>();
+        TryGetComponent(out playerAnimation);
         
-        playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine, ref povCamera);
-        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, topEyelid, bottomEyelid);
+        customVignette = postProcessingProfile.GetSetting<CustomVignette>();
+        playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
+        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, customVignette);
         playerEyeControl.SubscribeToEvents();
+        
     }
 
-    /// <summary>
-    /// æ÷¥œ∏ﬁ¿Ãº« ¿Ã∫•∆Æø°º≠ æ≤¥¬ State ∫Ø∞Ê «‘ºˆ.
-    /// </summary>
-    /// <param name="toState"></param>
     public void AnimationEvent_ChangeDirectionState(string toState)
     {
         switch (toState)
@@ -84,5 +84,9 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-    
+
+    private void OnApplicationQuit()
+    {
+        customVignette.blink.value = 0.001f;
+    }
 }

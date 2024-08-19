@@ -1,3 +1,4 @@
+using Bed.PostProcessing;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,20 +14,21 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    private int prevEyeLittleBlinkCount = 0;
-    private static int eyeLittleBlinkCount = 0;    // TODO: 눈 조금 감긴 횟수? 이름 좀 생각해 봐야 할 듯.
-    
-    public const int LITTLE_BLINK_COUNT_MIN = 0, LITTLE_BLINK_COUNT_MAX = 18;   // 눈 조금 감는 횟수
+    public const float BLINK_VALUE_MIN = 0.001f, BLINK_VALUE_MAX = 1f;   // Vignette의 Blink 값 최솟값, 최댓값.
+                                                                         // 최솟값을 0으로 하면 연산이 불가능.
     public const int MOUSE_SCROLL_VALUE = 120;    // 마우스 휠 값
-    public const float EYE_POSITION_MAX_Y = 1080f;
     
     private StateMachine playerEyeStateMachine;
     private PlayerEyeStates playerEyeStates;
+    private CustomVignette customVignette;
+
+    private float prevBlinkValue = 0f;
     
-    public PlayerEyeControl(StateMachine playerEyeStateMachine, RectTransform topEyelid, RectTransform bottomEyelid)
+    public PlayerEyeControl(StateMachine playerEyeStateMachine, CustomVignette customVignette)
     {
         this.playerEyeStateMachine = playerEyeStateMachine;
-        playerEyeStates = new PlayerEyeStates(this, topEyelid, bottomEyelid);
+        this.customVignette = customVignette;
+        playerEyeStates = new PlayerEyeStates(this, customVignette);
         
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Open]);
     }
@@ -39,7 +41,7 @@ public class PlayerEyeControl : IPlayerControl
 
     private void OnLittleBlink(int mouseScrollValue)
     {
-        UpdateBlinkCount(mouseScrollValue);
+        UpdateBlinkValue(mouseScrollValue);
         UpdateEyeState();
     }
     
@@ -47,66 +49,39 @@ public class PlayerEyeControl : IPlayerControl
     {
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
-
-    /// <summary>
-    /// 마우스 휠을 아래로 -> eyeLittleBlinkCount 증가
-    /// 마우스 휠을 위로 -> eyeLittleBlinkCount 감소
-    /// </summary>
-    /// <param name="mouseScrollValue"></param>
-    private void UpdateBlinkCount(int mouseScrollValue)
+    
+    private void UpdateBlinkValue(int mouseScrollValue)
     {
-        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && eyeLittleBlinkCount < LITTLE_BLINK_COUNT_MAX)    // 마우스 휠을 아래로 내렸을 때
+        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX)    // 마우스 휠을 아래로 내렸을 때
         {
-            eyeLittleBlinkCount += Mathf.Abs(mouseScrollValue / MOUSE_SCROLL_VALUE);                    // eyeLittleBlinkCount 1씩 증가
+            customVignette.blink.value += PlayerConstant.eyeOpenCloseInterval;
         }
-        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && eyeLittleBlinkCount > LITTLE_BLINK_COUNT_MIN)    // 마우스 휠을 위로 올렸을 때
+        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN)    // 마우스 휠을 위로 올렸을 때
         {
-            eyeLittleBlinkCount -= (mouseScrollValue / MOUSE_SCROLL_VALUE);                                // eyeLittleBlinkCount 1씩 감소
+            customVignette.blink.value -= PlayerConstant.eyeOpenCloseInterval;
         }
     }
     
-    public void UpdateBlinkCount(bool isIncrease)
-    {
-        int value = isIncrease ? 1 : -1;
-        
-        eyeLittleBlinkCount += value;
-    }
-
-    /// <summary>
-    /// eyeLittleBlinkCount가 LITTLE_BLINK_COUNT_MIN이면 완전히 눈 뜬 상태로 변경
-    /// eyeLittleBlinkCount가 LITTLE_BLINK_COUNT_MAX이면 완전히 눈 감은 상태로 변경
-    /// eyeLittleBlinkCount가 증가 -> 눈이 점점 감겨감
-    /// eyeLittleBlinkCount가 감소 -> 눈이 점점 떠짐
-    /// </summary>
     private void UpdateEyeState()
     {
-        if (eyeLittleBlinkCount == LITTLE_BLINK_COUNT_MIN)
+        if (customVignette.blink.value <= BLINK_VALUE_MIN)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Open]);
         }
-        else if (eyeLittleBlinkCount == LITTLE_BLINK_COUNT_MAX)
+        else if (customVignette.blink.value >= BLINK_VALUE_MAX)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Close]);
         }
-        else if (prevEyeLittleBlinkCount < eyeLittleBlinkCount)
+        else if (prevBlinkValue < customVignette.blink.value)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Closing], true);
         }
-        else if (prevEyeLittleBlinkCount > eyeLittleBlinkCount)
+        else if (prevBlinkValue > customVignette.blink.value)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Opening], true);
         }
-        prevEyeLittleBlinkCount = eyeLittleBlinkCount;
+        prevBlinkValue = customVignette.blink.value;
     }
-
-    /// <summary>
-    /// EyePosition을 변경하는 메소드
-    /// EyePosition 최댓값 (1080) - (EyePosition 최댓값 / 마우스 휠을 최대한 얼마나 올리고 내릴 수 있는지 * 현재까지 마우스 휠을 얼마나 내리고 올렸는지)
-    /// </summary>
-    /// <returns></returns>
-    public float GetChangedEyePosition() => EYE_POSITION_MAX_Y - (EYE_POSITION_MAX_Y / LITTLE_BLINK_COUNT_MAX * eyeLittleBlinkCount);
-    
-    public int GetEyeLittleBlinkCount() => eyeLittleBlinkCount;
     
     public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);
     
