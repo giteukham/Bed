@@ -13,8 +13,14 @@ public class AudioManager : MonoBehaviour
     [field: Header("Player SFX")]
     [field: SerializeField] public EventReference blanketMoving {get; private set;}
 
-    [field: Header("radio SFX")]
+    [field: Header("Radio SFX")]
     [field: SerializeField] public EventReference radio { get; private set; }
+
+    [field: Header("EyeStart SFX")]
+    [field: SerializeField] public EventReference eyeStart { get; private set; }
+
+    [field: Header("EyeEnd SFX")]
+    [field: SerializeField] public EventReference eyeEnd { get; private set; }
 
     private void Awake() 
     {

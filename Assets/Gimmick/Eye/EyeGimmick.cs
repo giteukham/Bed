@@ -8,11 +8,15 @@ public class EyeGimmick : Gimmick
     [SerializeField]
     private NewGimmickManager gimmickManager;
 
-    [SerializeField]
-    private new Light light;
-
     public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
     public override float Probability { get; set; } = 100;
+
+
+    [SerializeField]
+    private GameObject pupil; // ë™ê³µ
+    Quaternion targetQuaternion; // ì‹œì„  íšŒì „ ëª©í‘œ ê°ë„
+    float durationTime = 4f;    // ë™ê³µ ì»¤ì§€ëŠ”ë° ê±¸ë¦¬ëŠ” ì‹œê°„
+    float elapsedTime = 0f;     // ë™ê³µ ì»¤ì§€ëŠ” ê²½ê³¼ ì‹œê°„
 
     private void Awake()
     {
@@ -26,10 +30,12 @@ public class EyeGimmick : Gimmick
 
     public override void Activate()
     {
-        light.intensity = 0;
-        light.color = Color.white;
+        // ê²½ê³¼ ì‹œê°„ ì´ˆê¸°í™”
+        elapsedTime = 0f;
+
         SettingVariables();
         StartCoroutine(MainCode());
+        StartCoroutine(MoveEye());
     }
 
     public override void Deactivate()
@@ -37,6 +43,7 @@ public class EyeGimmick : Gimmick
         gimmickManager.LowerProbability(this);
         gimmickManager.unrealGimmick = null;
         gameObject.SetActive(false);
+        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 
     public override void UpdateProbability(ExPlayer player)
@@ -46,42 +53,68 @@ public class EyeGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
+        AudioManager.instance.PlayOneShot(AudioManager.instance.eyeStart, transform.position);
+
+        Vector3 initialScale = pupil.transform.localScale; // ë™ê³µ ì´ˆê¸° í¬ê¸°
+        Vector3 targetScale = new Vector3(1.1f, 1.1f, pupil.transform.localScale.z); // ë™ê³µ ëª©í‘œ í¬ê¸°
+
         while (timeLimit < 15)
         {
-            yield return new WaitForSeconds(0.05f);
+            yield return null;
             if (isDetected == true)
             {
-                light.intensity += 0.1f;
-            }
-            else
-            {
-                light.intensity -= 0.1f;
-            }
-
-            //¾È±¤ 20 ³ÑÀ¸¸é ±â¹Í ÆÄÈÑ ½ÇÆĞ
-            if (light.intensity >= 20)
-            {
-                light.intensity = 20;
-                light.color = Color.red;
-                for (int i = 0; i < 20; i++)
+                targetQuaternion = Quaternion.Euler(new Vector3(21.1f, 55.5f, 0));
+                while (Quaternion.Angle(transform.rotation, targetQuaternion) > 0.1f)
                 {
-                    yield return new WaitForSeconds(0.05f);
-                    if (light.intensity == 20)
-                    {
-                        light.intensity = 0;
-                    }
-                    else
-                    {
-                        light.intensity = 20;
-                    }
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetQuaternion, 8f * Time.deltaTime);
+                    yield return null;
                 }
-                //½ºÆ®·¹½º Áö¼ö, °øÆ÷ Áö¼ö ¿Ã¸®´Â ÄÚµå
-                //±×´ÙÀ½ Á¾·á
-                Deactivate();
+                
+                if (elapsedTime < durationTime)
+                {
+                    pupil.transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / durationTime);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+                if (elapsedTime >= durationTime)
+                {
+                    pupil.transform.localScale = targetScale;
+                    AudioManager.instance.PlayOneShot(AudioManager.instance.eyeEnd, transform.position);
+                    yield return new WaitForSeconds(1f);
+                    Deactivate();
+                    yield break;
+                }
             }
         }
-
         Deactivate();
+        yield break;
+    }
 
+    IEnumerator MoveEye()
+    {
+        while (true)
+        {   
+            if(isDetected) yield break;
+
+            // ëŒì•„ê°ˆ ê°ë„ì˜ ìµœì†Œ ê°’, ìµœëŒ€ ê°’
+            float randomX = Random.Range(-3f, 32f);
+            float randomY = Random.Range(62f, 82f);
+
+            // ëŒì•„ê°ˆ ì†ë„
+            float rotationSpeed = Random.Range(7f, 12f);
+
+            // ëŒì•„ê°ˆ ê°ë„ë¥¼ Quaternionìœ¼ë¡œ ë³€í™˜
+            Vector3 targetRotation = new Vector3(randomX, randomY, 0);
+            targetQuaternion = Quaternion.Euler(targetRotation);
+            
+            // ëŒì•„ê°ˆ ê°ë„ë¡œ ë¶€ë“œëŸ½ê²Œ íšŒì „ ì‹œí‚´
+            while (Quaternion.Angle(transform.rotation, targetQuaternion) > 0.1f)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetQuaternion, rotationSpeed * Time.deltaTime);
+                yield return null;
+            }
+            float delay = Random.Range(0.3f, 0.9f);
+            yield return new WaitForSeconds(delay);
+        }
     }
 }
