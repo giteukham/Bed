@@ -82,27 +82,50 @@ public class PlayerEyeStates
     
     public class BlinkEyeState : IState     // 마우스 휠을 누르면 눈을 감았다가 뜨는 상태
     {
+        float elapsedTime = 0f;
         public async void Enter()
         {
-            do
+            while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX)
             {
-                customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, PlayerEyeControl.BLINK_VALUE_MAX, PlayerConstant.eyeOpenCloseInterval);
-                await UniTask.Delay(PlayerConstant.blinkSpeed);
-            } while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX - 0.05f);
-            
-            await UniTask.Delay(3);
-            
-            do
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.eyeOpenCloseInterval);
+                await UniTask.Yield();
+            } 
+
+            await UniTask.Delay(40);
+            elapsedTime = 0f;
+
+            while (customVignette.blink.value > playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount])
             {
-                customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, PlayerEyeControl.BLINK_VALUE_MIN, PlayerConstant.eyeOpenCloseInterval);
-                await UniTask.Delay(PlayerConstant.blinkSpeed);
-            } while (customVignette.blink.value > PlayerEyeControl.BLINK_VALUE_MIN + 0.05f);
-            
-            playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Open);
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], elapsedTime / PlayerConstant.eyeOpenCloseInterval);
+                await UniTask.Yield();
+            } 
         }
+
+        // public async void Enter()
+        // {
+        //     do
+        //     {
+        //         customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, PlayerEyeControl.BLINK_VALUE_MAX, PlayerConstant.eyeOpenCloseInterval);
+        //         await UniTask.Delay(PlayerConstant.blinkSpeed);
+        //     } while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX - 0.05f);
+            
+        //     await UniTask.Delay(3);
+            
+        //     do
+        //     {
+        //         customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, PlayerEyeControl.BLINK_VALUE_MIN, PlayerConstant.eyeOpenCloseInterval);
+        //         await UniTask.Delay(PlayerConstant.blinkSpeed);
+        //     } while (customVignette.blink.value > PlayerEyeControl.BLINK_VALUE_MIN + 0.05f);
+            
+        //     playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Open);
+        // }
 
         public void Execute()
         {
+            playerEyeControl.UpdateEyeState();
+            Debug.Log("완료");
         }
 
         public void Exit()
