@@ -35,13 +35,12 @@ Shader "Hidden/Custom/Vignette HLSL"
             {
                 half4 color = (0.0);
                 half2 d = abs(i.texcoord - _Vignette_Center) * _Vignette_Intensity;
-
+                
                 d.y *= lerp(0.0, 1.0, exp2(11.0 * log2(_Vignette_Blink)));   // Blink
                 d = pow(saturate(d),_Vignette_Roundness); // Roundness
                 half vfactor = pow(saturate(1.0 - dot(d, d)), _Vignette_Smoothness);
                 color.rgb *= lerp(float3(1,1,1), (1.0).xxx, vfactor);
                 color.a = lerp(1.0, color.a, vfactor);
-                
                 return color;
             }
             ENDHLSL

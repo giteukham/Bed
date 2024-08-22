@@ -1,4 +1,5 @@
 using Bed.PostProcessing;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +24,9 @@ public class PlayerEyeControl : IPlayerControl
     private CustomVignette customVignette;
 
     private float prevBlinkValue = 0f;
+    
+    private int mouseCount = 0;
+    private double[] mouseBlinkValues = { 0.001, 0.04, 0.08, 0.18, 1};
     
     public PlayerEyeControl(StateMachine playerEyeStateMachine, CustomVignette customVignette)
     {
@@ -50,15 +54,34 @@ public class PlayerEyeControl : IPlayerControl
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
     
-    private void UpdateBlinkValue(int mouseScrollValue)
+    private async void UpdateBlinkValue(int mouseScrollValue)
     {
-        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX)    // 마우스 휠을 아래로 내렸을 때
+        float elapsedTime = 0f;
+        float durationTime = 0.1f;
+        float currentValue = customVignette.blink.value;
+        
+        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX && mouseCount < mouseBlinkValues.Length) // 마우스 휠을 아래로 내렸을 때
         {
-            customVignette.blink.value += PlayerConstant.eyeOpenCloseInterval;
+            mouseCount++;
+            while (customVignette.blink.value < mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
+            {
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(currentValue, (float)mouseBlinkValues[mouseCount], elapsedTime / durationTime);
+                await UniTask.Yield();
+            }
+            await UniTask.WaitUntil(() => customVignette.blink.value >= mouseBlinkValues[mouseCount]);
         }
-        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN)    // 마우스 휠을 위로 올렸을 때
+        
+        if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN && mouseCount >= 0) // 마우스 휠을 위로 올렸을 때
         {
-            customVignette.blink.value -= PlayerConstant.eyeOpenCloseInterval;
+            mouseCount--;
+            while (customVignette.blink.value > mouseBlinkValues[mouseCount])
+            {
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(currentValue, (float)mouseBlinkValues[mouseCount], elapsedTime / durationTime);
+                await UniTask.Delay(50);
+            }
+            await UniTask.WaitUntil(() => customVignette.blink.value < mouseBlinkValues[mouseCount]);
         }
     }
     
