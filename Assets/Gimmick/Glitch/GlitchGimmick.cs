@@ -1,17 +1,14 @@
 using AbstractGimmick;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
-public class HackingGimmick : Gimmick
+public class GlitchGimmick : Gimmick
 {
     [SerializeField]
     private NewGimmickManager gimmickManager;
-
-    [SerializeField]
-    private PostProcessVolume processVolume;
-    private ColorGrading colorGrading;
 
     //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
     public override GimmickType Type { get; protected set; } = GimmickType.Human;
@@ -21,10 +18,9 @@ public class HackingGimmick : Gimmick
     {
         try
         {
-            processVolume.profile.TryGetSettings<ColorGrading>(out colorGrading);
             gameObject.SetActive(false);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
@@ -34,10 +30,9 @@ public class HackingGimmick : Gimmick
     {
         try
         {
-            //타임 스케일에 영향 안받음
-            timeLimit += Time.unscaledDeltaTime;
+            timeLimit += Time.deltaTime;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
@@ -47,11 +42,10 @@ public class HackingGimmick : Gimmick
     {
         try
         {
-            print("해킹기믹 실행");
             SettingVariables();
             StartCoroutine(MainCode());
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
@@ -62,10 +56,11 @@ public class HackingGimmick : Gimmick
         try
         {
             gimmickManager.LowerProbability(this);
+            //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
             gimmickManager.humanGimmick = null;
             gameObject.SetActive(false);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
@@ -78,7 +73,7 @@ public class HackingGimmick : Gimmick
         {
             Probability = 100;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
@@ -88,34 +83,22 @@ public class HackingGimmick : Gimmick
     {
         try
         {
-            Time.timeScale = 0;
-            //다른 소리 모두 일시정지 혹은 모두 데미지 없이 강제종료(이건 추후 논의)
-            StartCoroutine(BlackOut());
+            StartCoroutine(GlitchOn());
             yield break;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
     }
 
-    private IEnumerator BlackOut()
+    private IEnumerator GlitchOn()
     {
-        //이상한 전자음 깨지는 소리 반복
-        AudioManager.instance.PlayOneShot(AudioManager.instance.lag1, transform.position);
-        yield return new WaitForSecondsRealtime(3);
-        //화면 검은색으로
-        colorGrading.postExposure.value = -100;
-        colorGrading.active = true;
-        yield return new WaitForSecondsRealtime(7);
         //삐- 거리는 소리
         AudioManager.instance.PlayOneShot(AudioManager.instance.lag2, transform.position);
-        //화면 하얀색(일부 오브젝트 색깔 영향 세게 받음)
-        colorGrading.postExposure.value = 100;
-        yield return new WaitForSecondsRealtime(6);
-        colorGrading.active = false;
+        yield return new WaitForSeconds(6);
+
         //플레이어에게 데미지 주는 코드 삽입
-        Time.timeScale = 1;
         Deactivate();
     }
 }
