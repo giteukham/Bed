@@ -48,12 +48,6 @@ public class PlayerEyeControl : IPlayerControl
         InputSystem.OnMouseScrollEvent += OnLittleBlink;
         InputSystem.OnMouseWheelClickEvent += OnBlink;
     }
-
-    private void OnLittleBlink(int mouseScrollValue)
-    {
-        UpdateBlinkValue(mouseScrollValue);
-        UpdateEyeState();
-    }
     
     private void OnBlink()
     {
@@ -62,7 +56,7 @@ public class PlayerEyeControl : IPlayerControl
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
 
-    private async void UpdateBlinkValue(int mouseScrollValue)
+    private async void OnLittleBlink(int mouseScrollValue)
     {
         if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
 
@@ -81,6 +75,7 @@ public class PlayerEyeControl : IPlayerControl
                 elapsedTime += Time.deltaTime;
                 customVignette.blink.value = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
                 await UniTask.Yield();
+                UpdateEyeState();
             }
             elapsedTime = 0f;
         }
@@ -97,6 +92,7 @@ public class PlayerEyeControl : IPlayerControl
                 elapsedTime += Time.deltaTime;
                 customVignette.blink.value = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
                 await UniTask.Yield();
+                UpdateEyeState();
             }
             elapsedTime = 0f;
         }

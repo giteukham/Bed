@@ -19,6 +19,9 @@ public class InputSystem : MonoBehaviour
     private void OnMouseDelta(InputValue value)
     {
         MouseDeltaX = value.Get<Vector2>().x;
+
+        PlayerConstant.HeadMovementCAT += Mathf.Abs(value.Get<Vector2>().x) + Mathf.Abs(value.Get<Vector2>().y);
+        PlayerConstant.HeadMovementLAT += Mathf.Abs(value.Get<Vector2>().x) + Mathf.Abs(value.Get<Vector2>().y);
     }
 
     private void OnMouseScroll(InputValue value)

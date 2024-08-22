@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-
+    
     private void OnApplicationQuit()
     {
         customVignette.blink.value = 0.001f;

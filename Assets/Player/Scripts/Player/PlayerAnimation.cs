@@ -18,5 +18,7 @@ public class PlayerAnimation : MonoBehaviour
     public static void PlayAnimation(string triggerName)
     {
         playerAnimator.SetTrigger(triggerName);
+        PlayerConstant.BodyMovementCAT++;
+        PlayerConstant.BodyMovementLAT++;
     }
 }

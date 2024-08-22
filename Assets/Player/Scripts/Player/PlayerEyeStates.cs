@@ -55,6 +55,8 @@ public class PlayerEyeStates
 
         public void Execute()
         {
+            PlayerConstant.EyeClosedCAT += Time.deltaTime;
+            PlayerConstant.EyeClosedLAT += Time.deltaTime;
         }
 
         public void Exit()
@@ -89,9 +91,11 @@ public class PlayerEyeStates
             while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX)
             {
                 elapsedTime += Time.deltaTime;
-                customVignette.blink.value = Mathf.Lerp(playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.eyeOpenCloseInterval);
+                customVignette.blink.value = Mathf.Lerp(playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
+            // 감은거 체크
+            playerEyeControl.UpdateEyeState();
 
             await UniTask.Delay(150);
             elapsedTime = 0f;
@@ -99,7 +103,7 @@ public class PlayerEyeStates
             while (customVignette.blink.value > playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount])
             {
                 elapsedTime += Time.deltaTime;
-                customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], elapsedTime / PlayerConstant.eyeOpenCloseInterval);
+                customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
             await UniTask.Yield();
@@ -109,7 +113,8 @@ public class PlayerEyeStates
         
         public void Execute()
         {
-            
+            PlayerConstant.EyeBlinkCAT++;
+            PlayerConstant.EyeBlinkLAT++;
         }
 
         public void Exit()
