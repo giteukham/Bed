@@ -73,6 +73,7 @@ public class HackingGimmick : Gimmick
 
     public override void UpdateProbability(ExPlayer player)
     {
+        //눈 자주 감으면 기믹 나오게 하고 싶음, 그리고 게임 중 단 한번만 나왔으면 함
         try
         {
             Probability = 100;
@@ -85,43 +86,33 @@ public class HackingGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        while (timeLimit < 10)
+        try
         {
-            //WaitForSecondsRealtime은 Time.timeScale에 영향 안받음
-            yield return new WaitForSecondsRealtime(0.1f);
-            try
-            {
-                print("테스트 코드 실행중");
-                //기믹 실행 조건 어떻게 할지 아직 미정
-                if (isDetected == true)
-                {
-                    Time.timeScale = 0;
-                    //다른 소리 모두 일시정지 혹은 모두 데미지 없이 강제종료(이건 추후 논의)
-                    //검은 화면 띄우고 렉걸린듯한 소리(라디오 전자음 같은거)
-                    StartCoroutine(BlackOut());
-                    yield break;
-                }
-                else
-                {
-                    Time.timeScale = 1;
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e.Message);
-            }
+            Time.timeScale = 0;
+            //다른 소리 모두 일시정지 혹은 모두 데미지 없이 강제종료(이건 추후 논의)
+            StartCoroutine(BlackOut());
+            yield break;
         }
-
-        Deactivate();
+        catch (System.Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
     }
 
     private IEnumerator BlackOut()
     {
+        //이상한 전자음 깨지는 소리 반복
+        AudioManager.instance.PlayOneShot(AudioManager.instance.lag1, transform.position);
+        yield return new WaitForSecondsRealtime(3);
+        //화면 검은색으로
+        colorGrading.postExposure.value = -100;
         colorGrading.active = true;
-        yield return new WaitForSecondsRealtime(10);
-        //어둠에서 빠져나오는 듯한 소리
-        //빠져나오는 듯한 소리에 맞춰서 화면 변환 딜레이
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(7);
+        //삐- 거리는 소리
+        AudioManager.instance.PlayOneShot(AudioManager.instance.lag2, transform.position);
+        //화면 하얀색(일부 오브젝트 색깔 영향 세게 받음)
+        colorGrading.postExposure.value = 100;
+        yield return new WaitForSecondsRealtime(6);
         colorGrading.active = false;
         //플레이어에게 데미지 주는 코드 삽입
         Time.timeScale = 1;

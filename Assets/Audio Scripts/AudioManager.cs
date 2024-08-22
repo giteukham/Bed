@@ -22,6 +22,12 @@ public class AudioManager : MonoBehaviour
     [field: Header("EyeEnd SFX")]
     [field: SerializeField] public EventReference eyeEnd { get; private set; }
 
+    [field: Header("Lag1 SFX")]
+    [field: SerializeField] public EventReference lag1 { get; private set; }
+
+    [field: Header("Lag2 SFX")]
+    [field: SerializeField] public EventReference lag2 { get; private set; }
+
     private void Awake() 
     {
         if (instance != null) Debug.LogError("Audio Manager?? ??? ????");
