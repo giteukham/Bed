@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerEyeControl : IPlayerControl
 {
@@ -30,10 +31,9 @@ public class PlayerEyeControl : IPlayerControl
     public float[] mouseBlinkValues = new float[] { BLINK_VALUE_MIN, 0.04f, 0.08f, 0.18f,  BLINK_VALUE_MAX};
     private CancellationTokenSource blinkCancellationTokenSource;
     float elapsedTime = 0f;
-    float durationTime = 0.3f;
-    float? currentValue;
+    float durationTime = 0.18f;
+    float currentValue;
 
-    
     public PlayerEyeControl(StateMachine playerEyeStateMachine, CustomVignette customVignette)
     {
         this.playerEyeStateMachine = playerEyeStateMachine;
@@ -57,24 +57,17 @@ public class PlayerEyeControl : IPlayerControl
     
     private void OnBlink()
     {
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close]) 
+         || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
-    
+
     private async void UpdateBlinkValue(int mouseScrollValue)
     {
-        if (blinkCancellationTokenSource != null)
-        {
-            blinkCancellationTokenSource.Cancel();
-            blinkCancellationTokenSource.Dispose();
-        }
-        blinkCancellationTokenSource = new CancellationTokenSource();
-        CancellationToken token = blinkCancellationTokenSource.Token;
-        await UpdateBlinkValueAsync(mouseScrollValue, token);
-    }
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
 
-    private async UniTask UpdateBlinkValueAsync(int mouseScrollValue, CancellationToken cancellationToken)
-    {
-        currentValue ??= customVignette.blink.value;
+        currentValue = customVignette.blink.value;
+        
         if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX) // 마우스 휠을 아래로 내렸을 때
         {
             mouseCount++;
@@ -82,29 +75,33 @@ public class PlayerEyeControl : IPlayerControl
            
             while (customVignette.blink.value < mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
             {
+                if(mouseCount == 4) durationTime = 0.15f;
+                else durationTime = 0.18f;
+
                 elapsedTime += Time.deltaTime;
-                customVignette.blink.value = Mathf.Lerp((float)currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
+                customVignette.blink.value = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
                 await UniTask.Yield();
             }
-            currentValue = customVignette.blink.value;
             elapsedTime = 0f;
         }
-        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN) // 마우스 휠을 위로 올렸을 때
+        if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN) // 마우스 휠을 위로 올렸을 때
         {
             mouseCount--;
             if (mouseCount < 0) mouseCount = 0;
 
             while (customVignette.blink.value > mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
             {   
+                if(mouseCount == 3) durationTime = 0.06f;
+                else durationTime = 0.18f;
+
                 elapsedTime += Time.deltaTime;
-                customVignette.blink.value = Mathf.Lerp((float)currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
+                customVignette.blink.value = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
                 await UniTask.Yield();
             }
-            currentValue = customVignette.blink.value;
             elapsedTime = 0f;
         }
     }
-    
+
     public void UpdateEyeState()
     {
         if (customVignette.blink.value <= BLINK_VALUE_MIN)
@@ -119,11 +116,11 @@ public class PlayerEyeControl : IPlayerControl
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Closing], true);
         }
-        else if (prevBlinkValue > customVignette.blink.value)
+        else if (prevBlinkValue > customVignette.blink.value || prevBlinkValue == customVignette.blink.value) // 같은 위치에서 계속 깜빡(휠 클릭)이면 Opening 상태가 되게
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Opening], true);
         }
-        Debug.Log("현재 상태 : " + playerEyeStateMachine.ToString());
+        //Debug.Log("현재 상태 : " + playerEyeStateMachine.ToString());
         prevBlinkValue = customVignette.blink.value;
     }
     

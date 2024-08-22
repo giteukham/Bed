@@ -82,9 +82,10 @@ public class PlayerEyeStates
     
     public class BlinkEyeState : IState     // 마우스 휠을 누르면 눈을 감았다가 뜨는 상태
     {
-        float elapsedTime = 0f;
+        
         public async void Enter()
         {
+            float elapsedTime = 0f;
             while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX)
             {
                 elapsedTime += Time.deltaTime;
@@ -92,7 +93,7 @@ public class PlayerEyeStates
                 await UniTask.Yield();
             } 
 
-            await UniTask.Delay(40);
+            await UniTask.Delay(150);
             elapsedTime = 0f;
 
             while (customVignette.blink.value > playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount])
@@ -101,35 +102,19 @@ public class PlayerEyeStates
                 customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], elapsedTime / PlayerConstant.eyeOpenCloseInterval);
                 await UniTask.Yield();
             } 
+            await UniTask.Yield();
+
+            playerEyeControl.UpdateEyeState();
         }
-
-        // public async void Enter()
-        // {
-        //     do
-        //     {
-        //         customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, PlayerEyeControl.BLINK_VALUE_MAX, PlayerConstant.eyeOpenCloseInterval);
-        //         await UniTask.Delay(PlayerConstant.blinkSpeed);
-        //     } while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX - 0.05f);
-            
-        //     await UniTask.Delay(3);
-            
-        //     do
-        //     {
-        //         customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, PlayerEyeControl.BLINK_VALUE_MIN, PlayerConstant.eyeOpenCloseInterval);
-        //         await UniTask.Delay(PlayerConstant.blinkSpeed);
-        //     } while (customVignette.blink.value > PlayerEyeControl.BLINK_VALUE_MIN + 0.05f);
-            
-        //     playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Open);
-        // }
-
+        
         public void Execute()
         {
-            playerEyeControl.UpdateEyeState();
-            Debug.Log("완료");
+            
         }
 
         public void Exit()
         {
+            
         }
     }
     
