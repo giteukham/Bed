@@ -1,6 +1,10 @@
+using Bed.PostProcessing;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerEyeControl : IPlayerControl
 {
@@ -13,20 +17,28 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    private int prevEyeLittleBlinkCount = 0;
-    private int eyeLittleBlinkCount = 0;    // TODO: ëˆˆ ì¡°ê¸ˆ ê°ê¸´ íšŸìˆ˜? ì´ë¦„ ì¢€ ìƒê°í•´ ë´ì•¼ í•  ë“¯.
-    
-    public const int LITTLE_BLINK_COUNT_MIN = 0, LITTLE_BLINK_COUNT_MAX = 18;   // ëˆˆ ì¡°ê¸ˆ ê°ëŠ” íšŸìˆ˜
-    public const int MOUSE_SCROLL_VALUE = 120;    // ë§ˆìš°ìŠ¤ íœ  ê°’
-    public const float EYE_POSITION_MAX_Y = 1080f;
+    public const float BLINK_VALUE_MIN = 0.001f, BLINK_VALUE_MAX = 1f;   // VignetteÀÇ Blink °ª ÃÖ¼Ú°ª, ÃÖ´ñ°ª.
+                                                                         // ÃÖ¼Ú°ªÀ» 0À¸·Î ÇÏ¸é ¿¬»êÀÌ ºÒ°¡´É.
+    public const int MOUSE_SCROLL_VALUE = 120;    // ¸¶¿ì½º ÈÙ °ª
     
     private StateMachine playerEyeStateMachine;
     private PlayerEyeStates playerEyeStates;
-    
-    public PlayerEyeControl(StateMachine playerEyeStateMachine, RectTransform topEyelid, RectTransform bottomEyelid)
+    private CustomVignette customVignette;
+
+    private float prevBlinkValue = 0f;
+
+    public int mouseCount = 0;
+    public float[] mouseBlinkValues = new float[] { BLINK_VALUE_MIN, 0.04f, 0.08f, 0.18f,  BLINK_VALUE_MAX};
+    private CancellationTokenSource blinkCancellationTokenSource;
+    float elapsedTime = 0f;
+    float durationTime = 0.18f;
+    float currentValue;
+
+    public PlayerEyeControl(StateMachine playerEyeStateMachine, CustomVignette customVignette)
     {
         this.playerEyeStateMachine = playerEyeStateMachine;
-        playerEyeStates = new PlayerEyeStates(this, topEyelid, bottomEyelid);
+        this.customVignette = customVignette;
+        playerEyeStates = new PlayerEyeStates(this, customVignette);
         
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Open]);
     }
@@ -36,74 +48,80 @@ public class PlayerEyeControl : IPlayerControl
         InputSystem.OnMouseScrollEvent += OnLittleBlink;
         InputSystem.OnMouseWheelClickEvent += OnBlink;
     }
-
-    private void OnLittleBlink(int mouseScrollValue)
-    {
-        UpdateBlinkCount(mouseScrollValue);
-        UpdateEyeState();
-    }
     
     private void OnBlink()
     {
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close]) 
+         || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
 
-    /// <summary>
-    /// ë§ˆìš°ìŠ¤ íœ ì„ ì•„ë˜ë¡œ -> eyeLittleBlinkCount ì¦ê°€
-    /// ë§ˆìš°ìŠ¤ íœ ì„ ìœ„ë¡œ -> eyeLittleBlinkCount ê°ì†Œ
-    /// </summary>
-    /// <param name="mouseScrollValue"></param>
-    private void UpdateBlinkCount(int mouseScrollValue)
+    private async void OnLittleBlink(int mouseScrollValue)
     {
-        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && eyeLittleBlinkCount < LITTLE_BLINK_COUNT_MAX)    // ë§ˆìš°ìŠ¤ íœ ì„ ì•„ë˜ë¡œ ë‚´ë ¸ì„ ë•Œ
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
+
+        currentValue = customVignette.blink.value;
+        
+        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX) // ¸¶¿ì½º ÈÙÀ» ¾Æ·¡·Î ³»·ÈÀ» ¶§
         {
-            eyeLittleBlinkCount += Mathf.Abs(mouseScrollValue / MOUSE_SCROLL_VALUE);                    // eyeLittleBlinkCount 1ì”© ì¦ê°€
+            mouseCount++;
+            if (mouseCount >= mouseBlinkValues.Length) mouseCount = mouseBlinkValues.Length - 1;
+           
+            while (customVignette.blink.value < mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
+            {
+                if(mouseCount == 4) durationTime = 0.15f;
+                else durationTime = 0.18f;
+
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
+                await UniTask.Yield();
+                UpdateEyeState();
+            }
+            elapsedTime = 0f;
         }
-        else if (mouseScrollValue == MOUSE_SCROLL_VALUE && eyeLittleBlinkCount > LITTLE_BLINK_COUNT_MIN)    // ë§ˆìš°ìŠ¤ íœ ì„ ìœ„ë¡œ ì˜¬ë ¸ì„ ë•Œ
+        if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN) // ¸¶¿ì½º ÈÙÀ» À§·Î ¿Ã·ÈÀ» ¶§
         {
-            eyeLittleBlinkCount -= (mouseScrollValue / MOUSE_SCROLL_VALUE);                                // eyeLittleBlinkCount 1ì”© ê°ì†Œ
+            mouseCount--;
+            if (mouseCount < 0) mouseCount = 0;
+
+            while (customVignette.blink.value > mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
+            {   
+                if(mouseCount == 3) durationTime = 0.06f;
+                else durationTime = 0.18f;
+
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime);
+                await UniTask.Yield();
+                UpdateEyeState();
+            }
+            elapsedTime = 0f;
         }
     }
 
-    /// <summary>
-    /// eyeLittleBlinkCountê°€ LITTLE_BLINK_COUNT_MINì´ë©´ ì™„ì „íˆ ëˆˆ ëœ¬ ìƒíƒœë¡œ ë³€ê²½
-    /// eyeLittleBlinkCountê°€ LITTLE_BLINK_COUNT_MAXì´ë©´ ì™„ì „íˆ ëˆˆ ê°ì€ ìƒíƒœë¡œ ë³€ê²½
-    /// eyeLittleBlinkCountê°€ ì¦ê°€ -> ëˆˆì´ ì ì  ê°ê²¨ê°
-    /// eyeLittleBlinkCountê°€ ê°ì†Œ -> ëˆˆì´ ì ì  ë– ì§
-    /// </summary>
-    private void UpdateEyeState()
+    public void UpdateEyeState()
     {
-        if (eyeLittleBlinkCount == LITTLE_BLINK_COUNT_MIN)
+        if (customVignette.blink.value <= BLINK_VALUE_MIN)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Open]);
         }
-        else if (eyeLittleBlinkCount == LITTLE_BLINK_COUNT_MAX)
+        else if (customVignette.blink.value >= BLINK_VALUE_MAX)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Close]);
         }
-        else if (prevEyeLittleBlinkCount < eyeLittleBlinkCount)
+        else if (prevBlinkValue < customVignette.blink.value)
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Closing], true);
         }
-        else if (prevEyeLittleBlinkCount > eyeLittleBlinkCount)
+        else if (prevBlinkValue > customVignette.blink.value || prevBlinkValue == customVignette.blink.value) // °°Àº À§Ä¡¿¡¼­ °è¼Ó ±ôºı(ÈÙ Å¬¸¯)ÀÌ¸é Opening »óÅÂ°¡ µÇ°Ô
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Opening], true);
         }
-        prevEyeLittleBlinkCount = eyeLittleBlinkCount;
-    }
-
-    public float GetChangedEyePosition()
-    {
-        return EYE_POSITION_MAX_Y - (EYE_POSITION_MAX_Y / LITTLE_BLINK_COUNT_MAX * eyeLittleBlinkCount);
+        //Debug.Log("ÇöÀç »óÅÂ : " + playerEyeStateMachine.ToString());
+        prevBlinkValue = customVignette.blink.value;
     }
     
-    public void ChangeState(PlayerEyeStateTypes stateType)
-    {
-        playerEyeStateMachine.ChangeState(eyeStates[stateType]);
-    }
+    public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);
     
-    public void UnsubscribeToEvents()
-    {
-        InputSystem.OnMouseScrollEvent -= OnLittleBlink;
-    }
+    public void UnsubscribeToEvents() => InputSystem.OnMouseScrollEvent -= OnLittleBlink;
+    
 }

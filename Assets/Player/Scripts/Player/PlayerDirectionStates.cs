@@ -1,4 +1,5 @@
 using Cinemachine;
+using UnityEngine;
 
 public class PlayerDirectionStates
 {
@@ -15,6 +16,8 @@ public class PlayerDirectionStates
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
             }
+            PlayerConstant.LeftStateCAT += Time.deltaTime;
+            PlayerConstant.LeftStateLAT += Time.deltaTime;
         }
         
         public void Exit()
@@ -39,6 +42,8 @@ public class PlayerDirectionStates
             {
                 PlayerAnimation.PlayAnimation("Middle To Right");
             }
+            PlayerConstant.MiddleStateCAT += Time.deltaTime;
+            PlayerConstant.MiddleStateLAT += Time.deltaTime;
         }
         
         public void Exit()
@@ -59,6 +64,8 @@ public class PlayerDirectionStates
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
             }
+            PlayerConstant.RightStateCAT += Time.deltaTime;
+            PlayerConstant.RightStateLAT += Time.deltaTime;
         }
         
         public void Exit()

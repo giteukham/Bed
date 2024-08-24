@@ -1,27 +1,23 @@
 
+using Bed.PostProcessing;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 public class PlayerEyeStates
 {
     private static PlayerEyeControl playerEyeControl;
-    private static RectTransform topEyelid, bottomEyelid;
-    private static Vector2 topEyelidPosition = Vector2.zero, bottomEyelidPosition = Vector2.zero;
-    
-    public PlayerEyeStates(PlayerEyeControl playerEyeControl, RectTransform topEyelid, RectTransform bottomEyelid)
+    private static CustomVignette customVignette;
+
+    public PlayerEyeStates(PlayerEyeControl playerEyeControl, CustomVignette customVignette)
     {
         PlayerEyeStates.playerEyeControl = playerEyeControl;
-        PlayerEyeStates.topEyelid = topEyelid;
-        PlayerEyeStates.bottomEyelid = bottomEyelid;
+        PlayerEyeStates.customVignette = customVignette;
     }
     
-    public class OpenEyeState : IState      // ëˆˆì„ ì™„ì „íˆ ëœ¬ ìƒíƒœ
+    public class OpenEyeState : IState      // ?ˆˆ?„ ?™„? „?ˆ ?œ¬ ?ƒ?ƒœ
     {
         public void Enter()
         {
-            topEyelidPosition.y = PlayerEyeControl.EYE_POSITION_MAX_Y;
-            bottomEyelidPosition.y = -PlayerEyeControl.EYE_POSITION_MAX_Y;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
+            customVignette.blink.value = PlayerEyeControl.BLINK_VALUE_MIN;
         }
 
         public void Execute()
@@ -34,16 +30,11 @@ public class PlayerEyeStates
         }
     }
     
-    public class OpeningEyeState : IState // ëˆˆì„ ì¡°ê¸ˆì”© ëœ¨ëŠ” ìƒíƒœ
+    public class ClosingEyeState : IState // ´«À» Á¶±İ¾¿ °¨´Â »óÅÂ
     {
         public void Enter()
         {
-            float eyePositionY = playerEyeControl.GetChangedEyePosition();
             
-            topEyelidPosition.y = eyePositionY;
-            bottomEyelidPosition.y = -eyePositionY;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
         }
 
         public void Execute()
@@ -55,18 +46,17 @@ public class PlayerEyeStates
         }
     }
     
-    public class CloseEyeState : IState     // ëˆˆì„ ì™„ì „íˆ ê°ì€ ìƒíƒœ
+    public class CloseEyeState : IState     // ?ˆˆ?„ ?™„? „?ˆ ê°ì?? ?ƒ?ƒœ
     {
         public void Enter()
         {
-            topEyelidPosition.y = 0f;
-            bottomEyelidPosition.y = 0f;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
+            customVignette.blink.value = PlayerEyeControl.BLINK_VALUE_MAX;
         }
 
         public void Execute()
         {
+            PlayerConstant.EyeClosedCAT += Time.deltaTime;
+            PlayerConstant.EyeClosedLAT += Time.deltaTime;
         }
 
         public void Exit()
@@ -74,16 +64,11 @@ public class PlayerEyeStates
         }
     }
     
-    public class ClosingEyeState : IState // ëˆˆì„ ì¡°ê¸ˆì”© ê°ëŠ” ìƒíƒœ
+    public class OpeningEyeState : IState // ´«À» Á¶±İ¾¿ ¶ß´Â »óÅÂ
     {
         public void Enter()
         {
-            float eyePositionY = playerEyeControl.GetChangedEyePosition();
             
-            topEyelidPosition.y = eyePositionY;
-            bottomEyelidPosition.y = -eyePositionY;
-            topEyelid.offsetMin = topEyelidPosition;
-            bottomEyelid.offsetMax = bottomEyelidPosition;
         }
 
         public void Execute()
@@ -95,46 +80,46 @@ public class PlayerEyeStates
         }
     }
     
-    public class BlinkEyeState : IState     // ë§ˆìš°ìŠ¤ íœ ì„ ëˆ„ë¥´ë©´ ëˆˆì„ ê°ì•˜ë‹¤ê°€ ëœ¨ëŠ” ìƒíƒœ
+
+    
+    public class BlinkEyeState : IState     // ¸¶¿ì½º ÈÙÀ» ´©¸£¸é ´«À» °¨¾Ò´Ù°¡ ¶ß´Â »óÅÂ
     {
+        
         public async void Enter()
         {
-            float eyePositionY = playerEyeControl.GetChangedEyePosition();
-            float blinkUpdateValue = PlayerEyeControl.EYE_POSITION_MAX_Y / PlayerEyeControl.LITTLE_BLINK_COUNT_MAX;
-            
-            do
+            float elapsedTime = 0f;
+            while (customVignette.blink.value < PlayerEyeControl.BLINK_VALUE_MAX)
             {
-                topEyelidPosition.y = eyePositionY - blinkUpdateValue;
-                bottomEyelidPosition.y = -eyePositionY + blinkUpdateValue;
-                topEyelid.offsetMin = topEyelidPosition;
-                bottomEyelid.offsetMax = bottomEyelidPosition;
-                
-                await UniTask.Delay(7);
-                eyePositionY = topEyelidPosition.y;
-            } while (topEyelidPosition.y != 0f && bottomEyelidPosition.y != 0f);
-            
-            await UniTask.Delay(3);
-            
-            do
-            {
-                topEyelidPosition.y = eyePositionY + blinkUpdateValue;
-                bottomEyelidPosition.y = -eyePositionY - blinkUpdateValue;
-                topEyelid.offsetMin = topEyelidPosition;
-                bottomEyelid.offsetMax = bottomEyelidPosition;
-                
-                await UniTask.Delay(7);
-                eyePositionY = topEyelidPosition.y;
-            } while (topEyelidPosition.y != PlayerEyeControl.EYE_POSITION_MAX_Y && bottomEyelidPosition.y != PlayerEyeControl.EYE_POSITION_MAX_Y);
-            
-            playerEyeControl.ChangeState(PlayerEyeStateTypes.Open);
-        }
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
+                await UniTask.Yield();
+            } 
+            // °¨Àº°Å Ã¼Å©
+            playerEyeControl.UpdateEyeState();
 
+            await UniTask.Delay(150);
+            elapsedTime = 0f;
+
+            while (customVignette.blink.value > playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount])
+            {
+                elapsedTime += Time.deltaTime;
+                customVignette.blink.value = Mathf.Lerp(customVignette.blink.value, playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], elapsedTime / PlayerConstant.blinkSpeed);
+                await UniTask.Yield();
+            } 
+            await UniTask.Yield();
+
+            playerEyeControl.UpdateEyeState();
+        }
+        
         public void Execute()
         {
+            PlayerConstant.EyeBlinkCAT++;
+            PlayerConstant.EyeBlinkLAT++;
         }
 
         public void Exit()
         {
+            
         }
     }
     
