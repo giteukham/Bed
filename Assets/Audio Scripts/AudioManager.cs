@@ -13,6 +13,21 @@ public class AudioManager : MonoBehaviour
     [field: Header("Player SFX")]
     [field: SerializeField] public EventReference blanketMoving {get; private set;}
 
+    [field: Header("Radio SFX")]
+    [field: SerializeField] public EventReference radio { get; private set; }
+
+    [field: Header("EyeStart SFX")]
+    [field: SerializeField] public EventReference eyeStart { get; private set; }
+
+    [field: Header("EyeEnd SFX")]
+    [field: SerializeField] public EventReference eyeEnd { get; private set; }
+
+    [field: Header("Lag1 SFX")]
+    [field: SerializeField] public EventReference lag1 { get; private set; }
+
+    [field: Header("Lag2 SFX")]
+    [field: SerializeField] public EventReference lag2 { get; private set; }
+
     private void Awake() 
     {
         if (instance != null) Debug.LogError("Audio Manager?? ??? ????");

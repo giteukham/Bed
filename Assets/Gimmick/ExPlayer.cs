@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//가나다라마바사아 닭 볕 붓 
-//  닭  닳  
+
 public class ExPlayer : MonoBehaviour
 {
     /// <summary>
@@ -13,21 +12,18 @@ public class ExPlayer : MonoBehaviour
 
     //여기에 이벤트 만들고 GimmickTest쪽에서 이벤트 구독할거임
     //코루틴으로 3초마다 이벤트 발동예정
-    //이렇게 되면 GimmickTest의 percent 변수 조절 가능
+    //이렇게 되면 GimmickTest의 Probability 변수 조절 가능
 
     //가상 수치들(마우스 움직임, 눈깜빡임 등등...)
-    int mouseMove = 0;
-    int eyeBlink = 0;
+    public int mouseMove = 0;
+    public int eyeBlink = 0;
 
     //많이 움직였는지, 눈 깜빡거렸는지 여부(안쓸수도 있음)
     //지금 bool변수로 참, 거짓 2가지 값만으로 기믹 등장 확률에 영향주는데
     //상황에 따라서 중간값도 필요해보임
     //enum 변수 하나 만들어서 쓰는것도 나쁘지 않아보임
-    bool manyMousemove = false;
-    bool manyEyeBlink = false;
-
-    //이벤트 변수 선언
-    public event Action<bool, bool> TendencyDataEvent;
+    public bool manyMousemove = false;
+    public bool manyEyeBlink = false;
 
     private void Awake()
     {
@@ -48,7 +44,7 @@ public class ExPlayer : MonoBehaviour
     private void ThrowTendencyData()
     {
         //이벤트 구독한 모든 메소드에게 수치 넘김
-        TendencyDataEvent?.Invoke(manyMousemove, manyEyeBlink);
+        //TendencyDataEvent?.Invoke(manyMousemove, manyEyeBlink);
     }
 
     //3초마다 1회 실행되는 코루틴
@@ -71,7 +67,6 @@ public class ExPlayer : MonoBehaviour
     private void UserTendencyAnalysis(int mouseMove, int eyeBlink)
     {
         //대충 마우스 움직임, 눈깜빡임 변수들 더하고 빼는 메소드
-        print("사용자 성향 분석");
 
         //일단 기준수치 50으로 뒀음, 3초마다 체크하는거라 실제로는 값이 더 적을거임
         //아니면 30초마다 체크하거나
