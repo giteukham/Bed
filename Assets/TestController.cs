@@ -187,7 +187,7 @@ public class TestController : MonoBehaviour
                 break;
             }
             case State.Right: {
-                animator.Play("MddileToRight");
+                animator.Play("MiddleToRight");
                 break;
             }
             case State.Left: {

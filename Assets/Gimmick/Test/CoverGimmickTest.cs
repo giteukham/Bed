@@ -1,0 +1,91 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using GimmickInterface;
+using System;
+
+public class CoverGimcikTest : MonoBehaviour, IGimmick
+{
+    //자신이 어느 리스트에 속해있는지 초기값 바로 지정
+    public ListGroup myGroup { get; set; } = ListGroup.Unreal;
+
+    public int percent { get; set; } = 100;
+
+    public ExPlayer Player { get; set; }
+
+    public Animator animator;
+
+    //기믹 끝났을 때 맨 마지막 마무리
+    public void OnEnd()
+    {
+        print("OnEnd");
+        if (gameObject.activeSelf == true)
+            this.gameObject.SetActive(false);
+    }
+
+    //기믹이 처음 시작할 때
+    public void OnStart()
+    {
+        //print("OnStart");
+        OnUpdate();
+    }
+
+    //기믹이 시작하고 있는 도중에
+    public void OnUpdate()
+    {
+        //print("OnUpdate");
+        if (gameObject.activeSelf == false)
+            this.gameObject.SetActive(true);
+    }
+
+    private void OnEnable() 
+    {
+        StartCoroutine(TestCode());
+    }
+
+    public void PercentRedefine(bool mouseMove, bool eyeBlink)
+    {
+        print("퍼센트 리디파인");
+
+        if (mouseMove == true)
+        {
+            percent += 5;
+        }
+        else
+        {
+            percent -= 5;
+        }
+
+        if (percent > 100)
+        {
+            percent = 100;
+        }
+        else if (percent < 1)
+        {
+            percent = 1;
+        }
+    }
+
+    private IEnumerator TestCode()
+    {
+        print("CoverGimcikTest Start !");
+
+        yield return new WaitForSeconds(4);
+        AudioManager.instance.PlayOneShot(AudioManager.instance.handCover, this.transform.position);
+        animator.Play("CoverEye");
+
+        yield return new WaitForSeconds(0.16f);
+        AudioManager.instance.PlayOneShot(AudioManager.instance.roughBreath, this.transform.position);
+
+        yield return new WaitForSeconds(2.68f);
+        AudioManager.instance.PlayOneShot(AudioManager.instance.handCoverOff, this.transform.position);
+
+        yield return new WaitForSeconds(0.3f);
+        animator.Play("CoverOffEye");
+
+        yield return new WaitForSeconds(0.15f);
+        OnEnd();
+
+        print("CoverGimcikTest End !");
+    }
+}
