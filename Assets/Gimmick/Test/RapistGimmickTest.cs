@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GimmickInterface;
+using AbstractGimmick;
 
-public class RapistGimmickTest : MonoBehaviour, IGimmick
+public class RapistGimmickTest : Gimmick
 {
-    public ListGroup myGroup { get; set; } = ListGroup.Human;
+    [SerializeField]
+    private NewGimmickManager gimmickManager;
 
-    public int percent { get; set; } = 100;
-
-    public ExPlayer Player { get; set; }
+    public override GimmickType Type { get; protected set; } = GimmickType.Human;
+    public override float Probability { get; set; } = 100;
 
     public GameObject hand, houseLight;
 
@@ -18,13 +18,16 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
 
     private Animator animator;
 
-    private void Start() 
+    private void Awake()
     {
+        gameObject.SetActive(false);
         animator = GetComponent<Animator>();
     }
 
     private void Update() 
     {
+        timeLimit += Time.deltaTime;
+
         if (zeroPahse)
         {
             animator.Play("Phase 0");
@@ -52,60 +55,26 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
         }
     }
 
-    public void OnEnd()
+    public override void Activate()
     {
-        print("OnEnd");
-        if (gameObject.activeSelf == true)
-            this.gameObject.SetActive(false);
+        SettingVariables();
+        StartCoroutine(MainCode());
     }
 
-    //기믹이 처음 시작할 때
-    public void OnStart()
+    public override void Deactivate()
     {
-        
-        //print("OnStart");
-        OnUpdate();
+        gimmickManager.LowerProbability(this);
+        gimmickManager.humanGimmick = null;
+        gameObject.SetActive(false);
     }
 
-    //기믹이 시작하고 있는 도중에
-    public void OnUpdate()
+    public override void UpdateProbability(ExPlayer player)
     {
-        //print("OnUpdate");
-        if (gameObject.activeSelf == false)
-            this.gameObject.SetActive(true);
+        Probability = 100;
     }
 
-    private void OnEnable() 
+    private IEnumerator MainCode()
     {
-        StartCoroutine(TestCode());
-    }
-
-    public void PercentRedefine(bool mouseMove, bool eyeBlink)
-    {
-        print("퍼센트 리디파인");
-
-        if (mouseMove == true)
-        {
-            percent += 5;
-        }
-        else
-        {
-            percent -= 5;
-        }
-
-        if (percent > 100)
-        {
-            percent = 100;
-        }
-        else if (percent < 1)
-        {
-            percent = 1;
-        }
-    }
-
-    private IEnumerator TestCode()
-    {
-        print("RapistGimmickTest Start !!");
         if (zeroPahse == false) 
             zeroPahse = true;
 
@@ -144,14 +113,12 @@ public class RapistGimmickTest : MonoBehaviour, IGimmick
         yield return new WaitForSeconds(3f);
         hand.SetActive(false);
         fourPhase = false;
-        OnEnd();
 
-        print("RapistGimmickTest End !!");
+        Deactivate(); 
     }
 
     private void RustleSoundPlay()
     {
-        // 애니메이션 이벤트로 실행
         AudioManager.instance.PlayOneShot(AudioManager.instance.pantRustle, this.transform.position);
     }
 }

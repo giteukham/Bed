@@ -97,6 +97,9 @@ public class PlayerEyeStates
             // 감은거 체크
             playerEyeControl.UpdateEyeState();
 
+            PlayerConstant.EyeBlinkCAT++;
+            PlayerConstant.EyeBlinkLAT++;
+
             await UniTask.Delay(150);
             elapsedTime = 0f;
 
@@ -113,8 +116,7 @@ public class PlayerEyeStates
         
         public void Execute()
         {
-            PlayerConstant.EyeBlinkCAT++;
-            PlayerConstant.EyeBlinkLAT++;
+            
         }
 
         public void Exit()

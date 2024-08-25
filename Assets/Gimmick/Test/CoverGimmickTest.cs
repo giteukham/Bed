@@ -1,75 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GimmickInterface;
 using System;
+using AbstractGimmick;
 
-public class CoverGimcikTest : MonoBehaviour, IGimmick
+public class CoverGimcikTest : Gimmick
 {
-    //자신이 어느 리스트에 속해있는지 초기값 바로 지정
-    public ListGroup myGroup { get; set; } = ListGroup.Unreal;
+    [SerializeField]
+    private NewGimmickManager gimmickManager;
 
-    public int percent { get; set; } = 100;
-
-    public ExPlayer Player { get; set; }
+    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
+    public override float Probability { get; set; } = 100;
 
     public Animator animator;
 
-    //기믹 끝났을 때 맨 마지막 마무리
-    public void OnEnd()
+    private void Awake()
     {
-        print("OnEnd");
-        if (gameObject.activeSelf == true)
-            this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
-    //기믹이 처음 시작할 때
-    public void OnStart()
+    private void Update()
     {
-        //print("OnStart");
-        OnUpdate();
+        timeLimit += Time.deltaTime;
     }
 
-    //기믹이 시작하고 있는 도중에
-    public void OnUpdate()
+    public override void Activate()
     {
-        //print("OnUpdate");
-        if (gameObject.activeSelf == false)
-            this.gameObject.SetActive(true);
+        SettingVariables();
+        StartCoroutine(MainCode());
     }
 
-    private void OnEnable() 
+    public override void Deactivate()
     {
-        StartCoroutine(TestCode());
+        gimmickManager.LowerProbability(this);
+        gimmickManager.unrealGimmick = null;
+        gameObject.SetActive(false);
     }
 
-    public void PercentRedefine(bool mouseMove, bool eyeBlink)
+    public override void UpdateProbability(ExPlayer player)
     {
-        print("퍼센트 리디파인");
-
-        if (mouseMove == true)
-        {
-            percent += 5;
-        }
-        else
-        {
-            percent -= 5;
-        }
-
-        if (percent > 100)
-        {
-            percent = 100;
-        }
-        else if (percent < 1)
-        {
-            percent = 1;
-        }
+        Probability = 100;
     }
-
-    private IEnumerator TestCode()
+    private IEnumerator MainCode()
     {
-        print("CoverGimcikTest Start !");
-
         yield return new WaitForSeconds(4);
         AudioManager.instance.PlayOneShot(AudioManager.instance.handCover, this.transform.position);
         animator.Play("CoverEye");
@@ -84,8 +57,6 @@ public class CoverGimcikTest : MonoBehaviour, IGimmick
         animator.Play("CoverOffEye");
 
         yield return new WaitForSeconds(0.15f);
-        OnEnd();
-
-        print("CoverGimcikTest End !");
+        Deactivate();
     }
 }

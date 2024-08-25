@@ -10,7 +10,7 @@ public static class PlayerConstant
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)
     // LAT: Last Action Time (최근 행동 시간, 가장 최근 기믹이 시작때 부터 끝날때 까지 기록)
-    
+ 
     /// <summary>
     /// 눈을 얼마나 감았는지 (누적)
     /// </summary>

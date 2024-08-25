@@ -1,74 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GimmickInterface;
 using System;
+using AbstractGimmick;
 
-public class ClapGimcikTest : MonoBehaviour, IGimmick
+public class ClapGimcikTest : Gimmick
 {
-    public ListGroup myGroup { get; set; } = ListGroup.Unreal;
+    [SerializeField]
+    private NewGimmickManager gimmickManager;
 
-    public int percent { get; set; } = 100;
+    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
 
-    public ExPlayer Player { get; set; }
+    public override float Probability { get; set; } = 100;
 
     public Light houseLight;
 
     public Animator animator;
 
-    //기믹 끝났을 때 맨 마지막 마무리
-    public void OnEnd()
+    private void Awake()
     {
-        print("OnEnd");
-        if (gameObject.activeSelf == true)
-            this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
-    //기믹이 처음 시작할 때
-    public void OnStart()
+    private void Update()
     {
-        
-        //print("OnStart");
-        OnUpdate();
+        timeLimit += Time.deltaTime;
     }
 
-    //기믹이 시작하고 있는 도중에
-    public void OnUpdate()
+    private void ClapSoundPlay()
     {
-        //print("OnUpdate");
-        if (gameObject.activeSelf == false)
-            this.gameObject.SetActive(true);
+        // 박수 소리는 애니메이션 이벤트로 실행
+        AudioManager.instance.PlayOneShot(AudioManager.instance.handClap, this.transform.position);
     }
 
-    private void OnEnable() 
+    public override void Activate()
     {
-        StartCoroutine(TestCode());
+        SettingVariables();
+        StartCoroutine(MainCode());
     }
 
-    public void PercentRedefine(bool mouseMove, bool eyeBlink)
+    public override void Deactivate()
     {
-        print("퍼센트 리디파인");
-
-        if (mouseMove == true)
-        {
-            percent += 5;
-        }
-        else
-        {
-            percent -= 5;
-        }
-
-        if (percent > 100)
-        {
-            percent = 100;
-        }
-        else if (percent < 1)
-        {
-            percent = 1;
-        }
+        gimmickManager.LowerProbability(this);
+        gimmickManager.unrealGimmick = null;
+        gameObject.SetActive(false);
     }
 
-    private IEnumerator TestCode()
+    public override void UpdateProbability(ExPlayer player)
+    {
+        Probability = 100;
+    }
+
+    private IEnumerator MainCode()
     {
         print("ClapGimcikTest Start !!");
 
@@ -90,14 +73,6 @@ public class ClapGimcikTest : MonoBehaviour, IGimmick
         AudioManager.instance.PlayOneShot(AudioManager.instance.switchOff, this.transform.position);
         // 스위치 끄는 소리
 
-        OnEnd();
-
-        print("ClapGimcikTest End !!");
-    }
-
-    private void ClapSoundPlay()
-    {
-        // 박수 소리는 애니메이션 이벤트로 실행
-        AudioManager.instance.PlayOneShot(AudioManager.instance.handClap, this.transform.position);
+        Deactivate();
     }
 }

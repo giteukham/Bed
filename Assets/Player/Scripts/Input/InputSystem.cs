@@ -7,10 +7,17 @@ using UnityEngine.InputSystem;
 public class InputSystem : MonoBehaviour
 {
     private static float mouseDeltaX;
+    private static float mouseDeltaY;
     public static float MouseDeltaX
     {
         get { return mouseDeltaX; }
         private set { mouseDeltaX = value; }
+    }
+
+    public static float MouseDeltaY
+    {
+        get { return mouseDeltaY; }
+        private set { mouseDeltaY = value; }
     }
 
     public static event Action OnMouseWheelClickEvent; 
@@ -19,9 +26,6 @@ public class InputSystem : MonoBehaviour
     private void OnMouseDelta(InputValue value)
     {
         MouseDeltaX = value.Get<Vector2>().x;
-
-        PlayerConstant.HeadMovementCAT += Mathf.Abs(value.Get<Vector2>().x) + Mathf.Abs(value.Get<Vector2>().y);
-        PlayerConstant.HeadMovementLAT += Mathf.Abs(value.Get<Vector2>().x) + Mathf.Abs(value.Get<Vector2>().y);
     }
 
     private void OnMouseScroll(InputValue value)

@@ -2,6 +2,7 @@ using Bed.PostProcessing;
 using Cinemachine;
 using Cinemachine.PostFX;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
@@ -55,11 +56,18 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Player Stats Updtae Variables
-    private float updateInterval = 0.1f; // ������Ʈ �ֱ�
+    private float updateInterval = 0.1f; // 업데이트 주기
     private float timeSinceLastUpdate = 0f;
+
+    private float currentHeadMovement;
+    private float recentHeadMovement;
+    #endregion
+
+    #region Debug Text Variables
+    public GameObject debugText;
     #endregion
     
-    //TODO: ?��중에 Game Manager�? ?��겨야 ?��
+    //TODO: ?굹以묒뿉 Game Manager濡? ?삷寃⑥빞 ?븿
     private void Awake()
     {
         Cursor.visible = false;
@@ -74,6 +82,9 @@ public class Player : MonoBehaviour
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, customVignette);
         playerEyeControl.SubscribeToEvents();
+
+        if (debugText.activeSelf)
+            debugText.SetActive(false);
     }
 
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -101,53 +112,111 @@ public class Player : MonoBehaviour
 
         if (timeSinceLastUpdate >= updateInterval)
         {
-            UpdateLookStatistics();
+            UpdateStats();
             timeSinceLastUpdate = 0f;
         }
-    }
-    
-    private void UpdateLookStatistics()
-{
-    float eulerY = mainCamera.transform.eulerAngles.y;
-    float eulerX = mainCamera.transform.eulerAngles.x;
 
-    if (eulerY < 105f) 
-    {
-        PlayerConstant.LeftLookCAT += timeSinceLastUpdate;
-        PlayerConstant.LeftLookLAT += timeSinceLastUpdate;
-    }
-    else if (eulerY < 175f)
-    {
-        PlayerConstant.LeftFrontLookCAT += timeSinceLastUpdate;
-        PlayerConstant.LeftFrontLookLAT += timeSinceLastUpdate;
-    }
-    else if (eulerY <= 185f)
-    {
-        PlayerConstant.FrontLookCAT += timeSinceLastUpdate;
-        PlayerConstant.FrontLookLAT += timeSinceLastUpdate;
-    }
-    else if (eulerY <= 250f)
-    {
-        PlayerConstant.RightFrontLookCAT += timeSinceLastUpdate;
-        PlayerConstant.RightFrontLookLAT += timeSinceLastUpdate;
-    }
-    else
-    {
-        PlayerConstant.RightLookCAT += timeSinceLastUpdate;
-        PlayerConstant.RightLookLAT += timeSinceLastUpdate;
+        // TODO : Move To GmaeManager ----------------------------
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            debugText.SetActive(!debugText.activeSelf);
+        }
+
+        // if (Input.GetKeyDown(KeyCode.R))     // LAT 스탯들 초기화 하는건데 쓸모 없을 것 같아서 주석 처리
+        // {
+        //     PlayerConstant.ResetLATStats();
+        // }
+
+        if (debugText.activeSelf)
+            debugText.GetComponent<TMP_Text>().text = 
+                $"EyeClosedCAT: {PlayerConstant.EyeClosedCAT}\n" +
+                $"EyeClosedLAT: {PlayerConstant.EyeClosedLAT}\n" +
+                $"EyeBlinkCAT: {PlayerConstant.EyeBlinkCAT}\n" +
+                $"EyeBlinkLAT: {PlayerConstant.EyeBlinkLAT}\n" +
+                $"HeadMovementCAT: {PlayerConstant.HeadMovementCAT}\n" +
+                $"HeadMovementLAT: {PlayerConstant.HeadMovementLAT}\n" +
+                $"BodyMovementCAT: {PlayerConstant.BodyMovementCAT}\n" +
+                $"BodyMovementLAT: {PlayerConstant.BodyMovementLAT}\n" +
+                $"LeftStateCAT: {PlayerConstant.LeftStateCAT}\n" +
+                $"LeftStateLAT: {PlayerConstant.LeftStateLAT}\n" +
+                $"RightStateCAT: {PlayerConstant.RightStateCAT}\n" +
+                $"RightStateLAT: {PlayerConstant.RightStateLAT}\n" +
+                $"MiddleStateCAT: {PlayerConstant.MiddleStateCAT}\n" +
+                $"MiddleStateLAT: {PlayerConstant.MiddleStateLAT}\n" +
+                $"LeftLookCAT: {PlayerConstant.LeftLookCAT}\n" +
+                $"LeftLookLAT: {PlayerConstant.LeftLookLAT}\n" +
+                $"LeftFrontLookCAT: {PlayerConstant.LeftFrontLookCAT}\n" +
+                $"LeftFrontLookLAT: {PlayerConstant.LeftFrontLookLAT}\n" +
+                $"FrontLookCAT: {PlayerConstant.FrontLookCAT}\n" +
+                $"FrontLookLAT: {PlayerConstant.FrontLookLAT}\n" +
+                $"RightFrontLookCAT: {PlayerConstant.RightFrontLookCAT}\n" +
+                $"RightFrontLookLAT: {PlayerConstant.RightFrontLookLAT}\n" +
+                $"RightLookCAT: {PlayerConstant.RightLookCAT}\n" +
+                $"RightLookLAT: {PlayerConstant.RightLookLAT}\n" +
+                $"UpLookCAT: {PlayerConstant.UpLookCAT}\n" +
+                $"UpLookLAT: {PlayerConstant.UpLookLAT}\n" +
+                $"DownLookCAT: {PlayerConstant.DownLookCAT}\n" +
+                $"DownLookLAT: {PlayerConstant.DownLookLAT}\n";
+        // TODO : Move To GmaeManager ----------------------------
     }
 
-    if (eulerX > 330f)
+    private void UpdateStats()
     {
-        PlayerConstant.UpLookCAT += timeSinceLastUpdate;
-        PlayerConstant.UpLookLAT += timeSinceLastUpdate;
+        // ----------------- Head Movement -----------------
+        recentHeadMovement = currentHeadMovement;
+        currentHeadMovement = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value + playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
+
+        float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaX);
+        float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaY);
+        float headMovementDelta = Mathf.Abs(currentHeadMovement - recentHeadMovement);
+
+        PlayerConstant.HeadMovementCAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
+        PlayerConstant.HeadMovementLAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
+        // ----------------- Head Movement -----------------
+
+
+        // ----------------- Look -----------------
+        float eulerY = mainCamera.transform.eulerAngles.y;
+        float eulerX = mainCamera.transform.eulerAngles.x;
+
+        if (eulerY < 105f) 
+        {
+            PlayerConstant.LeftLookCAT += timeSinceLastUpdate;
+            PlayerConstant.LeftLookLAT += timeSinceLastUpdate;
+        }
+        else if (eulerY < 175f)
+        {
+            PlayerConstant.LeftFrontLookCAT += timeSinceLastUpdate;
+            PlayerConstant.LeftFrontLookLAT += timeSinceLastUpdate;
+        }
+        else if (eulerY <= 185f)
+        {
+            PlayerConstant.FrontLookCAT += timeSinceLastUpdate;
+            PlayerConstant.FrontLookLAT += timeSinceLastUpdate;
+        }
+        else if (eulerY <= 250f)
+        {
+            PlayerConstant.RightFrontLookCAT += timeSinceLastUpdate;
+            PlayerConstant.RightFrontLookLAT += timeSinceLastUpdate;
+        }
+        else
+        {
+            PlayerConstant.RightLookCAT += timeSinceLastUpdate;
+            PlayerConstant.RightLookLAT += timeSinceLastUpdate;
+        }
+
+        if (eulerX > 330f)
+        {
+            PlayerConstant.UpLookCAT += timeSinceLastUpdate;
+            PlayerConstant.UpLookLAT += timeSinceLastUpdate;
+        }
+        else
+        {
+            PlayerConstant.DownLookCAT += timeSinceLastUpdate;
+            PlayerConstant.DownLookLAT += timeSinceLastUpdate;
+        }
+        // ----------------- Look -----------------
     }
-    else
-    {
-        PlayerConstant.DownLookCAT += timeSinceLastUpdate;
-        PlayerConstant.DownLookLAT += timeSinceLastUpdate;
-    }
-}
 
     private void OnApplicationQuit()
     {
