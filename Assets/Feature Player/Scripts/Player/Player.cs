@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Player Stats Updtae Variables
-    private float updateInterval = 0.1f; // 업데이트 주기
+    private float updateInterval = 0.1f; // ?��?��?��?�� 주기
     private float timeSinceLastUpdate = 0f;
 
     private float currentHeadMovement;
@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
     public GameObject debugText;
     #endregion
     
-    //TODO: ?굹以묒뿉 Game Manager濡? ?삷寃⑥빞 ?븿
+    //TODO: ?굹以묒뿉 Game Manager�?? ??��寃⑥�? ?�?
     private void Awake()
     {
         Cursor.visible = false;
@@ -122,41 +122,43 @@ public class Player : MonoBehaviour
             debugText.SetActive(!debugText.activeSelf);
         }
 
-        // if (Input.GetKeyDown(KeyCode.R))     // LAT 스탯들 초기화 하는건데 쓸모 없을 것 같아서 주석 처리
-        // {
-        //     PlayerConstant.ResetLATStats();
-        // }
+        if (Input.GetKeyDown(KeyCode.R)) 
+        {
+            PlayerConstant.ResetLATStats();
+        }
 
         if (debugText.activeSelf)
             debugText.GetComponent<TMP_Text>().text = 
-                $"EyeClosedCAT: {PlayerConstant.EyeClosedCAT}\n" +
-                $"EyeClosedLAT: {PlayerConstant.EyeClosedLAT}\n" +
-                $"EyeBlinkCAT: {PlayerConstant.EyeBlinkCAT}\n" +
-                $"EyeBlinkLAT: {PlayerConstant.EyeBlinkLAT}\n" +
-                $"HeadMovementCAT: {PlayerConstant.HeadMovementCAT}\n" +
-                $"HeadMovementLAT: {PlayerConstant.HeadMovementLAT}\n" +
-                $"BodyMovementCAT: {PlayerConstant.BodyMovementCAT}\n" +
-                $"BodyMovementLAT: {PlayerConstant.BodyMovementLAT}\n" +
-                $"LeftStateCAT: {PlayerConstant.LeftStateCAT}\n" +
-                $"LeftStateLAT: {PlayerConstant.LeftStateLAT}\n" +
-                $"RightStateCAT: {PlayerConstant.RightStateCAT}\n" +
-                $"RightStateLAT: {PlayerConstant.RightStateLAT}\n" +
-                $"MiddleStateCAT: {PlayerConstant.MiddleStateCAT}\n" +
-                $"MiddleStateLAT: {PlayerConstant.MiddleStateLAT}\n" +
-                $"LeftLookCAT: {PlayerConstant.LeftLookCAT}\n" +
-                $"LeftLookLAT: {PlayerConstant.LeftLookLAT}\n" +
-                $"LeftFrontLookCAT: {PlayerConstant.LeftFrontLookCAT}\n" +
-                $"LeftFrontLookLAT: {PlayerConstant.LeftFrontLookLAT}\n" +
-                $"FrontLookCAT: {PlayerConstant.FrontLookCAT}\n" +
-                $"FrontLookLAT: {PlayerConstant.FrontLookLAT}\n" +
-                $"RightFrontLookCAT: {PlayerConstant.RightFrontLookCAT}\n" +
-                $"RightFrontLookLAT: {PlayerConstant.RightFrontLookLAT}\n" +
-                $"RightLookCAT: {PlayerConstant.RightLookCAT}\n" +
-                $"RightLookLAT: {PlayerConstant.RightLookLAT}\n" +
-                $"UpLookCAT: {PlayerConstant.UpLookCAT}\n" +
-                $"UpLookLAT: {PlayerConstant.UpLookLAT}\n" +
-                $"DownLookCAT: {PlayerConstant.DownLookCAT}\n" +
-                $"DownLookLAT: {PlayerConstant.DownLookLAT}\n";
+                $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
+                $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
+                $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
+                $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
+                $"EyeBlinkCAT: <color=yellow>{PlayerConstant.EyeBlinkCAT}</color>\n" +
+                $"EyeBlinkLAT: <color=yellow>{PlayerConstant.EyeBlinkLAT}</color>\n" +
+                $"HeadMovementCAT: <color=yellow>{PlayerConstant.HeadMovementCAT}</color>\n" +
+                $"HeadMovementLAT: <color=yellow>{PlayerConstant.HeadMovementLAT}</color>\n" +
+                $"BodyMovementCAT: <color=yellow>{PlayerConstant.BodyMovementCAT}</color>\n" +
+                $"BodyMovementLAT: <color=yellow>{PlayerConstant.BodyMovementLAT}</color>\n" +
+                $"LeftStateCAT: <color=yellow>{PlayerConstant.LeftStateCAT}</color>\n" +
+                $"LeftStateLAT: <color=yellow>{PlayerConstant.LeftStateLAT}</color>\n" +
+                $"RightStateCAT: <color=yellow>{PlayerConstant.RightStateCAT}</color>\n" +
+                $"RightStateLAT: <color=yellow>{PlayerConstant.RightStateLAT}</color>\n" +
+                $"MiddleStateCAT: <color=yellow>{PlayerConstant.MiddleStateCAT}</color>\n" +
+                $"MiddleStateLAT: <color=yellow>{PlayerConstant.MiddleStateLAT}</color>\n" +
+                $"LeftLookCAT: <color=yellow>{PlayerConstant.LeftLookCAT}</color>\n" +
+                $"LeftLookLAT: <color=yellow>{PlayerConstant.LeftLookLAT}</color>\n" +
+                $"LeftFrontLookCAT: <color=yellow>{PlayerConstant.LeftFrontLookCAT}</color>\n" +
+                $"LeftFrontLookLAT: <color=yellow>{PlayerConstant.LeftFrontLookLAT}</color>\n" +
+                $"FrontLookCAT: <color=yellow>{PlayerConstant.FrontLookCAT}</color>\n" +
+                $"FrontLookLAT: <color=yellow>{PlayerConstant.FrontLookLAT}</color>\n" +
+                $"RightFrontLookCAT: <color=yellow>{PlayerConstant.RightFrontLookCAT}</color>\n" +
+                $"RightFrontLookLAT: <color=yellow>{PlayerConstant.RightFrontLookLAT}</color>\n" +
+                $"RightLookCAT: <color=yellow>{PlayerConstant.RightLookCAT}</color>\n" +
+                $"RightLookLAT: <color=yellow>{PlayerConstant.RightLookLAT}</color>\n" +
+                $"UpLookCAT: <color=yellow>{PlayerConstant.UpLookCAT}</color>\n" +
+                $"UpLookLAT: <color=yellow>{PlayerConstant.UpLookLAT}</color>\n" +
+                $"DownLookCAT: <color=yellow>{PlayerConstant.DownLookCAT}</color>\n" +
+                $"DownLookLAT: <color=yellow>{PlayerConstant.DownLookLAT}</color>\n";
         // TODO : Move To GmaeManager ----------------------------
     }
 

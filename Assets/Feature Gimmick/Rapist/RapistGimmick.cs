@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using AbstractGimmick;
 
-public class RapistGimmickTest : Gimmick
+public class RapistGimmick : Gimmick
 {
     [SerializeField]
     private NewGimmickManager gimmickManager;
