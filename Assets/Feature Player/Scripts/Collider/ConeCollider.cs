@@ -26,10 +26,10 @@ namespace Bed.Collider
         
         private void OnTriggerExit(UnityEngine.Collider other)
         {
-            if (other.CompareTag("Test"))
+            /*if (other.CompareTag("Test"))
             {
                 Debug.Log($"{other.name} Exit");    
-            }
+            }*/
         }
 
         private Vector3[] GetEpllipseCoordinate()
