@@ -28,7 +28,7 @@ namespace AbstractGimmick
         //기믹 끝날 때
         public abstract void Deactivate();
         //플레이어의 몸 움직임, 눈 깜빡임등을 참조하여 기믹 자체 Probability 계산식 실행
-        public abstract void UpdateProbability(ExPlayer player);
+        public abstract void UpdateProbability();
 
         //Activate 실행할때 기본적으로 초기화할 내용들
         protected virtual void SettingVariables()

@@ -6,7 +6,7 @@ using UnityEngine;
 public class EyeGimmick : Gimmick
 {
     [SerializeField]
-    private NewGimmickManager gimmickManager;
+    private GimmickManager gimmickManager;
 
     public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
     public override float Probability { get; set; } = 100;
@@ -46,7 +46,7 @@ public class EyeGimmick : Gimmick
         pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 
-    public override void UpdateProbability(ExPlayer player)
+    public override void UpdateProbability()
     {
         Probability = 100;
     }

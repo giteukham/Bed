@@ -6,7 +6,7 @@ using AbstractGimmick;
 public class RapistGimmick : Gimmick
 {
     [SerializeField]
-    private NewGimmickManager gimmickManager;
+    private GimmickManager gimmickManager;
 
     public override GimmickType Type { get; protected set; } = GimmickType.Human;
     public override float Probability { get; set; } = 100;
@@ -68,7 +68,7 @@ public class RapistGimmick : Gimmick
         gameObject.SetActive(false);
     }
 
-    public override void UpdateProbability(ExPlayer player)
+    public override void UpdateProbability()
     {
         Probability = 100;
     }

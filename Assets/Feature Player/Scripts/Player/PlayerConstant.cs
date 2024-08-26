@@ -15,7 +15,7 @@ public static class PlayerConstant
     /// 눈을 얼마나 감았는지 (누적)
     /// </summary>
     public static float EyeClosedCAT = 0;
-
+    
     /// <summary>
     /// 눈을 얼마나 감았는지 (최근)
     /// </summary>

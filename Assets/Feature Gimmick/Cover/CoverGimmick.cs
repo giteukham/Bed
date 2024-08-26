@@ -7,7 +7,7 @@ using AbstractGimmick;
 public class CoverGimcik : Gimmick
 {
     [SerializeField]
-    private NewGimmickManager gimmickManager;
+    private GimmickManager gimmickManager;
 
     public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
     public override float Probability { get; set; } = 100;
@@ -37,7 +37,7 @@ public class CoverGimcik : Gimmick
         gameObject.SetActive(false);
     }
 
-    public override void UpdateProbability(ExPlayer player)
+    public override void UpdateProbability()
     {
         Probability = 100;
     }

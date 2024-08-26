@@ -8,7 +8,7 @@ using UnityEngine.Rendering.PostProcessing;
 public class GlitchGimmick : Gimmick
 {
     [SerializeField]
-    private NewGimmickManager gimmickManager;
+    private GimmickManager gimmickManager;
 
     //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
     public override GimmickType Type { get; protected set; } = GimmickType.Human;
@@ -66,7 +66,7 @@ public class GlitchGimmick : Gimmick
         }
     }
 
-    public override void UpdateProbability(ExPlayer player)
+    public override void UpdateProbability()
     {
         //눈 자주 감으면 기믹 나오게 하고 싶음, 그리고 게임 중 단 한번만 나왔으면 함
         try
