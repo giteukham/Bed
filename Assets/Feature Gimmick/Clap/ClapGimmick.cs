@@ -53,13 +53,10 @@ public class ClapGimcik : Gimmick
 
     private IEnumerator MainCode()
     {
-        print("ClapGimcikTest Start !!");
-
         yield return new WaitForSeconds(3.2f);
         houseLight.enabled = true;
         
         AudioManager.instance.PlayOneShot(AudioManager.instance.switchOn, this.transform.position);
-        // 스위치 키는 소리
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -71,7 +68,6 @@ public class ClapGimcik : Gimmick
         houseLight.enabled = false;
 
         AudioManager.instance.PlayOneShot(AudioManager.instance.switchOff, this.transform.position);
-        // 스위치 끄는 소리
 
         Deactivate();
     }

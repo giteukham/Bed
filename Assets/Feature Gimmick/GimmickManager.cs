@@ -23,6 +23,12 @@ public class GimmickManager : MonoBehaviour
         StartCoroutine(RandomGimmick());
     }
 
+    private void Update()
+    {
+        if (unrealGimmick == null && humanGimmick == null && objectGimmick == null) TimeManager.GimmickRunningCheck(false);
+        else TimeManager.GimmickRunningCheck(true);
+    }
+
     //현재 실행 시킬 기믹과 같은 타입의 기믹이 실행되고 있는지 확인
     private bool CanActivateGimmick(Gimmick gimmick)
     {
