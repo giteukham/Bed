@@ -18,7 +18,7 @@ public class TimeManager : MonoBehaviour
 
     #region Game Time Variables
     [Header("Game Time Variables")]
-    private int targetTimeToMin = 480; // 게임 시간 480분(현실 시간1440초)이 흐르면 끝
+    private const int TARGET_TIME_TO_MIN = 480; // 게임 시간 480분(현실 시간1440초)이 흐르면 끝
     public static int playTimeToMin = 0;  // 게임 시간 기준 누적 분
     private float realTimeCounter; // 실제 시간
     private int timeInterval = 3; // 시간 흐름 간격

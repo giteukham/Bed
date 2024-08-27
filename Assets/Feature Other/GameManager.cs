@@ -28,20 +28,11 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.BackQuote))
-        {
-            debugText.SetActive(!debugText.activeSelf);
-        }
+        if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
 
-        if (Input.GetKeyDown(KeyCode.R)) 
-        {
-            PlayerConstant.ResetLATStats();
-        }
+        if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();
 
-        if (Input.GetKeyDown(KeyCode.T)) 
-        {
-            TimeManager.ResetPlayTime();
-        }
+        if (Input.GetKeyDown(KeyCode.BackQuote)) debugText.SetActive(!debugText.activeSelf);
 
         if (debugText.activeSelf)
             debugText.GetComponent<TMP_Text>().text = 

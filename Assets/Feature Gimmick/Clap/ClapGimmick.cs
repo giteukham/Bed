@@ -30,7 +30,7 @@ public class ClapGimcik : Gimmick
     private void ClapSoundPlay()
     {
         // 박수 소리는 애니메이션 이벤트로 실행
-        AudioManager.instance.PlayOneShot(AudioManager.instance.handClap, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.handClap, this.transform.position);
     }
 
     public override void Activate()

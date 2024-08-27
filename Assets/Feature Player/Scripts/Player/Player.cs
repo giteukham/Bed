@@ -13,6 +13,7 @@ public enum PlayerDirectionStateTypes
     Middle,
     Right,
     Switching
+
 }
 
 public enum PlayerEyeStateTypes
