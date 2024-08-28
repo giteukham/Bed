@@ -5,6 +5,9 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
+namespace Assets {
+
+
 public class ConeCollider : MonoBehaviour {
     [SerializeField, Range(0.01f,88.5f)]
     private float m_angle = 45;
@@ -166,3 +169,4 @@ public class ConeColliderEditor : Editor {
 }
 
 #endif
+}

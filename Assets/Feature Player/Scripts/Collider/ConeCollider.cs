@@ -1,27 +1,26 @@
 
 using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 namespace Bed.Collider
 {
     public class ConeCollider : MonoBehaviour
     {
-        [SerializeField] private float horizontal = 2f;
-        [SerializeField] private float vertical = 3f;
-        [SerializeField] private float distance = 1f;
-        
-        [Range(3f, 100f)]
-        [SerializeField] private int epllipseSegments = 10;
+        [SerializeField, Tooltip("가로")] private float horizontal = 8f;
+        [SerializeField, Tooltip("세로")] private float vertical = 3f;
+        [SerializeField, Tooltip("Z축 거리")] private float distance = 1f;
+        [SerializeField, Range(4f, 100f), Tooltip("각짐 정도")] private int epllipseSegments;
+        [SerializeField, Tooltip("디버그 이미지")] private GameObject debugImage;
+        private Vector2 debugImageSize;
+        private MeshCollider coneCollider;
         
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
         {
-            // if (other.CompareTag("Test"))
-            // {
-            //     Debug.Log($"{other.name} Enter");
-            // }
+            if (other.CompareTag("Test"))
+            {
+                Debug.Log($"{other.name} Enter");
+            }
         }
         
         private void OnTriggerExit(UnityEngine.Collider other)
@@ -30,6 +29,28 @@ namespace Bed.Collider
             {
                 Debug.Log($"{other.name} Exit");    
             }*/
+        }
+        
+        private void Awake()
+        {
+            coneCollider = this.gameObject.AddComponent<MeshCollider>();
+            coneCollider.sharedMesh = CreateConeMesh();
+            coneCollider.sharedMesh.RecalculateNormals();
+            coneCollider.sharedMesh.RecalculateBounds();
+            coneCollider.convex = true;
+            coneCollider.isTrigger = true;
+            coneCollider.hideFlags = HideFlags.HideInInspector;
+        }
+
+        // 인스펙터에서 값이 변경될 때마다 호출
+        private void OnValidate()
+        {
+            if (coneCollider != null)
+            {
+                coneCollider.sharedMesh = CreateConeMesh();
+                coneCollider.sharedMesh.RecalculateNormals();
+                coneCollider.sharedMesh.RecalculateBounds();
+            }
         }
 
         private Vector3[] GetEpllipseCoordinate()
@@ -53,11 +74,11 @@ namespace Bed.Collider
             return epllipsePoints;
         }
         
-        private void Start()
+        private Mesh CreateConeMesh()
         {
             Vector3[] epllipsePoints = GetEpllipseCoordinate();
-            Mesh m_mesh = new Mesh();
-            m_mesh.Clear();
+            Mesh mesh = new Mesh();
+            mesh.Clear();
             
             Vector3[] vertices = new Vector3[epllipseSegments + 1];
             for (int i = 0; i < epllipseSegments; i++)
@@ -73,16 +94,37 @@ namespace Bed.Collider
                 triangles[i * 3 + 2] = (i + 1) % epllipseSegments + 1;
             }
 
-            m_mesh.vertices = vertices;
-            m_mesh.triangles = triangles;
-            
-            MeshCollider meshCollider = this.gameObject.AddComponent<MeshCollider>();
-            meshCollider.sharedMesh = m_mesh;
-            meshCollider.sharedMesh.RecalculateNormals();
-            meshCollider.sharedMesh.RecalculateBounds();
-            meshCollider.convex = true;
-            meshCollider.isTrigger = true;
-            meshCollider.hideFlags = HideFlags.HideInInspector;
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+
+            return mesh;
+        }
+        public void SetColider(float value)
+        {
+            debugImageSize = debugImage.GetComponent<RectTransform>().sizeDelta;    // 디버그 이미지 초기화
+
+            if(!gameObject.activeSelf) gameObject.SetActive(true);
+
+            if(value < 0.5 ) horizontal = 8 * (1 - value);
+
+            if(1 - value * 2 > 0) vertical = 3 * (1 - value * 2);
+            else vertical = 3 * (1 - value);
+
+            debugImageSize = new Vector2(horizontal * 135, vertical * 130); // 디버그 이미지 사이즈 조절
+
+            if(value <= 0.001f) 
+            {
+                horizontal = 8f;
+                vertical = 3f;
+                debugImageSize = new Vector2(1080, 390);    // 디버그 이미지 사이즈 조절
+            }
+            else if(value == 1)
+            {
+                gameObject.SetActive(false);
+            }
+            debugImage.GetComponent<RectTransform>().sizeDelta = debugImageSize;    // 디버그 이미지 사이즈 조절
+
+            OnValidate();
         }
     }
     
@@ -94,9 +136,9 @@ namespace Bed.Collider
         private SerializedProperty vertical;
         private SerializedProperty distance;
         private SerializedProperty epllipseSegments;
-        
         private Vector3[] epllipsePoints;
         private ConeCollider coneCollider;
+        private SerializedProperty debugImage;
         
         private void OnEnable()
         {
@@ -104,8 +146,8 @@ namespace Bed.Collider
             vertical = serializedObject.FindProperty("vertical");
             distance = serializedObject.FindProperty("distance");
             epllipseSegments = serializedObject.FindProperty("epllipseSegments");
-            epllipsePoints = new Vector3[epllipseSegments.intValue];
             coneCollider = target as ConeCollider;
+            debugImage = serializedObject.FindProperty("debugImage");
         }
 
         public override void OnInspectorGUI()
@@ -116,6 +158,7 @@ namespace Bed.Collider
                 EditorGUILayout.PropertyField(vertical);
                 EditorGUILayout.PropertyField(distance);
                 EditorGUILayout.PropertyField(epllipseSegments);
+                EditorGUILayout.PropertyField(debugImage);
             }
             serializedObject.ApplyModifiedProperties();
         }
@@ -125,6 +168,7 @@ namespace Bed.Collider
             if (!EditorApplication.isPlaying)
             {
                 distance.floatValue = distance.floatValue < 1.0f ? 1.0f : distance.floatValue;
+                epllipsePoints = new Vector3[epllipseSegments.intValue];
                 DrawEpllipse();
             }
         }

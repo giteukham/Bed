@@ -51,7 +51,7 @@ public class EyeGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlayOneShot(AudioManager.instance.eyeStart, transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.eyeStart, transform.position);
 
         Vector3 initialScale = pupil.transform.localScale; // 동공 초기 크기
         Vector3 targetScale = new Vector3(1.1f, 1.1f, pupil.transform.localScale.z); // 동공 목표 크기
@@ -77,7 +77,7 @@ public class EyeGimmick : Gimmick
                 if (elapsedTime >= durationTime)
                 {
                     pupil.transform.localScale = targetScale;
-                    AudioManager.instance.PlayOneShot(AudioManager.instance.eyeEnd, transform.position);
+                    AudioManager.instance.PlaySound(AudioManager.instance.eyeEnd, transform.position);
                     yield return new WaitForSeconds(1f);
                     Deactivate();
                     yield break;

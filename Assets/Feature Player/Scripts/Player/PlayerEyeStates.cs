@@ -2,6 +2,7 @@
 using Bed.PostProcessing;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Bed.Collider;
 public class PlayerEyeStates
 {
     private static PlayerEyeControl playerEyeControl;
@@ -13,7 +14,7 @@ public class PlayerEyeStates
         PlayerEyeStates.customVignette = customVignette;
     }
     
-    public class OpenEyeState : IState      // ?┬┬?²└ ?≥└?═└?·┬ ?°╛ ?┐│?┐°
+    public class OpenEyeState : IState      // ?О©╫О©╫?О©╫О©╫ ?О©╫О©╫?О©╫О©╫?О©╫О©╫ ?О©╫О©╫ ?О©╫О©╫?О©╫О©╫
     {
         public void Enter()
         {
@@ -30,7 +31,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class ClosingEyeState : IState // ╢╚ю╩ а╤╠щ╬© ╟╗╢б ╩Себ
+    public class ClosingEyeState : IState // О©╫О©╫О©╫О©╫ О©╫О©╫О©╫щ╬О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫
     {
         public void Enter()
         {
@@ -46,7 +47,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class CloseEyeState : IState     // ?┬┬?²└ ?≥└?═└?·┬ Й╟░Л?? ?┐│?┐°
+    public class CloseEyeState : IState     // ?О©╫О©╫?О©╫О©╫ ?О©╫О©╫?О©╫О©╫?О©╫О©╫ Й╟░О©╫?? ?О©╫О©╫?О©╫О©╫
     {
         public void Enter()
         {
@@ -64,7 +65,7 @@ public class PlayerEyeStates
         }
     }
     
-    public class OpeningEyeState : IState // ╢╚ю╩ а╤╠щ╬© ╤ъ╢б ╩Себ
+    public class OpeningEyeState : IState // О©╫О©╫О©╫О©╫ О©╫О©╫О©╫щ╬О©╫ О©╫ъ╢О©╫ О©╫О©╫О©╫О©╫
     {
         public void Enter()
         {
@@ -82,7 +83,7 @@ public class PlayerEyeStates
     
 
     
-    public class BlinkEyeState : IState     // ╦╤©Л╫╨ хыю╩ ╢╘╦ё╦И ╢╚ю╩ ╟╗╬р╢ы╟║ ╤ъ╢б ╩Себ
+    public class BlinkEyeState : IState     // О©╫О©╫О©╫Л╫╨ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫р╢ы╟О©╫ О©╫ъ╢О©╫ О©╫О©╫О©╫О©╫
     {
         
         public async void Enter()
@@ -94,7 +95,7 @@ public class PlayerEyeStates
                 customVignette.blink.value = Mathf.Lerp(playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
-            // ╟╗ю╨╟е ц╪е╘
+            // О©╫О©╫О©╫О©╫О©╫О©╫ ц╪е╘
             playerEyeControl.UpdateEyeState();
 
             PlayerConstant.EyeBlinkCAT++;

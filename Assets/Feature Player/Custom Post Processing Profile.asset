@@ -61,19 +61,19 @@ MonoBehaviour:
   active: 0
   enabled:
     overrideState: 1
-    value: 0
+    value: 1
   focusDistance:
     overrideState: 1
-    value: 4.07
+    value: 0.17
   aperture:
     overrideState: 1
     value: 0.1
   focalLength:
     overrideState: 1
-    value: 300
-  kernelSize:
-    overrideState: 1
     value: 1
+  kernelSize:
+    overrideState: 0
+    value: 0
 --- !u!114 &7323642749870772070
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -92,13 +92,13 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 1.43
+    value: 1.1
   smoothness:
     overrideState: 1
-    value: 3.86
+    value: 2.73
   roundness:
     overrideState: 1
-    value: {x: 0.85, y: 0.62}
+    value: {x: 0.79, y: 0.71}
   blink:
     overrideState: 1
     value: 0.001

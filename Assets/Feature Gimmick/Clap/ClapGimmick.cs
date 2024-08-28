@@ -30,7 +30,7 @@ public class ClapGimcik : Gimmick
     private void ClapSoundPlay()
     {
         // 박수 소리는 애니메이션 이벤트로 실행
-        AudioManager.instance.PlayOneShot(AudioManager.instance.handClap, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.handClap, this.transform.position);
     }
 
     public override void Activate()
@@ -53,13 +53,10 @@ public class ClapGimcik : Gimmick
 
     private IEnumerator MainCode()
     {
-        print("ClapGimcikTest Start !!");
-
         yield return new WaitForSeconds(3.2f);
         houseLight.enabled = true;
         
-        AudioManager.instance.PlayOneShot(AudioManager.instance.switchOn, this.transform.position);
-        // 스위치 키는 소리
+        AudioManager.instance.PlaySound(AudioManager.instance.switchOn, this.transform.position);
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -70,8 +67,7 @@ public class ClapGimcik : Gimmick
         yield return new WaitForSeconds(0.4f);
         houseLight.enabled = false;
 
-        AudioManager.instance.PlayOneShot(AudioManager.instance.switchOff, this.transform.position);
-        // 스위치 끄는 소리
+        AudioManager.instance.PlaySound(AudioManager.instance.switchOff, this.transform.position);
 
         Deactivate();
     }

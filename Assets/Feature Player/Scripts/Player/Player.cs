@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
+using Bed.Collider;
 
 public enum PlayerDirectionStateTypes
 {
@@ -13,6 +14,7 @@ public enum PlayerDirectionStateTypes
     Middle,
     Right,
     Switching
+
 }
 
 public enum PlayerEyeStateTypes
@@ -43,6 +45,9 @@ public class Player : MonoBehaviour
     [Header("Post Processing")]
     [SerializeField] private PostProcessProfile postProcessingProfile;
     private CustomVignette customVignette;
+    [Header("Cone Colider")]
+    [SerializeField] private ConeCollider coneCollider;
+    
     #endregion
     
     #region Player Control Classes
@@ -56,23 +61,13 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Player Stats Updtae Variables
-    private float updateInterval = 0.1f; // ?óÖ?ç∞?ù¥?ä∏ Ï£ºÍ∏∞
+    private float updateInterval = 0.1f; // ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ Ï£ºÍ∏∞
     private float timeSinceLastUpdate = 0f;
 
     private float currentHeadMovement;
     private float recentHeadMovement;
     #endregion
 
-    #region Debug Text Variables
-    public GameObject debugText;
-    #endregion
-    
-    //TODO: ?Íµπ‰ª•Î¨íÎøâ Game ManagerÊø?? ??Ç∑ÂØÉ‚ë•Îπ? ?Î∏?
-    private void Awake()
-    {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
 
     private void Start()
     {
@@ -82,9 +77,6 @@ public class Player : MonoBehaviour
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, customVignette);
         playerEyeControl.SubscribeToEvents();
-
-        if (debugText.activeSelf)
-            debugText.SetActive(false);
     }
 
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -116,50 +108,7 @@ public class Player : MonoBehaviour
             timeSinceLastUpdate = 0f;
         }
 
-        // TODO : Move To GmaeManager ----------------------------
-        if (Input.GetKeyDown(KeyCode.BackQuote))
-        {
-            debugText.SetActive(!debugText.activeSelf);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R)) 
-        {
-            PlayerConstant.ResetLATStats();
-        }
-
-        if (debugText.activeSelf)
-            debugText.GetComponent<TMP_Text>().text = 
-                $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
-                $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
-                $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
-                $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
-                $"EyeBlinkCAT: <color=yellow>{PlayerConstant.EyeBlinkCAT}</color>\n" +
-                $"EyeBlinkLAT: <color=yellow>{PlayerConstant.EyeBlinkLAT}</color>\n" +
-                $"HeadMovementCAT: <color=yellow>{PlayerConstant.HeadMovementCAT}</color>\n" +
-                $"HeadMovementLAT: <color=yellow>{PlayerConstant.HeadMovementLAT}</color>\n" +
-                $"BodyMovementCAT: <color=yellow>{PlayerConstant.BodyMovementCAT}</color>\n" +
-                $"BodyMovementLAT: <color=yellow>{PlayerConstant.BodyMovementLAT}</color>\n" +
-                $"LeftStateCAT: <color=yellow>{PlayerConstant.LeftStateCAT}</color>\n" +
-                $"LeftStateLAT: <color=yellow>{PlayerConstant.LeftStateLAT}</color>\n" +
-                $"RightStateCAT: <color=yellow>{PlayerConstant.RightStateCAT}</color>\n" +
-                $"RightStateLAT: <color=yellow>{PlayerConstant.RightStateLAT}</color>\n" +
-                $"MiddleStateCAT: <color=yellow>{PlayerConstant.MiddleStateCAT}</color>\n" +
-                $"MiddleStateLAT: <color=yellow>{PlayerConstant.MiddleStateLAT}</color>\n" +
-                $"LeftLookCAT: <color=yellow>{PlayerConstant.LeftLookCAT}</color>\n" +
-                $"LeftLookLAT: <color=yellow>{PlayerConstant.LeftLookLAT}</color>\n" +
-                $"LeftFrontLookCAT: <color=yellow>{PlayerConstant.LeftFrontLookCAT}</color>\n" +
-                $"LeftFrontLookLAT: <color=yellow>{PlayerConstant.LeftFrontLookLAT}</color>\n" +
-                $"FrontLookCAT: <color=yellow>{PlayerConstant.FrontLookCAT}</color>\n" +
-                $"FrontLookLAT: <color=yellow>{PlayerConstant.FrontLookLAT}</color>\n" +
-                $"RightFrontLookCAT: <color=yellow>{PlayerConstant.RightFrontLookCAT}</color>\n" +
-                $"RightFrontLookLAT: <color=yellow>{PlayerConstant.RightFrontLookLAT}</color>\n" +
-                $"RightLookCAT: <color=yellow>{PlayerConstant.RightLookCAT}</color>\n" +
-                $"RightLookLAT: <color=yellow>{PlayerConstant.RightLookLAT}</color>\n" +
-                $"UpLookCAT: <color=yellow>{PlayerConstant.UpLookCAT}</color>\n" +
-                $"UpLookLAT: <color=yellow>{PlayerConstant.UpLookLAT}</color>\n" +
-                $"DownLookCAT: <color=yellow>{PlayerConstant.DownLookCAT}</color>\n" +
-                $"DownLookLAT: <color=yellow>{PlayerConstant.DownLookLAT}</color>\n";
-        // TODO : Move To GmaeManager ----------------------------
+        coneCollider.SetColider(customVignette.blink.value);
     }
 
     private void UpdateStats()
@@ -176,8 +125,7 @@ public class Player : MonoBehaviour
         PlayerConstant.HeadMovementLAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
         // ----------------- Head Movement -----------------
 
-
-        // ----------------- Look -----------------
+        // ----------------- Look Value -----------------
         float eulerY = mainCamera.transform.eulerAngles.y;
         float eulerX = mainCamera.transform.eulerAngles.x;
 
@@ -217,7 +165,7 @@ public class Player : MonoBehaviour
             PlayerConstant.DownLookCAT += timeSinceLastUpdate;
             PlayerConstant.DownLookLAT += timeSinceLastUpdate;
         }
-        // ----------------- Look -----------------
+        // ----------------- Look Value -----------------
     }
 
     private void OnApplicationQuit()
