@@ -5,16 +5,12 @@ using UnityEngine;
 
 public class RadioGimmick : Gimmick
 {
-    //기믹 매니저 참조할 변수
-    [SerializeField]
-    private GimmickManager gimmickManager;
 
     public override GimmickType Type { get; protected set; } = GimmickType.Object;
     public override float Probability { get; set; } = 100;
 
     private void Awake()
     {
-        //기본적인 구성후에 오브젝트 바로 끔(바로 끄기 때문에 OnEnable 실행되지 않음)
         gameObject.SetActive(false);
     }
 
