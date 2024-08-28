@@ -70,15 +70,7 @@ public class AudioManager : MonoBehaviour
         if (instance != null) Debug.LogError("Audio Manager already exists");
         instance = this;
     }
-
-    /// <summary>
-    /// 소리 한번만 실행
-    /// </summary>
-    public void PlayOneShot(EventReference _eventRef, Vector3 _pos) 
-    {
-        RuntimeManager.PlayOneShot(_eventRef, _pos);
-    }
-
+    
     /// <summary>
     /// 소리 꺼지기 전까지 실행
     /// </summary>

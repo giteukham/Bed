@@ -56,7 +56,7 @@ public class ClapGimcik : Gimmick
         yield return new WaitForSeconds(3.2f);
         houseLight.enabled = true;
         
-        AudioManager.instance.PlayOneShot(AudioManager.instance.switchOn, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.switchOn, this.transform.position);
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -67,7 +67,7 @@ public class ClapGimcik : Gimmick
         yield return new WaitForSeconds(0.4f);
         houseLight.enabled = false;
 
-        AudioManager.instance.PlayOneShot(AudioManager.instance.switchOff, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.switchOff, this.transform.position);
 
         Deactivate();
     }

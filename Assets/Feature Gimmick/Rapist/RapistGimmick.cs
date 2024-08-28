@@ -91,15 +91,15 @@ public class RapistGimmick : Gimmick
             twoPhase = true;
         if (houseLight.activeSelf == true)
             houseLight.SetActive(false);
-        AudioManager.instance.PlayOneShot(AudioManager.instance.hornyBreath, this.transform.position);
-        AudioManager.instance.PlayOneShot(AudioManager.instance.pantRustle, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.hornyBreath, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
 
         //3페이즈
         yield return new WaitForSeconds(3f);
         twoPhase = false;
         if (threePhase == false)
             threePhase = true;
-        AudioManager.instance.PlayOneShot(AudioManager.instance.windowOpenClose, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.windowOpenClose, this.transform.position);
 
 
         // 4페이즈 / 이땐 정면 고정
@@ -108,7 +108,7 @@ public class RapistGimmick : Gimmick
         if (fourPhase == false)
             fourPhase = true;
         hand.SetActive(true);
-        AudioManager.instance.PlayOneShot(AudioManager.instance.rapist4Phase, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.rapist4Phase, this.transform.position);
         
         yield return new WaitForSeconds(3f);
         hand.SetActive(false);
@@ -119,6 +119,6 @@ public class RapistGimmick : Gimmick
 
     private void RustleSoundPlay()
     {
-        AudioManager.instance.PlayOneShot(AudioManager.instance.pantRustle, this.transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
     }
 }

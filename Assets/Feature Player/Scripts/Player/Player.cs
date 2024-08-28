@@ -108,8 +108,6 @@ public class Player : MonoBehaviour
             timeSinceLastUpdate = 0f;
         }
 
-        Debug.Log(customVignette.blink.value);
-
         coneCollider.SetColider(customVignette.blink.value);
     }
 
