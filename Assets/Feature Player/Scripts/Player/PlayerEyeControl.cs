@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
+using Bed.Collider;
 
 public class PlayerEyeControl : IPlayerControl
 {
@@ -19,6 +20,7 @@ public class PlayerEyeControl : IPlayerControl
     
     public const float BLINK_VALUE_MIN = 0.001f, BLINK_VALUE_MAX = 1f;   // Vignette의 Blink 값 최솟값, 최댓값.
                                                                          // 최솟값을 0으로 하면 연산이 불가능.
+    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Collider의 최대 값
     public const int MOUSE_SCROLL_VALUE = 120;    // 마우스 휠 값
     
     private StateMachine playerEyeStateMachine;

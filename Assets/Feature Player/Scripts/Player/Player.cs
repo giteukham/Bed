@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
+using Bed.Collider;
 
 public enum PlayerDirectionStateTypes
 {
@@ -44,6 +45,9 @@ public class Player : MonoBehaviour
     [Header("Post Processing")]
     [SerializeField] private PostProcessProfile postProcessingProfile;
     private CustomVignette customVignette;
+    [Header("Cone Colider")]
+    [SerializeField] private ConeCollider coneCollider;
+    
     #endregion
     
     #region Player Control Classes
@@ -57,7 +61,7 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Player Stats Updtae Variables
-    private float updateInterval = 0.1f; // ?óÖ?ç∞?ù¥?ä∏ Ï£ºÍ∏∞
+    private float updateInterval = 0.1f; // ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ Ï£ºÍ∏∞
     private float timeSinceLastUpdate = 0f;
 
     private float currentHeadMovement;
@@ -103,6 +107,10 @@ public class Player : MonoBehaviour
             UpdateStats();
             timeSinceLastUpdate = 0f;
         }
+
+        Debug.Log(customVignette.blink.value);
+
+        coneCollider.SetColider(customVignette.blink.value);
     }
 
     private void UpdateStats()

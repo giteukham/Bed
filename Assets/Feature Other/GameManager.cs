@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    #region Debug Text Variables
-    [Header("Debug Text")]
+    #region Debug Variables
+    [Header("Debug Variables")]
     [SerializeField] private GameObject debugText;
+    [SerializeField] private GameObject debugImage;
     #endregion
 
     #region Main Camera
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         if (debugText.activeSelf) debugText.SetActive(false);
+        if (debugImage.activeSelf) debugImage.SetActive(false);
     }
 
     void Update()
@@ -32,10 +34,13 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();
 
-        if (Input.GetKeyDown(KeyCode.BackQuote)) debugText.SetActive(!debugText.activeSelf);
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            debugText.SetActive(!debugText.activeSelf);
+            debugImage.SetActive(!debugImage.activeSelf);
+        } 
 
-        if (debugText.activeSelf)
-            debugText.GetComponent<TMP_Text>().text = 
+        debugText.GetComponent<TMP_Text>().text = 
                 $"<size=130%><b>Play Time: <color=#ff808f></b>{TimeManager.playTimeToMin}/480</color></size>\n" +
                 $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
@@ -67,6 +72,5 @@ public class GameManager : MonoBehaviour
                 $"UpLookLAT: <color=yellow>{PlayerConstant.UpLookLAT}</color>\n" +
                 $"DownLookCAT: <color=yellow>{PlayerConstant.DownLookCAT}</color>\n" +
                 $"DownLookLAT: <color=yellow>{PlayerConstant.DownLookLAT}</color>\n";
-    
     }
 }
