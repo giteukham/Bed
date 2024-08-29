@@ -17,10 +17,10 @@ namespace Bed.Collider
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
         {
-            if (other.CompareTag("Test"))
+            /*if (other.CompareTag("Test"))
             {
                 Debug.Log($"{other.name} Enter");
-            }
+            }*/
         }
         
         private void OnTriggerExit(UnityEngine.Collider other)

@@ -4,11 +4,11 @@ using UnityEngine;
 using AbstractGimmick;
 using System;
 
+/// <summary>
+/// 기믹 제작 예시 코드 및 유일하게 gimmickManager 싱글톤 변수 초기화하는 스크립트
+/// </summary>
 public class TestGimmick : Gimmick
 {
-    //기믹 매니저 참조할 변수
-    /*[SerializeField]
-    private GimmickManager gimmickManager;*/
 
     public override GimmickType Type { get; protected set; } = GimmickType.Human;
     public override float Probability { get; set; } = 100;

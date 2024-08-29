@@ -7,9 +7,7 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class GlitchGimmick : Gimmick
 {
-
-    //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
-    public override GimmickType Type { get; protected set; } = GimmickType.Human;
+    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
     public override float Probability { get; set; } = 100;
 
     private void Awake()
@@ -54,8 +52,7 @@ public class GlitchGimmick : Gimmick
         try
         {
             gimmickManager.LowerProbability(this);
-            //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
-            gimmickManager.humanGimmick = null;
+            gimmickManager.unrealGimmick = null;
             gameObject.SetActive(false);
         }
         catch (Exception e)
