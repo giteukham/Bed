@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
 {
     #region Debug Variables
     [Header("Debug Variables")]
-    [SerializeField] private GameObject debugText;
+    [SerializeField] private GameObject debugStatsText;
+    [SerializeField] private GameObject debugTimeText;
     [SerializeField] private GameObject debugImage;
     #endregion
 
@@ -24,7 +25,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (debugText.activeSelf) debugText.SetActive(false);
+        if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
+        if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
         if (debugImage.activeSelf) debugImage.SetActive(false);
     }
 
@@ -34,13 +36,20 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();
 
+        if (Input.GetKeyDown(KeyCode.N)) debugImage.SetActive(!debugImage.activeSelf);
+
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
-            debugText.SetActive(!debugText.activeSelf);
-            debugImage.SetActive(!debugImage.activeSelf);
+            debugStatsText.SetActive(!debugStatsText.activeSelf);
+            debugTimeText.SetActive(!debugTimeText.activeSelf);
         } 
 
-        debugText.GetComponent<TMP_Text>().text = 
+        int hour = TimeManager.playTimeToMin >= 60 ? 11 + TimeManager.playTimeToMin / 60 - 12 : 11 + TimeManager.playTimeToMin / 60;
+        int minute = TimeManager.playTimeToMin % 60;
+
+        debugTimeText.GetComponent<TMP_Text>().text = $"<size=150%>{hour}h : {minute}m</size>";
+
+        debugStatsText.GetComponent<TMP_Text>().text = 
                 $"<size=130%><b>Play Time: <color=#ff808f></b>{TimeManager.playTimeToMin}/480</color></size>\n" +
                 $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +

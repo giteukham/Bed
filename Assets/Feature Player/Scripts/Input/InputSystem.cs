@@ -26,6 +26,7 @@ public class InputSystem : MonoBehaviour
     private void OnMouseDelta(InputValue value)
     {
         MouseDeltaX = value.Get<Vector2>().x;
+        MouseDeltaY = value.Get<Vector2>().y;
     }
 
     private void OnMouseScroll(InputValue value)

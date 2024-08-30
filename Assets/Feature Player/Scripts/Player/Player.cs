@@ -64,8 +64,11 @@ public class Player : MonoBehaviour
     private float updateInterval = 0.1f; // ?��?��?��?�� 주기
     private float timeSinceLastUpdate = 0f;
 
-    private float currentHeadMovement;
-    private float recentHeadMovement;
+    private float currentHorizontalHeadMovement;
+    private float currentVerticalHeadMovement;
+    private float recentHorizontalHeadMovement;
+    private float recentVerticalHeadMovement;
+    private float headMovementDelta;
     #endregion
 
 
@@ -113,14 +116,19 @@ public class Player : MonoBehaviour
 
     private void UpdateStats()
     {
-        // ----------------- Head Movement -----------------
-        recentHeadMovement = currentHeadMovement;
-        currentHeadMovement = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value + playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
+        // ----------------- Eye State -----------------
+        float cameraDeltaX = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
+        float cameraDeltaY = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
+        recentHorizontalHeadMovement = currentHorizontalHeadMovement;
+        recentVerticalHeadMovement = currentVerticalHeadMovement;
+        currentHorizontalHeadMovement = cameraDeltaX;
+        currentVerticalHeadMovement = cameraDeltaY;
+        if(currentVerticalHeadMovement == recentVerticalHeadMovement && currentHorizontalHeadMovement == recentHorizontalHeadMovement) headMovementDelta = 0;
+        else headMovementDelta = Mathf.Abs(currentHorizontalHeadMovement - recentHorizontalHeadMovement) + Mathf.Abs(currentVerticalHeadMovement - recentVerticalHeadMovement);
 
         float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaX);
         float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaY);
-        float headMovementDelta = Mathf.Abs(currentHeadMovement - recentHeadMovement);
-
+        
         PlayerConstant.HeadMovementCAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
         PlayerConstant.HeadMovementLAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
         // ----------------- Head Movement -----------------
