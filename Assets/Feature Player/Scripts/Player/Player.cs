@@ -64,11 +64,18 @@ public class Player : MonoBehaviour
     private float updateInterval = 0.1f; // ?��?��?��?�� 주기
     private float timeSinceLastUpdate = 0f;
 
-    private float currentHorizontalHeadMovement;
-    private float currentVerticalHeadMovement;
-    private float recentHorizontalHeadMovement;
-    private float recentVerticalHeadMovement;
-    private float headMovementDelta;
+    private float currentHorizontalCameraMovement;
+    private float currentVerticalCameraMovement;
+    private float recentHorizontalCameraMovement;
+    private float recentVerticalCameraMovement;
+    private float isCameraMovement;
+
+    private float currentHorizontalMouseMovement;
+    private float currentVerticalMouseMovement;
+    private float recentHorizontalMouseMovement;
+    private float recentVerticalMouseMovement;
+    private float deltaHorizontalMouseMovement;
+    private float deltaVerticalMouseMovement;
     #endregion
 
 
@@ -119,18 +126,26 @@ public class Player : MonoBehaviour
         // ----------------- Eye State -----------------
         float cameraDeltaX = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
         float cameraDeltaY = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
-        recentHorizontalHeadMovement = currentHorizontalHeadMovement;
-        recentVerticalHeadMovement = currentVerticalHeadMovement;
-        currentHorizontalHeadMovement = cameraDeltaX;
-        currentVerticalHeadMovement = cameraDeltaY;
-        if(currentVerticalHeadMovement == recentVerticalHeadMovement && currentHorizontalHeadMovement == recentHorizontalHeadMovement) headMovementDelta = 0;
-        else headMovementDelta = Mathf.Abs(currentHorizontalHeadMovement - recentHorizontalHeadMovement) + Mathf.Abs(currentVerticalHeadMovement - recentVerticalHeadMovement);
-
+        recentHorizontalCameraMovement = currentHorizontalCameraMovement;
+        recentVerticalCameraMovement = currentVerticalCameraMovement;
+        currentHorizontalCameraMovement = cameraDeltaX;
+        currentVerticalCameraMovement = cameraDeltaY;
+        if(currentVerticalCameraMovement == recentVerticalCameraMovement && currentHorizontalCameraMovement == recentHorizontalCameraMovement) isCameraMovement = 0;
+        else isCameraMovement = 1;
+        
         float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaX);
         float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaY);
+        recentHorizontalMouseMovement = currentHorizontalMouseMovement;
+        recentVerticalMouseMovement = currentVerticalMouseMovement;
+        currentHorizontalMouseMovement = mouseDeltaX;
+        currentVerticalMouseMovement = mouseDeltaY;
+        if(currentVerticalMouseMovement == recentVerticalMouseMovement) deltaVerticalMouseMovement = 0;
+        else deltaVerticalMouseMovement = Mathf.Abs(currentVerticalMouseMovement - recentVerticalMouseMovement);
+        if(currentHorizontalMouseMovement == recentHorizontalMouseMovement) deltaHorizontalMouseMovement = 0;
+        else deltaHorizontalMouseMovement = Mathf.Abs(currentHorizontalMouseMovement - recentHorizontalMouseMovement);
         
-        PlayerConstant.HeadMovementCAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
-        PlayerConstant.HeadMovementLAT += (mouseDeltaX + mouseDeltaY) * headMovementDelta;
+        PlayerConstant.HeadMovementCAT += (deltaHorizontalMouseMovement + deltaVerticalMouseMovement) * isCameraMovement;
+        PlayerConstant.HeadMovementLAT += (deltaHorizontalMouseMovement + deltaVerticalMouseMovement) * isCameraMovement;
         // ----------------- Head Movement -----------------
 
         // ----------------- Look Value -----------------
