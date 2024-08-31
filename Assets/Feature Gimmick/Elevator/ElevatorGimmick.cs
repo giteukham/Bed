@@ -16,6 +16,9 @@ public class ElevatorGimmick : Gimmick
     private int floor = 6;
     private int randomNum = 0;
 
+    [SerializeField]
+    private GameObject room;
+
     private void Awake()
     {
         impulseSource = GetComponent<CinemachineImpulseSource>();
@@ -32,6 +35,7 @@ public class ElevatorGimmick : Gimmick
     public override void Activate()
     {
         SettingVariables();
+        room.SetActive(false);
         StartCoroutine(MainCode());
     }
 
@@ -42,6 +46,7 @@ public class ElevatorGimmick : Gimmick
         camShaker.StopShakeCam();
         floor = 6;
         tmo.text = "6";
+        room.SetActive(true);
         gameObject.SetActive(false);
     }
 
@@ -75,7 +80,7 @@ public class ElevatorGimmick : Gimmick
             tmo.text = floor.ToString();
         }
 
-        //빨간불 켜지고 쾅! 소리들리면서 카메라 흔들림
+        //쾅! 소리들리면서 카메라 흔들림
         impulseSource.GenerateImpulseWithForce(4);
 
         //갑자기 급격히 상승
@@ -117,12 +122,11 @@ public class ElevatorGimmick : Gimmick
             tmo.text = randomNum.ToString();
         }
 
+        //카메라 흔들림 제거
         tmo.text = "666!66_66";
         camShaker.StopShakeCam();
 
         //플레이어 데미지 받고 기믹종료
         Deactivate();
-
-        //카메라 흔들림 강도는 더 극심해짐
     }
 }

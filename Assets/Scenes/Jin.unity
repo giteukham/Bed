@@ -1988,7 +1988,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &157123513
 Transform:
   m_ObjectHideFlags: 0
@@ -3913,6 +3913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDetected: 0
+  room: {fileID: 157123512}
 --- !u!114 &740248956
 MonoBehaviour:
   m_ObjectHideFlags: 0
