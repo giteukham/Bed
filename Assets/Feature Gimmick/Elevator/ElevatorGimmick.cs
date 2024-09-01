@@ -4,6 +4,7 @@ using UnityEngine;
 using AbstractGimmick;
 using Cinemachine;
 using TMPro;
+using FMODUnity;
 
 public class ElevatorGimmick : Gimmick
 {
@@ -47,6 +48,9 @@ public class ElevatorGimmick : Gimmick
         floor = 6;
         tmo.text = "6";
         room.SetActive(true);
+        //엘리베이터 상승음 종료
+        AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.instance.StopSound(AudioManager.instance.elevatorFast, FMOD.Studio.STOP_MODE.IMMEDIATE);
         gameObject.SetActive(false);
     }
 
@@ -58,6 +62,7 @@ public class ElevatorGimmick : Gimmick
     private IEnumerator MainCode()
     {
         //처음에 우우웅 거리는 기계작동음
+        AudioManager.instance.PlaySound(AudioManager.instance.elevatorMove, transform.position);
 
         //엘리베이터 숫자가 점점 내려감
         while (floor > 2)
@@ -67,12 +72,16 @@ public class ElevatorGimmick : Gimmick
             tmo.text = floor.ToString();
         }
         //쾅! 소리와 함께 카메라 흔들림 엘리베이터 몇초간 정지
+        AudioManager.instance.PlaySound(AudioManager.instance.elevatorCrash, transform.position);
+        yield return new WaitForSeconds(1.7f);
         impulseSource.GenerateImpulseWithForce(3);
+        AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.IMMEDIATE);
         tmo.text = "ERROR";
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(5);
 
 
         //그뒤 서서히 숫자 올라가면서 올라가는 작동음
+        AudioManager.instance.PlaySound(AudioManager.instance.elevatorMove, transform.position);
         while (floor <= 6)
         {
             yield return new WaitForSeconds(0.7f);
@@ -81,9 +90,11 @@ public class ElevatorGimmick : Gimmick
         }
 
         //쾅! 소리들리면서 카메라 흔들림
+        AudioManager.instance.PlaySound(AudioManager.instance.hit, transform.position);
         impulseSource.GenerateImpulseWithForce(4);
 
         //갑자기 급격히 상승
+        AudioManager.instance.PlaySound(AudioManager.instance.elevatorFast, transform.position);
         while (floor < 66)
         {
             yield return new WaitForSeconds(0.05f);
