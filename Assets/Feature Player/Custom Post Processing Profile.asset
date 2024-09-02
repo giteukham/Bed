@@ -46,6 +46,7 @@ MonoBehaviour:
   settings:
   - {fileID: 7323642749870772070}
   - {fileID: 4005980269079171750}
+  - {fileID: 4710387421846319281}
 --- !u!114 &4005980269079171750
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -64,14 +65,66 @@ MonoBehaviour:
     value: 1
   focusDistance:
     overrideState: 1
+<<<<<<< HEAD
     value: 0.17
+=======
+    value: 1.1
+>>>>>>> 05cd0b9 (모델링 수정 중)
   aperture:
     overrideState: 1
     value: 0.1
   focalLength:
     overrideState: 1
     value: 1
+<<<<<<< HEAD
   kernelSize:
+=======
+--- !u!114 &4710387421846319281
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48a79b01ea5641d4aa6daa2e23605641, type: 3}
+  m_Name: Bloom
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  intensity:
+    overrideState: 1
+    value: 3.5
+  threshold:
+    overrideState: 1
+    value: 1
+  softKnee:
+    overrideState: 1
+    value: 1
+  clamp:
+    overrideState: 0
+    value: 65472
+  diffusion:
+    overrideState: 1
+    value: 10
+  anamorphicRatio:
+    overrideState: 0
+    value: 1
+  color:
+    overrideState: 1
+    value: {r: 1, g: 1, b: 1, a: 1}
+  fastMode:
+    overrideState: 0
+    value: 0
+  dirtTexture:
+    overrideState: 0
+    value: {fileID: 0}
+    defaultState: 1
+  dirtIntensity:
+>>>>>>> 05cd0b9 (모델링 수정 중)
     overrideState: 0
     value: 0
 --- !u!114 &7323642749870772070
@@ -86,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ef224c15c7c8ef4c802b4f8811688aa, type: 3}
   m_Name: CustomVignette
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
