@@ -38,6 +38,12 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.N)) debugImage.SetActive(!debugImage.activeSelf);
         
+        if (Input.GetKeyDown(KeyCode.B)) 
+        {
+            if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
+            else BedRoomLightSwitch.SwitchAction(true);
+        }
+
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             debugStatsText.SetActive(!debugStatsText.activeSelf);
