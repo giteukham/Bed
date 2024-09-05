@@ -54,9 +54,7 @@ public class ClapGimcik : Gimmick
     private IEnumerator MainCode()
     {
         yield return new WaitForSeconds(3.2f);
-        houseLight.enabled = true;
-        
-        AudioManager.instance.PlaySound(AudioManager.instance.switchOn, this.transform.position);
+        LivingRoomLightSwitch.SwitchAction(true);
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -65,9 +63,7 @@ public class ClapGimcik : Gimmick
         animator.Play("ClapOff");
 
         yield return new WaitForSeconds(0.4f);
-        houseLight.enabled = false;
-
-        AudioManager.instance.PlaySound(AudioManager.instance.switchOff, this.transform.position);
+        LivingRoomLightSwitch.SwitchAction(false);
 
         Deactivate();
     }
