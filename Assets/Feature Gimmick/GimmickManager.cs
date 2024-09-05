@@ -29,7 +29,7 @@ public class GimmickManager : MonoBehaviour
         else TimeManager.GimmickRunningCheck(true);
     }
 
-    //ÇöÀç ½ÇÇà ½ÃÅ³ ±â¹Í°ú °°Àº Å¸ÀÔÀÇ ±â¹ÍÀÌ ½ÇÇàµÇ°í ÀÖ´ÂÁö È®ÀÎ
+    //í˜„ì¬ ì‹¤í–‰ ì‹œí‚¬ ê¸°ë¯¹ê³¼ ê°™ì€ íƒ€ì…ì˜ ê¸°ë¯¹ì´ ì‹¤í–‰ë˜ê³  ìˆëŠ”ì§€ í™•ì¸
     private bool CanActivateGimmick(Gimmick gimmick)
     {
         switch (gimmick.Type)
@@ -45,7 +45,7 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //±â¹Í ºĞ·ù ÈÄ Å¸ÀÔ¿¡ ¸Â´Â º¯¼ö¿¡ ³ÖÀ½
+    //ê¸°ë¯¹ ë¶„ë¥˜ í›„ íƒ€ì…ì— ë§ëŠ” ë³€ìˆ˜ì— ë„£ìŒ
     private void ActivateGimmick(Gimmick gimmick)
     {
         switch (gimmick.Type)
@@ -60,7 +60,7 @@ public class GimmickManager : MonoBehaviour
                 objectGimmick = gimmick;
                 break;
         }
-        //±â¹Í ½ÇÇà
+        //ê¸°ë¯¹ ì‹¤í–‰
         gimmick.Activate();
     }
 
@@ -79,30 +79,30 @@ public class GimmickManager : MonoBehaviour
 
         if (unrealGimmick == null || humanGimmick == null || objectGimmick == null)
         {
-            //±â¹Í 3Á¾·ù Áß¿¡ ÇÑÁ¾·ù¶óµµ ½ÇÇà ¾ÈµÇ´Â°Å ÀÖÀ¸¸é ±×³É ÄÚµå °è¼Ó ½ÇÇà
+            //ê¸°ë¯¹ 3ì¢…ë¥˜ ì¤‘ì— í•œì¢…ë¥˜ë¼ë„ ì‹¤í–‰ ì•ˆë˜ëŠ”ê±° ìˆìœ¼ë©´ ê·¸ëƒ¥ ì½”ë“œ ê³„ì† ì‹¤í–‰
         }
         else
         {
-            //Á¾·ù 3°³ ´Ù ½ÇÇàµÇ°í ÀÖ´Â »óÅÂ¸é ¸Ş¼Òµå Å»Ãâ
+            //ì¢…ë¥˜ 3ê°œ ë‹¤ ì‹¤í–‰ë˜ê³  ìˆëŠ” ìƒíƒœë©´ ë©”ì†Œë“œ íƒˆì¶œ
             return;
         }
 
-        //1~10¹ø Á¤µµ ¸®½ºÆ® ¹«ÀÛÀ§ ¼¯±â
+        //1~10ë²ˆ ì •ë„ ë¦¬ìŠ¤íŠ¸ ë¬´ì‘ìœ„ ì„ê¸°
         randomNum1 = Random.Range(1, 10);
         for (int i = 0; i < randomNum1; i++)
         {
             ShakeList();
         }
 
-        //¹«ÀÛÀ§ È®·ü°ª ±¸ÇÏ±â
+        //ë¬´ì‘ìœ„ í™•ë¥ ê°’ êµ¬í•˜ê¸°
         randomNum1 = Random.Range(1, 101);
 
-        //¹®Á¦Á¡ : allGimicks ¾ÕÂÊ¿¡ À§Ä¡ÇÑ ±â¹ÍÀÏ ¼ö·Ï µîÀåÈ®·üÀÌ ´õ ³ôÀ½
+        //ë¬¸ì œì  : allGimicks ì•ìª½ì— ìœ„ì¹˜í•œ ê¸°ë¯¹ì¼ ìˆ˜ë¡ ë“±ì¥í™•ë¥ ì´ ë” ë†’ìŒ
         foreach (Gimmick item in allGimicks)
         {
             if (item.Probability >= randomNum1 && CanActivateGimmick(item) == true)
             {
-                //±â¹Í ½ÇÇà
+                //ê¸°ë¯¹ ì‹¤í–‰
                 ActivateGimmick(item);
                 break;
             }
@@ -110,7 +110,7 @@ public class GimmickManager : MonoBehaviour
 
     }
 
-    //±â¹Íº° µîÀåÈ®·ü ÀçÁ¤ÀÇ
+    //ê¸°ë¯¹ë³„ ë“±ì¥í™•ë¥  ì¬ì •ì˜
     private void RedefineProbability()
     {
         foreach (Gimmick item in allGimicks)
@@ -119,7 +119,7 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //¸®½ºÆ® ¼¯´Â ¸Ş¼Òµå
+    //ë¦¬ìŠ¤íŠ¸ ì„ëŠ” ë©”ì†Œë“œ
     private void ShakeList()
     {
         randomNum1 = Random.Range(0, allGimicks.Count);
@@ -131,7 +131,7 @@ public class GimmickManager : MonoBehaviour
         allGimicks[randomNum2] = temp;
     }
 
-    //µîÀåÈ®·ü ³·Ãß´Â ¸Ş¼Òµå
+    //ë“±ì¥í™•ë¥  ë‚®ì¶”ëŠ” ë©”ì†Œë“œ
     public void LowerProbability(Gimmick gimmick)
     {
         allGimicks.Remove(gimmick);

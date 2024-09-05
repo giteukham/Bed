@@ -63,7 +63,7 @@ public class GlitchGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        //´« ÀÚÁÖ °¨À¸¸é ±â¹Í ³ª¿À°Ô ÇÏ°í ½ÍÀ½, ±×¸®°í °ÔÀÓ Áß ´Ü ÇÑ¹ø¸¸ ³ª¿ÔÀ¸¸é ÇÔ
+        //ëˆˆ ìì£¼ ê°ìœ¼ë©´ ê¸°ë¯¹ ë‚˜ì˜¤ê²Œ í•˜ê³  ì‹¶ìŒ, ê·¸ë¦¬ê³  ê²Œì„ ì¤‘ ë‹¨ í•œë²ˆë§Œ ë‚˜ì™”ìœ¼ë©´ í•¨
         try
         {
             Probability = 100;
@@ -89,11 +89,11 @@ public class GlitchGimmick : Gimmick
 
     private IEnumerator GlitchOn()
     {
-        //»ß- °Å¸®´Â ¼Ò¸®
+        //ì‚- ê±°ë¦¬ëŠ” ì†Œë¦¬
         AudioManager.instance.PlaySound(AudioManager.instance.lag2, transform.position);
         yield return new WaitForSeconds(6);
 
-        //ÇÃ·¹ÀÌ¾î¿¡°Ô µ¥¹ÌÁö ÁÖ´Â ÄÚµå »ğÀÔ
+        //í”Œë ˆì´ì–´ì—ê²Œ ë°ë¯¸ì§€ ì£¼ëŠ” ì½”ë“œ ì‚½ì…
         Deactivate();
     }
 }

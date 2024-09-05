@@ -6,7 +6,6 @@ using Cinemachine;
 using TMPro;
 using FMODUnity;
 
-//인코딩 테스트
 public class ElevatorGimmick : Gimmick
 {
     public override GimmickType Type { get; protected set; } = GimmickType.Object;

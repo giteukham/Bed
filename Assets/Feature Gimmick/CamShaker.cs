@@ -4,21 +4,21 @@ using UnityEngine;
 using Cinemachine;
 
 /// <summary>
-/// ±â¹ÍÀÇ ÄÄÆ÷³ÍÆ®·Î µé¾î°¡´Â Ä«¸Ş¶ó ½¦ÀÌÅ· ½ºÅ©¸³Æ®
+/// ê¸°ë¯¹ì˜ ì»´í¬ë„ŒíŠ¸ë¡œ ë“¤ì–´ê°€ëŠ” ì¹´ë©”ë¼ ì‰ì´í‚¹ ìŠ¤í¬ë¦½íŠ¸
 /// </summary>
 public class CamShaker : MonoBehaviour
 {
     private CinemachineImpulseSource impulseSource;
 
     [SerializeField]
-    private CinemachineVirtualCamera virtualCamera; // °¡»óÄ«¸Ş¶ó
-    private CinemachineTransposer transposer;       // °¡»óÄ«¸Ş¶óÀÇ offset¿¡ Á¢±ÙÇÏ±â À§ÇÑ º¯¼ö
+    private CinemachineVirtualCamera virtualCamera; // ê°€ìƒì¹´ë©”ë¼
+    private CinemachineTransposer transposer;       // ê°€ìƒì¹´ë©”ë¼ì˜ offsetì— ì ‘ê·¼í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
 
-    private IEnumerator currentCoroutine;           // ÄÚ·çÆ¾À» ¾ÈÀüÇÏ°Ô °ü¸®ÇÏ±â À§ÇÑ º¯¼ö
+    private IEnumerator currentCoroutine;           // ì½”ë£¨í‹´ì„ ì•ˆì „í•˜ê²Œ ê´€ë¦¬í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
 
     private void Awake()
     {
-        //º»ÀÎ¿¡°Ô ÀÖ´Â CinemachineImpulseSource ÄÄÆ÷³ÍÆ®¸¦ °¡Á®¿È
+        //ë³¸ì¸ì—ê²Œ ìˆëŠ” CinemachineImpulseSource ì»´í¬ë„ŒíŠ¸ë¥¼ ê°€ì ¸ì˜´
         impulseSource = GetComponent<CinemachineImpulseSource>();
 
         transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
@@ -39,10 +39,10 @@ public class CamShaker : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó Èçµå´Â ¸Ş¼Òµå
+    /// ì¹´ë©”ë¼ í”ë“œëŠ” ë©”ì†Œë“œ
     /// </summary>
-    /// <param name="shakeTime"></param> Ä«¸Ş¶ó Èçµé¸² Áö¼Ó ½Ã°£
-    /// <param name="shakePower"></param> Èçµé¸² °­µµ(0.01 ~ 0.5 ¹üÀ§ ÃßÃµÇÔ)
+    /// <param name="shakeTime"></param> ì¹´ë©”ë¼ í”ë“¤ë¦¼ ì§€ì† ì‹œê°„
+    /// <param name="shakePower"></param> í”ë“¤ë¦¼ ê°•ë„(0.01 ~ 0.5 ë²”ìœ„ ì¶”ì²œí•¨)
     public void ShakeCam(float shakeTime, float shakePower)
     {
         currentCoroutine = ShakeOffset(shakeTime, shakePower);
@@ -50,7 +50,7 @@ public class CamShaker : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó ½¦ÀÌÅ· Á¾·á
+    /// ì¹´ë©”ë¼ ì‰ì´í‚¹ ì¢…ë£Œ
     /// </summary>
     public void StopShakeCam()
     {
@@ -58,7 +58,7 @@ public class CamShaker : MonoBehaviour
         {
             StopCoroutine(currentCoroutine);
             currentCoroutine = null;
-            //Ä«¸Ş¶ó ¿øÀ§Ä¡
+            //ì¹´ë©”ë¼ ì›ìœ„ì¹˜
             transposer.m_FollowOffset = Vector3.zero;
         }
 
@@ -68,7 +68,7 @@ public class CamShaker : MonoBehaviour
     {
         float duration = shakeTime;
         //bool test = false;
-        //Áö¼Ó½Ã°£¸¸Å­ Èçµé±â
+        //ì§€ì†ì‹œê°„ë§Œí¼ í”ë“¤ê¸°
         while (duration > 0.0f)
         {
             yield return null;
@@ -88,7 +88,7 @@ public class CamShaker : MonoBehaviour
 
 
     /// <summary>
-    /// Ä«¸Ş¶ó Èçµé¸² ´Ü 1È¸ ½ÇÇà
+    /// ì¹´ë©”ë¼ í”ë“¤ë¦¼ ë‹¨ 1íšŒ ì‹¤í–‰
     /// </summary>
     /// <param name="power"></param>
     public void MakeImpulse(float power)
@@ -98,9 +98,9 @@ public class CamShaker : MonoBehaviour
 
     public void DeleteImpulse()
     {
-        //Á¸ÀçÇÏ´Â ¸ğµç Impulse¸¦ Áö¿ì´Â ÄÚµå
-        //ÇÏÁö¸¸ ÇöÀç ¿À·ù·Î Àû¿ëµÇÁö ¾Ê°í ÀÖÀ½
-        //½Ã³×¸Ó½Å 3 ¹öÀü¿¡¼­´Â ¿À·ù°¡ ¾ø´Ù°í ÇÔ
+        //ì¡´ì¬í•˜ëŠ” ëª¨ë“  Impulseë¥¼ ì§€ìš°ëŠ” ì½”ë“œ
+        //í•˜ì§€ë§Œ í˜„ì¬ ì˜¤ë¥˜ë¡œ ì ìš©ë˜ì§€ ì•Šê³  ìˆìŒ
+        //ì‹œë„¤ë¨¸ì‹  3 ë²„ì „ì—ì„œëŠ” ì˜¤ë¥˜ê°€ ì—†ë‹¤ê³  í•¨
         CinemachineImpulseManager.Instance.Clear();
     }
 }
