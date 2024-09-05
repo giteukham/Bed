@@ -42,6 +42,8 @@ public class ElevatorGimmick : Gimmick
         tmo = GetComponentInChildren<TextMeshPro>();
         camShaker = GetComponent<CamShaker>();
         tempMatList = ren.materials;
+        tempMatList[0] = whiteLightMat;
+        ren.materials = tempMatList;
         gameObject.SetActive(false);
     }
 
@@ -70,8 +72,8 @@ public class ElevatorGimmick : Gimmick
         camShaker.StopShakeCam();
         floor = 6;
         tmo.text = "6";
-        //???? ??? ?????
-        tempMatList[1] = whiteLightMat;
+        //엘베 바꾸면서 0번째로 바뀜
+        tempMatList[0] = whiteLightMat;
         ren.materials = tempMatList;
         //?????????? ????? ????
         AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.IMMEDIATE);
@@ -121,8 +123,8 @@ public class ElevatorGimmick : Gimmick
         // add by kwon
         blinkLightCoroutine = StartCoroutine(BlinkLight());
 
-        //???? ????? ???? ??????
-        tempMatList[1] = BlinkLightMat;
+        //엘베 바꾸면서 0번째로 바뀜
+        tempMatList[0] = BlinkLightMat;
         ren.materials = tempMatList;
         AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.IMMEDIATE);
         tmo.text = "ERROR";
@@ -141,8 +143,8 @@ public class ElevatorGimmick : Gimmick
         //??! ??????? ???? ???
         AudioManager.instance.PlaySound(AudioManager.instance.hit, transform.position);
         impulseSource.GenerateImpulseWithForce(4);
-        //???? ????? ???? ????
-        tempMatList[1] = BlackLightMat;
+        //엘베 바꾸면서 0번째로 바뀜
+        tempMatList[0] = BlackLightMat;
         ren.materials = tempMatList;
 
         // add by kwon
