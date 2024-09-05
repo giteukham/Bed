@@ -10,7 +10,7 @@ public class BedRoomLightSwitch : MonoBehaviour
     [SerializeField] private GameObject offSwitch;
     [SerializeField] private GameObject onSwitch;
     private Material cellingLampMaterial;
-    static private bool isOn = false;
+    static public bool isOn = false;
     static private GameObject bedRoomlightSwitch;
 
     void Awake() 

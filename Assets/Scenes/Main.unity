@@ -1798,6 +1798,13 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4430554449364882346}
+  - {fileID: 39990730}
+  - {fileID: 1230513865}
+  - {fileID: 1978118272}
+  - {fileID: 7909545157062771439}
+  - {fileID: 984148486}
+  - {fileID: 252660665}
   - {fileID: 58458}
   - {fileID: 58451}
   - {fileID: 629}
@@ -1809,7 +1816,6 @@ Transform:
   - {fileID: 1500150568}
   - {fileID: 385321322}
   - {fileID: 80046170}
-  - {fileID: 984148486}
   - {fileID: 5}
   - {fileID: 1813326870}
   - {fileID: 1977039992}
@@ -1824,15 +1830,11 @@ Transform:
   - {fileID: 1725703266}
   - {fileID: 303790225}
   - {fileID: 1980042795}
-  - {fileID: 7909545157062771439}
   - {fileID: 4178894427220715002}
-  - {fileID: 1978118272}
   - {fileID: 1396281237}
   - {fileID: 1453599781109459585}
   - {fileID: 6102073861169874382}
   - {fileID: 2094038613}
-  - {fileID: 8095998911688044758}
-  - {fileID: 1262200947}
   - {fileID: 36195833}
   - {fileID: 4557032301025087520}
   - {fileID: 2086509240}
@@ -1858,9 +1860,6 @@ Transform:
   - {fileID: 578589403}
   - {fileID: 1462051840}
   - {fileID: 908304219}
-  - {fileID: 1230513865}
-  - {fileID: 39990730}
-  - {fileID: 4430554449364882346}
   - {fileID: 1177533395}
   - {fileID: 1931144877}
   - {fileID: 2143918902}
@@ -2137,6 +2136,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 20, y: 110, z: 56.823}
+--- !u!1 &252660664
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 252660665}
+  m_Layer: 0
+  m_Name: Drawers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &252660665
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 252660664}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071058, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: -0.072999954, y: 1.595, z: 5.3210006}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8095998911688044758}
+  - {fileID: 1262200947}
+  m_Father: {fileID: 157123513}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &255970722
 GameObject:
   m_ObjectHideFlags: 0
@@ -3218,7 +3250,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 5, y: -5.000122}
+  m_AnchoredPosition: {x: 5, y: -5}
   m_SizeDelta: {x: -10, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &670431569
@@ -4333,8 +4365,9 @@ GameObject:
   - component: {fileID: 984148486}
   - component: {fileID: 26}
   - component: {fileID: 27}
+  - component: {fileID: 984148487}
   m_Layer: 0
-  m_Name: SM_Doorway_Door_LOD0
+  m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4348,13 +4381,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 984148485}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.92793095, z: -0, w: 0.37275216}
+  m_LocalRotation: {x: -0, y: 0.9965592, z: -0, w: 0.08288408}
   m_LocalPosition: {x: 5.23, y: 1.608, z: 5.09}
   m_LocalScale: {x: -1, y: 1.01, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 157123513}
-  m_LocalEulerAnglesHint: {x: 0, y: -136.229, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+--- !u!114 &984148487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 984148485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1aa6ef98f2954e41a019d4ea4b760c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1002274151
 GameObject:
   m_ObjectHideFlags: 0
@@ -4422,7 +4467,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 5, y: -5.000122}
+  m_AnchoredPosition: {x: 5, y: -5}
   m_SizeDelta: {x: -10, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1003692746
@@ -5467,7 +5512,7 @@ GameObject:
   - component: {fileID: 1262200956}
   - component: {fileID: 1262200957}
   m_Layer: 0
-  m_Name: SM_Drawers_Whole_LOD0
+  m_Name: Closed Drawers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5481,13 +5526,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262200946}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071058, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: -0.072999954, y: 1.595, z: 5.3210006}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1737608016}
-  m_Father: {fileID: 157123513}
+  m_Father: {fileID: 252660665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1262200956
 MeshRenderer:
@@ -7409,7 +7454,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!20 &1641359433
 Camera:
   m_ObjectHideFlags: 0
@@ -8849,7 +8894,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1859349051
 Transform:
   m_ObjectHideFlags: 0
@@ -11708,12 +11753,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8095998911688044759}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071059, z: -0, w: 0.7071078}
-  m_LocalPosition: {x: -0.072999954, y: 1.595, z: 5.3210006}
+  m_LocalRotation: {x: -0, y: 0.000000119209275, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 157123513}
+  m_Father: {fileID: 252660665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8095998911688044759
 GameObject:
@@ -11727,7 +11772,7 @@ GameObject:
   - component: {fileID: 8095998911688044753}
   - component: {fileID: 8095998911688044752}
   m_Layer: 0
-  m_Name: SM_Drawers_Open_LOD0
+  m_Name: Opened Drawers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

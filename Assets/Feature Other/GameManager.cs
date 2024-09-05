@@ -37,11 +37,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();
 
         if (Input.GetKeyDown(KeyCode.N)) debugImage.SetActive(!debugImage.activeSelf);
-
-        if (Input.GetKeyDown(KeyCode.B)) BedRoomLightSwitch.SwitchAction(true);
-
-        if (Input.GetKeyDown(KeyCode.V)) BedRoomLightSwitch.SwitchAction(false);
-
+        
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             debugStatsText.SetActive(!debugStatsText.activeSelf);
