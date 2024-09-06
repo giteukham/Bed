@@ -79,12 +79,12 @@ public class RapistGimmick : Gimmick
             zeroPahse = true;
 
         yield return new WaitForSeconds(3f);
-        //1ÆäÀÌÁî
+        //1í˜ì´ì¦ˆ
         zeroPahse = false;
         if (onePhase == false) 
             onePhase = true;
 
-        //2ÆäÀÌÁî
+        //2í˜ì´ì¦ˆ
         yield return new WaitForSeconds(3f);
         onePhase = false;
         if (twoPhase == false)
@@ -94,7 +94,7 @@ public class RapistGimmick : Gimmick
         AudioManager.instance.PlaySound(AudioManager.instance.hornyBreath, this.transform.position);
         AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
 
-        //3ÆäÀÌÁî
+        //3í˜ì´ì¦ˆ
         yield return new WaitForSeconds(3f);
         twoPhase = false;
         if (threePhase == false)
@@ -102,7 +102,7 @@ public class RapistGimmick : Gimmick
         AudioManager.instance.PlaySound(AudioManager.instance.windowOpenClose, this.transform.position);
 
 
-        // 4ÆäÀÌÁî / ÀÌ¶© Á¤¸é °íÁ¤
+        // 4í˜ì´ì¦ˆ / ì´ë• ì •ë©´ ê³ ì •
         yield return new WaitForSeconds(3f);
         threePhase = false;
         if (fourPhase == false)

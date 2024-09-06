@@ -29,7 +29,7 @@ public class ClapGimcik : Gimmick
 
     private void ClapSoundPlay()
     {
-        // ¹Ú¼ö ¼Ò¸®´Â ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®·Î ½ÇÇà
+        // ë°•ìˆ˜ ì†Œë¦¬ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ë¡œ ì‹¤í–‰
         AudioManager.instance.PlaySound(AudioManager.instance.handClap, this.transform.position);
 
         // Å×½ºÆ®·Î ¹æ ºÒµµ ÄÑÁö°í ²¨Áö°Ô

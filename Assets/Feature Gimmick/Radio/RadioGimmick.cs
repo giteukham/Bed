@@ -5,16 +5,12 @@ using UnityEngine;
 
 public class RadioGimmick : Gimmick
 {
-    //±â¹Í ¸Å´ÏÀú ÂüÁ¶ÇÒ º¯¼ö
-    [SerializeField]
-    private GimmickManager gimmickManager;
 
     public override GimmickType Type { get; protected set; } = GimmickType.Object;
     public override float Probability { get; set; } = 100;
 
     private void Awake()
     {
-        //±âº»ÀûÀÎ ±¸¼ºÈÄ¿¡ ¿ÀºêÁ§Æ® ¹Ù·Î ²û(¹Ù·Î ²ô±â ¶§¹®¿¡ OnEnable ½ÇÇàµÇÁö ¾ÊÀ½)
         gameObject.SetActive(false);
     }
 
@@ -25,7 +21,7 @@ public class RadioGimmick : Gimmick
 
     public override void Activate()
     {
-        print("¶óµğ¿À±â¹Í ½ÇÇà");
+        print("ë¼ë””ì˜¤ê¸°ë¯¹ ì‹¤í–‰");
         SettingVariables();
         StartCoroutine(MainCode());
     }
@@ -39,7 +35,7 @@ public class RadioGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        //Probability¿¡ ´ëÇÑ °è»ê½Ä
+        //Probabilityì— ëŒ€í•œ ê³„ì‚°ì‹
         Probability = 100;
     }
 
@@ -49,18 +45,18 @@ public class RadioGimmick : Gimmick
         while (timeLimit < 10)
         {
             yield return null;
-            //±â¹Í ÆÄÈÑ ¼º°ø½Ã
+            //ê¸°ë¯¹ íŒŒí›¼ ì„±ê³µì‹œ
             if (false)
             {
                 Deactivate();
             }
         }
 
-        //10ÃÊ Áö³ª¼­ ±â¹Í ÆÄÈÑ ½ÇÆĞ ÇßÀ» ¶§
+        //10ì´ˆ ì§€ë‚˜ì„œ ê¸°ë¯¹ íŒŒí›¼ ì‹¤íŒ¨ í–ˆì„ ë•Œ
 
-        //´ëÃæ ±â¹ÍÆÄÈÑ ½ÇÆĞ½Ã ÇÃ·¹ÀÌ¾î ½ºÆ®·¹½º Áö¼ö ¿Ã¸®´Â ÄÚµå
+        //ëŒ€ì¶© ê¸°ë¯¹íŒŒí›¼ ì‹¤íŒ¨ì‹œ í”Œë ˆì´ì–´ ìŠ¤íŠ¸ë ˆìŠ¤ ì§€ìˆ˜ ì˜¬ë¦¬ëŠ” ì½”ë“œ
 
-        //ÀÌÈÄ Deactivate ½ÇÇà
+        //ì´í›„ Deactivate ì‹¤í–‰
         Deactivate();
 
     }

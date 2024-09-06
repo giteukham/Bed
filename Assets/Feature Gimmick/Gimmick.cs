@@ -14,23 +14,26 @@ namespace AbstractGimmick
 
     public abstract class Gimmick : MonoBehaviour
     {
-        //ÀÚ½ÅÀÇ ±×·ì Ç¥½ÃÇÏ±â À§ÇØ »ç¿ë
+        //ê¸°ë¯¹ ë§¤ë‹ˆì € ì°¸ì¡°ìš© ì‹±ê¸€í†¤ ë³€ìˆ˜
+        protected static GimmickManager gimmickManager;
+
+        //ìì‹ ì˜ ê·¸ë£¹ í‘œì‹œí•˜ê¸° ìœ„í•´ ì‚¬ìš©
         public abstract GimmickType Type { get; protected set; }
-        //±â¹Í µîÀå È®·ü
+        //ê¸°ë¯¹ ë“±ì¥ í™•ë¥ 
         public abstract float Probability { get; set; }
-        //±â¹Í ÁøÇà ½Ã°£
+        //ê¸°ë¯¹ ì§„í–‰ ì‹œê°„
         protected float timeLimit = 0;
 
         public bool isDetected = false;
 
-        //±â¹Í ½ÇÇàµÉ ¶§
+        //ê¸°ë¯¹ ì‹¤í–‰ë  ë•Œ
         public abstract void Activate();
-        //±â¹Í ³¡³¯ ¶§
+        //ê¸°ë¯¹ ëë‚  ë•Œ
         public abstract void Deactivate();
-        //ÇÃ·¹ÀÌ¾îÀÇ ¸ö ¿òÁ÷ÀÓ, ´« ±ôºıÀÓµîÀ» ÂüÁ¶ÇÏ¿© ±â¹Í ÀÚÃ¼ Probability °è»ê½Ä ½ÇÇà
+        //í”Œë ˆì´ì–´ì˜ ëª¸ ì›€ì§ì„, ëˆˆ ê¹œë¹¡ì„ë“±ì„ ì°¸ì¡°í•˜ì—¬ ê¸°ë¯¹ ìì²´ Probability ê³„ì‚°ì‹ ì‹¤í–‰
         public abstract void UpdateProbability();
 
-        //Activate ½ÇÇàÇÒ¶§ ±âº»ÀûÀ¸·Î ÃÊ±âÈ­ÇÒ ³»¿ëµé
+        //Activate ì‹¤í–‰í• ë•Œ ê¸°ë³¸ì ìœ¼ë¡œ ì´ˆê¸°í™”í•  ë‚´ìš©ë“¤
         protected virtual void SettingVariables()
         {
             gameObject.SetActive(true);

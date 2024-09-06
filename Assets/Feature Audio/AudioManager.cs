@@ -60,6 +60,18 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
+
+    [field: Header("ElevatorCrash SFX")]
+    [field: SerializeField] public EventReference elevatorCrash { get; private set; }
+
+    [field: Header("ElevatorMove SFX")]
+    [field: SerializeField] public EventReference elevatorMove { get; private set; }
+
+    [field: Header("ElevatorFast SFX")]
+    [field: SerializeField] public EventReference elevatorFast { get; private set; }
+
+    [field: Header("Hit SFX")]
+    [field: SerializeField] public EventReference hit { get; private set; }
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
