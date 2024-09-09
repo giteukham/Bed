@@ -82,27 +82,6 @@ public class AudioManager : MonoBehaviour
     [field: Header("Elevator Ding SFX")]
     [field: SerializeField] public EventReference elevatorDing { get; private set; }
 
-    [field: Header("Creepy Vocal 1 SFX")]
-    [field: SerializeField] public EventReference creepyVocal1 { get; private set; }
-
-    [field: Header("Creepy Vocal 2 SFX")]
-    [field: SerializeField] public EventReference creepyVocal2 { get; private set; }
-
-    [field: Header("Creepy Laugh 1 SFX")]
-    [field: SerializeField] public EventReference creepyLaugh1 { get; private set; }
-
-    [field: Header("Creepy Laugh 2 SFX")]
-    [field: SerializeField] public EventReference creepyLaugh2 { get; private set; }
-
-    [field: Header("Creepy Laugh 3 SFX")]
-    [field: SerializeField] public EventReference creepyLaugh3 { get; private set; }
-
-    [field: Header("Creepy Laugh 4 SFX")]
-    [field: SerializeField] public EventReference creepyLaugh4 { get; private set; }
-
-    [field: Header("Creepy Scream SFX")]
-    [field: SerializeField] public EventReference creepyScream { get; private set; }
-
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스

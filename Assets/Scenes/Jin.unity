@@ -3686,7 +3686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &511131479
 Light:
   m_ObjectHideFlags: 0
@@ -3909,7 +3909,7 @@ Transform:
   m_GameObject: {fileID: 602868715}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.882, y: 1.495, z: 0.03}
+  m_LocalPosition: {x: -2.799, y: 1.726, z: 0.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4471,17 +4471,20 @@ MonoBehaviour:
   BlackLightMat: {fileID: 0}
   elevatorLight: {fileID: 0}
   elevatorBlinkLight: {fileID: 0}
+  elevatorLittleLight: {fileID: 0}
   floorLight: {fileID: 0}
   leftDoor: {fileID: 0}
   rightDoor: {fileID: 0}
+  moonLight: {fileID: 0}
+  sunLight: {fileID: 0}
+  bed: {fileID: 0}
   hitAndCrashSoundPos: {fileID: 0}
   moveAndFastSoundPos: {fileID: 0}
-  creepySoundPos1: {fileID: 0}
-  creepySoundPos2: {fileID: 0}
-  creepySoundPos3: {fileID: 0}
-  creepySoundPos4: {fileID: 0}
+  laughSoundPos1: {fileID: 0}
+  laughSoundPos2: {fileID: 0}
+  laughSoundPos3: {fileID: 0}
+  laughSoundPos4: {fileID: 0}
   screamSoundPos: {fileID: 0}
-  soundPlayPrefab: {fileID: 0}
 --- !u!114 &740248956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4829,7 +4832,7 @@ Transform:
   m_GameObject: {fileID: 863112598}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.02, y: 1.24, z: 1.53}
+  m_LocalPosition: {x: -2.02, y: 1.24, z: 1.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6081,7 +6084,7 @@ Transform:
   m_GameObject: {fileID: 1038342954}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.95, y: 1.24, z: -1.52}
+  m_LocalPosition: {x: -1.95, y: 1.24, z: -0.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6291,6 +6294,100 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102200260}
   m_Mesh: {fileID: -2745519390412981159, guid: d03a7d389f5a9d447ab933422978aab7, type: 3}
+--- !u!1 &1133866838
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1133866839}
+  - component: {fileID: 1133866840}
+  m_Layer: 0
+  m_Name: Elevator Little Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1133866839
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133866838}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.5, y: -0.5, z: 0.5, w: -0.5}
+  m_LocalPosition: {x: -1.09, y: 5.016, z: 0.016}
+  m_LocalScale: {x: 1.4999994, y: 2, z: 1.5999997}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3381841434236490227}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!108 &1133866840
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133866838}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 2
+  m_Shape: 0
+  m_Color: {r: 0.08894867, g: 0.08894867, b: 0.08894867, a: 1}
+  m_Intensity: 1.93
+  m_Range: 20.201944
+  m_SpotAngle: 167
+  m_InnerSpotAngle: 1
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 1
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 2
+    m_NormalBias: 0
+    m_NearPlane: 0.1
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &1139378657
 GameObject:
   m_ObjectHideFlags: 0
@@ -6373,6 +6470,7 @@ Transform:
   m_Children:
   - {fileID: 1986560769}
   - {fileID: 1301270532}
+  - {fileID: 1399629186}
   m_Father: {fileID: 3381841434236490227}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1171542545
@@ -7318,12 +7416,12 @@ Light:
   m_GameObject: {fileID: 1301270530}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 2
+  m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.05263158, b: 0, a: 1}
-  m_Intensity: 0.2
-  m_Range: 8.27
-  m_SpotAngle: 179
+  m_Intensity: 0.39
+  m_Range: 12.65
+  m_SpotAngle: 78
   m_InnerSpotAngle: 1
   m_CookieSize: 10
   m_Shadows:
@@ -7379,13 +7477,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1301270530}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000008940697, y: -0.7071068, z: 0.000000029802322, w: 0.7071068}
-  m_LocalPosition: {x: 0.0234, y: -0.112, z: -0.00034}
+  m_LocalRotation: {x: 0.14857626, y: -0.69132155, z: 0.14857548, w: 0.69132125}
+  m_LocalPosition: {x: 0.0081, y: -0.053, z: -0.00034}
   m_LocalScale: {x: 0.025503615, y: 0.96815276, z: 0.19608971}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1171542544}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 24.259, y: -90, z: 0}
 --- !u!4 &1310462880
 Transform:
   m_ObjectHideFlags: 0
@@ -8186,6 +8284,100 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1396281236}
   m_Mesh: {fileID: 4300002, guid: abc00000000009916263669508453389, type: 3}
+--- !u!1 &1399629185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1399629186}
+  - component: {fileID: 1399629187}
+  m_Layer: 0
+  m_Name: Floor Light 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1399629186
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399629185}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.22030896, y: -0.6719107, z: 0.22030893, w: 0.6719107}
+  m_LocalPosition: {x: 0.0053, y: -0.03, z: -0.00024}
+  m_LocalScale: {x: 0.025503615, y: 0.96815276, z: 0.19608971}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1171542544}
+  m_LocalEulerAnglesHint: {x: 36.307, y: -90, z: 0}
+--- !u!108 &1399629187
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399629185}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 2
+  m_Shape: 0
+  m_Color: {r: 1, g: 0.05263158, b: 0, a: 1}
+  m_Intensity: 0.84
+  m_Range: 0.57
+  m_SpotAngle: 122
+  m_InnerSpotAngle: 1
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0
+    m_NormalBias: 0
+    m_NearPlane: 0.1
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &1417116477
 GameObject:
   m_ObjectHideFlags: 0
@@ -8667,7 +8859,6 @@ GameObject:
   - component: {fileID: 1467565229}
   - component: {fileID: 1467565232}
   - component: {fileID: 1467565231}
-  - component: {fileID: 1467565230}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -8684,33 +8875,12 @@ Transform:
   m_GameObject: {fileID: 1467565228}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.162, y: -2.122, z: 0}
-  m_LocalScale: {x: 0.18241, y: 2.1171374, z: 2.96327}
+  m_LocalPosition: {x: 0.187, y: 1.364, z: 0}
+  m_LocalScale: {x: 0.18241, y: 4.797857, z: 2.96327}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3381841434236490227}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1467565230
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467565228}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1467565231
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -12782,55 +12952,6 @@ MonoBehaviour:
       Data3: 209313698
       Data4: -2020691596
     Path: event:/Elevator/ElevatorDing
-  <creepyVocal1>k__BackingField:
-    Guid:
-      Data1: -756601685
-      Data2: 1114941616
-      Data3: -704513368
-      Data4: -207089231
-    Path: event:/Elevator/CreepyVocal1
-  <creepyVocal2>k__BackingField:
-    Guid:
-      Data1: -276410731
-      Data2: 1150919205
-      Data3: 1567368628
-      Data4: 1733200865
-    Path: event:/Elevator/CreepyVocal2
-  <creepyLaugh1>k__BackingField:
-    Guid:
-      Data1: 93735759
-      Data2: 1207510728
-      Data3: 407185305
-      Data4: 748865821
-    Path: event:/Elevator/CreepyLaugh1
-  <creepyLaugh2>k__BackingField:
-    Guid:
-      Data1: -1682841634
-      Data2: 1285318084
-      Data3: -530418038
-      Data4: -1809379135
-    Path: event:/Elevator/CreepyLaugh2
-  <creepyLaugh3>k__BackingField:
-    Guid:
-      Data1: 628880576
-      Data2: 1166006601
-      Data3: 1853434501
-      Data4: 933163306
-    Path: event:/Elevator/CreepyLaugh3
-  <creepyLaugh4>k__BackingField:
-    Guid:
-      Data1: -328248154
-      Data2: 1176622536
-      Data3: -887990851
-      Data4: 1110050587
-    Path: event:/Elevator/CreepyLaugh4
-  <creepyScream>k__BackingField:
-    Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
 --- !u!1 &2133688424
 GameObject:
   m_ObjectHideFlags: 0
@@ -13842,17 +13963,20 @@ MonoBehaviour:
   BlackLightMat: {fileID: 2100000, guid: 3a2c5f6b925ab2a429d70147f60f6366, type: 2}
   elevatorLight: {fileID: 14803502}
   elevatorBlinkLight: {fileID: 2105157627}
+  elevatorLittleLight: {fileID: 0}
   floorLight: {fileID: 42141664}
   leftDoor: {fileID: 0}
   rightDoor: {fileID: 0}
+  moonLight: {fileID: 0}
+  sunLight: {fileID: 0}
+  bed: {fileID: 0}
   hitAndCrashSoundPos: {fileID: 0}
   moveAndFastSoundPos: {fileID: 0}
-  creepySoundPos1: {fileID: 0}
-  creepySoundPos2: {fileID: 0}
-  creepySoundPos3: {fileID: 0}
-  creepySoundPos4: {fileID: 0}
+  laughSoundPos1: {fileID: 0}
+  laughSoundPos2: {fileID: 0}
+  laughSoundPos3: {fileID: 0}
+  laughSoundPos4: {fileID: 0}
   screamSoundPos: {fileID: 0}
-  soundPlayPrefab: {fileID: 0}
 --- !u!4 &3381841434236490227
 Transform:
   m_ObjectHideFlags: 0
@@ -13871,6 +13995,7 @@ Transform:
   - {fileID: 6965174033819027392}
   - {fileID: 6833036847401619343}
   - {fileID: 511131480}
+  - {fileID: 1133866839}
   - {fileID: 1540448025}
   - {fileID: 1171542544}
   - {fileID: 1467565229}
@@ -13969,17 +14094,20 @@ MonoBehaviour:
   BlackLightMat: {fileID: 2100000, guid: 3a2c5f6b925ab2a429d70147f60f6366, type: 2}
   elevatorLight: {fileID: 511131478}
   elevatorBlinkLight: {fileID: 1540448023}
+  elevatorLittleLight: {fileID: 1133866838}
   floorLight: {fileID: 1301270530}
   leftDoor: {fileID: 3855221741182165572}
   rightDoor: {fileID: 2643845890529070563}
+  moonLight: {fileID: 230726874}
+  sunLight: {fileID: 1266884804}
+  bed: {fileID: 588872463}
   hitAndCrashSoundPos: {fileID: 1578525915}
   moveAndFastSoundPos: {fileID: 1894940639}
-  creepySoundPos1: {fileID: 1038342955}
-  creepySoundPos2: {fileID: 863112599}
-  creepySoundPos3: {fileID: 602868716}
-  creepySoundPos4: {fileID: 0}
-  screamSoundPos: {fileID: 0}
-  soundPlayPrefab: {fileID: 3951569410309061510, guid: 91434410e411cb94f90de125f282a8c7, type: 3}
+  laughSoundPos1: {fileID: 1038342955}
+  laughSoundPos2: {fileID: 863112599}
+  laughSoundPos3: {fileID: 439990270}
+  laughSoundPos4: {fileID: 814891369}
+  screamSoundPos: {fileID: 602868716}
 --- !u!33 &3399130244069605908
 MeshFilter:
   m_ObjectHideFlags: 0

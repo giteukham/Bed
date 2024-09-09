@@ -31,12 +31,10 @@ public class ElevatorGimmick : Gimmick
     private Material BlackLightMat;
     
     // add by kwon
-
-    [SerializeField] private GameObject elevatorLight, elevatorBlinkLight, floorLight, leftDoor, rightDoor;
+    [SerializeField] private GameObject elevatorLight, elevatorBlinkLight, elevatorLittleLight, floorLight, leftDoor, rightDoor, moonLight, sunLight, bed;
+    private GameObject currentLight;
     private Coroutine blinkLightCoroutine;
     [SerializeField] private Transform hitAndCrashSoundPos, moveAndFastSoundPos, laughSoundPos1, laughSoundPos2, laughSoundPos3, laughSoundPos4, screamSoundPos;
-    [SerializeField] private GameObject soundPlayPrefab;
-    // [SerializeField] private Transform moveAndFastSoundPos;
 
     private void Awake()
     {
@@ -60,8 +58,13 @@ public class ElevatorGimmick : Gimmick
         room.SetActive(false);
 
         // add by kwon
+        bed.SetActive(false);
+        if(moonLight.activeSelf) currentLight = moonLight;
+        else currentLight = sunLight;
+        currentLight.SetActive(false);
         elevatorLight.SetActive(true);
         floorLight.SetActive(true);
+        elevatorLittleLight.SetActive(false);
         elevatorBlinkLight.SetActive(false);
 
         StartCoroutine(MainCode());
@@ -81,6 +84,11 @@ public class ElevatorGimmick : Gimmick
         AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.IMMEDIATE);
         AudioManager.instance.StopSound(AudioManager.instance.elevatorFast, FMOD.Studio.STOP_MODE.IMMEDIATE);
         room.SetActive(true);
+        
+        //add by kwon
+        bed.SetActive(true);
+        currentLight.SetActive(true);
+
         gameObject.SetActive(false);
     }
 
@@ -155,7 +163,7 @@ public class ElevatorGimmick : Gimmick
         // add by kwon
         StopCoroutine(blinkLightCoroutine);
         elevatorBlinkLight.SetActive(false);
-
+        elevatorLittleLight.SetActive(true);
         //????? ????? ???
         AudioManager.instance.PlaySound(AudioManager.instance.elevatorFast, moveAndFastSoundPos.position);
         while (floor < 66)
@@ -174,11 +182,9 @@ public class ElevatorGimmick : Gimmick
             tmo.text = floor.ToString();
         }
 
-        //???? ??? ??????? ?? ?? ??? ????
         camShaker.StopShakeCam();
         camShaker.ShakeCam(66, 0.07f);
 
-        //??? ?÷???? ?????? ????
         PlayerConstant.ResetLATStats();
 
         for (int i = 0; i < 1500; i++)
@@ -190,10 +196,6 @@ public class ElevatorGimmick : Gimmick
             }
             randomNum = Random.Range(1000, 40000);
             tmo.text = randomNum.ToString();
-
-            //if (i == 1) AudioManager.instance.PlaySound(AudioManager.instance.creepy1, laughSoundPos1.position);
-
-            if (i == 1335) AudioManager.instance.PlaySound(AudioManager.instance.creepyScream, screamSoundPos.position);
             yield return null;
         }
 
@@ -205,9 +207,15 @@ public class ElevatorGimmick : Gimmick
         AudioManager.instance.StopSound(AudioManager.instance.elevatorFast, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         camShaker.StopShakeCam();
         impulseSource.GenerateImpulseWithForce(3.5f);
-        yield return new WaitForSeconds(2f);
+        
+        tempMatList[0] = BlinkLightMat;
+        ren.materials = tempMatList;
+        elevatorLittleLight.SetActive(false);
+        blinkLightCoroutine = StartCoroutine(BlinkLight());
+
+        yield return new WaitForSeconds(6f);
         AudioManager.instance.PlaySound(AudioManager.instance.elevatorDing, moveAndFastSoundPos.position);
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(2.5f);
 
         Vector3 leftDoorInitPosition = leftDoor.transform.localPosition;
         Vector3 leftDoorTargetPosition = new(leftDoorInitPosition.x, leftDoorInitPosition.y, -1.1f);
@@ -229,6 +237,7 @@ public class ElevatorGimmick : Gimmick
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        //StopCoroutine(blinkLightCoroutine);
         //Deactivate();
     }
 
@@ -238,18 +247,8 @@ public class ElevatorGimmick : Gimmick
         while (true)
         {
             elevatorBlinkLight.SetActive(!elevatorBlinkLight.activeSelf);
-            float randomNum = Random.Range(0.05f, 0.18f);
+            float randomNum = Random.Range(0.03f, 0.1f);
             yield return new WaitForSeconds(randomNum);
         }
-    }
-
-    // add by kwon
-    private void InstantiateSoundPrefab(Vector3 _pos, EventReference _sound)
-    {
-        GameObject prefab = Instantiate(soundPlayPrefab, _pos, Quaternion.identity);
-        prefab.GetComponent<SoundPlayPrefab>().soundReference = _sound;
-        prefab.SetActive(true);
-        Destroy(prefab, 2.5f);
-        
     }
 }
