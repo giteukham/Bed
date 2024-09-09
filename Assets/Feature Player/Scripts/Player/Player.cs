@@ -1,11 +1,5 @@
-using Bed.PostProcessing;
 using Cinemachine;
-using Cinemachine.PostFX;
-using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 
 public enum PlayerDirectionStateTypes
@@ -42,9 +36,6 @@ public class Player : MonoBehaviour
     [Header("Input System")]
     [SerializeField] private InputSystem inputSystem;
     
-    [Header("Post Processing")]
-    [SerializeField] private PostProcessProfile postProcessingProfile;
-    private CustomVignette customVignette;
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
     
@@ -55,8 +46,8 @@ public class Player : MonoBehaviour
     private PlayerEyeControl playerEyeControl;
     #endregion
 
-    #region Main Camera
-    [Header("Main Camera")]
+    #region Graphic Components
+    [Header("Graphic Components")]
     [SerializeField] private Camera mainCamera;
     #endregion
 
@@ -82,10 +73,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         TryGetComponent(out playerAnimation);
-        
-        customVignette = postProcessingProfile.GetSetting<CustomVignette>();
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
-        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, customVignette);
+        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
     }
 
@@ -118,7 +107,7 @@ public class Player : MonoBehaviour
             timeSinceLastUpdate = 0f;
         }
 
-        coneCollider.SetColider(customVignette.blink.value);
+        coneCollider.SetColider(BlinkEffect.Blink);
     }
 
     private void UpdateStats()
@@ -191,8 +180,4 @@ public class Player : MonoBehaviour
         // ----------------- Look Value -----------------
     }
 
-    private void OnApplicationQuit()
-    {
-        customVignette.blink.value = 0.001f;
-    }
 }

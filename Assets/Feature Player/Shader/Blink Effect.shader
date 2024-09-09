@@ -3,14 +3,14 @@ Shader "Unlit/Blink Effect"
 {
     Properties
     {
-        _Blink ("Blink", Range(0, 1)) = 0.0
-        _StartBlink ("Start Point", Range(0, 1)) = 0.0
+        _Blink ("Blink", Range(0.3, 1.0)) = 0.7
+        _StartBlink ("Start Point", Range(0.0, 1.0)) = 0.0
         _Smoothness ("Smoothness", Range(0.1, 0.9)) = 0.5
         _AspectRatio ("Aspect Ratio", Float) = 1.0
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "RenderType"="Transparent" "IgnoreProjector"="True" "Queue"="Transparent" }
         Cull Off ZWrite Off ZTest Always
         Blend SrcAlpha OneMinusSrcAlpha
 
@@ -19,8 +19,7 @@ Shader "Unlit/Blink Effect"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
+            #pragma target 3.0
 
             #include "UnityCG.cginc"
 
@@ -48,15 +47,15 @@ Shader "Unlit/Blink Effect"
             float _StartBlink;
             float _AspectRatio;
             float _Smoothness;
-
+            
             fixed4 frag (v2f i) : SV_Target
             {
                 float x = (i.uv.x - 0.5) * _AspectRatio;
                 float y = (i.uv.y - 0.5) * _AspectRatio;
                 float height = lerp(_StartBlink, 1.0, _Blink + (1.0 - _Blink) * dot(x,x));
                 float width = dot(y,y);
-                float4 col = step(0.0, width + height);
-                return fixed4(smoothstep(col, col * _Smoothness, width + height).xxx, 1.0);
+                float mask = width + height;
+                return fixed4(1.0 - smoothstep(0.0, (width + height) * _Smoothness, width + height).xxx, mask);
             }
             ENDCG
         }

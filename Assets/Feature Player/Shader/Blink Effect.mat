@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_Blink Effect
+  m_Name: Blink Effect
   m_Shader: {fileID: 4800000, guid: 64627b4609d4ce74c9373e62d0b6e537, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -22,13 +22,18 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AspectRatio: 3.54
+    - _AspectRatio: 1.5
     - _Blink: 0
     - _BlinkSpeed: 1
-    - _StartBlink: 0
+    - _Smoothness: 0.1
+    - _StartBlink: 0.308
     - _Vignette_Blink: 0
     - _Vignette_Intensity: 0.5
     - _Vignette_Smoothness: 0.5
