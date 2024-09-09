@@ -1,54 +1,28 @@
 
 using System;
-<<<<<<< HEAD:Assets/Feature Player/Scripts/Collider/ConeCollider.cs
 using UnityEditor;
 using UnityEngine;
-=======
-using System.Collections.Generic;
-using System.Reflection;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-using GizmoUtility = UnityEditor.Rendering.GizmoUtility;
->>>>>>> fc2d3cf (콘 콜라이더 버그 수정):Assets/Player/Scripts/Collider/ConeCollider.cs
 namespace Bed.Collider
 {
     public class ConeCollider : MonoBehaviour
     {
-<<<<<<< HEAD:Assets/Feature Player/Scripts/Collider/ConeCollider.cs
         [SerializeField, Tooltip("가로")] private float horizontal = 8f;
         [SerializeField, Tooltip("세로")] private float vertical = 3f;
         [SerializeField, Tooltip("Z축 거리")] private float distance = 1f;
         [SerializeField, Range(4f, 100f), Tooltip("각짐 정도")] private int epllipseSegments;
         [SerializeField, Tooltip("디버그 이미지")] private GameObject debugImage;
         private Vector2 debugImageSize;
-=======
-        [SerializeField, Tooltip("가로")] private float horizontal = 2f;
-        [SerializeField, Tooltip("세로")] private float vertical = 3f;
-        [SerializeField, Tooltip("Z축 거리")] private float distance = 1f;
-        
-        [SerializeField, Range(4f, 100f), Tooltip("각짐 정도")] private int epllipseSegments;
-        
->>>>>>> fc2d3cf (콘 콜라이더 버그 수정):Assets/Player/Scripts/Collider/ConeCollider.cs
         private MeshCollider coneCollider;
         
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
         {
-            if (other.CompareTag("Test"))
-            {
-                Debug.Log($"{other.name} Enter");
-            }
+
         }
         
         private void OnTriggerExit(UnityEngine.Collider other)
         {
-            if (other.CompareTag("Test"))
-            {
-                Debug.Log($"{other.name} Exit");    
-            }
+
         }
         
         private void Awake()
@@ -118,7 +92,6 @@ namespace Bed.Collider
             mesh.triangles = triangles;
 
             return mesh;
-<<<<<<< HEAD:Assets/Feature Player/Scripts/Collider/ConeCollider.cs
         }
         public void SetColider(float value)
         {
@@ -146,8 +119,6 @@ namespace Bed.Collider
             debugImage.GetComponent<RectTransform>().sizeDelta = debugImageSize;    // 디버그 이미지 사이즈 조절
 
             OnValidate();
-=======
->>>>>>> fc2d3cf (콘 콜라이더 버그 수정):Assets/Player/Scripts/Collider/ConeCollider.cs
         }
     }
     

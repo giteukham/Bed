@@ -2828,8 +2828,8 @@ MonoBehaviour:
   playerCamera: {fileID: 2142733324}
   inputSystem: {fileID: 1010110861}
   postProcessingProfile: {fileID: 11400000, guid: 3df3b6d564b27e642baba19733326e6b, type: 2}
+  coneCollider: {fileID: 801348871}
   mainCamera: {fileID: 1732393634}
-  debugText: {fileID: 670431567}
 --- !u!1 &458945868
 GameObject:
   m_ObjectHideFlags: 0
@@ -3533,6 +3533,7 @@ MonoBehaviour:
   vertical: 3
   distance: 14
   epllipseSegments: 50
+  debugImage: {fileID: 0}
 --- !u!54 &801348872
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7759,6 +7760,7 @@ GameObject:
   - component: {fileID: 1732393636}
   - component: {fileID: 1732393638}
   - component: {fileID: 1732393639}
+  - component: {fileID: 1732393641}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -7982,6 +7984,19 @@ MonoBehaviour:
   _FlatShadingMode: 0
   _TriangleSortMode: 1
   _DepthDebugView: 0
+--- !u!114 &1732393641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732393631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8096d24bc6f86334286d1ddd16e2b913, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blinkMaterial: {fileID: 2100000, guid: 95df678b22bf8144292fd33622f209a4, type: 2}
 --- !u!1 &1737608015
 GameObject:
   m_ObjectHideFlags: 0
