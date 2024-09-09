@@ -17,7 +17,7 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    public const float BLINK_VALUE_MIN = 0.001f, BLINK_VALUE_MAX = 1f;   // Vignette의 Blink 값 최솟값, 최댓값.
+    public const float BLINK_VALUE_MIN = 0.3f, BLINK_VALUE_MAX = 1.0f;   // Vignette의 Blink 값 최솟값, 최댓값.
                                                                          // 최솟값을 0으로 하면 연산이 불가능.
     public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Collider의 최대 값
     public const int MOUSE_SCROLL_VALUE = 120;    // 마우스 휠 값
@@ -28,7 +28,7 @@ public class PlayerEyeControl : IPlayerControl
     private float prevBlinkValue = 0f;
 
     public int mouseCount = 0;
-    public float[] mouseBlinkValues = new float[] { BLINK_VALUE_MIN, 0.04f, 0.08f, 0.18f,  BLINK_VALUE_MAX};
+    public float[] mouseBlinkValues = new float[] { BLINK_VALUE_MIN, 0.5f, 0.75f, 0.9f,  BLINK_VALUE_MAX};
     private CancellationTokenSource blinkCancellationTokenSource;
     float elapsedTime = 0f;
     float durationTime = 0.18f;
