@@ -8,7 +8,7 @@
 			<value>2</value>
 		</property>
 		<relationship name="folder">
-			<destination>{4b5737d9-e32f-4a69-b4aa-15afc156eb93}</destination>
+			<destination>{5c2f8ec5-8a8a-4628-925d-634d64822add}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{7f7cf918-317a-4cd0-99bb-f6d1c6a39f4e}</destination>
@@ -98,7 +98,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{c975d6f6-a8da-4d3a-8f85-9b485f7e3096}">
 		<property name="volume">
-			<value>0.5</value>
+			<value>1</value>
 		</property>
 		<property name="name">
 			<value>Audio 1</value>
@@ -124,10 +124,46 @@
 	<object class="MixerBusEffectChain" id="{0500e7e5-6f0a-47a6-a7a4-4802e7648deb}">
 		<relationship name="effects">
 			<destination>{43091765-1c08-42d3-bb9b-7b508fcf93a3}</destination>
+			<destination>{b5f80c7c-1f52-42d8-8ecc-be4347130f20}</destination>
+			<destination>{7e341f30-6e77-45a1-ae80-3ad5a9b64098}</destination>
+			<destination>{f07d7272-cb47-493e-ac48-0d27757d803e}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{19b99ec5-287a-4d7c-9bc1-98adf8094dc8}" />
 	<object class="MixerBusFader" id="{76a1ef88-8504-4dd8-a94b-1918517aaa15}" />
 	<object class="SpatialiserEffect" id="{c26c881c-88cd-4252-93ea-b47e2c6937dd}" />
 	<object class="MixerBusFader" id="{43091765-1c08-42d3-bb9b-7b508fcf93a3}" />
+	<object class="LowpassEffect" id="{b5f80c7c-1f52-42d8-8ecc-be4347130f20}">
+		<property name="cutoff">
+			<value>360</value>
+		</property>
+		<property name="resonance">
+			<value>1.10000002</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{7e341f30-6e77-45a1-ae80-3ad5a9b64098}">
+		<property name="decayTime">
+			<value>400</value>
+		</property>
+		<property name="earlyDelay">
+			<value>17</value>
+		</property>
+		<property name="lateDelay">
+			<value>6.5</value>
+		</property>
+		<property name="highCut">
+			<value>5400</value>
+		</property>
+		<property name="wetLevel">
+			<value>0</value>
+		</property>
+	</object>
+	<object class="CompressorEffect" id="{f07d7272-cb47-493e-ac48-0d27757d803e}">
+		<property name="threshold">
+			<value>-17</value>
+		</property>
+		<property name="ratio">
+			<value>4</value>
+		</property>
+	</object>
 </objects>

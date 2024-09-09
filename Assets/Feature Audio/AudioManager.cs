@@ -70,12 +70,43 @@ public class AudioManager : MonoBehaviour
     [field: Header("ElevatorFast SFX")]
     [field: SerializeField] public EventReference elevatorFast { get; private set; }
 
-    [field: Header("Hit SFX")]
+    [field: Header("Elevator Stop SFX")]
+    [field: SerializeField] public EventReference elevatorStop { get; private set; }
+
+    [field: Header("Elevator Hit SFX")]
     [field: SerializeField] public EventReference hit { get; private set; }
+    
+    [field: Header("Elevator Door Open SFX")]
+    [field: SerializeField] public EventReference elevatorDoorOpen { get; private set; }
+
+    [field: Header("Elevator Ding SFX")]
+    [field: SerializeField] public EventReference elevatorDing { get; private set; }
+
+    [field: Header("Creepy Vocal 1 SFX")]
+    [field: SerializeField] public EventReference creepyVocal1 { get; private set; }
+
+    [field: Header("Creepy Vocal 2 SFX")]
+    [field: SerializeField] public EventReference creepyVocal2 { get; private set; }
+
+    [field: Header("Creepy Laugh 1 SFX")]
+    [field: SerializeField] public EventReference creepyLaugh1 { get; private set; }
+
+    [field: Header("Creepy Laugh 2 SFX")]
+    [field: SerializeField] public EventReference creepyLaugh2 { get; private set; }
+
+    [field: Header("Creepy Laugh 3 SFX")]
+    [field: SerializeField] public EventReference creepyLaugh3 { get; private set; }
+
+    [field: Header("Creepy Laugh 4 SFX")]
+    [field: SerializeField] public EventReference creepyLaugh4 { get; private set; }
+
+    [field: Header("Creepy Scream SFX")]
+    [field: SerializeField] public EventReference creepyScream { get; private set; }
+
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
-    private Dictionary<EventReference, EventInstance> eventInstances = new(); 
+    [SerializeField]private Dictionary<EventReference, EventInstance> eventInstances = new(); 
 
     private void Awake() 
     {
@@ -109,6 +140,16 @@ public class AudioManager : MonoBehaviour
         }
         while (playbackState != PLAYBACK_STATE.STOPPED);
         StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
+    }
+
+    /// <summary>
+    /// 소리 위치 업데이트
+    /// </summary>
+    public void UpdateSoundPosition(EventReference _eventRef, Vector3 _pos)
+    {
+        if(!eventInstances.ContainsKey(_eventRef)) return;
+        EventInstance eventInstance = eventInstances[_eventRef];
+        eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
     }
 
     /// <summary>

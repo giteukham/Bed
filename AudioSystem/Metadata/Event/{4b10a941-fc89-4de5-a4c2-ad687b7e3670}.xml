@@ -8,7 +8,7 @@
 			<value>2</value>
 		</property>
 		<relationship name="folder">
-			<destination>{4b5737d9-e32f-4a69-b4aa-15afc156eb93}</destination>
+			<destination>{5c2f8ec5-8a8a-4628-925d-634d64822add}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{04f495bf-499b-468f-9f5e-411f396f089f}</destination>
@@ -70,6 +70,9 @@
 		<relationship name="modules">
 			<destination>{26ca6f0b-310f-4cfc-bdc4-721d05ae3fa9}</destination>
 		</relationship>
+		<relationship name="markers">
+			<destination>{e8fa2385-ca04-4d50-9bd8-fe6a56f9051c}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{169558cf-d34a-4207-b2fb-d5c0057a1df5}">
 		<relationship name="effectChain">
@@ -113,6 +116,20 @@
 			<destination>{169558cf-d34a-4207-b2fb-d5c0057a1df5}</destination>
 		</relationship>
 	</object>
+	<object class="LoopRegion" id="{e8fa2385-ca04-4d50-9bd8-fe6a56f9051c}">
+		<property name="position">
+			<value>10</value>
+		</property>
+		<property name="length">
+			<value>5</value>
+		</property>
+		<relationship name="timeline">
+			<destination>{4d4c3ef4-8631-4812-80d1-7ed2f34de325}</destination>
+		</relationship>
+		<relationship name="markerTrack">
+			<destination>{fd03100d-ee7f-4e95-b412-dc4a893edbf6}</destination>
+		</relationship>
+	</object>
 	<object class="MixerBusEffectChain" id="{9286509a-f873-41f4-99c4-d2cc1768feac}">
 		<relationship name="effects">
 			<destination>{babc6aa0-dd84-447f-a944-600726d35790}</destination>
@@ -124,10 +141,19 @@
 	<object class="MixerBusEffectChain" id="{3c6b4c45-96c8-4fcc-82ce-95c516d4e809}">
 		<relationship name="effects">
 			<destination>{33f0cfb8-03e6-4627-a6dc-ff5da54a701a}</destination>
+			<destination>{47f86ce3-0593-4c17-b740-b02a4c9d6744}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{0587ce1b-e2f6-46af-8b07-178d1ea3c86e}" />
 	<object class="MixerBusFader" id="{babc6aa0-dd84-447f-a944-600726d35790}" />
 	<object class="SpatialiserEffect" id="{19aedae5-3f1a-4134-95fa-5e896f51b6cb}" />
 	<object class="MixerBusFader" id="{33f0cfb8-03e6-4627-a6dc-ff5da54a701a}" />
+	<object class="LowpassEffect" id="{47f86ce3-0593-4c17-b740-b02a4c9d6744}">
+		<property name="cutoff">
+			<value>1300</value>
+		</property>
+		<property name="resonance">
+			<value>1.22000003</value>
+		</property>
+	</object>
 </objects>
