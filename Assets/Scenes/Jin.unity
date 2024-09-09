@@ -12103,7 +12103,6 @@ GameObject:
   - component: {fileID: 2101565968}
   - component: {fileID: 2101565967}
   - component: {fileID: 2101565966}
-  - component: {fileID: 2101565965}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -12111,27 +12110,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &2101565965
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2101565964}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &2101565966
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -13167,7 +13145,6 @@ GameObject:
   - component: {fileID: 543450652535542177}
   - component: {fileID: 919132148079102748}
   - component: {fileID: 919132148079102749}
-  - component: {fileID: 919132148079102750}
   m_Layer: 0
   m_Name: WhiteManGimmick
   m_TagString: Untagged
@@ -13213,29 +13190,6 @@ MonoBehaviour:
   waist: {fileID: 5742672706748400294}
   neck: {fileID: 6515712192461957720}
   point: {fileID: 2101565968}
---- !u!136 &919132148079102750
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132148079102747}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.25
-  m_Height: 2.1
-  m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &1004713468853031582
 GameObject:
   m_ObjectHideFlags: 0
