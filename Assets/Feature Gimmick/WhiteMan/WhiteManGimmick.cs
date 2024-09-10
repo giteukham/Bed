@@ -110,12 +110,16 @@ public class WhiteManGimmick : Gimmick
         yield return new WaitForSeconds(2);
         
         timeLimit = 0;
-        //플레이어 쪽으로 목 돌림
+        //플레이어 쪽으로 갑자기 확! 목 돌림
         while (timeLimit <= 3)
         {
             yield return null;
-            neck.LookAt(player.position);
+            neck.localRotation = Quaternion.Slerp(neck.localRotation, Quaternion.Euler(0, 90, 0), Time.deltaTime);
+            //neck.LookAt(player.position);
         }
+        //목 갑자기 확돌림
+        neck.LookAt(player.position);
+        yield return new WaitForSeconds(2);
 
         print(neck.localRotation.eulerAngles);
 
@@ -144,13 +148,43 @@ public class WhiteManGimmick : Gimmick
         while (timeLimit <= 5)
         {
             yield return null;
-            head.Rotate(new Vector3(0, 0, 720 * Time.deltaTime));
+            //너무 많이 돌리니까 좀 별로임
+            head.Rotate(new Vector3(0, 0, 180 * Time.deltaTime));
             leftArm.localRotation = Quaternion.Slerp(leftArm.localRotation, Quaternion.Euler(-10, 0, 0), Time.deltaTime);
             rightArm.localRotation = Quaternion.Slerp(rightArm.localRotation, Quaternion.Euler(-10, 0, 0), Time.deltaTime);
+            //새총 당기듯이 뒤로 살짝 감
+            transform.Translate(Vector3.forward * Time.deltaTime * 0.1f);
         }
 
-        //돌진
+        //새총 당기듯이 뒤로 살짝 감
+        /*timeLimit = 0;
+        while (timeLimit <= 1)
+        {
+            yield return null;
+            transform.Translate(Vector3.forward * Time.deltaTime * 0.5f);
+        }*/
 
+        yield return new WaitForSeconds(2);
+
+        //플레이어를 향해 돌진
+        timeLimit = 0;
+        while (timeLimit <= 0.1f)
+        {
+            yield return null;
+            //이 방식말고 그냥 플레이어 살짝 앞에 좌표줘서 거기까지 빠르게 이동하게 하는게 나을듯
+            //이때 플레이어는 괴물의 얼굴이 보여야 함
+            transform.Translate(Vector3.back * Time.deltaTime * 30f);
+            waist.localRotation = Quaternion.Euler(-120, 0, 0);
+            neck.LookAt(player.position);
+            head.LookAt(player.position);
+        }
+
+        timeLimit = 0;
+        while (timeLimit <= 3)
+        {
+            yield return null;
+            head.Rotate(new Vector3(0, 0, 1080 * Time.deltaTime));
+        }
         print("끝");
     }
 
