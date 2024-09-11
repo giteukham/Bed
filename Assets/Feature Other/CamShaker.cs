@@ -17,12 +17,13 @@ public class CamShaker : MonoBehaviour
     private IEnumerator currentCoroutine;           // 코루틴을 안전하게 관리하기 위한 변수
 
     private void Awake()
-    {
+    {   
+        virtualCamera = GameObject.Find("Player CM").GetComponent<CinemachineVirtualCamera>();
         //본인에게 있는 CinemachineImpulseSource 컴포넌트를 가져옴
         impulseSource = GetComponent<CinemachineImpulseSource>();
 
         transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
-        //ShakeCam(10, 1);
+        //ShakeCam(10, 1)
     }
 
     private void Update()

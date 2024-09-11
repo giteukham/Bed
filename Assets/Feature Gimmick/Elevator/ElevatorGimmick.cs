@@ -13,12 +13,10 @@ public class ElevatorGimmick : Gimmick
 
     private CinemachineImpulseSource impulseSource;
     private TextMeshPro tmo;
-    private CamShaker camShaker;
     private int floor = 6;
     private int randomNum = 0;
 
-    [SerializeField]
-    private GameObject room;
+    private GameObject room, bed, moonLight, sunLight;
 
     [SerializeField]
     private MeshRenderer ren;
@@ -29,21 +27,29 @@ public class ElevatorGimmick : Gimmick
     private Material BlinkLightMat;
     [SerializeField]
     private Material BlackLightMat;
+
+    private CamShaker camShaker;
     
     // add by kwon
-    [SerializeField] private GameObject elevatorLight, elevatorBlinkLight, elevatorLittleLight, floorLight, leftDoor, rightDoor, moonLight, sunLight, bed;
+    [SerializeField] private GameObject elevatorLight, elevatorBlinkLight, elevatorLittleLight, floorLight, leftDoor, rightDoor;
     private GameObject currentLight;
     private Coroutine blinkLightCoroutine;
-    [SerializeField] private Transform hitAndCrashSoundPos, moveAndFastSoundPos, laughSoundPos1, laughSoundPos2, laughSoundPos3, laughSoundPos4, screamSoundPos;
+    [SerializeField] private Transform hitAndCrashSoundPos, moveAndFastSoundPos;
 
     private void Awake()
     {
         impulseSource = GetComponent<CinemachineImpulseSource>();
         tmo = GetComponentInChildren<TextMeshPro>();
-        camShaker = GetComponent<CamShaker>();
         tempMatList = ren.materials;
         tempMatList[0] = whiteLightMat;
         ren.materials = tempMatList;
+        camShaker = GetComponent<CamShaker>();
+
+        room = GameObject.Find("Room");
+        bed = GameObject.Find("Bed");
+        moonLight = GameObject.Find("Moon Light");
+        sunLight = GameObject.Find("Sun Light");
+
         gameObject.SetActive(false);
     }
 
@@ -128,7 +134,7 @@ public class ElevatorGimmick : Gimmick
         yield return new WaitForSeconds(0.03f);
         elevatorLight.SetActive(true);
         yield return new WaitForSeconds(0.32f);
-        impulseSource.GenerateImpulseWithForce(3);
+        impulseSource.GenerateImpulseWithForce(2f);
         elevatorLight.SetActive(false);
 
         // add by kwon
@@ -139,7 +145,6 @@ public class ElevatorGimmick : Gimmick
         ren.materials = tempMatList;
         camShaker.StopShakeCam();
         AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.IMMEDIATE);
-        tmo.text = "31212012";
         yield return new WaitForSeconds(5);
 
         //??? ?????? ???? ???? ???? ?????
@@ -155,7 +160,7 @@ public class ElevatorGimmick : Gimmick
         //??! ??????? ???? ???
         AudioManager.instance.PlaySound(AudioManager.instance.hit, hitAndCrashSoundPos.position);
         camShaker.StopShakeCam();
-        impulseSource.GenerateImpulseWithForce(4);
+        impulseSource.GenerateImpulseWithForce(2.5f);
         //엘베 바꾸면서 0번째로 바뀜
         tempMatList[0] = BlackLightMat;
         ren.materials = tempMatList;
@@ -173,7 +178,7 @@ public class ElevatorGimmick : Gimmick
             tmo.text = floor.ToString();
         }
         //???? ?????????? ??? ???
-        camShaker.ShakeCam(66, 0.02f);
+        camShaker.ShakeCam(66, 0.019f);
 
         while (floor < 666)
         {
@@ -183,31 +188,33 @@ public class ElevatorGimmick : Gimmick
         }
 
         camShaker.StopShakeCam();
-        camShaker.ShakeCam(66, 0.07f);
+        camShaker.ShakeCam(66, 0.03f);
 
         PlayerConstant.ResetLATStats();
 
-        for (int i = 0; i < 1500; i++)
+        for (int i = 0; i < 2000; i++)
         {
             if (PlayerConstant.EyeBlinkLAT >= 6)
             {
                 Deactivate();
                 yield break;
             }
-            randomNum = Random.Range(1000, 40000);
-            tmo.text = randomNum.ToString();
+            randomNum = Random.Range(667, 1000);    
+
+            if( i < 1990) tmo.text = randomNum.ToString();
+
+            if ( i == 1990)
+            {
+                AudioManager.instance.PlaySound(AudioManager.instance.elevatorStop, moveAndFastSoundPos.position);
+                yield return new WaitForSeconds(0.4f);
+                AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                AudioManager.instance.StopSound(AudioManager.instance.elevatorFast, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                camShaker.StopShakeCam();
+                impulseSource.GenerateImpulseWithForce(2f);
+            }
             yield return null;
         }
 
-        //???? ??? ????
-        tmo.text = "31212012";
-        AudioManager.instance.PlaySound(AudioManager.instance.elevatorStop, moveAndFastSoundPos.position);
-        yield return new WaitForSeconds(0.4f);
-        AudioManager.instance.StopSound(AudioManager.instance.elevatorMove, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        AudioManager.instance.StopSound(AudioManager.instance.elevatorFast, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        camShaker.StopShakeCam();
-        impulseSource.GenerateImpulseWithForce(3.5f);
-        
         tempMatList[0] = BlinkLightMat;
         ren.materials = tempMatList;
         elevatorLittleLight.SetActive(false);
@@ -226,7 +233,7 @@ public class ElevatorGimmick : Gimmick
         float elapsedTime = 0f;
         
         AudioManager.instance.PlaySound(AudioManager.instance.elevatorDoorOpen, moveAndFastSoundPos.position);
-        camShaker.ShakeCam(1.6f, 0.07f);
+        camShaker.ShakeCam(1.6f, 0.013f);
         while (elapsedTime < 1.6f)
         {
             float t = elapsedTime / 1.6f;
@@ -237,8 +244,8 @@ public class ElevatorGimmick : Gimmick
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        //StopCoroutine(blinkLightCoroutine);
-        //Deactivate();
+        yield return new WaitForSeconds(5f);
+        Deactivate();
     }
 
     // add by kwon
