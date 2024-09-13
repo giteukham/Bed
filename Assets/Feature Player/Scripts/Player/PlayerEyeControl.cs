@@ -18,10 +18,10 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    public const float BLINK_VALUE_MIN = 0.001f, BLINK_VALUE_MAX = 1f;   // VignetteÀÇ Blink °ª ÃÖ¼Ú°ª, ÃÖ´ñ°ª.
-                                                                         // ÃÖ¼Ú°ªÀ» 0À¸·Î ÇÏ¸é ¿¬»êÀÌ ºÒ°¡´É.
-    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone ColliderÀÇ ÃÖ´ë °ª
-    public const int MOUSE_SCROLL_VALUE = 120;    // ¸¶¿ì½º ÈÙ °ª
+    public const float BLINK_VALUE_MIN = 0.001f, BLINK_VALUE_MAX = 1f;   // Vignetteì˜ Blink ê°’ ìµœì†Ÿê°’, ìµœëŒ“ê°’.
+                                                                         // ìµœì†Ÿê°’ì„ 0ìœ¼ë¡œ í•˜ë©´ ì—°ì‚°ì´ ë¶ˆê°€ëŠ¥.
+    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Colliderì˜ ìµœëŒ€ ê°’
+    public const int MOUSE_SCROLL_VALUE = 120;    // ë§ˆìš°ìŠ¤ íœ  ê°’
     
     private StateMachine playerEyeStateMachine;
     private PlayerEyeStates playerEyeStates;
@@ -64,7 +64,7 @@ public class PlayerEyeControl : IPlayerControl
 
         currentValue = customVignette.blink.value;
         
-        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX) // ¸¶¿ì½º ÈÙÀ» ¾Æ·¡·Î ³»·ÈÀ» ¶§
+        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && customVignette.blink.value < BLINK_VALUE_MAX) // ë§ˆìš°ìŠ¤ íœ ì„ ì•„ë˜ë¡œ ë‚´ë ¸ì„ ë•Œ
         {
             mouseCount++;
             if (mouseCount >= mouseBlinkValues.Length) mouseCount = mouseBlinkValues.Length - 1;
@@ -81,7 +81,7 @@ public class PlayerEyeControl : IPlayerControl
             }
             elapsedTime = 0f;
         }
-        if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN) // ¸¶¿ì½º ÈÙÀ» À§·Î ¿Ã·ÈÀ» ¶§
+        if (mouseScrollValue == MOUSE_SCROLL_VALUE && customVignette.blink.value > BLINK_VALUE_MIN) // ë§ˆìš°ìŠ¤ íœ ì„ ìœ„ë¡œ ì˜¬ë ¸ì„ ë•Œ
         {
             mouseCount--;
             if (mouseCount < 0) mouseCount = 0;
@@ -114,11 +114,11 @@ public class PlayerEyeControl : IPlayerControl
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Closing], true);
         }
-        else if (prevBlinkValue > customVignette.blink.value || prevBlinkValue == customVignette.blink.value) // °°Àº À§Ä¡¿¡¼­ °è¼Ó ±ôºı(ÈÙ Å¬¸¯)ÀÌ¸é Opening »óÅÂ°¡ µÇ°Ô
+        else if (prevBlinkValue > customVignette.blink.value || prevBlinkValue == customVignette.blink.value) // ê°™ì€ ìœ„ì¹˜ì—ì„œ ê³„ì† ê¹œë¹¡(íœ  í´ë¦­)ì´ë©´ Opening ìƒíƒœê°€ ë˜ê²Œ
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Opening], true);
         }
-        //Debug.Log("ÇöÀç »óÅÂ : " + playerEyeStateMachine.ToString());
+        //Debug.Log("í˜„ì¬ ìƒíƒœ : " + playerEyeStateMachine.ToString());
         prevBlinkValue = customVignette.blink.value;
     }
     
