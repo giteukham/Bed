@@ -72,9 +72,21 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Hit SFX")]
     [field: SerializeField] public EventReference hit { get; private set; }
+
+    [field: Header("ToyWalk SFX")]
+    [field: SerializeField] public EventReference toyWalk { get; private set; }
+
+    [field: Header("Knock SFX")]
+    [field: SerializeField] public EventReference knock { get; private set; }
+
+    [field: Header("CogWheell SFX")]
+    [field: SerializeField] public EventReference cogWheell { get; private set; }
+
+    [field: Header("NeckSnap SFX")]
+    [field: SerializeField] public EventReference neckSnap { get; private set; }
     #endregion
 
-    // Key ÀÌº¥Æ® ÂüÁ¶ °ª, Value ÀÌº¥Æ® ÀÎ½ºÅÏ½º
+    // Key ì´ë²¤íŠ¸ ì°¸ì¡° ê°’, Value ì´ë²¤íŠ¸ ì¸ìŠ¤í„´ìŠ¤
     private Dictionary<EventReference, EventInstance> eventInstances = new(); 
 
     private void Awake() 
@@ -84,7 +96,7 @@ public class AudioManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ¼Ò¸® ²¨Áö±â Àü±îÁö ½ÇÇà
+    /// ì†Œë¦¬ êº¼ì§€ê¸° ì „ê¹Œì§€ ì‹¤í–‰
     /// </summary>
     public void PlaySound(EventReference _eventRef, Vector3 _pos)
     {
@@ -112,9 +124,9 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼Ò¸® ²ô±â
+    /// ì†Œë¦¬ ë„ê¸°
     /// </summary>
-    /// <param name="_mode">¼Ò¸® ²ô´Â ¸ğµå IMMEDIATE == ÀÏ¹İ, ALLOWFADEOUT == ÆäÀÌµå ¾Æ¿ô</param>
+    /// <param name="_mode">ì†Œë¦¬ ë„ëŠ” ëª¨ë“œ IMMEDIATE == ì¼ë°˜, ALLOWFADEOUT == í˜ì´ë“œ ì•„ì›ƒ</param>
     public void StopSound(EventReference _eventRef, FMOD.Studio.STOP_MODE _mode)
     {
         if (eventInstances.ContainsKey(_eventRef))
@@ -126,9 +138,9 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ğµç ¼Ò¸® ´Ù ²ô±â
+    /// ëª¨ë“  ì†Œë¦¬ ë‹¤ ë„ê¸°
     /// </summary>
-    /// /// <param name="_mode">¼Ò¸® ²ô´Â ¸ğµå, IMMEDIATE == ÀÏ¹İ, ALLOWFADEOUT  == ÆäÀÌµå ¾Æ¿ô</param>
+    /// /// <param name="_mode">ì†Œë¦¬ ë„ëŠ” ëª¨ë“œ, IMMEDIATE == ì¼ë°˜, ALLOWFADEOUT  == í˜ì´ë“œ ì•„ì›ƒ</param>
     public void StopAllSounds(FMOD.Studio.STOP_MODE _mode)
     {
         foreach (EventInstance eventInstance in eventInstances.Values)
@@ -140,7 +152,7 @@ public class AudioManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ¼Ò¸® ÀÏ½ÃÁ¤Áö
+    /// ì†Œë¦¬ ì¼ì‹œì •ì§€
     /// </summary>
     public void PauseSound(EventReference _eventRef)
     {
@@ -148,7 +160,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ğµç ¼Ò¸® ÀÏ½ÃÁ¤Áö
+    /// ëª¨ë“  ì†Œë¦¬ ì¼ì‹œì •ì§€
     /// </summary>
     public void PauseAllSounds()
     {
@@ -156,7 +168,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼Ò¸® Àç°³
+    /// ì†Œë¦¬ ì¬ê°œ
     /// </summary>
     public void ResumeSound(EventReference _eventRef)
     {
@@ -164,7 +176,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ğµç ¼Ò¸® Àç°³
+    /// ëª¨ë“  ì†Œë¦¬ ì¬ê°œ
     /// </summary>
     public void ResumeAllSounds()
     {

@@ -100,14 +100,15 @@ public class WhiteManGimmick : Gimmick
     {
         //첫번째 포인트 바라봄
         transform.LookAt(pointsArray[1].position);
-        //transform.rotation = Quaternion.LookRotation(pointsArray[1].position - transform.position);
-
-        //yield return new WaitForSeconds(3);
 
         //노크소리가 들리고 잠시 후 문이 열림
+        AudioManager.instance.PlaySound(AudioManager.instance.knock, transform.position);
+
+        yield return new WaitForSeconds(3);
 
         currentY = transform.eulerAngles.y;
         //문 넘어서 살짝 앞으로 직진함
+        AudioManager.instance.PlaySound(AudioManager.instance.toyWalk, transform.position);
         timeLimit = 0;
         while (timeLimit <= 3)
         {
@@ -118,15 +119,18 @@ public class WhiteManGimmick : Gimmick
             print("실행중");
         }
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0);
+        AudioManager.instance.StopSound(AudioManager.instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         yield return new WaitForSeconds(2);
         //소리 난뒤 갑자기 두번째 포인트 쪽으로 고개 확 돌림
+        AudioManager.instance.PlaySound(AudioManager.instance.neckSnap, transform.position);
         neck.LookAt(new Vector3(pointsArray[2].position.x, neck.position.y, pointsArray[2].position.z));
         
         //잠시 대기
         yield return new WaitForSeconds(2);
 
         //몸을 두번째 포인트로 향할 때 까지 3초 동안 회전
+        AudioManager.instance.PlaySound(AudioManager.instance.cogWheell, transform.position);
         timeLimit = 0;
         while (timeLimit <= 3)
         {
@@ -134,6 +138,7 @@ public class WhiteManGimmick : Gimmick
             transform.rotation = Quaternion.Slerp(transform.rotation, neck.rotation, Time.deltaTime);
             neck.LookAt(new Vector3(pointsArray[2].position.x, neck.position.y, pointsArray[2].position.z));
         }
+        AudioManager.instance.StopSound(AudioManager.instance.cogWheell, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         //목 원상복귀
         neck.localRotation = Quaternion.identity;
@@ -143,8 +148,9 @@ public class WhiteManGimmick : Gimmick
 
         currentY = transform.eulerAngles.y;
         //두번째 포인트로 직진
+        AudioManager.instance.PlaySound(AudioManager.instance.toyWalk, transform.position);
         timeLimit = 0;
-        while (timeLimit <= 6)
+        while (timeLimit <= 5.5f)
         {
             yield return null;
             //transform.Translate(Vector3.forward * Time.deltaTime * 0.5f);
@@ -152,6 +158,7 @@ public class WhiteManGimmick : Gimmick
             PenguinMove();
         }
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0);
+        AudioManager.instance.StopSound(AudioManager.instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         //웃는 소리 재생(너무 뻔함)
         yield return new WaitForSeconds(2);
@@ -164,9 +171,11 @@ public class WhiteManGimmick : Gimmick
             neck.localRotation = Quaternion.Slerp(neck.localRotation, Quaternion.Euler(0, 90, 0), Time.deltaTime);
         }
         //목 갑자기 플레이어 쪽으로 확 꺾음
+        AudioManager.instance.PlaySound(AudioManager.instance.neckSnap, transform.position);
         neck.LookAt(player.position);
         yield return new WaitForSeconds(2);
 
+        AudioManager.instance.PlaySound(AudioManager.instance.cogWheell, transform.position);
         timeLimit = 0;
         while (timeLimit <= 5)
         {
@@ -191,8 +200,6 @@ public class WhiteManGimmick : Gimmick
             rightArm.localRotation = Quaternion.Slerp(rightArm.localRotation, Quaternion.Euler(-10, 0, 0), Time.deltaTime);
         }
 
-        //활시위 당기는 소리
-
         //새총 당기듯이 뒤로 살짝 감
         timeLimit = 0;
         while(timeLimit <= 3)
@@ -200,8 +207,9 @@ public class WhiteManGimmick : Gimmick
             yield return null;
             transform.Translate(Vector3.forward * Time.deltaTime * 0.1f);
         }
+        AudioManager.instance.StopSound(AudioManager.instance.cogWheell, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(4);
 
         //플레이어를 향해 돌진
         timeLimit = 0;
