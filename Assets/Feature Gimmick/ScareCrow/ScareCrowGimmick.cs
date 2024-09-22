@@ -11,8 +11,17 @@ public class ScareCrowGimmick : Gimmick
     private float rotationX = 0;
     private bool isMinus = false;
 
+    private Rigidbody rig;
+    private BoxCollider boxColl;
+    private Vector3 startPosition;
+
+    private int soundNum = 0;
+
     private void Awake()
     {
+        rig = GetComponent<Rigidbody>();
+        boxColl = GetComponent<BoxCollider>();
+        startPosition = transform.position;
         gameObject.SetActive(false);
     }
 
@@ -29,7 +38,12 @@ public class ScareCrowGimmick : Gimmick
 
     public override void Deactivate()
     {
+        rig.useGravity = false;
+        boxColl.isTrigger = true;
+        soundNum = 0;
         transform.localRotation = Quaternion.Euler(-90, 0, 0);
+        transform.position = startPosition;
+
         gimmickManager.LowerProbability(this);
         gimmickManager.objectGimmick = null;
         gameObject.SetActive(false);
@@ -42,8 +56,7 @@ public class ScareCrowGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        //까마귀 소리 점점 더 시끄럽게 나는 걸로, 몇초 지나면 그냥 흔들거리게만
-        yield return null;
+        //처음에 일어섬
         timeLimit = 0;
         while (timeLimit <= 5)
         {
@@ -51,17 +64,53 @@ public class ScareCrowGimmick : Gimmick
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, 0), Time.deltaTime);
         }
 
+        boxColl.isTrigger = false;
         yield return new WaitForSeconds(3);
 
-        print(transform.localRotation.eulerAngles.x);
+        //위로 상승
+        rig.AddForce(new Vector3(0, 1, 4));
+
+        yield return new WaitForSeconds(5);
+
+        //갑자기 넘어짐
+        rig.velocity = Vector3.zero;
+        rig.useGravity = true;
+        rig.AddForce(new Vector3(3, 0, -4));
+
+        yield return new WaitForSeconds(3);
+
+        //다시 천천히 일어섬
+        rig.useGravity = false;
         timeLimit = 0;
+        while (timeLimit <= 10)
+        {
+            yield return null;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, 0), Time.deltaTime * 0.5f);
+        }
+
+        //다시 넘어짐
+        rig.velocity = Vector3.zero;
+        rig.useGravity = true;
+        rig.AddForce(new Vector3(-5, 0, 7));
+
+        yield return new WaitForSeconds(3);
+
+        //까마귀 소리 내고 끝냄
+        AudioManager.instance.PlaySound(AudioManager.instance.crows, transform.position);
+        yield return new WaitForSeconds(9);
+
+        //공포 데미지 상승
+        Deactivate();
+
+        /*timeLimit = 0;
         while (timeLimit <= 200)
         {
             yield return null;
             Wobble();
-        }
+        }*/
     }
 
+    //현재 사용 안함
     private void Wobble()
     {
         if (rotationX <= -12f)
@@ -83,5 +132,22 @@ public class ScareCrowGimmick : Gimmick
         }
 
         transform.localRotation = Quaternion.Euler(rotationX, transform.eulerAngles.y, transform.eulerAngles.z);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        //부모 콜라이더에서만 충돌할때 소리나게
+        if (collision.contacts[0].thisCollider.CompareTag("Gimmick"))
+        {
+            soundNum++;
+            if (soundNum == 1)
+            {
+                AudioManager.instance.PlaySound(AudioManager.instance.woodDrop1, transform.position);
+            }
+            else
+            {
+                AudioManager.instance.PlaySound(AudioManager.instance.woodDrop2, transform.position);
+            }
+        }
     }
 }

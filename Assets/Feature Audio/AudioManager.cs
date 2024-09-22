@@ -84,6 +84,15 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("NeckSnap SFX")]
     [field: SerializeField] public EventReference neckSnap { get; private set; }
+
+    [field: Header("Crows SFX")]
+    [field: SerializeField] public EventReference crows { get; private set; }
+
+    [field: Header("WoodDrop1 SFX")]
+    [field: SerializeField] public EventReference woodDrop1 { get; private set; }
+
+    [field: Header("WoodDrop2 SFX")]
+    [field: SerializeField] public EventReference woodDrop2 { get; private set; }
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
