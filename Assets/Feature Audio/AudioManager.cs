@@ -105,10 +105,10 @@ public class AudioManager : MonoBehaviour
     /// <param name="_mode">소리 끄는 모드 IMMEDIATE == 일반, ALLOWFADEOUT == 페이드 아웃</param>
     public void StopSound(EventReference _eventRef, FMOD.Studio.STOP_MODE _mode)
     {
-        if (eventInstances.ContainsKey(_eventRef))
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
         {
-            eventInstances[_eventRef].stop(_mode);
-            eventInstances[_eventRef].release();
+            eventInstance.stop(_mode);
+            eventInstance.release();
             eventInstances.Remove(_eventRef);
         }
     }
@@ -157,5 +157,13 @@ public class AudioManager : MonoBehaviour
     public void ResumeAllSounds()
     {
         foreach (EventInstance eventInstance in eventInstances.Values) eventInstance.setPaused(false);
+    }
+
+    /// <summary>
+    /// 볼륨 조절
+    /// </summary>
+    public void VolumeControl(EventReference _eventRef, float _volume)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setVolume(_volume);
     }
 }

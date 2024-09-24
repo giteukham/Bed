@@ -19,11 +19,12 @@ public class PlayerEyeStates
         public void Enter()
         {
             customVignette.blink.value = PlayerEyeControl.BLINK_VALUE_MIN;
+            PlayerConstant.isEyeOpen = true;
         }
 
         public void Execute()
         {
-
+            if(PlayerConstant.isEyeOpen == false) PlayerConstant.isEyeOpen = true;
         }
 
         public void Exit()
@@ -40,6 +41,7 @@ public class PlayerEyeStates
 
         public void Execute()
         {
+            if(PlayerConstant.isEyeOpen == false) PlayerConstant.isEyeOpen = true;
         }
 
         public void Exit()
@@ -52,16 +54,19 @@ public class PlayerEyeStates
         public void Enter()
         {
             customVignette.blink.value = PlayerEyeControl.BLINK_VALUE_MAX;
+            PlayerConstant.isEyeOpen = false;
         }
 
         public void Execute()
         {
             PlayerConstant.EyeClosedCAT += Time.deltaTime;
             PlayerConstant.EyeClosedLAT += Time.deltaTime;
+            if(PlayerConstant.isEyeOpen == true) PlayerConstant.isEyeOpen = false;
         }
 
         public void Exit()
         {
+            PlayerConstant.isEyeOpen = true;
         }
     }
     

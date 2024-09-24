@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
     public void AnimationEvent_ChangeDirectionState(string toState)
     {
         switch (toState)
-        {
+        {   
             case "Left":
                 playerDirectionStateMachine.ChangeState(PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Left]);
                 break;
@@ -117,13 +117,16 @@ public class Player : MonoBehaviour
             UpdateStats();
             timeSinceLastUpdate = 0f;
         }
+        UpdateGauge();
+        SetPlayerState();
+        //.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
 
         coneCollider.SetColider(customVignette.blink.value);
     }
 
     private void UpdateStats()
     {
-        // ----------------- Eye State -----------------
+        // ----------------- Head Movement -----------------
         float cameraDeltaX = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
         float cameraDeltaY = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
         recentHorizontalCameraMovement = currentHorizontalCameraMovement;
@@ -189,6 +192,33 @@ public class Player : MonoBehaviour
             PlayerConstant.DownLookLAT += timeSinceLastUpdate;
         }
         // ----------------- Look Value -----------------
+    }
+
+    private void UpdateGauge() 
+    {
+        if (PlayerConstant.stressGauge >= PlayerConstant.stressGaugeMax) PlayerConstant.isFainting = true;
+        else PlayerConstant.isFainting = false;
+        if (PlayerConstant.fearGauge >= PlayerConstant.fearGaugeMax) PlayerConstant.isParalysis = true;
+        else PlayerConstant.isParalysis = false;
+
+        if (PlayerConstant.stressGauge > PlayerConstant.stressGaugeMax) PlayerConstant.stressGauge = PlayerConstant.stressGaugeMax;
+        if (PlayerConstant.fearGauge > PlayerConstant.fearGaugeMax) PlayerConstant.fearGauge = PlayerConstant.fearGaugeMax;
+        if (PlayerConstant.stressGauge < PlayerConstant.stressGaugeMin) PlayerConstant.stressGauge = PlayerConstant.stressGaugeMin;
+        if (PlayerConstant.fearGauge < PlayerConstant.fearGaugeMin) PlayerConstant.fearGauge = PlayerConstant.fearGaugeMin;
+    }
+
+    private void SetPlayerState()
+    {   
+        if (PlayerConstant.isParalysis)
+        {
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 5f;
+        }
+        else
+        {
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 500f;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 500f;
+        }
     }
 
     private void OnApplicationQuit()

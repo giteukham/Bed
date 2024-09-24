@@ -50,6 +50,18 @@ public class GameManager : MonoBehaviour
             debugTimeText.SetActive(!debugTimeText.activeSelf);
         } 
 
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            PlayerConstant.stressGauge += 10;
+            PlayerConstant.fearGauge += 10;
+        }
+
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            PlayerConstant.stressGauge -= 10;
+            PlayerConstant.fearGauge -= 10;
+        }
+
         int hour = TimeManager.playTimeToMin >= 60 ? 11 + TimeManager.playTimeToMin / 60 - 12 : 11 + TimeManager.playTimeToMin / 60;
         int minute = TimeManager.playTimeToMin % 60;
 
@@ -59,6 +71,9 @@ public class GameManager : MonoBehaviour
                 $"<size=130%><b>Play Time: <color=#ff808f></b>{TimeManager.playTimeToMin}/480</color></size>\n" +
                 $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
+                $"isEyeOpen: <color=#80ffff>{PlayerConstant.isEyeOpen}</color>\n" +
+                $"isFainting: <color=#80ffff>{PlayerConstant.isFainting}</color>\n" +
+                $"isParalysis: <color=#80ffff>{PlayerConstant.isParalysis}</color>\n" +
                 $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
                 $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
                 $"EyeBlinkCAT: <color=yellow>{PlayerConstant.EyeBlinkCAT}</color>\n" +

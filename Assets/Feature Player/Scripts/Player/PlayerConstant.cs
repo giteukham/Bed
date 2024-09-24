@@ -7,6 +7,9 @@ public static class PlayerConstant
     //게이지
     public static int stressGauge = 0, fearGauge = 0;
     public static int stressGaugeMax = 100, fearGaugeMax = 100;
+    public static int stressGaugeMin = 0, fearGaugeMin = 0;
+    public static bool isEyeOpen = false;
+    public static bool isFainting, isParalysis = false;
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)
     // LAT: Last Action Time (최근 행동 시간, 가장 최근 기믹이 시작때 부터 끝날때 까지 기록)

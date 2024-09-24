@@ -12,12 +12,15 @@ public class PlayerDirectionStates
         
         public void Execute()
         {
+            PlayerConstant.LeftStateCAT += Time.deltaTime;
+            PlayerConstant.LeftStateLAT += Time.deltaTime;
+
+            if ( PlayerConstant.isParalysis ) return;
             if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
             }
-            PlayerConstant.LeftStateCAT += Time.deltaTime;
-            PlayerConstant.LeftStateLAT += Time.deltaTime;
+            
         }
         
         public void Exit()
@@ -34,6 +37,10 @@ public class PlayerDirectionStates
         
         public void Execute()
         {
+            PlayerConstant.MiddleStateCAT += Time.deltaTime;
+            PlayerConstant.MiddleStateLAT += Time.deltaTime;
+
+            if ( PlayerConstant.isParalysis ) return;
             if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle To Left");
@@ -42,8 +49,7 @@ public class PlayerDirectionStates
             {
                 PlayerAnimation.PlayAnimation("Middle To Right");
             }
-            PlayerConstant.MiddleStateCAT += Time.deltaTime;
-            PlayerConstant.MiddleStateLAT += Time.deltaTime;
+            
         }
         
         public void Exit()
@@ -57,15 +63,17 @@ public class PlayerDirectionStates
         public void Enter()
         {
         }
-        
         public void Execute()
         {
+            PlayerConstant.RightStateCAT += Time.deltaTime;
+            PlayerConstant.RightStateLAT += Time.deltaTime;
+
+            if ( PlayerConstant.isParalysis ) return;
             if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
             }
-            PlayerConstant.RightStateCAT += Time.deltaTime;
-            PlayerConstant.RightStateLAT += Time.deltaTime;
+            
         }
         
         public void Exit()
