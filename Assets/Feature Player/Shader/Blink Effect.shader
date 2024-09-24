@@ -3,9 +3,9 @@ Shader "Unlit/Blink Effect"
 {
     Properties
     {
-        _Blink ("Blink", Range(0.3, 1.0)) = 0.7
+        _Blink ("Blink", Range(0.0, 1.0)) = 0.7
         _StartBlink ("Start Point", Range(0.0, 1.0)) = 0.0
-        _Smoothness ("Smoothness", Range(0.1, 0.9)) = 0.5
+        _Smoothness ("Smoothness", Range(0.1, 1.0)) = 0.5
         _AspectRatio ("Aspect Ratio", Float) = 1.0
     }
     SubShader
@@ -54,8 +54,8 @@ Shader "Unlit/Blink Effect"
                 float y = (i.uv.y - 0.5) * _AspectRatio;
                 float height = lerp(_StartBlink, 1.0, _Blink + (1.0 - _Blink) * dot(x,x));
                 float width = dot(y,y);
-                float mask = width + height;
-                return fixed4(1.0 - smoothstep(0.0, (width + height) * _Smoothness, width + height).xxx, mask);
+                float mask = smoothstep(_Smoothness, 1.0, width + height);
+                return fixed4(1.0 - smoothstep(0.0,  width + height, width + height).xxx, mask);
             }
             ENDCG
         }
