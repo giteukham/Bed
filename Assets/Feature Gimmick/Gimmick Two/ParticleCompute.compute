@@ -1,12 +1,14 @@
 #pragma kernel Integrate
 
-RWStructuredBuffer<float3> _Velocity;
-RWStructuredBuffer<float3> _Position;
+struct Particle
+{
+	float3 position;
+};
 
-float deltaTime;
+RWStructuredBuffer<Particle> _Particles;
 
 [numthreads(8, 1, 1)]
 void Integrate (uint3 id : SV_DispatchThreadID)
 {
-	_Velocity[id.x] += float3(0, -9.81, 0); //* deltaTime;
+	
 }

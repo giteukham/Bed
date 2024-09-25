@@ -348,10 +348,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 959b0dd3931c4f5eb4a21180bbbb4008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particleCount: 1000
-  particleDiameter: 0.1
-  particlesSpawnBox: {x: 1, y: 1, z: 1}
-  boundingBox: {x: 10, y: 10, z: 10}
+  particleRadius: 1
+  particleSpawnPoint: {x: 0, y: 0, z: 0}
+  particleSpawnBox: {x: 100, y: 10, z: 10}
+  particleBoundBox: {x: 10, y: 10, z: 10}
   particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   particleMaterial: {fileID: 2100000, guid: 067830227be18a444bb4fde00cf6471f, type: 2}
   computeShader: {fileID: 7200000, guid: 3cedf3b8534e96945b5bb95821538df6, type: 3}
