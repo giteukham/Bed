@@ -12,13 +12,13 @@ namespace Bed.Gimmick
         [StructLayout(LayoutKind.Sequential, Size = 12)]
         struct Particle
         {
-            public float3 position;
+            public Vector3 position;
         }
 
         [Header("파티클 생성 옵션")]
         public float particleRadius = 0.1f; // 파티클의 반지름
         public Vector3 particleSpawnPoint;  // 파티클이 생성되는 위치
-        public Vector3Int particleSpawnBox; // 박스를 만들어서 그 안에 파티클이 생성되도록 함
+        public Vector3Int particleNumOfSpawn; // 파티클이 생성되는 개수 3차원으로 생성
         public Vector3 particleBoundBox;    // 파티클을 가두는 박스
 
         [Header("파티클 생성에 필요한 것")]
@@ -27,7 +27,7 @@ namespace Bed.Gimmick
         [SerializeField] private ComputeShader computeShader;
         
         private Particle[] particles;
-        private int particleCount => particleSpawnBox.x * particleSpawnBox.y * particleSpawnBox.z;
+        private int particleCount => particleNumOfSpawn.x * particleNumOfSpawn.y * particleNumOfSpawn.z;
         
         private ComputeBuffer particleBuffer;
         private GraphicsBuffer graphicsBuffer;
@@ -36,14 +36,6 @@ namespace Bed.Gimmick
         private RenderParams renderParams;
         private GraphicsBuffer.IndirectDrawIndexedArgs[] commandData = new GraphicsBuffer.IndirectDrawIndexedArgs[commandCount];
 
-        private void Awake()
-        {
-            if (Vector3.Distance(particleSpawnBox, particleBoundBox) < 0)
-            {
-                Debug.LogError("Spawn box 보다 bouding Box가 더 커야합니다.");
-                return;
-            }
-        }
 
         private void OnEnable()
         {
@@ -68,14 +60,14 @@ namespace Bed.Gimmick
                 worldBounds = new Bounds(transform.position, particleBoundBox)
             };
             computeShader.SetBuffer(0, "_Particles", particleBuffer);
-
+            computeShader.SetFloat("_Time", Time.deltaTime);
         }
 
         private void Update()
         {
-            //computeShader.Dispatch(0, particleCount / 8, 1, 1);
             particleMaterial.SetBuffer("_Particles", particleBuffer);
             particleMaterial.SetFloat("_ParticleRadius", particleRadius);
+            computeShader.Dispatch(computeShader.FindKernel("Force"), particleCount / 8, 1, 1);
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
         }
 
@@ -87,15 +79,15 @@ namespace Bed.Gimmick
             // 박스의 중심을 다시 박스의 좌표를 빼서 박스의 시작점을 구함으로써 Center를 중심으로 좌우로 박스를 그리게 함
             particleSpawnPoint = new Vector3()
             {
-                x = particleSpawnPoint.x - (particleSpawnBox.x * particleRadius),
-                y = particleSpawnPoint.y - (particleSpawnBox.y * particleRadius),
-                z = particleSpawnPoint.z - (particleSpawnBox.z * particleRadius)
+                x = particleSpawnPoint.x - (particleNumOfSpawn.x * particleRadius),
+                y = particleSpawnPoint.y - (particleNumOfSpawn.y * particleRadius),
+                z = particleSpawnPoint.z - (particleNumOfSpawn.z * particleRadius)
             };
             particleSpawnPoint += Random.onUnitSphere * particleRadius * 0.2f;
             
-            for (int i = 0; i < particleSpawnBox.x; i++)
-            for (int j = 0; j < particleSpawnBox.y; j++)
-            for (int k = 0; k < particleSpawnBox.z; k++)
+            for (int i = 0; i < particleNumOfSpawn.x; i++)
+            for (int j = 0; j < particleNumOfSpawn.y; j++)
+            for (int k = 0; k < particleNumOfSpawn.z; k++)
             {
                 x = particleSpawnPoint.x + (i * particleRadius * 2f);
                 y = particleSpawnPoint.y + (j * particleRadius * 2f);

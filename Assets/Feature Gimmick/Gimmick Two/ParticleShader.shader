@@ -1,7 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
 Shader "Custom/ParticleShader"
 {
     Properties
@@ -41,7 +37,8 @@ Shader "Custom/ParticleShader"
 				unity_ObjectToWorld._12_22_32_42 = float4(0, _ParticleRadius, 0, 0);
 				unity_ObjectToWorld._13_23_33_43 = float4(0, 0, _ParticleRadius, 0);
 				unity_ObjectToWorld._14_24_34_44 = float4(_Particles[id].position.xyz, 1);
-                
+    
+                unity_WorldToObject._11_21_31_41 = float4(1/_ParticleRadius, 0, 0, 0);
                 o.pos = UnityObjectToClipPos(v.pos);
                 return o;
             }
