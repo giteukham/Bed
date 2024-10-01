@@ -1,16 +1,74 @@
-#pragma kernel Force
+#pragma kernel UpdateHash
+#pragma kernel Integrate
+
 #define GRAVITY 9.81
+
+#include "SpatialHash.hlsl"
 
 struct Particle
 {
-	float3 Position;
+	float3 position;
+	float4 color;
 };
 
-RWStructuredBuffer<Particle> _Particles;
-float _Time;
+RWStructuredBuffer<Particle> _particles;
+RWStructuredBuffer<float3> _velocities;
+RWStructuredBuffer<uint> _cellIndices;
+RWStructuredBuffer<uint> _particlesIndicesInCell;
 
-[numthreads(8, 1, 1)]
-void Force (uint3 id : SV_DispatchThreadID)
+float3 _boundingBox;
+float _particleRadius;
+float _damping;
+float _time;
+
+[numthreads(128, 1, 1)]
+void UpdateHash(uint3 id : SV_DispatchThreadID)
 {
-	_Particles[id.x].Position += float3(0, -GRAVITY, 0) * _Time;
+	float space = _particleRadius * 2;
+	float3 cellPosition = GetCellCoord(_particles[id.x].position, space);
+	
+	_cellIndices[id.x] = GetCellIndex(cellPosition, _boundingBox);
+}
+
+[numthreads(128, 1, 1)]
+void Integrate (uint3 id : SV_DispatchThreadID)
+{
+	//_velocities[id.x] = float3(0, -GRAVITY, 0) * _time;
+	if (_particles[id.x].position.x < -(_boundingBox.x * 0.5))
+	{
+		_velocities[id.x].x *= _damping;
+		_particles[id.x].position.x = -(_boundingBox.x * 0.5);
+	}
+	
+	if (_particles[id.x].position.x > (_boundingBox.x * 0.5))
+	{
+		_velocities[id.x].x *= _damping;
+		_particles[id.x].position.x = (_boundingBox.x * 0.5);
+	}
+	
+	if (_particles[id.x].position.y < -(_boundingBox.y * 0.5))
+	{
+		_velocities[id.x].y *= _damping;
+		_particles[id.x].position.y = -(_boundingBox.y * 0.5);
+	}
+	
+	if (_particles[id.x].position.y > (_boundingBox.y * 0.5))
+	{
+		_velocities[id.x].y *= _damping;
+		_particles[id.x].position.y = (_boundingBox.y * 0.5);
+	}
+	
+	if (_particles[id.x].position.z < -(_boundingBox.z * 0.5))
+	{
+		_velocities[id.x].z *= _damping;
+		_particles[id.x].position.z = -(_boundingBox.z * 0.5);
+	}
+	
+	if (_particles[id.x].position.z > (_boundingBox.z * 0.5))
+	{
+		_velocities[id.x].z *= _damping;
+		_particles[id.x].position.z = (_boundingBox.z * 0.5);
+	}
+
+	_particles[id.x].position += _velocities[id.x];
 }

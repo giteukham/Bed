@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class SPH : MonoBehaviour
 {
-    [SerializeField] private GameObject _particlePrefab;
-    
-    
-
-    
     /// <summary>
     /// Poly 6 커널 함수
     /// r은 두 입자 사이의 거리

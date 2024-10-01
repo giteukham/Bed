@@ -15,6 +15,7 @@ Shader "Custom/ParticleShader"
             #pragma fragment frag;
             #pragma multi_compile_instancing
             #pragma target 4.5
+            #include "UnityCG.cginc"
             
             struct v2f
             {
@@ -25,21 +26,27 @@ Shader "Custom/ParticleShader"
             struct Particle
             {
                 float3 position;
+                float4 color;
             };
 
-            StructuredBuffer<Particle> _Particles;
-            float _ParticleRadius;
+            StructuredBuffer<Particle> _particles;
+            float _particleRadius;
 
-            v2f vert(v2f v, uint id : SV_InstanceID)        // TODO: Add the instance ID
+            v2f vert(appdata_full v, uint id : SV_InstanceID)
             {
                 v2f o;
-                unity_ObjectToWorld._11_21_31_41 = float4(_ParticleRadius, 0, 0, 0);
-				unity_ObjectToWorld._12_22_32_42 = float4(0, _ParticleRadius, 0, 0);
-				unity_ObjectToWorld._13_23_33_43 = float4(0, 0, _ParticleRadius, 0);
-				unity_ObjectToWorld._14_24_34_44 = float4(_Particles[id].position.xyz, 1);
-    
-                unity_WorldToObject._11_21_31_41 = float4(1/_ParticleRadius, 0, 0, 0);
-                o.pos = UnityObjectToClipPos(v.pos);
+            #if SHADER_TARGET >= 45
+                float4 data = float4(_particles[id].position, 1.0);
+            #else
+                float4 data = 0;
+            #endif
+
+                float3 localPosition = v.vertex.xyz * _particleRadius;      // 스케일 적용
+                float3 worldPosition = data.xyz + localPosition;            // 위치 적용
+
+                o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
+                o.uv  = v.texcoord;
+                
                 return o;
             }
 
