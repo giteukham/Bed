@@ -93,6 +93,15 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("WoodDrop2 SFX")]
     [field: SerializeField] public EventReference woodDrop2 { get; private set; }
+
+    [field: Header("DogBark SFX")]
+    [field: SerializeField] public EventReference dogBark { get; private set; }
+
+    [field: Header("DogWhine SFX")]
+    [field: SerializeField] public EventReference dogWhine { get; private set; }
+
+    [field: Header("Mosquito SFX")]
+    [field: SerializeField] public EventReference mosquito { get; private set; }
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
