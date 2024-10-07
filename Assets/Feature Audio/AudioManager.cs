@@ -102,6 +102,9 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Mosquito SFX")]
     [field: SerializeField] public EventReference mosquito { get; private set; }
+
+    [field: Header("CatFight SFX")]
+    [field: SerializeField] public EventReference catFight { get; private set; }
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
