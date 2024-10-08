@@ -1,36 +1,42 @@
+//////////////////////////////////////
+///	DO NOT USE KOREAN IN THIS FILE ///
+//////////////////////////////////////
+
 #pragma kernel UpdateHash
 #pragma kernel Integrate
 
 #define GRAVITY 9.81
+#define THREAD_SIZE 256
 
 #include "SpatialHash.hlsl"
 
 struct Particle
 {
+	int id;
 	float3 position;
 	float4 color;
 };
 
 RWStructuredBuffer<Particle> _particles;
 RWStructuredBuffer<float3> _velocities;
-RWStructuredBuffer<uint> _cellIndices;
-RWStructuredBuffer<uint> _particlesIndicesInCell;
+RWStructuredBuffer<uint2> _cellLists;					// x is the cell index, y is the particle index
 
 float3 _boundingBox;
 float _particleRadius;
 float _damping;
 float _time;
 
-[numthreads(128, 1, 1)]
+[numthreads(THREAD_SIZE, 1, 1)]
 void UpdateHash(uint3 id : SV_DispatchThreadID)
 {
-	float space = _particleRadius * 2;
-	float3 cellPosition = GetCellCoord(_particles[id.x].position, space);
+	int tableSize = floor((_boundingBox.x / _particleRadius) * (_boundingBox.y / _particleRadius) * (_boundingBox.z / _particleRadius));
+	int3 cellPosition = GetCellCoord(_particles[id.x].position, _particleRadius);
 	
-	_cellIndices[id.x] = GetCellIndex(cellPosition, _boundingBox);
+	_cellLists[id.x].x = HashFunction(cellPosition, tableSize);
+	_cellLists[id.x].y = _particles[id.x].id;
 }
 
-[numthreads(128, 1, 1)]
+[numthreads(THREAD_SIZE, 1, 1)]
 void Integrate (uint3 id : SV_DispatchThreadID)
 {
 	//_velocities[id.x] = float3(0, -GRAVITY, 0) * _time;

@@ -1,0 +1,29 @@
+[Compute Shader]
+SV_DispatchThreadID (uint3) 는 numthreads * Dispatch로 계산한다.
+SV_GroupID (uint3) 는 dispatch로만 계산한다.
+SV_GroupThreadID (uint3) 는 numthreads로만 계산한다.
+SV_GroupIndex (uint) 는 numthreads.x * numthreads.y * numthreads.z - 1로 계산한다.
+
+(1d-dispatch-ids2 사진 참조)
+예를 들어 numthreads.x 가 256, Dispatch가 256일 경우
+SV_DispatchThreadID.x는 0 ~ 65536 SV_GroupThreadID.x는 0 ~ 255까지의 값을 가지고 SV_GroupID.x는 0이다.
+만약 DispatchThreadID가 계속 증가해서 255가 되면 GroupThreadId도 255가 되고 GroupId는 0이지만
+DispatchThreadID가 256이 되면 GroupThreadId는 0이 되고 GroupId는 1이 된다.
+
+
+
+(_ParallelSum.compute)
+groupshared는 thread group 내에서 공유되는 메모리이다. 즉, 같은 GroupId 내에서만 공유된다.
+ParallelSum 에 Thread_Size가 256이고 _buffer[gtid.x] = _numbers[tid.x]; 가 있는데
+이는 256개의 thread가 각 스레드가 동시에 _numbers[tid.x] 값을 읽어와서 _buffer[gtid.x]에 저장한다.
+마찬가지로 for문에서 stride가 128이고 if (gtid.x < stride) 이면 128번 쓰레드까지 _buffer[gtid.x] += _buffer[gtid.x + stride]; 를 실행한다.
+
+GroupMemoryBarrierWithGroupSync는 주로 groupshared 에다가 대입할 때 사용하는듯?
+
+
+Exclusive Prefix Sum을 통한 Parallel Radix Sort
+예를 들어 17, 8, 24, 5가 있으면 
+2진수는 10001, 01000, 11000, 00101 이다.
+이 중 0번째 비트를 보면 0이 2개, 1이 2개 이므로 Exclusive Prefix Sum는 [0, 2]이다.
+즉, 0번째 비트가 0인 것들을 앞으로 보내고 1인 것들을 뒤로 보내면 8, 24, 17, 5가 된다.
+

@@ -1,20 +1,16 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
-
 
 namespace Bed.Gimmick
 {
     public class ParticleSystem : MonoBehaviour
     {
         [StructLayout(LayoutKind.Sequential, Size = 28)]
-        public struct Particle
+        public struct Particle                  // TODO: 쉐이더 내 구조체와 동일하게 맞춰줘야함
         {
+            public int id;
             public Vector3 position;
             public Vector4 color;
         }
@@ -38,15 +34,13 @@ namespace Bed.Gimmick
         
         private Particle[] particles;
         private Vector3[] velocities;
-        private int[] cellIndices;
-        private int[] particlesIndicesInCell;
+        private Vector2Int[] cellLists;
         private int particleCount => particleNumOfSpawn.x * particleNumOfSpawn.y * particleNumOfSpawn.z;
         private int cellCount => Mathf.FloorToInt((particleBoundBox.x / particleRadius) * (particleBoundBox.y / particleRadius) * (particleBoundBox.z / particleRadius));
         
         private ComputeBuffer particleBuffer;
         private ComputeBuffer velocityBuffer;
-        private ComputeBuffer cellIndicesBuffer;
-        private ComputeBuffer particlesIndicesInCellBuffer;
+        private ComputeBuffer cellListBuffer;
         private GraphicsBuffer graphicsBuffer;
         private const int commandCount = 1;
 
@@ -58,8 +52,7 @@ namespace Bed.Gimmick
         private void Awake()
         {
             velocities = new Vector3[particleCount];
-            cellIndices = new int[cellCount];
-            particlesIndicesInCell = new int[cellCount];
+            cellLists = new Vector2Int[cellCount];
         }
 
         private void OnEnable()
@@ -78,7 +71,6 @@ namespace Bed.Gimmick
             };
             InitBuffers();
             InitComputeShader();
-            cellIndicesBuffer.GetData(cellIndices);
         }
 
         private void Update()
@@ -86,12 +78,12 @@ namespace Bed.Gimmick
             particleMaterial.SetBuffer("_particles", particleBuffer);
             particleMaterial.SetFloat("_particleRadius", particleRadius);
 
-
             computeShader.Dispatch(updateHashKernel, 128 * (128 / cellCount + 1), 1, 1);
             computeShader.Dispatch(integrateKernel, 128 * (128 / particleCount + 1), 1, 1);
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
             
-
+            cellListBuffer.GetData(cellLists);
+            
         }
 
         private void InitKernel()
@@ -106,6 +98,7 @@ namespace Bed.Gimmick
         private void SpawnParticles()
         {
             float x, y, z;
+            int index = 0;
             List<Particle> particleList = new List<Particle>();
             
             particleSpawnPoint = new Vector3()
@@ -125,8 +118,10 @@ namespace Bed.Gimmick
                 z = particleSpawnPoint.z + (k * particleRadius * 2f);
                 particleList.Add(new Particle()
                 {
+                    id = index,
                     position = new Vector3(x, y, z)
                 });
+                index++;
             }
             particles = particleList.ToArray();
         }
@@ -145,11 +140,8 @@ namespace Bed.Gimmick
             velocityBuffer = new ComputeBuffer(particleCount, 12);      // Vector3의 크기는 4 * 3
             velocityBuffer.SetData(velocities);
             
-            cellIndicesBuffer = new ComputeBuffer(cellCount, 4);         // int의 크기는 4
-            cellIndicesBuffer.SetData(cellIndices);
-            
-            particlesIndicesInCellBuffer = new ComputeBuffer(cellCount, 4);
-            particlesIndicesInCellBuffer.SetData(particlesIndicesInCell);
+            cellListBuffer = new ComputeBuffer(cellCount, 8);           // Vector2Int의 크기는 4 * 2
+            cellListBuffer.SetData(cellLists);
             
             graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, 1, GraphicsBuffer.IndirectDrawIndexedArgs.size);
             graphicsBuffer.SetData(commandData);
@@ -161,7 +153,7 @@ namespace Bed.Gimmick
             computeShader.SetBuffer(integrateKernel, "_velocities", velocityBuffer);
             
             computeShader.SetBuffer(updateHashKernel, "_particles", particleBuffer);
-            computeShader.SetBuffer(updateHashKernel, "_cellIndices", cellIndicesBuffer);
+            computeShader.SetBuffer(updateHashKernel, "_cellLists", cellListBuffer);
             
             computeShader.SetFloats("_boundingBox", particleBoundBox.x, particleBoundBox.y, particleBoundBox.z);
             computeShader.SetFloat("_particleRadius", particleRadius);
@@ -169,18 +161,27 @@ namespace Bed.Gimmick
             computeShader.SetFloat("_time", Time.deltaTime);
         }
 
+        private void OnDrawGizmos()
+        {
+            for (float i = 0; i < particleBoundBox.x; i++)
+            for (float j = 0; j < particleBoundBox.y; j++)
+            for (float k = 0; k < particleBoundBox.z; k++)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(new Vector3(i - 0.5f, j - 0.5f, k - 0.5f), Vector3.one * particleRadius);
+            }
+        }
+
         private void OnDisable()
         {
             graphicsBuffer?.Release();
             particleBuffer?.Release();
             velocityBuffer?.Release();
-            cellIndicesBuffer?.Release();
-            particlesIndicesInCellBuffer?.Release();
+            cellListBuffer?.Release();
             graphicsBuffer = null;
             particleBuffer = null;
             velocityBuffer = null;
-            cellIndicesBuffer = null;
-            particlesIndicesInCellBuffer = null;
+            cellListBuffer = null;
         }
 
     }

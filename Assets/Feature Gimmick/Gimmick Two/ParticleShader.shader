@@ -25,6 +25,7 @@ Shader "Custom/ParticleShader"
 
             struct Particle
             {
+                int id;
                 float3 position;
                 float4 color;
             };
