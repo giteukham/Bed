@@ -60,6 +60,8 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
+    [field: Header("Fear Whisper SFX")]
+    [field: SerializeField] public EventReference fearWhisper {get; private set;}
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
@@ -97,6 +99,11 @@ public class AudioManager : MonoBehaviour
         }
         while (playbackState != PLAYBACK_STATE.STOPPED);
         StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
+    }
+
+    public void SetPosition(EventReference _eventRef, Vector3 _pos)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
     }
 
     /// <summary>

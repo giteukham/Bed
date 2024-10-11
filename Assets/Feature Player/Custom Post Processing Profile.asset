@@ -43,20 +43,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb84e30e02715445aeb9959894e3b4d, type: 3}
   m_Name: ColorGrading
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   enabled:
     overrideState: 1
     value: 1
   gradingMode:
     overrideState: 0
-    value: 0
+    value: 1
   externalLut:
     overrideState: 0
     value: {fileID: 0}
     defaultState: 1
   tonemapper:
     overrideState: 0
-    value: 0
+    value: 1
   toneCurveToeStrength:
     overrideState: 0
     value: 0
@@ -84,37 +84,37 @@ MonoBehaviour:
     value: 1
   temperature:
     overrideState: 0
-    value: 0
+    value: -9
   tint:
     overrideState: 0
-    value: 0
+    value: -12
   colorFilter:
     overrideState: 0
-    value: {r: 1, g: 1, b: 1, a: 1}
+    value: {r: 0.9191374, g: 0.9191374, b: 0.9191374, a: 1}
   hueShift:
     overrideState: 0
-    value: 35
+    value: -163
   saturation:
     overrideState: 1
     value: -100
   brightness:
     overrideState: 0
-    value: 43
+    value: 97
   postExposure:
     overrideState: 0
     value: 0
   contrast:
-    overrideState: 1
-    value: 3
+    overrideState: 0
+    value: -0
   mixerRedOutRedIn:
     overrideState: 0
-    value: -200
+    value: 62
   mixerRedOutGreenIn:
     overrideState: 0
-    value: 200
+    value: -200
   mixerRedOutBlueIn:
     overrideState: 0
-    value: 200
+    value: -200
   mixerGreenOutRedIn:
     overrideState: 0
     value: -200
@@ -126,19 +126,19 @@ MonoBehaviour:
     value: -200
   mixerBlueOutRedIn:
     overrideState: 0
-    value: 0
+    value: 200
   mixerBlueOutGreenIn:
     overrideState: 0
-    value: 0
+    value: -23
   mixerBlueOutBlueIn:
     overrideState: 0
-    value: 100
+    value: -200
   lift:
     overrideState: 0
     value: {x: 1, y: 1, z: 1, w: 0.08613008}
   gamma:
     overrideState: 0
-    value: {x: 1, y: 1, z: 1, w: -0.7870505}
+    value: {x: 0.2104268, y: 1, z: 0.5028416, w: -0.7870505}
   gain:
     overrideState: 0
     value: {x: 1, y: 1, z: 1, w: 0.023760557}
@@ -1354,7 +1354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6050e2d5de785ce4d931e4dbdbf2d755, type: 3}
   m_Name: ChromaticAberration
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   enabled:
     overrideState: 1
     value: 1
@@ -1381,7 +1381,6 @@ MonoBehaviour:
   m_Name: Custom Post Processing Profile
   m_EditorClassIdentifier: 
   settings:
-  - {fileID: 7323642749870772070}
   - {fileID: 5683370028424917349}
   - {fileID: -3438642647430161878}
   - {fileID: -4957504371979467791}
@@ -1397,13 +1396,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65e486e4de6e5448a8fbb43dc8756a0, type: 3}
   m_Name: Grain
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   enabled:
     overrideState: 1
     value: 1
   colored:
     overrideState: 1
-    value: 0
+    value: 1
   intensity:
     overrideState: 1
     value: 1
@@ -1411,39 +1410,8 @@ MonoBehaviour:
     overrideState: 1
     value: 3
   lumContrib:
-    overrideState: 1
+    overrideState: 0
     value: 0
---- !u!114 &7323642749870772070
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ef224c15c7c8ef4c802b4f8811688aa, type: 3}
-  m_Name: CustomVignette
-  m_EditorClassIdentifier: 
-  active: 1
-  enabled:
-    overrideState: 1
-    value: 1
-  intensity:
-    overrideState: 1
-    value: 1.16
-  smoothness:
-    overrideState: 1
-    value: 2.34
-  roundness:
-    overrideState: 1
-    value: {x: 0.79, y: 0.71}
-  blink:
-    overrideState: 1
-    value: 0.001
-  center:
-    overrideState: 1
-    value: {x: 0.5, y: 0.5}
 --- !u!114 &8540819142721491170
 MonoBehaviour:
   m_ObjectHideFlags: 3

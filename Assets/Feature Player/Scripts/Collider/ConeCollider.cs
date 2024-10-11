@@ -2,16 +2,19 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 namespace Bed.Collider
 {
     public class ConeCollider : MonoBehaviour
     {
-        [SerializeField, Tooltip("가로")] private float horizontal = 8f;
-        [SerializeField, Tooltip("세로")] private float vertical = 3f;
-        [SerializeField, Tooltip("Z축 거리")] private float distance = 1f;
+        [SerializeField, Tooltip("가로")] private float horizontal;
+        [SerializeField, Tooltip("세로")] private float vertical;
+        [SerializeField, Tooltip("Z축 거리")] private float distance;
         [SerializeField, Range(4f, 100f), Tooltip("각짐 정도")] private int epllipseSegments;
         [SerializeField, Tooltip("디버그 이미지")] private GameObject debugImage;
-        private Vector2 debugImageSize;
+        private float debugImageVertical; // 디버그 이미지 Y 초기 값
+        private float debugImageVerticalValue;
+        private float coliderVerticalValue;
         private MeshCollider coneCollider;
         
         //TODO: Trigger Enter, Exit 구현
@@ -40,6 +43,11 @@ namespace Bed.Collider
             coneCollider.convex = true;
             coneCollider.isTrigger = true;
             coneCollider.hideFlags = HideFlags.HideInInspector;
+
+            debugImageVertical = vertical * 210;
+
+            coliderVerticalValue = vertical;
+            debugImageVerticalValue = debugImageVertical;
         }
 
         // 인스펙터에서 값이 변경될 때마다 호출
@@ -101,29 +109,27 @@ namespace Bed.Collider
         }
         public void SetColider(float value)
         {
-            debugImageSize = debugImage.GetComponent<RectTransform>().sizeDelta;    // 디버그 이미지 초기화
-
             if(!gameObject.activeSelf) gameObject.SetActive(true);
+            if(!debugImage.GetComponent<Image>().IsActive()) debugImage.GetComponent<Image>().enabled = true;
 
-            if(value < 0.5 ) horizontal = 8 * (1 - value);
-
-            if(1 - value * 2 > 0) vertical = 3 * (1 - value * 2);
-            else vertical = 3 * (1 - value);
-
-            debugImageSize = new Vector2(horizontal * 135, vertical * 130); // 디버그 이미지 사이즈 조절
-
-            if(value <= 0.001f) 
+            if(value == 0f) 
             {
-                horizontal = 8f;
-                vertical = 3f;
-                debugImageSize = new Vector2(1080, 390);    // 디버그 이미지 사이즈 조절
+                vertical = coliderVerticalValue;
+                 debugImage.GetComponent<RectTransform>().sizeDelta = 
+                        new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVertical); 
             }
             else if(value == 1)
             {
                 gameObject.SetActive(false);
+                 debugImage.GetComponent<Image>().enabled = false;
             }
-            debugImage.GetComponent<RectTransform>().sizeDelta = debugImageSize;    // 디버그 이미지 사이즈 조절
-
+            else if(value != 0 && value != 1)
+            {
+                vertical = coliderVerticalValue * (1 - value);
+                
+                debugImage.GetComponent<RectTransform>().sizeDelta =    // 디버그 이미지 사이즈 조절
+                        new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVerticalValue * (1 - value));    
+            }
             OnValidate();
         }
     }

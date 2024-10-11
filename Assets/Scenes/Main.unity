@@ -21,8 +21,8 @@ RenderSettings:
   m_LinearFogStart: 3.41
   m_LinearFogEnd: 12.3
   m_AmbientSkyColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_AmbientEquatorColor: {r: 0.043137256, g: 0.03137255, b: 0.047058824, a: 1}
-  m_AmbientGroundColor: {r: 0.06666667, g: 0.05490196, b: 0.0627451, a: 1}
+  m_AmbientEquatorColor: {r: 0, g: 0, b: 0, a: 1}
+  m_AmbientGroundColor: {r: 0.08894867, g: 0.08894867, b: 0.08894867, a: 1}
   m_AmbientIntensity: 2
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
@@ -2759,8 +2759,9 @@ MonoBehaviour:
   playerEyeStateMachine: {fileID: 1921701273}
   playerCamera: {fileID: 2142733324}
   inputSystem: {fileID: 1010110861}
-  postProcessingProfile: {fileID: 11400000, guid: 3df3b6d564b27e642baba19733326e6b, type: 2}
   coneCollider: {fileID: 801348871}
+  leftEar: {fileID: 0}
+  rightEar: {fileID: 0}
   mainCamera: {fileID: 1732393634}
 --- !u!1 &458945868
 GameObject:
@@ -3544,10 +3545,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5150df12bc324111aafcebe3796f22b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontal: 8
-  vertical: 3
-  distance: 14
-  epllipseSegments: 18
+  horizontal: 9
+  vertical: 4.65
+  distance: 9
+  epllipseSegments: 100
   debugImage: {fileID: 1385739452}
 --- !u!54 &801348872
 Rigidbody:
@@ -6290,7 +6291,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1080, y: 390}
+  m_SizeDelta: {x: 1890, y: 976.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1385739454
 MonoBehaviour:
@@ -6462,7 +6463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugStatsText: {fileID: 670431567}
   debugTimeText: {fileID: 1003692744}
-  debugImage: {fileID: 1385739452}
+  debugColiderImage: {fileID: 1385739452}
   mainCamera: {fileID: 1732393634}
 --- !u!1 &1396281236
 GameObject:
@@ -8453,6 +8454,7 @@ GameObject:
   - component: {fileID: 1732393638}
   - component: {fileID: 1732393639}
   - component: {fileID: 1732393641}
+  - component: {fileID: 1732393642}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -8682,7 +8684,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attenuationObject: {fileID: 0}
+  attenuationObject: {fileID: 917754561}
+--- !u!114 &1732393642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732393631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8096d24bc6f86334286d1ddd16e2b913, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blinkMat: {fileID: 2100000, guid: 95df678b22bf8144292fd33622f209a4, type: 2}
+  camera: {fileID: 1732393634}
 --- !u!1 &1737608015
 GameObject:
   m_ObjectHideFlags: 0
@@ -10290,6 +10306,13 @@ MonoBehaviour:
       Data3: 1427793310
       Data4: -591575045
     Path: event:/HornyBreath
+  <fearWhisper>k__BackingField:
+    Guid:
+      Data1: -1940432464
+      Data2: 1220174579
+      Data3: 1518286508
+      Data4: -1400683950
+    Path: event:/FearWhipser
 --- !u!33 &2139504209
 MeshFilter:
   m_ObjectHideFlags: 0

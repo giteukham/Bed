@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
+using PSXShaderKit;
 
 public enum PlayerDirectionStateTypes
 {
@@ -14,7 +15,6 @@ public enum PlayerDirectionStateTypes
     Middle,
     Right,
     Switching
-
 }
 
 public enum PlayerEyeStateTypes
@@ -42,11 +42,18 @@ public class Player : MonoBehaviour
     [Header("Input System")]
     [SerializeField] private InputSystem inputSystem;
     
-    [Header("Post Processing")]
-    [SerializeField] private PostProcessProfile postProcessingProfile;
-    private CustomVignette customVignette;
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
+
+    [Header("Ear Position")]
+    [SerializeField] private Transform leftEar, rightEar;
+
+    private float currentVolume;
+    private CinemachinePostProcessing postProcessing;
+    private ColorGrading colorGrading;
+    private Grain grain;
+    private ChromaticAberration chromaticAberration;
+    private PSXPostProcessEffect psxPostProcessEffect;
     
     #endregion
     
@@ -78,15 +85,26 @@ public class Player : MonoBehaviour
     private float deltaVerticalMouseMovement;
     #endregion
 
-
     private void Start()
     {
         TryGetComponent(out playerAnimation);
         
-        customVignette = postProcessingProfile.GetSetting<CustomVignette>();
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
-        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine, customVignette);
+        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
+
+        postProcessing = playerCamera.GetComponent<CinemachinePostProcessing>();
+
+        postProcessing.m_Profile.TryGetSettings(out colorGrading);
+        postProcessing.m_Profile.TryGetSettings(out grain);
+        postProcessing.m_Profile.TryGetSettings(out chromaticAberration);
+        psxPostProcessEffect = mainCamera.GetComponent<PSXPostProcessEffect>();
+
+        // leftFearWhisper = RuntimeManager.CreateInstance(fearWhisper);
+        // rightFearWhisper = RuntimeManager.CreateInstance(fearWhisper);
+        // leftFearWhisper.start();
+        // rightFearWhisper.start();
+        AudioManager.instance.PlaySound(AudioManager.instance.fearWhisper, transform.position);
     }
 
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -119,9 +137,10 @@ public class Player : MonoBehaviour
         }
         UpdateGauge();
         SetPlayerState();
-        //.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
+        UpdatePostProcessing();
+        UpdateSFX();
 
-        coneCollider.SetColider(customVignette.blink.value);
+        coneCollider.SetColider(BlinkEffect.Blink);
     }
 
     private void UpdateStats()
@@ -198,13 +217,44 @@ public class Player : MonoBehaviour
     {
         if (PlayerConstant.stressGauge >= PlayerConstant.stressGaugeMax) PlayerConstant.isFainting = true;
         else PlayerConstant.isFainting = false;
+        
         if (PlayerConstant.fearGauge >= PlayerConstant.fearGaugeMax) PlayerConstant.isParalysis = true;
         else PlayerConstant.isParalysis = false;
 
-        if (PlayerConstant.stressGauge > PlayerConstant.stressGaugeMax) PlayerConstant.stressGauge = PlayerConstant.stressGaugeMax;
-        if (PlayerConstant.fearGauge > PlayerConstant.fearGaugeMax) PlayerConstant.fearGauge = PlayerConstant.fearGaugeMax;
-        if (PlayerConstant.stressGauge < PlayerConstant.stressGaugeMin) PlayerConstant.stressGauge = PlayerConstant.stressGaugeMin;
-        if (PlayerConstant.fearGauge < PlayerConstant.fearGaugeMin) PlayerConstant.fearGauge = PlayerConstant.fearGaugeMin;
+        PlayerConstant.stressGauge = Mathf.Clamp(PlayerConstant.stressGauge, PlayerConstant.stressGaugeMin, PlayerConstant.stressGaugeMax);
+        PlayerConstant.fearGauge = Mathf.Clamp(PlayerConstant.fearGauge, PlayerConstant.fearGaugeMin, PlayerConstant.fearGaugeMax);
+    }
+
+    private void UpdatePostProcessing()
+    {
+        chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f;
+        grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
+        psxPostProcessEffect._PixelationFactor = 0.25f + (-PlayerConstant.fearGauge * 0.0015f);
+        colorGrading.saturation.value = -PlayerConstant.fearGauge;
+    }
+
+    private void UpdateSFX()
+    {
+        float targetVolume;
+
+        if (PlayerConstant.fearGauge <= 40) targetVolume = 0.0f;
+        else targetVolume = Mathf.Clamp((PlayerConstant.fearGauge - 40) / 60f, 0f, 1f);
+
+        if (currentVolume > targetVolume)
+        {
+            currentVolume -= 0.1f * Time.deltaTime;
+            currentVolume = Mathf.Max(currentVolume, targetVolume);
+        }
+
+        if (currentVolume < targetVolume)
+        {
+            currentVolume += 0.1f * Time.deltaTime;
+            currentVolume = Mathf.Min(currentVolume, targetVolume);
+        }
+
+        AudioManager.instance.SetPosition(AudioManager.instance.fearWhisper, transform.position);
+
+         AudioManager.instance.VolumeControl(AudioManager.instance.fearWhisper, currentVolume);
     }
 
     private void SetPlayerState()
@@ -223,6 +273,6 @@ public class Player : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        customVignette.blink.value = 0.001f;
+        BlinkEffect.Blink = 0.001f;
     }
 }
