@@ -8,6 +8,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 using PSXShaderKit;
+using System.Collections;
 
 public enum PlayerDirectionStateTypes
 {
@@ -227,10 +228,21 @@ public class Player : MonoBehaviour
 
     private void UpdatePostProcessing()
     {
-        chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f;
+        StartCoroutine(ChromaticAberrationEffect());
         grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
         psxPostProcessEffect._PixelationFactor = 0.25f + (-PlayerConstant.fearGauge * 0.0015f);
         colorGrading.saturation.value = -PlayerConstant.fearGauge;
+    }
+
+    IEnumerator ChromaticAberrationEffect()
+    {
+        while (true)
+        {
+            chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f;
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.2f));
+            chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f / UnityEngine.Random.Range(2f, 4f);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.2f));
+        }
     }
 
     private void UpdateSFX()
@@ -254,7 +266,7 @@ public class Player : MonoBehaviour
 
         AudioManager.instance.SetPosition(AudioManager.instance.fearWhisper, transform.position);
 
-         AudioManager.instance.VolumeControl(AudioManager.instance.fearWhisper, currentVolume);
+        AudioManager.instance.VolumeControl(AudioManager.instance.fearWhisper, currentVolume);
     }
 
     private void SetPlayerState()
