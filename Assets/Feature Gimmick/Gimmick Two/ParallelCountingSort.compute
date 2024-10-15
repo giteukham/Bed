@@ -5,32 +5,20 @@
 
 #pragma kernel CountingSort
 
+#include "DigitNumber.hlsl"
+
 #define THREAD_SIZE 256
 #define DIGIT_COUNT 10
 
-RWStructuredBuffer<uint> _inputBuffer;
-RWStructuredBuffer<uint> _sortedBuffer;
+RWStructuredBuffer<uint> _unsortedBuffer;
+RWStructuredBuffer<uint> _sortedBufferByCounting;
 RWStructuredBuffer<uint> _testBuffer;
 
 groupshared uint _localCountingBuffer[DIGIT_COUNT];
-groupshared uint _maxDigitNumber = 0;                           // Digit Number is the number of digits in a number.
+groupshared uint _localMaxFigureNumber = 0;
 
 int _inputBufferLength;
-
-inline uint GetDigitNumber(uint value)
-{
-    int digitNumber = 0;
-
-    for (uint i = value; i > 0; i /= 10)
-        digitNumber++;
-    
-    return digitNumber;
-}
-
-inline uint GetDigitValue(uint value, uint digitNumber)
-{
-    return (value / (uint)pow(10, digitNumber - 1)) % 10;
-}
+int _figureNumber;
 
 inline void ResetCountingBuffer()
 {
@@ -38,75 +26,49 @@ inline void ResetCountingBuffer()
         _localCountingBuffer[i] = 0;
 }
 
-void CalculateMaxDigitNumber()
-{
-    for (uint i = 0; i < _inputBufferLength; i++)
-        _maxDigitNumber = GetDigitNumber(_inputBuffer[i]) > _maxDigitNumber ? GetDigitNumber(_inputBuffer[i]) : _maxDigitNumber;
-}
-
-void CountingSortByDigit(uint valueIndex, uint3 gtid, uint3 gid, uint currentDigitNumber)
+void CountingSortByDigit(uint threadId, uint3 gid, uint currentFigureNumber)
 {
     // Increase the count of the digit value.
-    if (valueIndex < _inputBufferLength)            // If the valueIndex exceeds the inputBufferLength, All zeros are also counted.
+    // If the valueIndex exceeds the inputBufferLength, All zeros are also counted.
+    if (threadId < _inputBufferLength)                                                    
     {
-        int countIndex = GetDigitValue(_inputBuffer[valueIndex], currentDigitNumber);
+        int countIndex = GetDigitPlaceValue(_unsortedBuffer[threadId], currentFigureNumber);
         InterlockedAdd(_localCountingBuffer[countIndex], 1);
     }
     GroupMemoryBarrierWithGroupSync();
-    
-    // Exclusive Prefix Sum
-    // if (gtid.x == 0)
-    // {
-    //     uint sum = 0;
-    //     for (uint i = 0; i < DIGIT_COUNT; i++)
-    //     {
-    //         uint temp = _localCountingBuffer[i];
-    //         _localCountingBuffer[i] = sum;
-    //         sum += temp;
-    //     }
-    // }
-    // GroupMemoryBarrierWithGroupSync();
 
     // Inclusive Prefix Sum
     for (uint i = 1; i < DIGIT_COUNT; i++)
         _localCountingBuffer[i] += _localCountingBuffer[i - 1];
     GroupMemoryBarrierWithGroupSync();
 
-    // Sort the inputBuffer by the digit value.
-    if (valueIndex < _inputBufferLength)
+    // Sort the unsorted buffer by the digit value.
+    if (threadId < _inputBufferLength)
     {
-        uint digitValue = GetDigitValue(_inputBuffer[valueIndex], currentDigitNumber);
+        uint digitValue = GetDigitPlaceValue(_unsortedBuffer[threadId], currentFigureNumber);
         uint sortedIndex;
         
         InterlockedAdd(_localCountingBuffer[digitValue], -1, sortedIndex);
-        _sortedBuffer[(sortedIndex - 1) + gid.x * THREAD_SIZE] = _inputBuffer[valueIndex];
-        if (currentDigitNumber == 1)
-        _testBuffer[valueIndex] = _sortedBuffer[valueIndex];
+        _sortedBufferByCounting[(sortedIndex - 1) + gid.x * THREAD_SIZE] = _unsortedBuffer[threadId];
     }
     GroupMemoryBarrierWithGroupSync();
-            
-    _inputBuffer[valueIndex] = _sortedBuffer[valueIndex];
-    GroupMemoryBarrierWithGroupSync();
-
-
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
-void CountingSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
+void CountingSort(uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-    const uint valueIndex = gtid.x + gid.x * THREAD_SIZE;
+    const uint threadId = gtid.x + gid.x * THREAD_SIZE;
 
-    if (gtid.x == 0)
-        CalculateMaxDigitNumber();
+    const uint figureNumbers = GetFigureNumbers(_unsortedBuffer[threadId]);
+    InterlockedMax(_localMaxFigureNumber, figureNumbers);
     GroupMemoryBarrierWithGroupSync();
     
-    for (uint i = 1; i <= _maxDigitNumber; i++)
-    {
-        ResetCountingBuffer();
-        GroupMemoryBarrierWithGroupSync();
-        
-        CountingSortByDigit(valueIndex, gtid, gid, i);
-    }
+    _testBuffer[threadId] = _localMaxFigureNumber;
+    GroupMemoryBarrierWithGroupSync();
+
+    ResetCountingBuffer();
+    GroupMemoryBarrierWithGroupSync();
     
+    CountingSortByDigit(threadId, gid , 1);
 }
 
