@@ -26,8 +26,6 @@ public class PlayerEyeControl : IPlayerControl
     private PlayerEyeStates playerEyeStates;
 
     private float prevBlinkValue = 0f;
-    public int mouseCount = 0;
-    public float[] mouseBlinkValues = new float[] { BLINK_VALUE_MIN, 0.04f, 0.08f, 0.18f,  BLINK_VALUE_MAX};
     float elapsedTime = 0f;
     float durationTime = 0.12f;
     float lastScrollTime = 0;

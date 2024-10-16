@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public static class PlayerConstant
@@ -175,7 +176,7 @@ public static class PlayerConstant
         UpLookLAT = 0;
         DownLookLAT = 0;
     }
-    
+
     #region Player Eye Control Constants
     public static float blinkSpeed = 0.1f;    // ±ôºýÀÌ´Â ¼Óµµ
     #endregion

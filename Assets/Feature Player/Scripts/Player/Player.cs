@@ -45,17 +45,15 @@ public class Player : MonoBehaviour
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
+    #endregion
 
-    [Header("Ear Position")]
-    [SerializeField] private Transform leftEar, rightEar;
-
-    private float currentVolume;
+    #region Post Processing
     private CinemachinePostProcessing postProcessing;
     private ColorGrading colorGrading;
     private Grain grain;
     private ChromaticAberration chromaticAberration;
+    private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
-    
     #endregion
     
     #region Player Control Classes
@@ -85,7 +83,9 @@ public class Player : MonoBehaviour
     private float deltaHorizontalMouseMovement;
     private float deltaVerticalMouseMovement;
     #endregion
-
+    
+    private CinemachineBasicMultiChannelPerlin cameraNoise;
+    private float currentVolume;
     private void Start()
     {
         TryGetComponent(out playerAnimation);
@@ -94,17 +94,18 @@ public class Player : MonoBehaviour
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
 
+        // Post Processing
         postProcessing = playerCamera.GetComponent<CinemachinePostProcessing>();
-
         postProcessing.m_Profile.TryGetSettings(out colorGrading);
         postProcessing.m_Profile.TryGetSettings(out grain);
         postProcessing.m_Profile.TryGetSettings(out chromaticAberration);
+        postProcessing.m_Profile.TryGetSettings(out depthOfField);
         psxPostProcessEffect = mainCamera.GetComponent<PSXPostProcessEffect>();
 
-        // leftFearWhisper = RuntimeManager.CreateInstance(fearWhisper);
-        // rightFearWhisper = RuntimeManager.CreateInstance(fearWhisper);
-        // leftFearWhisper.start();
-        // rightFearWhisper.start();
+        // Camera Noise
+        cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        // Sound Play
         AudioManager.instance.PlaySound(AudioManager.instance.fearWhisper, transform.position);
     }
 
@@ -136,6 +137,7 @@ public class Player : MonoBehaviour
             UpdateStats();
             timeSinceLastUpdate = 0f;
         }
+        UpdateCamera();
         UpdateGauge();
         SetPlayerState();
         UpdatePostProcessing();
@@ -214,6 +216,13 @@ public class Player : MonoBehaviour
         // ----------------- Look Value -----------------
     }
 
+    private void UpdateCamera()
+    {
+        if (PlayerConstant.fearGauge < 40) cameraNoise.m_FrequencyGain = 0.5f;
+        else if (PlayerConstant.fearGauge >= 40 && PlayerConstant.fearGauge < 70) cameraNoise.m_FrequencyGain = 1f;
+        else if(PlayerConstant.fearGauge >= 70) cameraNoise.m_FrequencyGain = 1.5f;
+    }
+
     private void UpdateGauge() 
     {
         if (PlayerConstant.stressGauge >= PlayerConstant.stressGaugeMax) PlayerConstant.isFainting = true;
@@ -232,6 +241,7 @@ public class Player : MonoBehaviour
         grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
         psxPostProcessEffect._PixelationFactor = 0.25f + (-PlayerConstant.fearGauge * 0.0015f);
         colorGrading.saturation.value = -PlayerConstant.fearGauge;
+        depthOfField.focusDistance.value = 2.4f - (BlinkEffect.Blink * 2.4f);
     }
 
     IEnumerator ChromaticAberrationEffect()
@@ -249,7 +259,7 @@ public class Player : MonoBehaviour
     {
         float targetVolume;
 
-        if (PlayerConstant.fearGauge <= 40) targetVolume = 0.0f;
+        if (PlayerConstant.fearGauge < 40) targetVolume = 0.0f;
         else targetVolume = Mathf.Clamp((PlayerConstant.fearGauge - 40) / 60f, 0f, 1f);
 
         if (currentVolume > targetVolume)
@@ -287,4 +297,36 @@ public class Player : MonoBehaviour
     {
         BlinkEffect.Blink = 0.001f;
     }
+
+    private static Coroutine fearGaugeCoroutine;
+
+    // public static void SetFearGuage(int value)
+    // {
+    //     float targetValue = PlayerConstant.fearGauge + value;
+
+    //     if (fearGaugeCoroutine != null)
+    //     {
+    //         StopCoroutine(fearGaugeCoroutine);
+    //     }
+
+    //     fearGaugeCoroutine = StartCoroutine(ChangeFearGauge(targetValue));
+    // }
+
+    public static IEnumerator ChangeFearGauge(int targetValue)
+    {
+        float duration = 2f;
+        float elapsed = 0f;
+        float startValue = PlayerConstant.fearGauge;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            PlayerConstant.fearGauge = (int)Mathf.Lerp(startValue, targetValue, elapsed / duration);
+            yield return null; 
+        }
+
+        PlayerConstant.fearGauge = targetValue;
+        yield return null;
+    }
 }
+

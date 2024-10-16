@@ -2760,8 +2760,6 @@ MonoBehaviour:
   playerCamera: {fileID: 2142733324}
   inputSystem: {fileID: 1010110861}
   coneCollider: {fileID: 801348871}
-  leftEar: {fileID: 0}
-  rightEar: {fileID: 0}
   mainCamera: {fileID: 1732393634}
 --- !u!1 &458945868
 GameObject:
@@ -3274,7 +3272,93 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: DEBUG TEXT
+  m_text: '<size=130%><b>Play Time: <color=#ff808f></b>0/480</color></size>
+
+    <size=120%><b>Camera
+    Horizontal Value: <color=#80ffff></b>180</color></size>
+
+    <size=120%><b>Camera
+    Vertical Value: <color=#80ffff></b>2.249998</color></size>
+
+    <size=120%><b>Stress
+    Gauge: <color=#80ffff></b>0 / 100</color></size>
+
+    <size=120%><b>Fear Gauge:
+    <color=#80ffff></b>0 / 100</color></size>
+
+    isParalysis: <color=#80ffff>False</color>
+
+    EyeClosedCAT:
+    <color=yellow>0</color>
+
+    EyeClosedLAT: <color=yellow>0</color>
+
+    EyeBlinkCAT:
+    <color=yellow>0</color>
+
+    EyeBlinkLAT: <color=yellow>0</color>
+
+    HeadMovementCAT:
+    <color=yellow>0</color>
+
+    HeadMovementLAT: <color=yellow>0</color>
+
+    BodyMovementCAT:
+    <color=yellow>0</color>
+
+    BodyMovementLAT: <color=yellow>0</color>
+
+    LeftStateCAT:
+    <color=yellow>0</color>
+
+    LeftStateLAT: <color=yellow>0</color>
+
+    RightStateCAT:
+    <color=yellow>0</color>
+
+    RightStateLAT: <color=yellow>0</color>
+
+    MiddleStateCAT:
+    <color=yellow>0</color>
+
+    MiddleStateLAT: <color=yellow>0</color>
+
+    LeftLookCAT:
+    <color=yellow>0</color>
+
+    LeftLookLAT: <color=yellow>0</color>
+
+    LeftFrontLookCAT:
+    <color=yellow>0</color>
+
+    LeftFrontLookLAT: <color=yellow>0</color>
+
+    FrontLookCAT:
+    <color=yellow>0</color>
+
+    FrontLookLAT: <color=yellow>0</color>
+
+    RightFrontLookCAT:
+    <color=yellow>0</color>
+
+    RightFrontLookLAT: <color=yellow>0</color>
+
+    RightLookCAT:
+    <color=yellow>0</color>
+
+    RightLookLAT: <color=yellow>0</color>
+
+    UpLookCAT:
+    <color=yellow>0</color>
+
+    UpLookLAT: <color=yellow>0</color>
+
+    DownLookCAT:
+    <color=yellow>0</color>
+
+    DownLookLAT: <color=yellow>0</color>
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a6caaa98afacf8a43b8924a7aa63030c, type: 2}
   m_sharedMaterial: {fileID: 7168413294564023021, guid: a6caaa98afacf8a43b8924a7aa63030c, type: 2}
@@ -4491,7 +4575,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: DEBUG TEXT
+  m_text: '<size=150%>11h : 0m</size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a6caaa98afacf8a43b8924a7aa63030c, type: 2}
   m_sharedMaterial: {fileID: 7168413294564023021, guid: a6caaa98afacf8a43b8924a7aa63030c, type: 2}
@@ -4870,6 +4954,50 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1123347001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1123347002}
+  - component: {fileID: 1123347003}
+  m_Layer: 0
+  m_Name: Controllers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1123347002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123347001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1123347003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123347001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49b5847deb8987644ac9da2784afe82d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1139378657
 GameObject:
   m_ObjectHideFlags: 0
@@ -5197,6 +5325,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1219860291}
+  - component: {fileID: 1219860292}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -5223,6 +5352,18 @@ Transform:
   - {fileID: 290243063}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1219860292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219860290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c2c119125567d428f9690e6e493e1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1230513864
 GameObject:
   m_ObjectHideFlags: 0
@@ -8094,10 +8235,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NoiseProfile: {fileID: 11400000, guid: 46965f9cbaf525742a6da4c2172a99cd, type: 2}
+  m_NoiseProfile: {fileID: 11400000, guid: 022c12e24bfa1c647adb3071a879d651, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
-  m_AmplitudeGain: 0.7
-  m_FrequencyGain: 0.7
+  m_AmplitudeGain: 0.4
+  m_FrequencyGain: 0.5
   mNoiseOffsets: {x: -463.21378, y: 700.1338, z: -790.3928}
 --- !u!114 &1712329903
 MonoBehaviour:
@@ -8613,7 +8754,7 @@ MonoBehaviour:
     stationaryBlending: 0.95
     motionBlending: 0.85
   subpixelMorphologicalAntialiasing:
-    quality: 0
+    quality: 2
   fastApproximateAntialiasing:
     fastMode: 0
     keepAlpha: 1
@@ -11664,6 +11805,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1219860291}
+  - {fileID: 1123347002}
   - {fileID: 370423254}
   - {fileID: 1353767448}
   - {fileID: 427841145}

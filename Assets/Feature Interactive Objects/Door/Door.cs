@@ -8,7 +8,6 @@ public class Door : MonoBehaviour
 {
     static private GameObject door;
     private float doorInitialAngle = 270f;
-    static private Coroutine rotateDoor;
 
     static private bool isRotating = false;
 
@@ -27,7 +26,7 @@ public class Door : MonoBehaviour
     /// </summary>
     /// <param name="angle">각도</param>
     /// <param name="time">시간</param>
-    static public async void Set(float angle, float time)
+    public static async void Set(float angle, float time)
     {
         if(isRotating) return;
 

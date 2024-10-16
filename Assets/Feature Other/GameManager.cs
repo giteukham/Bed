@@ -50,13 +50,21 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.BackQuote) && Input.GetKey(KeyCode.LeftShift)) debugColiderImage.SetActive(!debugColiderImage.activeSelf);
 
-        if (Input.GetKeyDown(KeyCode.P) && !Input.GetKey(KeyCode.LeftShift)) PlayerConstant.fearGauge += 10;
+        if (Input.GetKeyDown(KeyCode.P) && !Input.GetKey(KeyCode.LeftShift)) StartCoroutine(Player.ChangeFearGauge(+20));
 
-        if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)) PlayerConstant.fearGauge -= 10;
+        if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)) StopCoroutine(Player.ChangeFearGauge(0));
 
-        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) PlayerConstant.stressGauge += 10;
+        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) StartCoroutine(Player.ChangeFearGauge(-20));
 
-        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) PlayerConstant.stressGauge -= 10;
+        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) StopCoroutine(Player.ChangeFearGauge(20));
+
+        // if (Input.GetKeyDown(KeyCode.P) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, 10);
+
+        // if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, -10);
+
+        // if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, 10);
+
+        // if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, -10);
 
         int hour = TimeManager.playTimeToMin >= 60 ? 11 + TimeManager.playTimeToMin / 60 - 12 : 11 + TimeManager.playTimeToMin / 60;
         int minute = TimeManager.playTimeToMin % 60;
@@ -69,8 +77,6 @@ public class GameManager : MonoBehaviour
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
                 $"<size=120%><b>Stress Gauge: <color=#80ffff></b>{PlayerConstant.stressGauge} / 100</color></size>\n" +
                 $"<size=120%><b>Fear Gauge: <color=#80ffff></b>{PlayerConstant.fearGauge} / 100</color></size>\n" +
-                // $"isEyeOpen: <color=#80ffff>{PlayerConstant.isEyeOpen}</color>\n" +
-                // $"isFainting: <color=#80ffff>{PlayerConstant.isFainting}</color>\n" +
                 $"isParalysis: <color=#80ffff>{PlayerConstant.isParalysis}</color>\n" +
                 $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
                 $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
