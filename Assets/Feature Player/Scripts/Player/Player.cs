@@ -9,6 +9,7 @@ using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
+using Unity.VisualScripting;
 
 public enum PlayerDirectionStateTypes
 {
@@ -218,10 +219,31 @@ public class Player : MonoBehaviour
 
     private void UpdateCamera()
     {
-        if (PlayerConstant.fearGauge < 40) cameraNoise.m_FrequencyGain = 0.5f;
-        else if (PlayerConstant.fearGauge >= 40 && PlayerConstant.fearGauge < 70) cameraNoise.m_FrequencyGain = 1f;
-        else if(PlayerConstant.fearGauge >= 70) cameraNoise.m_FrequencyGain = 1.5f;
+        if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 2f;
+        else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 1.5f;
+        else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 1f;
+        else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 0.5f;
+
+        StartCoroutine(StressShake());
     }
+
+    IEnumerator StressShake()
+    {
+        while (true)
+        {
+            float shakeIntensity = 0f;
+
+            if      (PlayerConstant.stressGauge >= 80) shakeIntensity = 1.3f;
+            else if (PlayerConstant.stressGauge >= 65) shakeIntensity = 0.75f;
+            else if (PlayerConstant.stressGauge >= 50) shakeIntensity = 0.35f;
+            else if (PlayerConstant.stressGauge >= 25) shakeIntensity = 0.1f;
+            else if (PlayerConstant.stressGauge < 25)  shakeIntensity = 0f;
+
+            playerCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
+            yield return null; 
+        }
+    }
+
 
     private void UpdateGauge() 
     {
@@ -241,7 +263,12 @@ public class Player : MonoBehaviour
         grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
         psxPostProcessEffect._PixelationFactor = 0.25f + (-PlayerConstant.fearGauge * 0.0015f);
         colorGrading.saturation.value = -PlayerConstant.fearGauge;
-        depthOfField.focusDistance.value = 2.4f - (BlinkEffect.Blink * 2.4f);
+
+        depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
+        if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
+        else if (BlinkEffect.Blink > 0.7f) depthOfField.kernelSize.value = KernelSize.Large;
+        else if (BlinkEffect.Blink > 0.57f) depthOfField.kernelSize.value = KernelSize.Medium;
+        else if (BlinkEffect.Blink > 0.45f) depthOfField.kernelSize.value = KernelSize.Small;
     }
 
     IEnumerator ChromaticAberrationEffect()
@@ -249,9 +276,9 @@ public class Player : MonoBehaviour
         while (true)
         {
             chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f;
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.2f));
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.03f, 0.12f));
             chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f / UnityEngine.Random.Range(2f, 4f);
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.2f));
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.03f, 0.1f));
         }
     }
 
@@ -296,37 +323,6 @@ public class Player : MonoBehaviour
     private void OnApplicationQuit()
     {
         BlinkEffect.Blink = 0.001f;
-    }
-
-    private static Coroutine fearGaugeCoroutine;
-
-    // public static void SetFearGuage(int value)
-    // {
-    //     float targetValue = PlayerConstant.fearGauge + value;
-
-    //     if (fearGaugeCoroutine != null)
-    //     {
-    //         StopCoroutine(fearGaugeCoroutine);
-    //     }
-
-    //     fearGaugeCoroutine = StartCoroutine(ChangeFearGauge(targetValue));
-    // }
-
-    public static IEnumerator ChangeFearGauge(int targetValue)
-    {
-        float duration = 2f;
-        float elapsed = 0f;
-        float startValue = PlayerConstant.fearGauge;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            PlayerConstant.fearGauge = (int)Mathf.Lerp(startValue, targetValue, elapsed / duration);
-            yield return null; 
-        }
-
-        PlayerConstant.fearGauge = targetValue;
-        yield return null;
     }
 }
 

@@ -50,21 +50,13 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.BackQuote) && Input.GetKey(KeyCode.LeftShift)) debugColiderImage.SetActive(!debugColiderImage.activeSelf);
 
-        if (Input.GetKeyDown(KeyCode.P) && !Input.GetKey(KeyCode.LeftShift)) StartCoroutine(Player.ChangeFearGauge(+20));
+        if (Input.GetKeyDown(KeyCode.F) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, 10);
 
-        if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)) StopCoroutine(Player.ChangeFearGauge(0));
+        if (Input.GetKeyDown(KeyCode.F) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, -10);
 
-        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) StartCoroutine(Player.ChangeFearGauge(-20));
+        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, 10);
 
-        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) StopCoroutine(Player.ChangeFearGauge(20));
-
-        // if (Input.GetKeyDown(KeyCode.P) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, 10);
-
-        // if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, -10);
-
-        // if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, 10);
-
-        // if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, -10);
+        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, -10);
 
         int hour = TimeManager.playTimeToMin >= 60 ? 11 + TimeManager.playTimeToMin / 60 - 12 : 11 + TimeManager.playTimeToMin / 60;
         int minute = TimeManager.playTimeToMin % 60;

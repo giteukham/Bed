@@ -31,22 +31,14 @@ public class GaugeController : MonoBehaviour
     {
         if (type == GaugeTypes.Fear) 
         {
-            if (fearGaugeCoroutine != null) 
-            {
-                fearTargetValue = PlayerConstant.fearGauge;
-                StopCoroutine(fearGaugeCoroutine);
-            }
+            if (fearGaugeCoroutine != null) StopCoroutine(fearGaugeCoroutine);
             fearTargetValue += value;
             fearTargetValue = Mathf.Clamp(fearTargetValue, 0, 100);
             fearGaugeCoroutine = StartCoroutine(UpdateGauge(type, fearTargetValue));
         }
         else 
         {
-            if (stressGaugeCoroutine != null) 
-            {
-                stressTargetValue = PlayerConstant.stressGauge;
-                StopCoroutine(stressGaugeCoroutine);
-            }
+            if (stressGaugeCoroutine != null) StopCoroutine(stressGaugeCoroutine);
             stressTargetValue += value;
             stressTargetValue = Mathf.Clamp(stressTargetValue, 0, 100);
             stressGaugeCoroutine = StartCoroutine(UpdateGauge(type, stressTargetValue));
@@ -56,7 +48,7 @@ public class GaugeController : MonoBehaviour
     private IEnumerator UpdateGauge(GaugeTypes type, float targetValue)
     {
         float startValue;
-        float duration = 2f;
+        float duration = 1f;
         float elapsed = 0f;
 
         if (type == GaugeTypes.Fear) 
