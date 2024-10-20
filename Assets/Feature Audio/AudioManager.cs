@@ -105,6 +105,12 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("CatFight SFX")]
     [field: SerializeField] public EventReference catFight { get; private set; }
+
+    [field: Header("Chair1 SFX")]
+    [field: SerializeField] public EventReference chair1 { get; private set; }
+
+    [field: Header("Chair2 SFX")]
+    [field: SerializeField] public EventReference chair2 { get; private set; }
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스

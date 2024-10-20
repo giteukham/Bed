@@ -6441,7 +6441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allGimicks:
-  - {fileID: 434161029}
+  - {fileID: 2034408318}
   unrealGimmick: {fileID: 0}
   humanGimmick: {fileID: 0}
   objectGimmick: {fileID: 0}
@@ -9937,6 +9937,67 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a4a49202652bc240a0ce6fb70691698, type: 3}
+--- !u!1001 &1677805839
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.736
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.641
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.292
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_Name
+      value: Zombiegirl W Kurniawan@Low Crawl
+      objectReference: {fileID: 0}
+    - target: {fileID: 8460042987342472986, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.221
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7a04afe1fb186c84680baeffcade8e8b, type: 3}
 --- !u!33 &1680570810
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -12276,12 +12337,13 @@ GameObject:
   - component: {fileID: 2034408317}
   - component: {fileID: 2034408316}
   - component: {fileID: 2034408315}
+  - component: {fileID: 2034408318}
   m_Layer: 0
   m_Name: ChairGimmick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!33 &2034408315
 MeshFilter:
@@ -12348,6 +12410,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 203.225, z: 0}
+--- !u!114 &2034408318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034408314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba41211e44e888b43b33ed947458767d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDetected: 0
 --- !u!1 &2038450822
 GameObject:
   m_ObjectHideFlags: 0
@@ -13163,6 +13238,20 @@ MonoBehaviour:
       Data3: 1088278703
       Data4: 166828503
     Path: event:/CatFight
+  <chair1>k__BackingField:
+    Guid:
+      Data1: -917096060
+      Data2: 1245927640
+      Data3: 246130830
+      Data4: 143589832
+    Path: event:/Chair1
+  <chair2>k__BackingField:
+    Guid:
+      Data1: 128623519
+      Data2: 1234548328
+      Data3: 1837391548
+      Data4: 658831443
+    Path: event:/Chair2
 --- !u!1 &2133688424
 GameObject:
   m_ObjectHideFlags: 0
@@ -18781,3 +18870,4 @@ SceneRoots:
   - {fileID: 915590245}
   - {fileID: 434161030}
   - {fileID: 2034408317}
+  - {fileID: 1677805839}

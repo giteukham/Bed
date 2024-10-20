@@ -10,7 +10,8 @@ public class ChairGimmick : Gimmick
 
     private void Awake()
     {
-        gameObject.SetActive(false);
+        //의자기믹은 처음부터 사라지지 않고 계속 있는걸로
+        //gameObject.SetActive(false);
     }
 
     private void Update()
@@ -38,12 +39,41 @@ public class ChairGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        yield return null;
         //의자바퀴소리
+        AudioManager.instance.PlaySound(AudioManager.instance.chair1, transform.position);
         //약간 좌측으로 이동
+        timeLimit = 0;
+        while (timeLimit <= 1.3f)
+        {
+            yield return null;
+            transform.Translate(Vector3.left * Time.deltaTime * 0.2f);
+        }
+
+        yield return new WaitForSeconds(1.1f);
+
+        //의자바퀴소리
+        AudioManager.instance.PlaySound(AudioManager.instance.chair2, transform.position);
+        //약간 좌측으로 이동
+        timeLimit = 0;
+        while (timeLimit <= 3f)
+        {
+            yield return null;
+            transform.Translate(Vector3.left * Time.deltaTime * 0.3f);
+        }
 
         yield return new WaitForSeconds(4);
 
-        //갑자기 벽쪽으로 던져짐
+        //의자바퀴소리
+        AudioManager.instance.PlaySound(AudioManager.instance.chair1, transform.position);
+        //의자 돌아감
+        timeLimit = 0;
+        while (timeLimit <= 5)
+        {
+            yield return null;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 4.3f, 0), Time.deltaTime);
+        }
+
+        //의자 기믹은 단 한번만 나오게 함
+        Probability = 0;
     }
 }
