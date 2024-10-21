@@ -1,16 +1,74 @@
-#pragma kernel GlobalHistogram
+//////////////////////////////////////
+///	DO NOT USE KOREAN IN THIS FILE ///
+//////////////////////////////////////
+
+#pragma kernel RadixSort
+#pragma kernel LocalMaskScan
 
 #define THREAD_SIZE 256
 
-StructuredBuffer<uint2> _inputBuffer;
-RWStructuredBuffer<uint2> _outputBuffer;
+StructuredBuffer<uint> _unsortedBuffer;
+StructuredBuffer<uint> _prefixBlockSumsBuffer;
+RWStructuredBuffer<uint> _localMaskPrefixSumBuffer;
+RWStructuredBuffer<uint> _blockSumsBuffer;
+RWStructuredBuffer<uint> _sortedGlobalPositionBuffer;
+RWStructuredBuffer<uint> _sortedBufferByRadix;
 
-groupshared uint2 _hist[THREAD_SIZE];
+uint _elementCount;
+int _blockSumGroupCount;
+int _bitShift;
+
+groupshared uint _localMaskPrefixSumData[THREAD_SIZE];
 
 [numthreads(THREAD_SIZE, 1, 1)]
-void GlobalHistogram(uint3 gtid : SV_GroupThreadID, uint gid : SV_GroupID)
+void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	_hist[gtid.x] = _inputBuffer[gtid.x + gid.x * THREAD_SIZE];
+	const uint extract2bit = (_unsortedBuffer[tid.x] >> _bitShift) & 0x3;
+	
+	if (tid.x >= _elementCount)
+		return;
+	
+	uint inclusiveSum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		const bool isMask = extract2bit == i;
+		_localMaskPrefixSumData[tid.x] = (uint)isMask;
+	
+		// Inclusive Prefix Sum
+		for (int j = 1; j < THREAD_SIZE; j <<= 1)
+		{
+			if (tid.x >= j)
+			{
+				inclusiveSum = _localMaskPrefixSumData[tid.x] + _localMaskPrefixSumData[tid.x - j];
+			}
+			else
+			{
+				inclusiveSum = _localMaskPrefixSumData[tid.x];
+			}
+			
+			_localMaskPrefixSumData[tid.x] = inclusiveSum;
+		}
+
+		if (gtid.x == THREAD_SIZE - 1 || gtid.x == _elementCount - 1)
+		{
+			_blockSumsBuffer[i * _blockSumGroupCount + gid.x] = _localMaskPrefixSumData[tid.x];
+		}
+		_localMaskPrefixSumBuffer[tid.x] = _localMaskPrefixSumData[tid.x];
+	}
 	GroupMemoryBarrierWithGroupSync();
+}
+
+[numthreads(THREAD_SIZE, 1, 1)]
+void RadixSort(uint3 tid : SV_DispatchThreadID, uint gid : SV_GroupID)
+{
+	const uint extract2bit = (_unsortedBuffer[tid.x] >> _bitShift) & 0x3;
+	const uint prefixSum = _localMaskPrefixSumBuffer[tid.x];
+	const uint pos = _prefixBlockSumsBuffer[extract2bit * 4 + (gid + 1)] + prefixSum;
+	GroupMemoryBarrierWithGroupSync();
+	
+	if (_bitShift == 0)
+	_sortedBufferByRadix[pos] = _unsortedBuffer[tid.x] + 100;
+	GroupMemoryBarrierWithGroupSync();
+	
 }
 

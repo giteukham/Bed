@@ -1,0 +1,61 @@
+
+#pragma kernel GlobalBlockScan
+
+#define THREAD_SIZE 256
+
+StructuredBuffer<uint> _localBlockSumsBuffer;
+RWStructuredBuffer<uint> _prefixBlockSumsBuffer;
+
+groupshared uint _prefixBlockSumData[THREAD_SIZE];
+int _bitShift;
+
+[numthreads(THREAD_SIZE, 1, 1)]
+void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint gid : SV_GroupID)
+{
+	uint offset = 1;
+	_prefixBlockSumData[tid.x] = _localBlockSumsBuffer[tid.x];
+
+	[unroll]
+	for (uint d = THREAD_SIZE >> 1; d > 0; d >>= 1)
+	{
+		GroupMemoryBarrierWithGroupSync();
+
+		if (gtid.x < d)
+		{
+			uint ai = offset * (2 * gtid.x + 1) - 1;
+			uint bi = offset * (2 * gtid.x + 2) - 1;
+
+			_prefixBlockSumData[bi] += _prefixBlockSumData[ai];
+		}
+
+		offset <<= 1;
+	}
+
+	if (gtid.x == 0)
+	{
+		_prefixBlockSumData[THREAD_SIZE - 1] = 0;
+	}
+
+	[unroll]
+	for (uint d = 1; d < THREAD_SIZE; d <<= 1)
+	{
+		offset >>= 1;
+
+		GroupMemoryBarrierWithGroupSync();
+
+		if (gtid.x < d)
+		{
+			uint ai = offset * (2 * gtid.x + 1) - 1;
+			uint bi = offset * (2 * gtid.x + 2) - 1;
+
+			uint t = _prefixBlockSumData[ai];
+			_prefixBlockSumData[ai] = _prefixBlockSumData[bi];
+			_prefixBlockSumData[bi] += t;
+		}
+	}
+	GroupMemoryBarrierWithGroupSync();
+
+	if (_bitShift == 0)
+	_prefixBlockSumsBuffer[tid.x] = _prefixBlockSumData[tid.x];
+	GroupMemoryBarrierWithGroupSync();
+}
