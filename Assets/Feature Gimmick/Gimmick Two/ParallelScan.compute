@@ -4,43 +4,44 @@
 #define THREAD_SIZE 256
 
 StructuredBuffer<uint> _localBlockSumsBuffer;
-RWStructuredBuffer<uint> _prefixBlockSumsBuffer;
+RWStructuredBuffer<uint> _blockSumsScanBuffer;
 
-groupshared uint _prefixBlockSumData[THREAD_SIZE];
+groupshared uint _blockSumsScanData[THREAD_SIZE];
 int _bitShift;
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint gid : SV_GroupID)
 {
 	uint offset = 1;
-	_prefixBlockSumData[tid.x] = _localBlockSumsBuffer[tid.x];
+	_blockSumsScanData[tid.x] = _localBlockSumsBuffer[tid.x];
+	GroupMemoryBarrierWithGroupSync();
 
 	[unroll]
 	for (uint d = THREAD_SIZE >> 1; d > 0; d >>= 1)
 	{
-		GroupMemoryBarrierWithGroupSync();
-
 		if (gtid.x < d)
 		{
 			uint ai = offset * (2 * gtid.x + 1) - 1;
 			uint bi = offset * (2 * gtid.x + 2) - 1;
 
-			_prefixBlockSumData[bi] += _prefixBlockSumData[ai];
+			_blockSumsScanData[bi] += _blockSumsScanData[ai];
 		}
+		GroupMemoryBarrierWithGroupSync();
 
 		offset <<= 1;
+		GroupMemoryBarrierWithGroupSync();
 	}
 
 	if (gtid.x == 0)
 	{
-		_prefixBlockSumData[THREAD_SIZE - 1] = 0;
+		_blockSumsScanData[THREAD_SIZE - 1] = 0;
 	}
+	GroupMemoryBarrierWithGroupSync();
 
 	[unroll]
 	for (uint d = 1; d < THREAD_SIZE; d <<= 1)
 	{
 		offset >>= 1;
-
 		GroupMemoryBarrierWithGroupSync();
 
 		if (gtid.x < d)
@@ -48,14 +49,14 @@ void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThrea
 			uint ai = offset * (2 * gtid.x + 1) - 1;
 			uint bi = offset * (2 * gtid.x + 2) - 1;
 
-			uint t = _prefixBlockSumData[ai];
-			_prefixBlockSumData[ai] = _prefixBlockSumData[bi];
-			_prefixBlockSumData[bi] += t;
+			uint t = _blockSumsScanData[ai];
+			_blockSumsScanData[ai] = _blockSumsScanData[bi];
+			_blockSumsScanData[bi] += t;
 		}
+		GroupMemoryBarrierWithGroupSync();
 	}
 	GroupMemoryBarrierWithGroupSync();
-
-	if (_bitShift == 0)
-	_prefixBlockSumsBuffer[tid.x] = _prefixBlockSumData[tid.x];
+	
+	_blockSumsScanBuffer[tid.x] = _blockSumsScanData[tid.x];
 	GroupMemoryBarrierWithGroupSync();
 }
