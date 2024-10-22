@@ -7,7 +7,10 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
-
+            PlayerConstant.isLeftState = true;
+            PlayerConstant.isMiddleState = false;
+            PlayerConstant.isRightState = false;
+            PlayerConstant.isMovingState = false;
         }
         
         public void Execute()
@@ -25,7 +28,7 @@ public class PlayerDirectionStates
         
         public void Exit()
         {
-            
+            PlayerConstant.isLeftState = false;
         }
     }
 
@@ -33,6 +36,10 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
+            PlayerConstant.isLeftState = false;
+            PlayerConstant.isMiddleState = true;
+            PlayerConstant.isRightState = false;
+            PlayerConstant.isMovingState = false;
         }
         
         public void Execute()
@@ -54,7 +61,7 @@ public class PlayerDirectionStates
         
         public void Exit()
         {
-            
+            PlayerConstant.isMiddleState = false;
         }
     }
         
@@ -62,6 +69,10 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
+            PlayerConstant.isLeftState = false;
+            PlayerConstant.isMiddleState = false;
+            PlayerConstant.isRightState = true;
+            PlayerConstant.isMovingState = false;
         }
         public void Execute()
         {
@@ -78,7 +89,7 @@ public class PlayerDirectionStates
         
         public void Exit()
         {
-            
+            PlayerConstant.isRightState = false;
         }
     }
 
@@ -86,17 +97,20 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
-            
+            PlayerConstant.isLeftState = false;
+            PlayerConstant.isMiddleState = false;
+            PlayerConstant.isRightState = false;
+            PlayerConstant.isMovingState = true;
         }
 
         public void Execute()
         {
-            
+
         }
 
         public void Exit()
         {
-            
+            PlayerConstant.isMovingState = false;
         }
     }
 }

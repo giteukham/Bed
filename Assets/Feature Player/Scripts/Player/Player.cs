@@ -31,14 +31,14 @@ public enum PlayerEyeStateTypes
 [RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
 {
-    [Header("State Machine")]
-    [SerializeField] private StateMachine playerDirectionStateMachine;
-    [SerializeField] private StateMachine playerEyeStateMachine;
-    
     #region Player Components
     [Header("Player Camera")]
     [SerializeField] private CinemachineVirtualCamera playerCamera;
     
+    [Header("State Machine")]
+    [SerializeField] private StateMachine playerDirectionStateMachine;
+    [SerializeField] private StateMachine playerEyeStateMachine;
+
     private PlayerAnimation playerAnimation;
     
     [Header("Input System")]
@@ -48,13 +48,14 @@ public class Player : MonoBehaviour
     [SerializeField] private ConeCollider coneCollider;
     #endregion
 
-    #region Post Processing
+    #region Camera Effect Variables
     private CinemachinePostProcessing postProcessing;
     private ColorGrading colorGrading;
     private Grain grain;
     private ChromaticAberration chromaticAberration;
     private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
+    private CinemachineBasicMultiChannelPerlin cameraNoise;
     #endregion
     
     #region Player Control Classes
@@ -85,8 +86,16 @@ public class Player : MonoBehaviour
     private float deltaVerticalMouseMovement;
     #endregion
     
-    private CinemachineBasicMultiChannelPerlin cameraNoise;
-    private float currentVolume;
+    #region Sound Effect Variables
+    [SerializeField]private Transform playerPillowSoundPosition;
+    private Vector3 playerPillowSoundInitPosition;
+    private Vector3 playerPillowSoundInitRotation;
+    private float breathTime;
+    private float currentFearSFXVolume, currentStressSFXVolume, currentHeadMoveSFXVolume;
+    private bool exhaleCheck = false; // false면 들숨, true면 날숨
+    private Coroutine headMoveSFXCoroutine;
+    #endregion
+
     private void Start()
     {
         TryGetComponent(out playerAnimation);
@@ -107,7 +116,12 @@ public class Player : MonoBehaviour
         cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
-        AudioManager.instance.PlaySound(AudioManager.instance.fearWhisper, transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.fearHal, transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.stressHal, transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.headMove, transform.position);
+
+        playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
+        playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
     }
 
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -143,7 +157,6 @@ public class Player : MonoBehaviour
         SetPlayerState();
         UpdatePostProcessing();
         UpdateSFX();
-
         coneCollider.SetColider(BlinkEffect.Blink);
     }
 
@@ -219,10 +232,10 @@ public class Player : MonoBehaviour
 
     private void UpdateCamera()
     {
-        if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 2f;
-        else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 1.5f;
-        else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 1f;
-        else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 0.5f;
+        if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 4f;
+        else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 3f;
+        else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 2f;
+        else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 1f;
 
         StartCoroutine(StressShake());
     }
@@ -240,7 +253,7 @@ public class Player : MonoBehaviour
             else if (PlayerConstant.stressGauge < 25)  shakeIntensity = 0f;
 
             playerCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
-            yield return null; 
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -284,26 +297,119 @@ public class Player : MonoBehaviour
 
     private void UpdateSFX()
     {
-        float targetVolume;
+        playerPillowSoundPosition.position = new Vector3(this.transform.position.x, playerPillowSoundInitPosition.y, playerPillowSoundInitPosition.z);
+        playerPillowSoundPosition.eulerAngles = new Vector3(playerPillowSoundInitRotation.x, playerPillowSoundInitRotation.y, playerPillowSoundInitRotation.z);
+        
+        // 위치 조정
+        AudioManager.instance.SetPosition(AudioManager.instance.fearHal, transform.position);
+        AudioManager.instance.SetPosition(AudioManager.instance.stressHal, transform.position);
+        AudioManager.instance.SetPosition(AudioManager.instance.headMove, playerPillowSoundPosition.position);
+        // 위치 조정
 
-        if (PlayerConstant.fearGauge < 40) targetVolume = 0.0f;
-        else targetVolume = Mathf.Clamp((PlayerConstant.fearGauge - 40) / 60f, 0f, 1f);
-
-        if (currentVolume > targetVolume)
+        // --------머리 움직임 소리
+        if (deltaHorizontalMouseMovement > 0f || deltaVerticalMouseMovement > 0f || PlayerConstant.isMovingState)  
         {
-            currentVolume -= 0.1f * Time.deltaTime;
-            currentVolume = Mathf.Max(currentVolume, targetVolume);
+            if (PlayerConstant.isRightState || PlayerConstant.isLeftState) AudioManager.instance.SetParameter(AudioManager.instance.headMove, "Lowpass", 1.6f);
+            else AudioManager.instance.SetParameter(AudioManager.instance.headMove, "Lowpass", 4.5f);
+
+            if(AudioManager.instance.GetVolume(AudioManager.instance.headMove) < 1.0f) 
+            {
+                if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+                headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
+            }
+        }
+        else 
+        {
+            if(AudioManager.instance.GetVolume(AudioManager.instance.headMove) > 0.0f) 
+            {
+                if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+                headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
+            }
         }
 
-        if (currentVolume < targetVolume)
+        IEnumerator headMoveSFXSet(bool _Up)
         {
-            currentVolume += 0.1f * Time.deltaTime;
-            currentVolume = Mathf.Min(currentVolume, targetVolume);
+            float volume = AudioManager.instance.GetVolume(AudioManager.instance.headMove);
+
+            if(_Up)
+            {
+                AudioManager.instance.ResumeSound(AudioManager.instance.headMove);
+                while(volume < 1.0f)
+                {
+                    volume += 0.1f;
+                    volume = Mathf.Clamp(volume, 0.0f, 1.0f);
+                    AudioManager.instance.VolumeControl(AudioManager.instance.headMove, volume);
+                    yield return new WaitForSeconds(0.1f);
+                }
+                headMoveSFXCoroutine = null;
+            }
+            else
+            {
+                while(volume > 0.0f)
+                {
+                    volume -= 0.1f;
+                    volume = Mathf.Clamp(volume, 0.0f, 1.0f);
+                    AudioManager.instance.VolumeControl(AudioManager.instance.headMove, volume);
+                    yield return new WaitForSeconds(0.1f);
+                }
+                AudioManager.instance.PauseSound(AudioManager.instance.headMove);
+                headMoveSFXCoroutine = null;
+            }
+        }   
+        // --------머리 움직임 소리
+
+        // --------------------숨소리
+        breathTime += Time.deltaTime * (cameraNoise.m_FrequencyGain * 0.25f);
+        if (breathTime >= 0.5f && exhaleCheck == false) 
+        { 
+            breathTime = 0.0f; 
+            AudioManager.instance.PlayOneShot(AudioManager.instance.inhale, transform.position);
+            exhaleCheck = true;
+        }
+        if (breathTime >= 0.5f && exhaleCheck == true)
+        {
+            breathTime = 0.0f;
+            AudioManager.instance.PlayOneShot(AudioManager.instance.exhale, transform.position);
+            exhaleCheck = false;
+        }
+        // --------------------숨소리
+
+        // -------------------------------------게이지 효과음
+        float targetFearSFXVolume, targetStressSFXVolume;
+
+        if (PlayerConstant.fearGauge < 40) targetFearSFXVolume = 0.0f;
+        else targetFearSFXVolume = Mathf.Clamp((PlayerConstant.fearGauge - 39) / 60f, 0f, 1f);
+
+        if (PlayerConstant.stressGauge < 25) targetStressSFXVolume = 0.0f;
+        else targetStressSFXVolume = Mathf.Clamp((PlayerConstant.stressGauge - 25) / 75f, 0f, 1f);
+
+        if (currentFearSFXVolume > targetFearSFXVolume)
+        {
+            currentFearSFXVolume -= 0.1f * Time.deltaTime;
+            currentFearSFXVolume = Mathf.Max(currentFearSFXVolume, targetFearSFXVolume);
         }
 
-        AudioManager.instance.SetPosition(AudioManager.instance.fearWhisper, transform.position);
+        if (currentFearSFXVolume < targetFearSFXVolume)
+        {
+            currentFearSFXVolume += 0.1f * Time.deltaTime;
+            currentFearSFXVolume = Mathf.Min(currentFearSFXVolume, targetFearSFXVolume);
+        }
 
-        AudioManager.instance.VolumeControl(AudioManager.instance.fearWhisper, currentVolume);
+        if (currentStressSFXVolume > targetStressSFXVolume)
+        {
+            currentStressSFXVolume -= 0.1f * Time.deltaTime;
+            currentStressSFXVolume = Mathf.Max(currentStressSFXVolume, targetStressSFXVolume);
+        }
+
+        if (currentStressSFXVolume < targetStressSFXVolume)
+        {
+            currentStressSFXVolume += 0.1f * Time.deltaTime;
+            currentStressSFXVolume = Mathf.Min(currentStressSFXVolume, targetStressSFXVolume);
+        }
+
+        AudioManager.instance.VolumeControl(AudioManager.instance.fearHal, currentFearSFXVolume);
+        AudioManager.instance.VolumeControl(AudioManager.instance.stressHal, currentStressSFXVolume);
+        // -------------------------------------게이지 효과음
     }
 
     private void SetPlayerState()

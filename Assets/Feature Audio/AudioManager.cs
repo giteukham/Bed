@@ -60,8 +60,21 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
+    
     [field: Header("Fear Whisper SFX")]
-    [field: SerializeField] public EventReference fearWhisper {get; private set;}
+    [field: SerializeField] public EventReference fearHal {get; private set;}
+
+    [field: Header("Stress Hallucination SFX")]
+    [field: SerializeField] public EventReference stressHal {get; private set;}
+
+    [field: Header("Player Inhale SFX")]
+    [field: SerializeField] public EventReference inhale {get; private set;}
+
+    [field: Header("Player Exhale SFX")]
+    [field: SerializeField] public EventReference exhale {get; private set;}
+
+    [field: Header("Head Move On Pillow SFX")]
+    [field: SerializeField] public EventReference headMove {get; private set;}
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
@@ -101,6 +114,14 @@ public class AudioManager : MonoBehaviour
         StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 
+    public void PlayOneShot(EventReference _eventRef, Vector3 _pos)
+    {
+        RuntimeManager.PlayOneShot(_eventRef, _pos);
+    }
+
+    /// <summary>
+    /// 소리 위치 설정
+    /// </summary>
     public void SetPosition(EventReference _eventRef, Vector3 _pos)
     {
         if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
@@ -172,5 +193,53 @@ public class AudioManager : MonoBehaviour
     public void VolumeControl(EventReference _eventRef, float _volume)
     {
         if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setVolume(_volume);
+    }
+
+    /// <summary>
+    /// 볼륨 값 가져오기
+    /// </summary>
+    public float GetVolume(EventReference _eventRef)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            float volume;
+            eventInstance.getVolume(out volume);
+            return volume;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// 효과음 중복 체크
+    /// </summary>
+    public bool DuplicateCheck(EventReference _eventRef)
+    {
+        if (eventInstances.ContainsKey(_eventRef)) return true;
+        return false;
+    }
+
+    /// <summary>
+    /// 파라미터 값 설정
+    /// </summary>
+    /// <param name="_paramName">파라미터 이름</param>
+    /// <param name="_value">파라미터 값</param>
+    public void SetParameter(EventReference _eventRef, string _paramName, float _value)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setParameterByName(_paramName, _value);
+    }
+
+    /// <summary>
+    /// 파라미터 값 가져오기
+    /// </summary>
+    /// <param name="_paramName">파라미터 이름</param>
+    public float GetParameter(EventReference _eventRef, string _paramName)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            float value;
+            eventInstance.getParameterByName(_paramName, out value);
+            return value;
+        }
+        return 0;
     }
 }
