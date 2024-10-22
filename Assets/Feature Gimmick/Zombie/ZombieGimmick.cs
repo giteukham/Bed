@@ -99,7 +99,7 @@ public class ZombieGimmick : Gimmick
         rig.velocity = Vector3.zero;
 
         //플레이어 위에 착지 후 물어뜯는 모션(화면 붉어지는 효과 있으면 좋을듯)
-        //현재 물어뜯는 모션 잠깐 갔다가 갑자기 기어가는 모션이 다시 실행되는 오류 있음
+        //현재 물어뜯는 모션 잠깐 갔다가 갑자기 기어가는 모션이 다시 실행되는 오류 있음 : animator.speed와는 연관없음
         animator.speed = 1;
         animator.SetTrigger("Biting");
     }
