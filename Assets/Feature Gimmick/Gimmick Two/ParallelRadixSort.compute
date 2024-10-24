@@ -17,58 +17,70 @@ uint _elementCount;
 int _blockSumGroupCount;
 int _bitShift;
 
+groupshared uint _tempInput[THREAD_SIZE];
 groupshared uint _localMask[THREAD_SIZE];
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	const uint extract2bit = (_unsortedBuffer[tid.x] >> _bitShift) & 0x3;
+	if (tid.x <= _elementCount)
+	{
+		_tempInput[tid.x] = _unsortedBuffer[tid.x];
+	}
+	else
+	{
+		_tempInput[tid.x] = 0;
+	}
+	GroupMemoryBarrierWithGroupSync();
 	
-	if (tid.x >= _elementCount)
-		return;
-
-	uint inclusiveSum = 0;
+	const uint extract2bit = (_tempInput[tid.x] >> _bitShift) & 0x3;
+	GroupMemoryBarrierWithGroupSync();
+	
 	for (int i = 0; i < 4; i++)
 	{
 		const bool isMask = extract2bit == i;
-		_localMask[tid.x] = (uint)isMask;
-	
-		// // Inclusive Prefix Sum
-		for (int j = 1; j < THREAD_SIZE; j <<= 1)
+
+		_localMask[gtid.x] = (uint)isMask;
+		GroupMemoryBarrierWithGroupSync();
+		
+		//Exclusive Prefix Sum
+		for (int offset = 1; offset < THREAD_SIZE; offset <<= 1)
 		{
-			if (tid.x >= j)
+			if (tid.x >= offset)
 			{
-				inclusiveSum = _localMask[tid.x] + _localMask[tid.x - j];
+				_localMask[gtid.x] += _localMask[gtid.x - offset];
 			}
 			else
 			{
-				inclusiveSum = _localMask[tid.x];
+				_localMask[gtid.x] = _localMask[gtid.x];
 			}
-			
-			_localMask[tid.x] = inclusiveSum;
+			GroupMemoryBarrierWithGroupSync();
 		}
-		
-		//Exclusive Prefix Sum
-		_localMask[tid.x] = _localMask[tid.x - 1];
 
 		if (gtid.x == 0)
 		{
 			_localMask[tid.x] = 0;
 		}
+		GroupMemoryBarrierWithGroupSync();
 
-		if (isMask)
+		_localMask[gtid.x] = _localMask[gtid.x - 1];
+		GroupMemoryBarrierWithGroupSync();
+		
+		if (tid.x < _elementCount)
 		{
-			_localMaskScanBuffer[tid.x] = _localMask[tid.x];
+			_blockSumsBuffer[i * _blockSumGroupCount + gid.x] = _localMask[_elementCount - 1];
 		}
-	
-		// Find the last element of each block
-		// and store the sum of each block
-		if (gtid.x == THREAD_SIZE - 1 || gtid.x == _elementCount - 1)
+		else
 		{
-			_blockSumsBuffer[i * _blockSumGroupCount + gid.x] = inclusiveSum;
+			_blockSumsBuffer[i * _blockSumGroupCount + gid.x] = 0;
+		}
+		GroupMemoryBarrierWithGroupSync();
+
+		if (_bitShift == 0)
+		{
+			_sortedBufferByRadix[tid.x] = _blockSumsBuffer[tid.x];
 		}
 	}
-	GroupMemoryBarrierWithGroupSync();
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]

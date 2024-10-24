@@ -14,21 +14,23 @@ public class _ParallelRadixSort : MonoBehaviour
     private ComputeBuffer blockSumsScanBuffer;        // Local Block Sum을 Global Prefix Sum로 적용해서 넣은 데이터들
     private ComputeBuffer sortedBufferByRadix;          // Radix Sort를 통해 정렬된 데이터들
     
-    // private int[] unsortedData =
-    // {
-    //     170, 45, 75, 90, 802, 24, 2, 66, 25, 62, 431
-    // };
+    private int[] unsortedData =
+    {
+        170, 45, 75, 90, 802, 24, 2, 66, 25, 62, 431
+    };
+    private const int _size = 256;
 
-    private int[] unsortedData = new int[50];
+    // private int[] unsortedData = new int[_size];
 
     private int radixSortKernel, localMaskScanKernel, globalBlockScanKernel;
 
     private void Awake()
     {
-        for (int i = 0; i < 50; i++)
-        {
-            unsortedData[i] = UnityEngine.Random.Range(0, 50);
-        }
+        // int tmp = _size;
+        // for (int i = 0; i < _size; i++)
+        // {
+        //     unsortedData[i] = tmp - i;
+        // }
         
         radixSortKernel = radixSortShader.FindKernel("RadixSort");
         localMaskScanKernel = radixSortShader.FindKernel("LocalMaskScan");
@@ -39,10 +41,10 @@ public class _ParallelRadixSort : MonoBehaviour
     private void OnEnable()
     {
         unsortedBuffer = new ComputeBuffer(unsortedData.Length, sizeof(int));
-        blockSumsBuffer = new ComputeBuffer(unsortedData.Length, sizeof(int));
-        blockSumsScanBuffer = new ComputeBuffer(unsortedData.Length, sizeof(int));
-        localMaskScanBuffer = new ComputeBuffer(unsortedData.Length, sizeof(int));
-        sortedBufferByRadix = new ComputeBuffer(unsortedData.Length, sizeof(int));
+        blockSumsBuffer = new ComputeBuffer(256, sizeof(int));
+        blockSumsScanBuffer = new ComputeBuffer(256, sizeof(int));
+        localMaskScanBuffer = new ComputeBuffer(256, sizeof(int));
+        sortedBufferByRadix = new ComputeBuffer(256, sizeof(int));
         
     }
 
@@ -52,10 +54,11 @@ public class _ParallelRadixSort : MonoBehaviour
 
         radixSortShader.SetInt("_elementCount", unsortedData.Length);
         radixSortShader.SetInt("_blockSumGroupCount", blockSumGroupCount);
-        
+
         radixSortShader.SetBuffer(localMaskScanKernel, "_unsortedBuffer", unsortedBuffer);
         radixSortShader.SetBuffer(localMaskScanKernel, "_localMaskScanBuffer", localMaskScanBuffer);
         radixSortShader.SetBuffer(localMaskScanKernel, "_blockSumsBuffer", blockSumsBuffer);
+        radixSortShader.SetBuffer(localMaskScanKernel, "_sortedBufferByRadix", sortedBufferByRadix);
         
         radixSortShader.SetBuffer(radixSortKernel, "_unsortedBuffer", unsortedBuffer);
         radixSortShader.SetBuffer(radixSortKernel, "_localMaskScanBuffer", localMaskScanBuffer);
@@ -78,7 +81,7 @@ public class _ParallelRadixSort : MonoBehaviour
             radixSortShader.Dispatch(radixSortKernel, 256, 1, 1);
         }
 
-        var sortedBufferByRadixArray = new int[50];
+        var sortedBufferByRadixArray = new int[_size];
         sortedBufferByRadix.GetData(sortedBufferByRadixArray);
         
         for (int i = 0; i < sortedBufferByRadixArray.Length; i++)
