@@ -11,16 +11,27 @@ public class ZombieGimmick : Gimmick
     private Animator animator;
     private Rigidbody rig;
 
+    private Vector3 startPoint;
+    private Vector3 startRotation;
+    private bool isRun = false;
+    private float beforeSpeed = 0;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
         rig = GetComponent<Rigidbody>();
+        isRun = false;
+        startPoint = transform.position;
+        startRotation = transform.rotation.eulerAngles;
         gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        timeLimit += Time.deltaTime;
+        if (isDetected == false || isRun == true)
+        {
+            timeLimit += Time.deltaTime;
+        }
     }
 
     public override void Activate()
@@ -32,8 +43,13 @@ public class ZombieGimmick : Gimmick
     public override void Deactivate()
     {
         //초기 위치로 이동, 회전
+        animator.speed = 1;
         rig.useGravity = false;
         rig.velocity = Vector3.zero;
+        transform.position = startPoint;
+        transform.rotation = Quaternion.Euler(startRotation);
+        isRun = false;
+        isDetected = false;
 
         gimmickManager.LowerProbability(this);
         gimmickManager.unrealGimmick = null;
@@ -54,7 +70,16 @@ public class ZombieGimmick : Gimmick
         while (timeLimit <= 5f)
         {
             yield return null;
-            transform.Translate(Vector3.forward * Time.deltaTime * 0.2f);
+
+            if (isDetected == false)
+            {
+                animator.speed = 0.7f;
+                transform.Translate(Vector3.forward * Time.deltaTime * 0.2f);
+            }
+            else
+            {
+                animator.speed = 0;
+            }
         }
 
         //살짝 느리게
@@ -64,7 +89,16 @@ public class ZombieGimmick : Gimmick
         while (timeLimit <= 3f)
         {
             yield return null;
-            transform.Translate(Vector3.forward * Time.deltaTime * 0.15f);
+
+            if (isDetected == false)
+            {
+                animator.speed = 0.3f;
+                transform.Translate(Vector3.forward * Time.deltaTime * 0.15f);
+            }
+            else
+            {
+                animator.speed = 0;
+            }
         }
 
         //멈춤(애니메이션 스피드 0으로 하고 이 때 좀비 소리 재생)
@@ -72,6 +106,7 @@ public class ZombieGimmick : Gimmick
         //몇초간 대기
         //yield return new WaitForSeconds(8);
 
+        isRun = true;
         //빠르게 기어와서 플레이어 머리 바로 위까지 옴
         animator.speed = 5f;
         //animator.SetTrigger("Crawl");
@@ -93,20 +128,27 @@ public class ZombieGimmick : Gimmick
             transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, Time.deltaTime * 3f);
         }
 
-        yield return new WaitForSeconds(0.16f);
-        animator.speed = 0;
-        rig.useGravity = false;
-        rig.velocity = Vector3.zero;
-
-        //플레이어 위에 착지 후 물어뜯는 모션(화면 붉어지는 효과 있으면 좋을듯)
-        //현재 물어뜯는 모션 잠깐 갔다가 갑자기 기어가는 모션이 다시 실행되는 오류 있음 : animator.speed와는 연관없음
-        animator.speed = 1;
-        animator.SetTrigger("Biting");
+        //몇초후에 데미지 주고 기믹 종료
+        yield return new WaitForSeconds(3);
+        Deactivate();
     }
 
     private void SettingCrawl(float animationSpeed, float crawlSpeed)
     {
         animator.speed = 0.7f;
         transform.Translate(Vector3.forward * Time.deltaTime * 0.2f);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            animator.speed = 0;
+            rig.useGravity = false;
+            rig.velocity = Vector3.zero;
+
+            animator.speed = 1;
+            animator.SetTrigger("Biting");
+        }
     }
 }
