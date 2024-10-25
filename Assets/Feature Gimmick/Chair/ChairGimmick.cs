@@ -75,5 +75,7 @@ public class ChairGimmick : Gimmick
 
         //의자 기믹은 단 한번만 나오게 함
         Probability = 0;
+
+        Deactivate();
     }
 }
