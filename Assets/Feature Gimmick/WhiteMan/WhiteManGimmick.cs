@@ -72,8 +72,6 @@ public class WhiteManGimmick : Gimmick
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.humanGimmick = null;
         //기믹 상태 원래위치로 변경하고 로테이션 원래대로
         waist.localRotation = Quaternion.identity;
         neck.localRotation = Quaternion.identity;
@@ -87,8 +85,9 @@ public class WhiteManGimmick : Gimmick
         //포인트 오브젝트 로컬 오브젝트로 바꿈
         movePoints.SetParent(transform);
 
-        gimmickManager.gameObject.SetActive(false);
-        //gameObject.SetActive(false);
+        gimmickManager.LowerProbability(this);
+        gimmickManager.humanGimmick = null;
+        gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
@@ -116,7 +115,6 @@ public class WhiteManGimmick : Gimmick
             //transform.Translate(Vector3.forward * Time.deltaTime * 0.5f);
             transform.position = Vector3.MoveTowards(transform.position, pointsArray[1].position, 0.5f * Time.deltaTime);
             PenguinMove();
-            print("실행중");
         }
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0);
         AudioManager.instance.StopSound(AudioManager.instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);

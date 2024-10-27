@@ -36,6 +36,8 @@ public class MosquitoGimmick : Gimmick
 
     public override void Deactivate()
     {
+        transform.position = startPosition;
+
         gimmickManager.LowerProbability(this);
         gimmickManager.objectGimmick = null;
         gameObject.SetActive(false);
@@ -79,6 +81,8 @@ public class MosquitoGimmick : Gimmick
             yield return null;
             transform.position = Vector3.MoveTowards(transform.position, playerPosition.position + point, 2f * Time.deltaTime);
         }
+
+        Deactivate();
     }
 
     private Vector3 RandomPosition(float num)

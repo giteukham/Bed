@@ -38,10 +38,11 @@ public class EyeGimmick : Gimmick
 
     public override void Deactivate()
     {
+        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
+
         gimmickManager.LowerProbability(this);
         gimmickManager.unrealGimmick = null;
         gameObject.SetActive(false);
-        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 
     public override void UpdateProbability()
