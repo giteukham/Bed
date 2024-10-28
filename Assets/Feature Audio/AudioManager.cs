@@ -81,18 +81,6 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Player Test 2 SFX")]
     [field: SerializeField] public EventReference playerTest2 {get; private set;}
-
-    [field: Header("Gimmick Test 1 SFX")]
-    [field: SerializeField] public EventReference gimmickTest1 {get; private set;}
-
-    [field: Header("Gimmick Test 2 SFX")]
-    [field: SerializeField] public EventReference gimmickTest2 {get; private set;}
-
-    [field: Header("Gimmick Test 3 SFX")]
-    [field: SerializeField] public EventReference gimmickTest3 {get; private set;}
-
-    [field: Header("Gimmick Test 4 SFX")]
-    [field: SerializeField] public EventReference gimmickTest4 {get; private set;}
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스

@@ -32,11 +32,7 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         gimmickSounds = new EventReference[]
         {
             AudioManager.instance.catMeow,
-            AudioManager.instance.handClap,
-            AudioManager.instance.gimmickTest1,
-            AudioManager.instance.gimmickTest2,
-            AudioManager.instance.gimmickTest3,
-            AudioManager.instance.gimmickTest4
+            AudioManager.instance.handClap
         };
 
         floorWidth = 4f;
