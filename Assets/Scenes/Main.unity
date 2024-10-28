@@ -2811,9 +2811,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8128b9bda875443795d4d58dc53c1ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 2142733324}
   playerDirectionStateMachine: {fileID: 1660730629}
   playerEyeStateMachine: {fileID: 1921701273}
-  playerCamera: {fileID: 2142733324}
   inputSystem: {fileID: 1010110861}
   coneCollider: {fileID: 801348871}
   mainCamera: {fileID: 1732393634}
@@ -5715,7 +5715,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1251284694}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}
 --- !u!1001 &1252871587
 PrefabInstance:
   m_ObjectHideFlags: 0
