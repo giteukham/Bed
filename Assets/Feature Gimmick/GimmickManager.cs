@@ -6,6 +6,14 @@ using UnityEngine;
 [System.Serializable]
 public class GimmickManager : MonoBehaviour
 {
+    public enum GameProgress
+    {
+        //같은 숫자로 설정시 역참조 불가한거 기억해두기
+        First = 10,
+        Middle = 3,
+        End = 10
+    }
+
     [SerializeField]
     private List<Gimmick> allGimicks;
 
@@ -17,6 +25,8 @@ public class GimmickManager : MonoBehaviour
     private int randomNum2 = 0;
 
     private Gimmick temp;
+
+    public GameProgress progress = GameProgress.First;
 
     private void Awake()
     {
@@ -69,6 +79,7 @@ public class GimmickManager : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds((int)progress);
             RedefineProbability();  // 나올 확률 재정의
             ChoiceGimmick();        // 기믹타입 3종류 중에 하나라도 실행이 안되고 있으면 자동으로 기믹 고르게 함
         }
