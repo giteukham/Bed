@@ -7,97 +7,106 @@
 
 #define THREAD_SIZE 256
 
-StructuredBuffer<uint> _blockSumsScanBuffer;
 RWStructuredBuffer<uint> _unsortedBuffer;
-RWStructuredBuffer<uint> _localMaskScanBuffer;
+RWStructuredBuffer<uint> _localPrefixSumBuffer;
 RWStructuredBuffer<uint> _blockSumsBuffer;
+RWStructuredBuffer<int> _blockSumsCount;
+RWStructuredBuffer<uint> _blockSumsScanBuffer;
 RWStructuredBuffer<uint> _sortedBufferByRadix;
 
-uint _elementCount;
+RWStructuredBuffer<uint> _testBuffer;
+
 int _blockSumGroupCount;
 int _bitShift;
+int _lastThreadID;
 
-groupshared uint _tempInput[THREAD_SIZE];
-groupshared uint _localMask[THREAD_SIZE];
+groupshared uint _localPrefixSum[THREAD_SIZE];
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	if (tid.x <= _elementCount)
+	uint _unsortedAllCount, _unsortedStride = 0;
+	_unsortedBuffer.GetDimensions(_unsortedAllCount, _unsortedStride);
+
+	int element = tid.x < _unsortedAllCount ? _unsortedBuffer[tid.x] : 0;
+	uint extractBit = (element >> _bitShift) & 0x3;
+
+	if (_unsortedAllCount - THREAD_SIZE * gid.x >= THREAD_SIZE)
 	{
-		_tempInput[tid.x] = _unsortedBuffer[tid.x];
+		_lastThreadID = THREAD_SIZE - 1;
 	}
 	else
 	{
-		_tempInput[tid.x] = 0;
+		_lastThreadID = _unsortedAllCount - THREAD_SIZE * gid.x - 1;
 	}
-	GroupMemoryBarrierWithGroupSync();
-	
-	const uint extract2bit = (_tempInput[tid.x] >> _bitShift) & 0x3;
-	GroupMemoryBarrierWithGroupSync();
 	
 	for (int i = 0; i < 4; i++)
 	{
-		const bool isMask = extract2bit == i;
-
-		_localMask[gtid.x] = (uint)isMask;
+		uint mask = extractBit == i;
+		_localPrefixSum[gtid.x] = mask;
 		GroupMemoryBarrierWithGroupSync();
 		
-		//Exclusive Prefix Sum
-		for (int offset = 1; offset < THREAD_SIZE; offset <<= 1)
+		uint prefixSum = 0;
+		for (int offset = 1; offset < _lastThreadID; offset <<= 2)
 		{
-			if (tid.x >= offset)
+			if (gtid.x >= offset)
 			{
-				_localMask[gtid.x] += _localMask[gtid.x - offset];
+				prefixSum = _localPrefixSum[gtid.x] + _localPrefixSum[gtid.x - offset];
 			}
 			else
 			{
-				_localMask[gtid.x] = _localMask[gtid.x];
+				prefixSum = _localPrefixSum[gtid.x];
 			}
+			_localPrefixSum[gtid.x] = prefixSum;
 			GroupMemoryBarrierWithGroupSync();
 		}
-
-		if (gtid.x == 0)
+		
+		if (gtid.x < _lastThreadID)
 		{
-			_localMask[tid.x] = 0;
+			_localPrefixSum[gtid.x + 1] = _localPrefixSum[gtid.x];
 		}
-		GroupMemoryBarrierWithGroupSync();
-
-		_localMask[gtid.x] = _localMask[gtid.x - 1];
 		GroupMemoryBarrierWithGroupSync();
 		
-		if (tid.x < _elementCount)
+		if (gtid.x == 0)
 		{
-			_blockSumsBuffer[i * _blockSumGroupCount + gid.x] = _localMask[_elementCount - 1];
-		}
-		else
-		{
-			_blockSumsBuffer[i * _blockSumGroupCount + gid.x] = 0;
+			_localPrefixSum[gtid.x] = 0;
 		}
 		GroupMemoryBarrierWithGroupSync();
-
-		if (_bitShift == 0)
+		
+		if (gtid.x < _unsortedAllCount && mask)
 		{
-			_sortedBufferByRadix[tid.x] = _blockSumsBuffer[tid.x];
+			_localPrefixSumBuffer[gtid.x] = _localPrefixSum[gtid.x];
 		}
+		GroupMemoryBarrierWithGroupSync();
+		
+		if (tid.x == _lastThreadID)
+		{
+			_blockSumsBuffer[_blockSumGroupCount * i + gid.x] = prefixSum;
+		}
+		_blockSumsCount[0] = _blockSumGroupCount * i + gid.x + 1;
 	}
+
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
-void RadixSort(uint3 tid : SV_DispatchThreadID)
+void RadixSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	const uint extract2bit = (_unsortedBuffer[tid.x] >> _bitShift) & 0x3;
-	const uint prefixSum = _localMaskScanBuffer[tid.x];
-	const uint pos = _blockSumsScanBuffer[extract2bit * _blockSumGroupCount] + prefixSum;
-	GroupMemoryBarrierWithGroupSync();
-	
-	if (tid.x < _elementCount)
-	{
-		_sortedBufferByRadix[pos] = _unsortedBuffer[tid.x];
-	}
-	GroupMemoryBarrierWithGroupSync();
+	// TODO: ??
+	if (_bitShift == 0)
+		_testBuffer[tid.x] = _localPrefixSumBuffer[tid.x];
+	// uint _unsortedAllCount, _unsortedStride = 0;
+	// _unsortedBuffer.GetDimensions(_unsortedAllCount, _unsortedStride);
+	//
+	// int element = tid.x < _unsortedAllCount ? _unsortedBuffer[tid.x] : 0;
+	// uint extractBit = (element >> _bitShift) & 0x3;
+	//
+	// if (tid.x < _unsortedAllCount)
+	// {
+	// 	uint prefixSum = _localPrefixSumBuffer[tid.x];
+	// 	uint pos = _blockSumsScanBuffer[extractBit * _blockSumGroupCount + gid.x] + prefixSum;
+	// 	
+	// 	_sortedBufferByRadix[pos] = element;
+	// }
 
-	_unsortedBuffer[tid.x] = _sortedBufferByRadix[tid.x];
-	GroupMemoryBarrierWithGroupSync();
 }
 
