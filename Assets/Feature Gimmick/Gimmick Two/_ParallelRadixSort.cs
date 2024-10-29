@@ -2,9 +2,11 @@ using FMOD;
 using System;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
+
 public class _ParallelRadixSort : MonoBehaviour
 {
-    private const int THREAD_SIZE = 256;                  // Compute Shader에 있는 Thread Size와 일치시켜야 함.
+    private const ushort THREAD_SIZE = 256;                  // Compute Shader에 있는 Thread Size와 일치시켜야 함.
     private int blockSumGroupCount;
     
     public ComputeShader radixSortShader;
@@ -17,16 +19,12 @@ public class _ParallelRadixSort : MonoBehaviour
     private ComputeBuffer blockSumsCount;               // block Sums Count
     private ComputeBuffer blockSumsScanBuffer;          // Local Block Sum을 Global Prefix Sum로 적용해서 넣은 데이터들
     private ComputeBuffer sortedBufferByRadix;          // Radix Sort를 통해 정렬된 데이터들
-    private ComputeBuffer checkedBuffer;                // 정렬이 잘 되었는지 확인하기 위한 데이터들
+    private ComputeBuffer isSortedBuffer;               // 정렬이 되었는지 확인하는 버퍼
     
     private ComputeBuffer testBuffer;
 
-    private bool isSorted = false;
-    // private int[] unsortedData =
-    // {
-    //     170, 45, 75, 90, 802, 24, 2, 66, 25, 62, 431
-    // };
-    private const int _size = 333;
+    private int isSorted = 0;
+    private const int _size = 1000000;
 
     private int[] unsortedData = new int[_size];
 
@@ -56,25 +54,31 @@ public class _ParallelRadixSort : MonoBehaviour
         blockSumsScanBuffer  = new ComputeBuffer(Mathf.CeilToInt((float)unsortedData.Length / THREAD_SIZE) * 4, sizeof(int));
         blockSumsCount       = new ComputeBuffer(1, sizeof(int));
         sortedBufferByRadix  = new ComputeBuffer(unsortedData.Length, sizeof(int));
-        checkedBuffer        = new ComputeBuffer(512, sizeof(int));
+        isSortedBuffer       = new ComputeBuffer(1, sizeof(int));
         testBuffer           = new ComputeBuffer(unsortedData.Length, sizeof(int));
     }
 
     private void Start()
     {
-        //checkSortShader.Dispatch(checkSortKernel, Mathf.CeilToInt((float)_size / THREAD_SIZE), 1, 1);
-        
         for (int bitShift = 0; bitShift <= 30; bitShift += 2)
         {
             unsortedBuffer.SetData(unsortedData);
             radixSortShader.SetInt("_bitShift", bitShift);
             scanShader.SetInt("_bitShift", bitShift);
 
+            sortedBufferByRadix.SetData(unsortedData);
             checkSortShader.SetInt("_elementCount", unsortedData.Length);
-            checkSortShader.SetBool("_isSorted", isSorted);
-            checkSortShader.SetBuffer(checkSortKernel, "_unsortedBuffer", unsortedBuffer);
-            checkSortShader.SetBuffer(checkSortKernel, "_checkedBuffer", checkedBuffer);
-
+            checkSortShader.SetBuffer(checkSortKernel, "_isSortedBuffer", isSortedBuffer);
+            checkSortShader.SetBuffer(checkSortKernel, "_dataToCheckBuffer", sortedBufferByRadix);
+            checkSortShader.Dispatch(checkSortKernel, Mathf.CeilToInt((float)_size / THREAD_SIZE), 1, 1);
+            isSortedBuffer.GetData(new[] {isSorted});
+            
+            if (isSorted == 1)
+            {
+                Debug.Log("Already Sorted");
+                break;
+            }
+            
             radixSortShader.SetInt("_blockSumGroupCount", blockSumGroupCount);
             radixSortShader.SetBuffer(localMaskScanKernel, "_unsortedBuffer", unsortedBuffer);
             radixSortShader.SetBuffer(localMaskScanKernel, "_localPrefixSumBuffer", localPrefixSumBuffer);
@@ -105,11 +109,10 @@ public class _ParallelRadixSort : MonoBehaviour
             
             sortedBufferByRadix.GetData(unsortedData);
         }
-
         var sortedBufferByRadixArray = new int[_size];
         testBuffer.GetData(sortedBufferByRadixArray);
         
-        for (int i = 0; i < sortedBufferByRadixArray.Length; i++)
+        for (int i = 0; i < 10; i++)
         {
             Debug.Log(sortedBufferByRadixArray[i]);
         }
@@ -135,9 +138,9 @@ public class _ParallelRadixSort : MonoBehaviour
         localPrefixSumBuffer?.Release();
         localPrefixSumBuffer = null;
         
-        checkedBuffer?.Release();
-        checkedBuffer = null;
-        
+        isSortedBuffer?.Release();
+        isSortedBuffer = null;
+
         testBuffer?.Release();
         testBuffer = null;
     }

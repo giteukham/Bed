@@ -31,6 +31,11 @@ void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadI
 	int element = tid.x < _unsortedAllCount ? _unsortedBuffer[tid.x] : 0;
 	uint extractBit = (element >> _bitShift) & 0x3;
 
+	if (tid.x == 0)
+	{
+		_sortedBufferByRadix[tid.x] = 0;
+	}
+
 	if (_unsortedAllCount - THREAD_SIZE * gid.x >= THREAD_SIZE)
 	{
 		_lastThreadID = THREAD_SIZE - 1;
@@ -73,14 +78,13 @@ void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadI
 		}
 		GroupMemoryBarrierWithGroupSync();
 		
-		// TODO: _localPrefixSum Error
 		if (tid.x < _unsortedAllCount && mask)
 		{
-			_localPrefixSumBuffer[gtid.x] = _localPrefixSum[gtid.x];
+			_localPrefixSumBuffer[tid.x] = _localPrefixSum[gtid.x];
 		}
 		GroupMemoryBarrierWithGroupSync();
 		
-		if (tid.x == _lastThreadID)
+		if (gtid.x == _lastThreadID)
 		{
 			_blockSumsBuffer[_blockSumGroupCount * i + gid.x] = prefixSum;
 		}
@@ -88,16 +92,13 @@ void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadI
 		_blockSumsCount[0] = _blockSumGroupCount * (i + 1);
 		GroupMemoryBarrierWithGroupSync();
 	}
-			if (_bitShift == 0)
-		{
-			_testBuffer[tid.x] = _localPrefixSumBuffer[tid.x];
-		}
+	
+
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void RadixSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-
 	uint _unsortedAllCount, _unsortedStride = 0;
 	_unsortedBuffer.GetDimensions(_unsortedAllCount, _unsortedStride);
 	
@@ -110,11 +111,11 @@ void RadixSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, u
 		uint pos = _blockSumsScanBuffer[extractBit * _blockSumGroupCount + gid.x] + prefixSum;
 
 		_sortedBufferByRadix[pos] = element;
-
-
 	}
 
-
-
+	if (_bitShift == 24)
+	{
+		_testBuffer[tid.x] = _sortedBufferByRadix[tid.x];
+	}
 }
 
