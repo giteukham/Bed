@@ -82,6 +82,8 @@ public class MosquitoGimmick : Gimmick
             transform.position = Vector3.MoveTowards(transform.position, playerPosition.position + point, 2f * Time.deltaTime);
         }
 
+        //스트레스 데미지 주고 끝냄
+
         Deactivate();
     }
 

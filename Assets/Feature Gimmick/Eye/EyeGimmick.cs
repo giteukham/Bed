@@ -60,6 +60,7 @@ public class EyeGimmick : Gimmick
         while (timeLimit < 15)
         {
             yield return null;
+            //플레이어가 바라봤을때
             if (isDetected == true)
             {
                 targetQuaternion = Quaternion.Euler(new Vector3(21.1f, 55.5f, 0));
@@ -80,6 +81,7 @@ public class EyeGimmick : Gimmick
                     pupil.transform.localScale = targetScale;
                     AudioManager.instance.PlaySound(AudioManager.instance.eyeEnd, transform.position);
                     yield return new WaitForSeconds(1f);
+                    //데미지 넣는 코드 여기 하나 넣어야 함
                     Deactivate();
                     yield break;
                 }
