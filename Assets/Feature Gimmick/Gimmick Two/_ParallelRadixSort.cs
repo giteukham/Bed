@@ -68,6 +68,7 @@ public class _ParallelRadixSort : MonoBehaviour
         {
             unsortedBuffer.SetData(unsortedData);
             radixSortShader.SetInt("_bitShift", bitShift);
+            scanShader.SetInt("_bitShift", bitShift);
 
             checkSortShader.SetInt("_elementCount", unsortedData.Length);
             checkSortShader.SetBool("_isSorted", isSorted);
@@ -86,10 +87,12 @@ public class _ParallelRadixSort : MonoBehaviour
             scanShader.SetBuffer(globalBlockScanKernel, "_input", blockSumsBuffer);
             scanShader.SetBuffer(globalBlockScanKernel, "_output", blockSumsScanBuffer);
             scanShader.SetBuffer(globalBlockScanKernel, "_inputElementCount", blockSumsCount);
+            scanShader.SetBuffer(globalBlockScanKernel, "_testBuffer", testBuffer);
             scanShader.Dispatch(globalBlockScanKernel, Mathf.CeilToInt((float)_size / THREAD_SIZE), 1, 1);
             
             scanShader.SetBuffer(addBlockSumsKernel, "_input", blockSumsBuffer);
             scanShader.SetBuffer(addBlockSumsKernel, "_output", blockSumsScanBuffer);
+            scanShader.SetBuffer(addBlockSumsKernel, "_testBuffer", testBuffer);
             scanShader.SetBuffer(addBlockSumsKernel, "_inputElementCount", blockSumsCount);
             scanShader.Dispatch(addBlockSumsKernel, Mathf.CeilToInt((float)_size / THREAD_SIZE), 1, 1);
             

@@ -9,7 +9,10 @@
 
 RWStructuredBuffer<uint> _input;
 RWStructuredBuffer<uint> _output;
+RWStructuredBuffer<uint> _testBuffer;
 StructuredBuffer<uint> _inputElementCount;
+
+int _bitShift;
 
 groupshared uint _temp[THREAD_SIZE];
 
@@ -18,8 +21,8 @@ groupshared uint _temp[THREAD_SIZE];
 void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint gid : SV_GroupID)
 {
 	int inputElementCount = _inputElementCount[0];
-	int ai = gtid.x;
-	int bi = gtid.x + (inputElementCount / 2);
+	int ai = tid.x;
+	int bi = tid.x + (inputElementCount / 2);
 	int bankOffsetA = CONFLICT_FREE_OFFSET(ai);
 	int bankOffsetB = CONFLICT_FREE_OFFSET(bi);
 	
@@ -30,37 +33,39 @@ void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThrea
 	_temp[bi + bankOffsetB] = _input[bi];
 	GroupMemoryBarrierWithGroupSync();
 	
-	
 	uint offset = 1;
 	for (uint d = inputElementCount >> 1; d > 0; d >>= 1)
 	{
-		if (gtid.x < d)
+	
+		if (tid.x < d)
 		{
-			uint ai = offset * ((gtid.x << 1) + 1) - 1;
-			uint bi = offset * ((gtid.x << 1) + 2) - 1;
+			uint ai = offset * ((tid.x << 1) + 1) - 1;
+			uint bi = offset * ((tid.x << 1) + 2) - 1;
 			ai += CONFLICT_FREE_OFFSET(ai);
 			bi += CONFLICT_FREE_OFFSET(bi);
-	
+			
 			_temp[bi] += _temp[ai];
 		}
 		offset <<= 1;
+		GroupMemoryBarrierWithGroupSync();
 	}
 
-	if (gtid.x == 0)
+	if (tid.x == 0)
 	{
 		_input[gid.x] = _temp[inputElementCount];
 		_temp[inputElementCount - 1 + CONFLICT_FREE_OFFSET(inputElementCount - 1)] = 0;
 	}
+	GroupMemoryBarrierWithGroupSync();
 	
 	
 	for (uint d = 1; d < inputElementCount; d <<= 1)
 	{
 		offset >>= 1;
 	
-		if (gtid.x < d)
+		if (tid.x < d)
 		{
-			uint ai = offset * ((gtid.x << 1) + 1) - 1;
-			uint bi = offset * ((gtid.x << 1) + 2) - 1;
+			uint ai = offset * ((tid.x << 1) + 1) - 1;
+			uint bi = offset * ((tid.x << 1) + 2) - 1;
 			ai += CONFLICT_FREE_OFFSET(ai);
 			bi += CONFLICT_FREE_OFFSET(bi);
 	
@@ -68,6 +73,7 @@ void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThrea
 			_temp[ai] = _temp[bi];
 			_temp[bi] += t;
 		}
+		GroupMemoryBarrierWithGroupSync();
 	}
 	
 	if (tid.x < inputElementCount)
@@ -82,6 +88,7 @@ void GlobalBlockScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThrea
 	
 	_output[ai] = _temp[ai + bankOffsetA];
 	_output[bi] = _temp[bi + bankOffsetB];
+	GroupMemoryBarrierWithGroupSync();
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
@@ -91,7 +98,7 @@ void AddBlockSums(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID
 	
 	uint blockSum = _input[gid.x];
 	
-	int index = 2 * gid.x * inputElementCount + gtid.x;
+	int index = 2 * gid.x * inputElementCount + tid.x;
 	
 	if (index < inputElementCount)
 	{

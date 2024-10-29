@@ -47,7 +47,7 @@ void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadI
 		GroupMemoryBarrierWithGroupSync();
 		
 		uint prefixSum = 0;
-		for (int offset = 1; offset < _lastThreadID; offset <<= 2)
+		for (int offset = 1; offset < THREAD_SIZE; offset <<= 1)
 		{
 			if (gtid.x >= offset)
 			{
@@ -73,7 +73,8 @@ void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadI
 		}
 		GroupMemoryBarrierWithGroupSync();
 		
-		if (gtid.x < _unsortedAllCount && mask)
+		// TODO: _localPrefixSum Error
+		if (tid.x < _unsortedAllCount && mask)
 		{
 			_localPrefixSumBuffer[gtid.x] = _localPrefixSum[gtid.x];
 		}
@@ -83,30 +84,37 @@ void LocalMaskScan(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadI
 		{
 			_blockSumsBuffer[_blockSumGroupCount * i + gid.x] = prefixSum;
 		}
-		_blockSumsCount[0] = _blockSumGroupCount * i + gid.x + 1;
-	}
 
+		_blockSumsCount[0] = _blockSumGroupCount * (i + 1);
+		GroupMemoryBarrierWithGroupSync();
+	}
+			if (_bitShift == 0)
+		{
+			_testBuffer[tid.x] = _localPrefixSumBuffer[tid.x];
+		}
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void RadixSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	// TODO: ??
-	if (_bitShift == 0)
-		_testBuffer[tid.x] = _localPrefixSumBuffer[tid.x];
-	// uint _unsortedAllCount, _unsortedStride = 0;
-	// _unsortedBuffer.GetDimensions(_unsortedAllCount, _unsortedStride);
-	//
-	// int element = tid.x < _unsortedAllCount ? _unsortedBuffer[tid.x] : 0;
-	// uint extractBit = (element >> _bitShift) & 0x3;
-	//
-	// if (tid.x < _unsortedAllCount)
-	// {
-	// 	uint prefixSum = _localPrefixSumBuffer[tid.x];
-	// 	uint pos = _blockSumsScanBuffer[extractBit * _blockSumGroupCount + gid.x] + prefixSum;
-	// 	
-	// 	_sortedBufferByRadix[pos] = element;
-	// }
+
+	uint _unsortedAllCount, _unsortedStride = 0;
+	_unsortedBuffer.GetDimensions(_unsortedAllCount, _unsortedStride);
+	
+	int element = tid.x < _unsortedAllCount ? _unsortedBuffer[tid.x] : 0;
+	uint extractBit = (element >> _bitShift) & 0x3;
+
+	if (tid.x < _unsortedAllCount)
+	{
+		uint prefixSum = _localPrefixSumBuffer[tid.x];
+		uint pos = _blockSumsScanBuffer[extractBit * _blockSumGroupCount + gid.x] + prefixSum;
+
+		_sortedBufferByRadix[pos] = element;
+
+
+	}
+
+
 
 }
 
