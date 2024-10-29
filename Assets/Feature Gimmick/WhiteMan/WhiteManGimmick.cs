@@ -51,11 +51,11 @@ public class WhiteManGimmick : Gimmick
     private void Update()
     {
         //플레이어가 보지 않을때만 움직임(생각 더 해볼것)
-        if (Input.GetKeyDown(KeyCode.Space))
+        /*if (Input.GetKeyDown(KeyCode.Space))
         {
             print("스페이스바");
             transform.LookAt(pointsArray[1].position);
-        }
+        }*/
         timeLimit += Time.deltaTime;
         clockKey.Rotate(0, 0, 100 * Time.deltaTime);
         //dir은 항상 기믹 기준 플레이어 반대 방향을 가리킴

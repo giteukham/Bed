@@ -9,9 +9,10 @@ public class GimmickManager : MonoBehaviour
     public enum GameProgress
     {
         //같은 숫자로 설정시 역참조 불가한거 기억해두기
+        //(현재 End로 설정시 First로 설정되는 문제 있음 : 숫자 다 다르게 해야할듯)
         First = 10,
         Middle = 3,
-        End = 10
+        End = 9
     }
 
     [SerializeField]
@@ -78,7 +79,8 @@ public class GimmickManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(3);
+            //yield return new WaitForSeconds(3);
+            //현재 게임 진행상황에 따라서 기믹 뽑는 속도 조절
             yield return new WaitForSeconds((int)progress);
             RedefineProbability();  // 나올 확률 재정의
             ChoiceGimmick();        // 기믹타입 3종류 중에 하나라도 실행이 안되고 있으면 자동으로 기믹 고르게 함
