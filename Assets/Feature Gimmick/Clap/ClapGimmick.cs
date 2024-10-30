@@ -31,6 +31,10 @@ public class ClapGimcik : Gimmick
     {
         // ë°•ìˆ˜ ì†Œë¦¬ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ë¡œ ì‹¤í–‰
         AudioManager.instance.PlaySound(AudioManager.instance.handClap, this.transform.position);
+
+        // Å×½ºÆ®·Î ¹æ ºÒµµ ÄÑÁö°í ²¨Áö°Ô
+        if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
+        else BedRoomLightSwitch.SwitchAction(true);
     }
 
     public override void Activate()
@@ -53,10 +57,9 @@ public class ClapGimcik : Gimmick
 
     private IEnumerator MainCode()
     {
-        yield return new WaitForSeconds(3.2f);
-        houseLight.enabled = true;
-        
-        AudioManager.instance.PlaySound(AudioManager.instance.switchOn, this.transform.position);
+        Door.Set(45, 0.7f); // ¹æ¹® ¿­±â
+        yield return new WaitForSeconds(1.3f);
+        LivingRoomLightSwitch.SwitchAction(true);   // º¹µµ ºÒ ÄÑ±â
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -65,10 +68,12 @@ public class ClapGimcik : Gimmick
         animator.Play("ClapOff");
 
         yield return new WaitForSeconds(0.4f);
-        houseLight.enabled = false;
+        LivingRoomLightSwitch.SwitchAction(false);  // º¹µµ ºÒ ²ô±â
 
-        AudioManager.instance.PlaySound(AudioManager.instance.switchOff, this.transform.position);
+        yield return new WaitForSeconds(0.2f);
+        Door.Set(0, 0.2f); // ¹æ¹® ´İ±â
 
+        yield return new WaitForSeconds(0.4f);
         Deactivate();
     }
 }

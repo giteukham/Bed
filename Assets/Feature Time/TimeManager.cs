@@ -39,8 +39,8 @@ public class TimeManager : MonoBehaviour
 
     private Color startSkyColor = new Color32(50, 50, 50, 255);
     private Color endSkyColor = new Color32(119, 103, 110, 255);
-    private Color startEquatorColor = new Color32(11, 8, 12, 255);
-    private Color endEquatorColor = new Color32(32, 32, 38, 255);
+    private Color startEquatorColor = new Color32(0, 0, 0, 255);
+    private Color endEquatorColor = new Color32(11, 8, 12, 255);
     private Color currentSkyColor, currentEquatorColor;
     #endregion
     

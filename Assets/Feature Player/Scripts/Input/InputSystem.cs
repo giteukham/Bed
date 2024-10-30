@@ -25,7 +25,17 @@ public class InputSystem : MonoBehaviour
 
     private void OnMouseDelta(InputValue value)
     {
-        MouseDeltaX = value.Get<Vector2>().x;
+        if ( PlayerConstant.isParalysis ) 
+        {
+            MouseDeltaX = value.Get<Vector2>().x * 0.02f;
+            MouseDeltaY = value.Get<Vector2>().y * 0.02f;
+        }
+        else
+        {
+            MouseDeltaX = value.Get<Vector2>().x;
+            MouseDeltaY = value.Get<Vector2>().y;
+        }
+        
     }
 
     private void OnMouseScroll(InputValue value)

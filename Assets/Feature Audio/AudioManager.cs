@@ -111,6 +111,21 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Chair2 SFX")]
     [field: SerializeField] public EventReference chair2 { get; private set; }
+    
+    [field: Header("Fear Whisper SFX")]
+    [field: SerializeField] public EventReference fearHal {get; private set;}
+
+    [field: Header("Stress Hallucination SFX")]
+    [field: SerializeField] public EventReference stressHal {get; private set;}
+
+    [field: Header("Player Inhale SFX")]
+    [field: SerializeField] public EventReference inhale {get; private set;}
+
+    [field: Header("Player Exhale SFX")]
+    [field: SerializeField] public EventReference exhale {get; private set;}
+
+    [field: Header("Head Move On Pillow SFX")]
+    [field: SerializeField] public EventReference headMove {get; private set;}
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
@@ -150,16 +165,29 @@ public class AudioManager : MonoBehaviour
         StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 
+    public void PlayOneShot(EventReference _eventRef, Vector3 _pos)
+    {
+        RuntimeManager.PlayOneShot(_eventRef, _pos);
+    }
+
+    /// <summary>
+    /// �Ҹ� ��ġ ����
+    /// </summary>
+    public void SetPosition(EventReference _eventRef, Vector3 _pos)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
+    }
+
     /// <summary>
     /// 소리 끄기
     /// </summary>
     /// <param name="_mode">소리 끄는 모드 IMMEDIATE == 일반, ALLOWFADEOUT == 페이드 아웃</param>
     public void StopSound(EventReference _eventRef, FMOD.Studio.STOP_MODE _mode)
     {
-        if (eventInstances.ContainsKey(_eventRef))
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
         {
-            eventInstances[_eventRef].stop(_mode);
-            eventInstances[_eventRef].release();
+            eventInstance.stop(_mode);
+            eventInstance.release();
             eventInstances.Remove(_eventRef);
         }
     }
@@ -208,5 +236,61 @@ public class AudioManager : MonoBehaviour
     public void ResumeAllSounds()
     {
         foreach (EventInstance eventInstance in eventInstances.Values) eventInstance.setPaused(false);
+    }
+
+    /// <summary>
+    /// ���� ����
+    /// </summary>
+    public void VolumeControl(EventReference _eventRef, float _volume)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setVolume(_volume);
+    }
+
+    /// <summary>
+    /// ���� �� ��������
+    /// </summary>
+    public float GetVolume(EventReference _eventRef)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            float volume;
+            eventInstance.getVolume(out volume);
+            return volume;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// ȿ���� �ߺ� üũ
+    /// </summary>
+    public bool DuplicateCheck(EventReference _eventRef)
+    {
+        if (eventInstances.ContainsKey(_eventRef)) return true;
+        return false;
+    }
+
+    /// <summary>
+    /// �Ķ���� �� ����
+    /// </summary>
+    /// <param name="_paramName">�Ķ���� �̸�</param>
+    /// <param name="_value">�Ķ���� ��</param>
+    public void SetParameter(EventReference _eventRef, string _paramName, float _value)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setParameterByName(_paramName, _value);
+    }
+
+    /// <summary>
+    /// �Ķ���� �� ��������
+    /// </summary>
+    /// <param name="_paramName">�Ķ���� �̸�</param>
+    public float GetParameter(EventReference _eventRef, string _paramName)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            float value;
+            eventInstance.getParameterByName(_paramName, out value);
+            return value;
+        }
+        return 0;
     }
 }

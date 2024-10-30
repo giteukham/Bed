@@ -7,22 +7,28 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
-
+            PlayerConstant.isLeftState = true;
+            PlayerConstant.isMiddleState = false;
+            PlayerConstant.isRightState = false;
+            PlayerConstant.isMovingState = false;
         }
         
         public void Execute()
         {
+            PlayerConstant.LeftStateCAT += Time.deltaTime;
+            PlayerConstant.LeftStateLAT += Time.deltaTime;
+
+            if ( PlayerConstant.isParalysis ) return;
             if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
             }
-            PlayerConstant.LeftStateCAT += Time.deltaTime;
-            PlayerConstant.LeftStateLAT += Time.deltaTime;
+            
         }
         
         public void Exit()
         {
-            
+            PlayerConstant.isLeftState = false;
         }
     }
 
@@ -30,10 +36,18 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
+            PlayerConstant.isLeftState = false;
+            PlayerConstant.isMiddleState = true;
+            PlayerConstant.isRightState = false;
+            PlayerConstant.isMovingState = false;
         }
         
         public void Execute()
         {
+            PlayerConstant.MiddleStateCAT += Time.deltaTime;
+            PlayerConstant.MiddleStateLAT += Time.deltaTime;
+
+            if ( PlayerConstant.isParalysis ) return;
             if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle To Left");
@@ -42,13 +56,12 @@ public class PlayerDirectionStates
             {
                 PlayerAnimation.PlayAnimation("Middle To Right");
             }
-            PlayerConstant.MiddleStateCAT += Time.deltaTime;
-            PlayerConstant.MiddleStateLAT += Time.deltaTime;
+            
         }
         
         public void Exit()
         {
-            
+            PlayerConstant.isMiddleState = false;
         }
     }
         
@@ -56,21 +69,27 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
+            PlayerConstant.isLeftState = false;
+            PlayerConstant.isMiddleState = false;
+            PlayerConstant.isRightState = true;
+            PlayerConstant.isMovingState = false;
         }
-        
         public void Execute()
         {
+            PlayerConstant.RightStateCAT += Time.deltaTime;
+            PlayerConstant.RightStateLAT += Time.deltaTime;
+
+            if ( PlayerConstant.isParalysis ) return;
             if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
             }
-            PlayerConstant.RightStateCAT += Time.deltaTime;
-            PlayerConstant.RightStateLAT += Time.deltaTime;
+            
         }
         
         public void Exit()
         {
-            
+            PlayerConstant.isRightState = false;
         }
     }
 
@@ -78,17 +97,20 @@ public class PlayerDirectionStates
     {
         public void Enter()
         {
-            
+            PlayerConstant.isLeftState = false;
+            PlayerConstant.isMiddleState = false;
+            PlayerConstant.isRightState = false;
+            PlayerConstant.isMovingState = true;
         }
 
         public void Execute()
         {
-            
+
         }
 
         public void Exit()
         {
-            
+            PlayerConstant.isMovingState = false;
         }
     }
 }
