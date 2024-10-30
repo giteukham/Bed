@@ -9,15 +9,22 @@ using UnityEngine;
 public class PlayerAnimation : MonoBehaviour
 {
     private static Animator playerAnimator;
+    private static Animator blanketAnimator;
+    [SerializeField] private Transform blanket;
+    private static Vector3 blanketPosition;
 
     private void Start()
     {
         TryGetComponent(out playerAnimator);
+        blanketAnimator = blanket.GetComponent<Animator>();
+        blanketPosition = blanket.transform.position;
     }
     
     public static void PlayAnimation(string triggerName)
     {
         playerAnimator.SetTrigger(triggerName);
+        blanketAnimator.SetTrigger(triggerName);
+        AudioManager.instance.PlayOneShot(AudioManager.instance.blanketMoving, blanketPosition);
         PlayerConstant.BodyMovementCAT++;
         PlayerConstant.BodyMovementLAT++;
     }

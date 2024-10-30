@@ -82,9 +82,24 @@ public class AudioManager : MonoBehaviour
     [field: Header("Elevator Ding SFX")]
     [field: SerializeField] public EventReference elevatorDing { get; private set; }
 
+    
+    [field: Header("Fear Whisper SFX")]
+    [field: SerializeField] public EventReference fearHal {get; private set;}
+
+    [field: Header("Stress Hallucination SFX")]
+    [field: SerializeField] public EventReference stressHal {get; private set;}
+
+    [field: Header("Player Inhale SFX")]
+    [field: SerializeField] public EventReference inhale {get; private set;}
+
+    [field: Header("Player Exhale SFX")]
+    [field: SerializeField] public EventReference exhale {get; private set;}
+
+    [field: Header("Head Move On Pillow SFX")]
+    [field: SerializeField] public EventReference headMove {get; private set;}
     #endregion
 
-    // Key ÀÌº¥Æ® ÂüÁ¶ °ª, Value ÀÌº¥Æ® ÀÎ½ºÅÏ½º
+    // Key ì´ë²¤íŠ¸ ì°¸ì¡° ê°’, Value ì´ë²¤íŠ¸ ì¸ìŠ¤í„´ìŠ¤
     [SerializeField]private Dictionary<EventReference, EventInstance> eventInstances = new(); 
 
     private void Awake() 
@@ -94,7 +109,7 @@ public class AudioManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ¼Ò¸® ²¨Áö±â Àü±îÁö ½ÇÇà
+    /// ì†Œë¦¬ êº¼ì§€ê¸° ì „ê¹Œì§€ ì‹¤í–‰
     /// </summary>
     public void PlaySound(EventReference _eventRef, Vector3 _pos)
     {
@@ -121,8 +136,21 @@ public class AudioManager : MonoBehaviour
         StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 
+    public void PlayOneShot(EventReference _eventRef, Vector3 _pos)
+    {
+        RuntimeManager.PlayOneShot(_eventRef, _pos);
+    }
+
     /// <summary>
-    /// ¼Ò¸® À§Ä¡ ¾÷µ¥ÀÌÆ®
+    /// ì†Œë¦¬ ìœ„ì¹˜ ì„¤ì •
+    /// </summary>
+    public void SetPosition(EventReference _eventRef, Vector3 _pos)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
+    }
+
+    /// <summary>
+    /// ì†Œë¦¬ ìœ„ì¹˜ ì—…ë°ì´íŠ¸
     /// </summary>
     public void UpdateSoundPosition(EventReference _eventRef, Vector3 _pos)
     {
@@ -132,23 +160,23 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼Ò¸® ²ô±â
+    /// ì†Œë¦¬ ë„ê¸°
     /// </summary>
-    /// <param name="_mode">¼Ò¸® ²ô´Â ¸ğµå IMMEDIATE == ÀÏ¹İ, ALLOWFADEOUT == ÆäÀÌµå ¾Æ¿ô</param>
+    /// <param name="_mode">ì†Œë¦¬ ë„ëŠ” ëª¨ë“œ IMMEDIATE == ì¼ë°˜, ALLOWFADEOUT == í˜ì´ë“œ ì•„ì›ƒ</param>
     public void StopSound(EventReference _eventRef, FMOD.Studio.STOP_MODE _mode)
     {
-        if (eventInstances.ContainsKey(_eventRef))
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
         {
-            eventInstances[_eventRef].stop(_mode);
-            eventInstances[_eventRef].release();
+            eventInstance.stop(_mode);
+            eventInstance.release();
             eventInstances.Remove(_eventRef);
         }
     }
 
     /// <summary>
-    /// ¸ğµç ¼Ò¸® ´Ù ²ô±â
+    /// ëª¨ë“  ì†Œë¦¬ ë‹¤ ë„ê¸°
     /// </summary>
-    /// /// <param name="_mode">¼Ò¸® ²ô´Â ¸ğµå, IMMEDIATE == ÀÏ¹İ, ALLOWFADEOUT  == ÆäÀÌµå ¾Æ¿ô</param>
+    /// /// <param name="_mode">ì†Œë¦¬ ë„ëŠ” ëª¨ë“œ, IMMEDIATE == ì¼ë°˜, ALLOWFADEOUT  == í˜ì´ë“œ ì•„ì›ƒ</param>
     public void StopAllSounds(FMOD.Studio.STOP_MODE _mode)
     {
         foreach (EventInstance eventInstance in eventInstances.Values)
@@ -160,7 +188,7 @@ public class AudioManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ¼Ò¸® ÀÏ½ÃÁ¤Áö
+    /// ì†Œë¦¬ ì¼ì‹œì •ì§€
     /// </summary>
     public void PauseSound(EventReference _eventRef)
     {
@@ -168,7 +196,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ğµç ¼Ò¸® ÀÏ½ÃÁ¤Áö
+    /// ëª¨ë“  ì†Œë¦¬ ì¼ì‹œì •ì§€
     /// </summary>
     public void PauseAllSounds()
     {
@@ -176,7 +204,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼Ò¸® Àç°³
+    /// ì†Œë¦¬ ì¬ê°œ
     /// </summary>
     public void ResumeSound(EventReference _eventRef)
     {
@@ -184,10 +212,66 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ğµç ¼Ò¸® Àç°³
+    /// ëª¨ë“  ì†Œë¦¬ ì¬ê°œ
     /// </summary>
     public void ResumeAllSounds()
     {
         foreach (EventInstance eventInstance in eventInstances.Values) eventInstance.setPaused(false);
+    }
+
+    /// <summary>
+    /// ë³¼ë¥¨ ì¡°ì ˆ
+    /// </summary>
+    public void VolumeControl(EventReference _eventRef, float _volume)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setVolume(_volume);
+    }
+
+    /// <summary>
+    /// ë³¼ë¥¨ ê°’ ê°€ì ¸ì˜¤ê¸°
+    /// </summary>
+    public float GetVolume(EventReference _eventRef)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            float volume;
+            eventInstance.getVolume(out volume);
+            return volume;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// íš¨ê³¼ìŒ ì¤‘ë³µ ì²´í¬
+    /// </summary>
+    public bool DuplicateCheck(EventReference _eventRef)
+    {
+        if (eventInstances.ContainsKey(_eventRef)) return true;
+        return false;
+    }
+
+    /// <summary>
+    /// íŒŒë¼ë¯¸í„° ê°’ ì„¤ì •
+    /// </summary>
+    /// <param name="_paramName">íŒŒë¼ë¯¸í„° ì´ë¦„</param>
+    /// <param name="_value">íŒŒë¼ë¯¸í„° ê°’</param>
+    public void SetParameter(EventReference _eventRef, string _paramName, float _value)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setParameterByName(_paramName, _value);
+    }
+
+    /// <summary>
+    /// íŒŒë¼ë¯¸í„° ê°’ ê°€ì ¸ì˜¤ê¸°
+    /// </summary>
+    /// <param name="_paramName">íŒŒë¼ë¯¸í„° ì´ë¦„</param>
+    public float GetParameter(EventReference _eventRef, string _paramName)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            float value;
+            eventInstance.getParameterByName(_paramName, out value);
+            return value;
+        }
+        return 0;
     }
 }
