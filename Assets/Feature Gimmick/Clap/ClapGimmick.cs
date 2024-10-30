@@ -6,8 +6,8 @@ using AbstractGimmick;
 
 public class ClapGimcik : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
+    //[SerializeField]
+    //private GimmickManager gimmickManager;
 
     public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
 

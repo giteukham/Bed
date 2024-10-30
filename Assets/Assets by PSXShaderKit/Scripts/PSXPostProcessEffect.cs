@@ -42,7 +42,7 @@ namespace PSXShaderKit
         [SerializeField]
         [Range(0.0f, 1.0f)]
         [Tooltip("Scales the dithering pattern so that it's more visible at high resolutions. This will look weird as different pixels within the pattern will still have different values. " +
-                 "The best way to make the dithering visible is to drop your rendering resolution and display your framebuffer with point filtering.")]
+                 "The best way to make the dithering visible is to drop your rendering resolution and display your framebuffer with movePoints filtering.")]
         private float _DitheringScale = 1;
 
         [Header("Interlacing")]
