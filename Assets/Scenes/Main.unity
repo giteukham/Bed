@@ -1251,67 +1251,6 @@ MonoBehaviour:
   cellingLamp: {fileID: 7951309084960298646}
   offSwitch: {fileID: 1095580962}
   onSwitch: {fileID: 189311186}
---- !u!1001 &66330094
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2521683133136232483, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_Name
-      value: WhiteManGimmick
-      objectReference: {fileID: 0}
-    - target: {fileID: 2521683133136232483, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 4.653
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.765
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5.51
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 4873255782640767294, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 574ea8f7ba92ef943a618111040c237b, type: 3}
 --- !u!33 &80046164
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -10271,112 +10210,112 @@ MonoBehaviour:
       Data2: 1283878485
       Data3: 816481715
       Data4: -1974117964
-    Path: event:/CatMeow
+    Path: event:/Gimmick SFX/CatMeow
   <radio>k__BackingField:
     Guid:
       Data1: -420455738
       Data2: 1237618179
       Data3: 1390274721
       Data4: -732533398
-    Path: event:/Radio
+    Path: event:/Gimmick SFX/Radio
   <eyeStart>k__BackingField:
     Guid:
       Data1: 1430654648
       Data2: 1182977516
       Data3: -1338994798
       Data4: 520563050
-    Path: event:/EyeStart
+    Path: event:/Gimmick SFX/EyeStart
   <eyeEnd>k__BackingField:
     Guid:
       Data1: -534629553
       Data2: 1176161340
       Data3: -1285257826
       Data4: 1522124167
-    Path: event:/EyeEnd
+    Path: event:/Gimmick SFX/EyeEnd
   <lag1>k__BackingField:
     Guid:
       Data1: 884309015
       Data2: 1278010186
       Data3: 309319819
       Data4: 1417042417
-    Path: event:/Lag1
+    Path: event:/Gimmick SFX/Lag1
   <lag2>k__BackingField:
     Guid:
       Data1: 1214729952
       Data2: 1251174417
       Data3: -2103848308
       Data4: 1983284188
-    Path: event:/Lag2
+    Path: event:/Gimmick SFX/Lag2
   <switchOn>k__BackingField:
     Guid:
       Data1: 1220503684
       Data2: 1173879494
       Data3: -2115559773
       Data4: 1513127990
-    Path: event:/SwitchOn
+    Path: event:/Gimmick SFX/SwitchOn
   <switchOff>k__BackingField:
     Guid:
       Data1: 902070337
       Data2: 1223120481
       Data3: -1726651233
       Data4: 277808860
-    Path: event:/SwitchOff
+    Path: event:/Gimmick SFX/SwitchOff
   <handClap>k__BackingField:
     Guid:
       Data1: -1832842744
       Data2: 1125613889
       Data3: 147655308
       Data4: 451895025
-    Path: event:/HandClap
+    Path: event:/Gimmick SFX/HandClap
   <handCover>k__BackingField:
     Guid:
       Data1: 1531166159
       Data2: 1253220984
       Data3: -777748036
       Data4: -850656741
-    Path: event:/HandCover
+    Path: event:/Gimmick SFX/HandCover
   <roughBreath>k__BackingField:
     Guid:
       Data1: 878231570
       Data2: 1128496217
       Data3: -1818365783
       Data4: 355565189
-    Path: event:/RoughBreath
+    Path: event:/Gimmick SFX/RoughBreath
   <handCoverOff>k__BackingField:
     Guid:
       Data1: 1444812688
       Data2: 1230193531
       Data3: -1527330912
       Data4: -572691943
-    Path: event:/HandCoverOff
+    Path: event:/Gimmick SFX/HandCoverOff
   <windowOpenClose>k__BackingField:
     Guid:
       Data1: -789086865
       Data2: 1220498686
       Data3: -1592890477
       Data4: -1196550052
-    Path: event:/WindowOpenClose
+    Path: event:/Gimmick SFX/WindowOpenClose
   <pantRustle>k__BackingField:
     Guid:
       Data1: -34843396
       Data2: 1247064646
       Data3: 1503764394
       Data4: 1044178157
-    Path: event:/PantRustle
+    Path: event:/Gimmick SFX/PantRustle
   <rapist4Phase>k__BackingField:
     Guid:
       Data1: 1529977143
       Data2: 1146640107
       Data3: -950502233
       Data4: 357621249
-    Path: event:/Rapist4Phase
+    Path: event:/Gimmick SFX/Rapist4Phase
   <hornyBreath>k__BackingField:
     Guid:
       Data1: 1495983981
       Data2: 1135532163
       Data3: 1427793310
       Data4: -591575045
-    Path: event:/HornyBreath
+    Path: event:/Gimmick SFX/HornyBreath
   <hit>k__BackingField:
     Guid:
       Data1: 0
@@ -10481,42 +10420,42 @@ MonoBehaviour:
       Data2: 1290282412
       Data3: 1713477310
       Data4: -1837505310
-    Path: event:/HeadMoveOnPillow
+    Path: event:/Player SFX/HeadMoveOnPillow
   <fearHal>k__BackingField:
     Guid:
       Data1: -1940432464
       Data2: 1220174579
       Data3: 1518286508
       Data4: -1400683950
-    Path: event:/FearHal
+    Path: event:/Player SFX/FearHal
   <stressHal>k__BackingField:
     Guid:
       Data1: -646822876
       Data2: 1283756069
       Data3: -1549003869
       Data4: -1877940388
-    Path: event:/StressHal
+    Path: event:/Player SFX/StressHal
   <inhale>k__BackingField:
     Guid:
       Data1: -2085662643
       Data2: 1091394858
       Data3: 1377037446
       Data4: 1112082346
-    Path: event:/Inhale
+    Path: event:/Player SFX/Inhale
   <exhale>k__BackingField:
     Guid:
       Data1: -188046541
       Data2: 1159226807
       Data3: 1682411153
       Data4: 1259223687
-    Path: event:/Exhale
+    Path: event:/Player SFX/Exhale
   <blanketMoving>k__BackingField:
     Guid:
       Data1: -273215972
       Data2: 1249766749
       Data3: -428047218
       Data4: -1633766913
-    Path: event:/BlanketMoving
+    Path: event:/Player SFX/BlanketMoving
 --- !u!33 &2139504209
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -11884,7 +11823,6 @@ SceneRoots:
   - {fileID: 1344400906}
   - {fileID: 1282133977}
   - {fileID: 1013609323}
-  - {fileID: 66330094}
   - {fileID: 512084784}
   - {fileID: 150103664}
   - {fileID: 843813527}
