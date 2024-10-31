@@ -6,9 +6,6 @@ using AbstractGimmick;
 
 public class CoverGimcik : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
     public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
     public override float Probability { get; set; } = 100;
 

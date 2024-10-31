@@ -14,6 +14,8 @@ public class TimeManager : MonoBehaviour
     public static int playTimeToMin = 0;  // 게임 시간 기준 누적 분
     private float realTimeCounter; // 실제 시간
     private static bool isGimmickRunning = false; //현재 기믹이 실행되고 있는지
+    [SerializeField]private GimmickManager gimmickManager;
+
     #endregion
 
     #region AlarmClock Related Variables
@@ -65,6 +67,22 @@ public class TimeManager : MonoBehaviour
             realTimeCounter = 0;  
             timeInterval = isGimmickRunning ? timeIntervalValue * 3 : timeIntervalValue; 
         }
+        switch (playTimeToMin)
+        {
+            case 320:
+                gimmickManager.progress = GimmickManager.GameProgress.End;
+                print("End 실행");
+                break;
+            case 160:
+                gimmickManager.progress = GimmickManager.GameProgress.Middle;
+                print("Middle 실행");
+                break;
+            case 1:     //0은 나오지 않음
+                gimmickManager.progress = GimmickManager.GameProgress.First;
+                print("First 실행");
+                break;
+        }
+
     }
 
     private void UpdateClockTime() // 시계 갱신

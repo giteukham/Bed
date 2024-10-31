@@ -14,6 +14,9 @@ namespace AbstractGimmick
 
     public abstract class Gimmick : MonoBehaviour
     {
+        //기믹 매니저 참조용 싱글톤 변수
+        protected static GimmickManager gimmickManager;
+
         //자신의 그룹 표시하기 위해 사용
         public abstract GimmickType Type { get; protected set; }
         //기믹 등장 확률

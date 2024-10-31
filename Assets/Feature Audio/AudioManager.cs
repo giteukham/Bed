@@ -9,12 +9,9 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance { get; private set;}
 
-    #region FMOD Events
+    #region Other FMOD Events
     [field: Header("Cat SFX")]
     [field: SerializeField] public EventReference catMeow {get; private set;}
-
-    [field: Header("Player SFX")]
-    [field: SerializeField] public EventReference blanketMoving {get; private set;}
 
     [field: Header("Radio SFX")]
     [field: SerializeField] public EventReference radio { get; private set; }
@@ -60,7 +57,55 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
-    
+
+    [field: Header("Hit SFX")]
+    [field: SerializeField] public EventReference hit { get; private set; }
+
+    [field: Header("ToyWalk SFX")]
+    [field: SerializeField] public EventReference toyWalk { get; private set; }
+
+    [field: Header("Knock SFX")]
+    [field: SerializeField] public EventReference knock { get; private set; }
+
+    [field: Header("CogWheell SFX")]
+    [field: SerializeField] public EventReference cogWheell { get; private set; }
+
+    [field: Header("NeckSnap SFX")]
+    [field: SerializeField] public EventReference neckSnap { get; private set; }
+
+    [field: Header("Crows SFX")]
+    [field: SerializeField] public EventReference crows { get; private set; }
+
+    [field: Header("WoodDrop1 SFX")]
+    [field: SerializeField] public EventReference woodDrop1 { get; private set; }
+
+    [field: Header("WoodDrop2 SFX")]
+    [field: SerializeField] public EventReference woodDrop2 { get; private set; }
+
+    [field: Header("DogBark SFX")]
+    [field: SerializeField] public EventReference dogBark { get; private set; }
+
+    [field: Header("DogWhine SFX")]
+    [field: SerializeField] public EventReference dogWhine { get; private set; }
+
+    [field: Header("Mosquito SFX")]
+    [field: SerializeField] public EventReference mosquito { get; private set; }
+
+    [field: Header("CatFight SFX")]
+    [field: SerializeField] public EventReference catFight { get; private set; }
+
+    [field: Header("Chair1 SFX")]
+    [field: SerializeField] public EventReference chair1 { get; private set; }
+
+    [field: Header("Chair2 SFX")]
+    [field: SerializeField] public EventReference chair2 { get; private set; }
+
+    #endregion
+
+    #region Player FMOD Events
+    [field: Header("Head Move On Pillow SFX")]
+    [field: SerializeField] public EventReference headMove {get; private set;}
+
     [field: Header("Fear Whisper SFX")]
     [field: SerializeField] public EventReference fearHal {get; private set;}
 
@@ -73,8 +118,8 @@ public class AudioManager : MonoBehaviour
     [field: Header("Player Exhale SFX")]
     [field: SerializeField] public EventReference exhale {get; private set;}
 
-    [field: Header("Head Move On Pillow SFX")]
-    [field: SerializeField] public EventReference headMove {get; private set;}
+    [field: Header("blanketMoving SFX")]
+    [field: SerializeField] public EventReference blanketMoving {get; private set;}
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스

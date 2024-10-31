@@ -5,9 +5,6 @@ using AbstractGimmick;
 
 public class RapistGimmick : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
     public override GimmickType Type { get; protected set; } = GimmickType.Human;
     public override float Probability { get; set; } = 100;
 

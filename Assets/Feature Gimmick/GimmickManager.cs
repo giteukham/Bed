@@ -6,6 +6,15 @@ using UnityEngine;
 [System.Serializable]
 public class GimmickManager : MonoBehaviour
 {
+    public enum GameProgress
+    {
+        //같은 숫자로 설정시 역참조 불가한거 기억해두기
+        //(현재 End로 설정시 First로 설정되는 문제 있음 : 숫자 다 다르게 해야할듯)
+        First = 10,
+        Middle = 3,
+        End = 9
+    }
+
     [SerializeField]
     private List<Gimmick> allGimicks;
 
@@ -17,6 +26,8 @@ public class GimmickManager : MonoBehaviour
     private int randomNum2 = 0;
 
     private Gimmick temp;
+
+    public GameProgress progress = GameProgress.First;
 
     private void Awake()
     {
@@ -68,9 +79,11 @@ public class GimmickManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(3);
-            RedefineProbability();
-            ChoiceGimmick();
+            //yield return new WaitForSeconds(3);
+            //현재 게임 진행상황에 따라서 기믹 뽑는 속도 조절
+            yield return new WaitForSeconds((int)progress);
+            RedefineProbability();  // 나올 확률 재정의
+            ChoiceGimmick();        // 기믹타입 3종류 중에 하나라도 실행이 안되고 있으면 자동으로 기믹 고르게 함
         }
     }
 
@@ -97,9 +110,9 @@ public class GimmickManager : MonoBehaviour
         //무작위 확률값 구하기
         randomNum1 = Random.Range(1, 101);
 
-        //문제점 : allGimicks 앞쪽에 위치한 기믹일 수록 등장확률이 더 높음
         foreach (Gimmick item in allGimicks)
         {
+            //만약 확률이 무작위 확률값 보다 높으면서 같은 타입의 기믹이 실행되고 있지 않다면 뽑힌 기믹 실행
             if (item.Probability >= randomNum1 && CanActivateGimmick(item) == true)
             {
                 //기믹 실행
@@ -110,7 +123,7 @@ public class GimmickManager : MonoBehaviour
 
     }
 
-    //기믹별 등장확률 재정의
+    //기믹별 등장확률 재정의(UpdateProbability는 각 기믹 스크립트마다 다름)
     private void RedefineProbability()
     {
         foreach (Gimmick item in allGimicks)
@@ -119,7 +132,7 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //리스트 섞는 메소드
+    //allGimicks 리스트 무작위로 섞는 메소드
     private void ShakeList()
     {
         randomNum1 = Random.Range(0, allGimicks.Count);
@@ -131,7 +144,7 @@ public class GimmickManager : MonoBehaviour
         allGimicks[randomNum2] = temp;
     }
 
-    //등장확률 낮추는 메소드
+    //등장확률 낮추는 메소드(리스트 맨 뒤로 옮기고 확률 0으로 낮춤)
     public void LowerProbability(Gimmick gimmick)
     {
         allGimicks.Remove(gimmick);

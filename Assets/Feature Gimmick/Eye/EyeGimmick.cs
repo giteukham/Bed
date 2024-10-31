@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class EyeGimmick : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
     public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
     public override float Probability { get; set; } = 100;
 

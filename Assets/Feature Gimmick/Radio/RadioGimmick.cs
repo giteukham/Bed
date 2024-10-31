@@ -5,10 +5,6 @@ using UnityEngine;
 
 public class RadioGimmick : Gimmick
 {
-    //기믹 매니저 참조할 변수
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
     public override GimmickType Type { get; protected set; } = GimmickType.Object;
     public override float Probability { get; set; } = 100;
 
