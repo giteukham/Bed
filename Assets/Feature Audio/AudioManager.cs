@@ -58,9 +58,6 @@ public class AudioManager : MonoBehaviour
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
 
-    [field: Header("Hit SFX")]
-    [field: SerializeField] public EventReference hit { get; private set; }
-
     [field: Header("ToyWalk SFX")]
     [field: SerializeField] public EventReference toyWalk { get; private set; }
 
@@ -68,7 +65,7 @@ public class AudioManager : MonoBehaviour
     [field: SerializeField] public EventReference knock { get; private set; }
 
     [field: Header("CogWheell SFX")]
-    [field: SerializeField] public EventReference cogWheell { get; private set; }
+    [field: SerializeField] public EventReference cogWheel { get; private set; }
 
     [field: Header("NeckSnap SFX")]
     [field: SerializeField] public EventReference neckSnap { get; private set; }

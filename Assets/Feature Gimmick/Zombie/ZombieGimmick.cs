@@ -66,6 +66,7 @@ public class ZombieGimmick : Gimmick
         //처음에 기어옴
         animator.speed = 0.7f;
         animator.SetTrigger("Crawl");
+        print("크라울");
         timeLimit = 0;
         while (timeLimit <= 5f)
         {

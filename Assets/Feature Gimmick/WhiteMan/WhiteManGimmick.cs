@@ -128,7 +128,7 @@ public class WhiteManGimmick : Gimmick
         yield return new WaitForSeconds(2);
 
         //몸을 두번째 포인트로 향할 때 까지 3초 동안 회전
-        AudioManager.instance.PlaySound(AudioManager.instance.cogWheell, transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.cogWheel, transform.position);
         timeLimit = 0;
         while (timeLimit <= 3)
         {
@@ -136,7 +136,7 @@ public class WhiteManGimmick : Gimmick
             transform.rotation = Quaternion.Slerp(transform.rotation, neck.rotation, Time.deltaTime);
             neck.LookAt(new Vector3(pointsArray[2].position.x, neck.position.y, pointsArray[2].position.z));
         }
-        AudioManager.instance.StopSound(AudioManager.instance.cogWheell, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.instance.StopSound(AudioManager.instance.cogWheel, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         //목 원상복귀
         neck.localRotation = Quaternion.identity;
@@ -173,7 +173,7 @@ public class WhiteManGimmick : Gimmick
         neck.LookAt(player.position);
         yield return new WaitForSeconds(2);
 
-        AudioManager.instance.PlaySound(AudioManager.instance.cogWheell, transform.position);
+        AudioManager.instance.PlaySound(AudioManager.instance.cogWheel, transform.position);
         timeLimit = 0;
         while (timeLimit <= 5)
         {
@@ -205,7 +205,7 @@ public class WhiteManGimmick : Gimmick
             yield return null;
             transform.Translate(Vector3.forward * Time.deltaTime * 0.1f);
         }
-        AudioManager.instance.StopSound(AudioManager.instance.cogWheell, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.instance.StopSound(AudioManager.instance.cogWheel, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         yield return new WaitForSeconds(4);
 
