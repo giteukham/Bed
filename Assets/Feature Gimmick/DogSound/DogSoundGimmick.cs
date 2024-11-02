@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DogSoundGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private void Awake()
@@ -20,14 +20,13 @@ public class DogSoundGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -50,4 +49,6 @@ public class DogSoundGimmick : Gimmick
         //스트레스 데미지 주고 끝냄
         Deactivate();
     }
+
+    public override void Initialize(){}
 }

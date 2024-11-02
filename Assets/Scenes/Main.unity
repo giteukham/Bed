@@ -1761,6 +1761,10 @@ PrefabInstance:
       propertyPath: playerPosition
       value: 
       objectReference: {fileID: 427841145}
+    - target: {fileID: 5902645384576526096, guid: 0b640d0338ddd7e4b98ff658f4182be0, type: 3}
+      propertyPath: <Type>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8224738015081339081, guid: 0b640d0338ddd7e4b98ff658f4182be0, type: 3}
       propertyPath: m_Name
       value: MosquitoGimmick
@@ -2400,7 +2404,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeIntervalValue: 3
-  gimmickManager: {fileID: 1139378659}
   timeText: {fileID: 1990451067}
   clockRenderer: {fileID: 7909545157062771440}
   amTexture: {fileID: 2800000, guid: 122a1514a9eb91a45baf348bdc18e87b, type: 3}
@@ -2777,17 +2780,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &391890182 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6674230846721028615, guid: 9f39bba7a79d14141b9603e7fbb34afd, type: 3}
-  m_PrefabInstance: {fileID: 512084784}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4af81270e1f94e6419e020c460ce19b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &427841144
 GameObject:
   m_ObjectHideFlags: 0
@@ -3265,7 +3257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8189733262733992184, guid: 9f39bba7a79d14141b9603e7fbb34afd, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3975,6 +3967,10 @@ PrefabInstance:
     - target: {fileID: 3786719521596531883, guid: 1bc99913720fda542aac8075bf592c75, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6663401023396112885, guid: 1bc99913720fda542aac8075bf592c75, type: 3}
+      propertyPath: <Type>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5235,8 +5231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 556a37822e4d579489f8bbb44dfd723a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allGimicks:
-  - {fileID: 391890182}
+  allGimicks: []
   unrealGimmick: {fileID: 0}
   humanGimmick: {fileID: 0}
   objectGimmick: {fileID: 0}
@@ -5417,6 +5412,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 723445248732486607, guid: cecb4c5d0322d8641b1a87348beb768b, type: 3}
+      propertyPath: <Type>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3852064642154927670, guid: cecb4c5d0322d8641b1a87348beb768b, type: 3}
       propertyPath: m_Name
       value: DogSoundGimmick
@@ -6293,6 +6292,10 @@ PrefabInstance:
       propertyPath: gimmickManager
       value: 
       objectReference: {fileID: 1139378659}
+    - target: {fileID: 8462490830524522451, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: <Type>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6576,6 +6579,10 @@ PrefabInstance:
       propertyPath: gimmickManager
       value: 
       objectReference: {fileID: 1139378659}
+    - target: {fileID: 498099707345968025, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
+      propertyPath: <Type>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6171796030521548098, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.59
@@ -8043,6 +8050,10 @@ PrefabInstance:
       propertyPath: gimmickManager
       value: 
       objectReference: {fileID: 1139378659}
+    - target: {fileID: 6251113598675626979, guid: 7a4a49202652bc240a0ce6fb70691698, type: 3}
+      propertyPath: <Type>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8020602162408276563, guid: 7a4a49202652bc240a0ce6fb70691698, type: 3}
       propertyPath: m_Name
       value: EyeGimmick
@@ -9112,7 +9123,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1859023305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9120,12 +9131,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1859023304}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d432e07b375c3a4091a9098a1a6308f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeLimit: 0
   isDetected: 0
+  <Type>k__BackingField: 1
+  <Probability>k__BackingField: 100
 --- !u!4 &1859023306
 Transform:
   m_ObjectHideFlags: 0

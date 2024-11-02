@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MosquitoGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private Vector3 startPosition;
@@ -30,16 +30,13 @@ public class MosquitoGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        transform.position = startPosition;
-
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -104,5 +101,10 @@ public class MosquitoGimmick : Gimmick
         }
 
         return new Vector3(randomValue[0], randomValue[1], randomValue[2]);
+    }
+
+    public override void Initialize()
+    {
+        transform.position = startPosition;
     }
 }

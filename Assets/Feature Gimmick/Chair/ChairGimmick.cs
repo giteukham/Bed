@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ChairGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private void Awake()
@@ -21,14 +21,13 @@ public class ChairGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -78,4 +77,6 @@ public class ChairGimmick : Gimmick
 
         Deactivate();
     }
+
+    public override void Initialize(){ }
 }

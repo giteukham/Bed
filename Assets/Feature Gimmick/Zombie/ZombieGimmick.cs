@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class ZombieGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private Animator animator;
     private Rigidbody rig;
-
     private Vector3 startPoint;
     private Vector3 startRotation;
     private bool isRun = false;
@@ -36,11 +35,22 @@ public class ZombieGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
+    {
+        base.Deactivate();
+        gameObject.SetActive(false);
+    }
+
+    public override void UpdateProbability()
+    {
+        Probability = 100;
+    }
+
+    public override void Initialize()
     {
         //초기 위치로 이동, 회전
         animator.speed = 1;
@@ -50,15 +60,6 @@ public class ZombieGimmick : Gimmick
         transform.rotation = Quaternion.Euler(startRotation);
         isRun = false;
         isDetected = false;
-
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
-        gameObject.SetActive(false);
-    }
-
-    public override void UpdateProbability()
-    {
-        Probability = 100;
     }
 
     private IEnumerator MainCode()

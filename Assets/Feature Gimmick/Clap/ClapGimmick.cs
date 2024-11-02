@@ -6,7 +6,7 @@ using AbstractGimmick;
 
 public class ClapGimcik : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
 
     public override float Probability { get; set; } = 100;
 
@@ -36,14 +36,13 @@ public class ClapGimcik : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -51,6 +50,8 @@ public class ClapGimcik : Gimmick
     {
         Probability = 100;
     }
+
+    public override void Initialize(){}
 
     private IEnumerator MainCode()
     {
@@ -73,4 +74,6 @@ public class ClapGimcik : Gimmick
         yield return new WaitForSeconds(0.4f);
         Deactivate();
     }
+
+
 }

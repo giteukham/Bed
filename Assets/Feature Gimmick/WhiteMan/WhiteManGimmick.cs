@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class WhiteManGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Human;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     [SerializeField]
@@ -64,7 +64,7 @@ public class WhiteManGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         //포인트 오브젝트 월드 오브젝트로 바꿈
         movePoints.SetParent(null);
         StartCoroutine(MainCode());
@@ -72,21 +72,7 @@ public class WhiteManGimmick : Gimmick
 
     public override void Deactivate()
     {
-        //기믹 상태 원래위치로 변경하고 로테이션 원래대로
-        waist.localRotation = Quaternion.identity;
-        neck.localRotation = Quaternion.identity;
-        head.localRotation = Quaternion.identity;
-        rightArm.localRotation = Quaternion.Euler(80, 10, 16);
-        leftArm.localRotation = Quaternion.Euler(80, -10, -16);
-
-        transform.position = pointsArray[0].position;
-        transform.rotation = Quaternion.Euler(0, 180, 0);
-
-        //포인트 오브젝트 로컬 오브젝트로 바꿈
-        movePoints.SetParent(transform);
-
-        gimmickManager.LowerProbability(this);
-        gimmickManager.humanGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -252,5 +238,21 @@ public class WhiteManGimmick : Gimmick
         rotationZ = -(Mathf.PingPong(Time.time * 15, 12) - 6);
         //현재 Z 회전값에 회전 추가
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, rotationY, rotationZ);
+    }
+
+    public override void Initialize()
+    {
+        //기믹 상태 원래위치로 변경하고 로테이션 원래대로
+        waist.localRotation = Quaternion.identity;
+        neck.localRotation = Quaternion.identity;
+        head.localRotation = Quaternion.identity;
+        rightArm.localRotation = Quaternion.Euler(80, 10, 16);
+        leftArm.localRotation = Quaternion.Euler(80, -10, -16);
+
+        transform.position = pointsArray[0].position;
+        transform.rotation = Quaternion.Euler(0, 180, 0);
+
+        //포인트 오브젝트 로컬 오브젝트로 바꿈
+        movePoints.SetParent(transform);
     }
 }

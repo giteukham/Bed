@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EyeGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
 
@@ -27,20 +27,15 @@ public class EyeGimmick : Gimmick
 
     public override void Activate()
     {
-        // 경과 시간 초기화
-        elapsedTime = 0f;
-
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
         StartCoroutine(MoveEye());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
-        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 
     public override void UpdateProbability()
@@ -113,5 +108,11 @@ public class EyeGimmick : Gimmick
             float delay = Random.Range(0.3f, 0.9f);
             yield return new WaitForSeconds(delay);
         }
+    }
+
+    public override void Initialize()
+    {
+        elapsedTime = 0f;
+        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 }

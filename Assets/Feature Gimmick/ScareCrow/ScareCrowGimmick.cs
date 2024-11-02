@@ -5,7 +5,7 @@ using AbstractGimmick;
 
 public class ScareCrowGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private float rotationX = 0;
@@ -14,7 +14,6 @@ public class ScareCrowGimmick : Gimmick
     private Rigidbody rig;
     private BoxCollider boxColl;
     private Vector3 startPosition;
-
     private int soundNum = 0;
 
     private void Awake()
@@ -32,20 +31,13 @@ public class ScareCrowGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        rig.useGravity = false;
-        boxColl.isTrigger = true;
-        soundNum = 0;
-        transform.localRotation = Quaternion.Euler(-90, 0, 0);
-        transform.position = startPosition;
-
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -149,5 +141,14 @@ public class ScareCrowGimmick : Gimmick
                 AudioManager.instance.PlaySound(AudioManager.instance.woodDrop2, transform.position);
             }
         }
+    }
+
+    public override void Initialize()
+    {
+        rig.useGravity = false;
+        boxColl.isTrigger = true;
+        soundNum = 0;
+        transform.localRotation = Quaternion.Euler(-90, 0, 0);
+        transform.position = startPosition;
     }
 }
