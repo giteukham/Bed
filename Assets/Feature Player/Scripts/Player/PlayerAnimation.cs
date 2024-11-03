@@ -28,4 +28,22 @@ public class PlayerAnimation : MonoBehaviour
         PlayerConstant.BodyMovementCAT++;
         PlayerConstant.BodyMovementLAT++;
     }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="isPause">true면 정지, false면 다시 재생</param>
+    public static void PauseAndResumeAnimation(bool isPause)
+    {
+        if (isPause)
+        {
+            playerAnimator.speed = 0;
+            blanketAnimator.speed = 0;
+        }
+        else
+        {
+            playerAnimator.speed = 1;
+            blanketAnimator.speed = 1;
+        }
+    }
 }

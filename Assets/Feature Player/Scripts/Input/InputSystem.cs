@@ -2,52 +2,68 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// TODO: 성혁이꺼랑 합쳐야 함.
-
-public class InputSystem : MonoBehaviour
+namespace Bed
 {
-    private static float mouseDeltaX;
-    private static float mouseDeltaY;
-    public static float MouseDeltaX
+    public class InputSystem : MonoSingleton<InputSystem>
     {
-        get { return mouseDeltaX; }
-        private set { mouseDeltaX = value; }
-    }
-
-    public static float MouseDeltaY
-    {
-        get { return mouseDeltaY; }
-        private set { mouseDeltaY = value; }
-    }
-
-    public static event Action OnMouseWheelClickEvent; 
-    public static event Action<int> OnMouseScrollEvent; // 마우스 휠. 위로는 120, 아래로는 -120
-
-    private void OnMouseDelta(InputValue value)
-    {
-        if ( PlayerConstant.isParalysis ) 
+        private float mouseDeltaX;
+        private float mouseDeltaY;
+        public float MouseDeltaX
         {
-            MouseDeltaX = value.Get<Vector2>().x * 0.02f;
-            MouseDeltaY = value.Get<Vector2>().y * 0.02f;
+            get { return mouseDeltaX; }
+            private set { mouseDeltaX = value; }
         }
-        else
+    
+        public float MouseDeltaY
         {
-            MouseDeltaX = value.Get<Vector2>().x;
-            MouseDeltaY = value.Get<Vector2>().y;
+            get { return mouseDeltaY; }
+            private set { mouseDeltaY = value; }
+        }
+    
+        #region Mouse Events
+        public event Action OnMouseWheelClickEvent; 
+        public event Action<int> OnMouseScrollEvent;         // 마우스 휠. 위로는 120, 아래로는 -120
+        public event Action OnMouseClickEvent;               // 마우스 클릭 이벤트
+        #endregion
+        
+        #region Keyboard Events
+        public event Action OnEscEvent;                      // ESC 키 이벤트
+        #endregion
+        private void OnMouseDelta(InputValue value)
+        {
+            if (PlayerConstant.isPlayerStop) return;
+                
+            if ( PlayerConstant.isParalysis ) 
+            {
+                MouseDeltaX = value.Get<Vector2>().x * 0.02f;
+                MouseDeltaY = value.Get<Vector2>().y * 0.02f;
+            }
+            else
+            {
+                MouseDeltaX = value.Get<Vector2>().x;
+                MouseDeltaY = value.Get<Vector2>().y;
+            }
+        }
+    
+        private void OnMouseScroll(InputValue value)
+        {
+            OnMouseScrollEvent?.Invoke(Convert.ToInt32(value.Get<Vector2>().y));
         }
         
-    }
-
-    private void OnMouseScroll(InputValue value)
-    {
-        OnMouseScrollEvent?.Invoke(Convert.ToInt32(value.Get<Vector2>().y));
-    }
-    
-    private void OnMouseWheelClick(InputValue value)
-    {
-        if (value.isPressed)
+        private void OnMouseWheelClick(InputValue value)
         {
-            OnMouseWheelClickEvent?.Invoke();
+            if (value.isPressed)
+            {
+                OnMouseWheelClickEvent?.Invoke();
+            }
+        }
+        
+        private void OnMouseClick(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                OnMouseClickEvent?.Invoke();
+            }
         }
     }
 }

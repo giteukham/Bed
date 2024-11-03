@@ -1,3 +1,4 @@
+using Bed;
 using Cinemachine;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class PlayerDirectionStates
             PlayerConstant.LeftStateLAT += Time.deltaTime;
 
             if ( PlayerConstant.isParalysis ) return;
-            if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            if (InputSystem.Instance.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
             }
@@ -48,11 +49,11 @@ public class PlayerDirectionStates
             PlayerConstant.MiddleStateLAT += Time.deltaTime;
 
             if ( PlayerConstant.isParalysis ) return;
-            if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if (InputSystem.Instance.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle To Left");
             }
-            else if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            else if (InputSystem.Instance.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle To Right");
             }
@@ -80,7 +81,7 @@ public class PlayerDirectionStates
             PlayerConstant.RightStateLAT += Time.deltaTime;
 
             if ( PlayerConstant.isParalysis ) return;
-            if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if (InputSystem.Instance.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
             }

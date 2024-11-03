@@ -1,15 +1,11 @@
-using Bed.PostProcessing;
 using Cinemachine;
 using Cinemachine.PostFX;
-using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
-using Unity.VisualScripting;
+using Bed;
 
 public enum PlayerDirectionStateTypes
 {
@@ -40,9 +36,6 @@ public class Player : MonoBehaviour
     [SerializeField] private StateMachine playerEyeStateMachine;
 
     private PlayerAnimation playerAnimation;
-    
-    [Header("Input System")]
-    [SerializeField] private InputSystem inputSystem;
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
@@ -96,6 +89,15 @@ public class Player : MonoBehaviour
     private Coroutine headMoveSFXCoroutine;
     #endregion
 
+    private void OnEnable()
+    {
+        // TODO: 나중에 GameManager로 옮기기
+        InputSystem.Instance.OnMouseClickEvent += () =>
+        {
+            Cursor.visible = false;
+        };
+    }
+
     private void Start()
     {
         TryGetComponent(out playerAnimation);
@@ -143,8 +145,26 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Update() 
+    // TODO: 나중에 GameManager로 옮기기
+    private void StopPlayer()
     {
+        if (Cursor.visible == true && PlayerConstant.isPlayerStop == false)             // 커서가 보이면 2번 카메라로 이동 및 현재 재생 중인 애니메이션 일시정지
+        {
+            playerCamera.enabled = false;
+            PlayerConstant.isPlayerStop = true;
+            PlayerAnimation.PauseAndResumeAnimation(true);
+        }
+        else if (Cursor.visible == false && PlayerConstant.isPlayerStop == true)        // 커서가 안보이면 1번 카메라로 이동 및 애니메이션 재시작
+        {
+            playerCamera.enabled = true;
+            PlayerConstant.isPlayerStop = false;
+            PlayerAnimation.PauseAndResumeAnimation(false);
+        }
+    }
+
+    void Update()
+    {
+        StopPlayer();
         timeSinceLastUpdate += Time.deltaTime;
 
         if (timeSinceLastUpdate >= updateInterval)
@@ -172,8 +192,8 @@ public class Player : MonoBehaviour
         if(currentVerticalCameraMovement == recentVerticalCameraMovement && currentHorizontalCameraMovement == recentHorizontalCameraMovement) isCameraMovement = 0;
         else isCameraMovement = 1;
         
-        float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaX);
-        float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaY);
+        float mouseDeltaX = Mathf.Abs(InputSystem.Instance.MouseDeltaX);
+        float mouseDeltaY = Mathf.Abs(InputSystem.Instance.MouseDeltaY);
         recentHorizontalMouseMovement = currentHorizontalMouseMovement;
         recentVerticalMouseMovement = currentVerticalMouseMovement;
         currentHorizontalMouseMovement = mouseDeltaX;
@@ -431,4 +451,3 @@ public class Player : MonoBehaviour
         BlinkEffect.Blink = 0.001f;
     }
 }
-
