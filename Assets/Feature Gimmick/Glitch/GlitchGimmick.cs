@@ -7,11 +7,8 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class GlitchGimmick : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
     //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
-    public override GimmickType Type { get; protected set; } = GimmickType.Human;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private void Awake()
@@ -40,24 +37,15 @@ public class GlitchGimmick : Gimmick
 
     public override void Activate()
     {
-        try
-        {
-            SettingVariables();
-            StartCoroutine(MainCode());
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.Message);
-        }
+        base.Activate();
+        StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
         try
         {
-            gimmickManager.LowerProbability(this);
-            //원래는 비현실인데 테스트를 위해서 휴먼 기믹으로 잠깐 변경함
-            gimmickManager.humanGimmick = null;
+            base.Deactivate();
             gameObject.SetActive(false);
         }
         catch (Exception e)
@@ -78,6 +66,8 @@ public class GlitchGimmick : Gimmick
             Debug.LogError(e.Message);
         }
     }
+
+    public override void Initialize(){}
 
     private IEnumerator MainCode()
     {

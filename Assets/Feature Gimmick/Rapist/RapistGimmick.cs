@@ -5,10 +5,7 @@ using AbstractGimmick;
 
 public class RapistGimmick : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
-    public override GimmickType Type { get; protected set; } = GimmickType.Human;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     public GameObject hand, houseLight;
@@ -20,8 +17,8 @@ public class RapistGimmick : Gimmick
 
     private void Awake()
     {
-        gameObject.SetActive(false);
         animator = GetComponent<Animator>();
+        gameObject.SetActive(false);
     }
 
     private void Update() 
@@ -57,14 +54,13 @@ public class RapistGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.humanGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -121,4 +117,6 @@ public class RapistGimmick : Gimmick
     {
         AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
     }
+
+    public override void Initialize(){}
 }

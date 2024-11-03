@@ -2827,7 +2827,8 @@ MonoBehaviour:
   playerEyeStateMachine: {fileID: 1921701273}
   playerCamera: {fileID: 2142733324}
   inputSystem: {fileID: 1010110861}
-  coneCollider: {fileID: 801348871}
+  postProcessingProfile: {fileID: 11400000, guid: 3df3b6d564b27e642baba19733326e6b, type: 2}
+  coneCollider: {fileID: 0}
   mainCamera: {fileID: 1732393634}
 --- !u!1 &458945868
 GameObject:
@@ -3531,8 +3532,8 @@ MonoBehaviour:
   horizontal: 8
   vertical: 3
   distance: 14
-  epllipseSegments: 50
-  debugImage: {fileID: 670431567}
+  epllipseSegments: 6
+  debugImage: {fileID: 0}
 --- !u!54 &801348872
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7917,7 +7918,7 @@ MonoBehaviour:
     m_Bits: 8
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  antialiasingMode: 3
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -7954,11 +7955,13 @@ MonoBehaviour:
       colorBlindnessStrength: 1
   m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
   m_ShowToolkit: 0
-  m_ShowCustomSorter: 0
+  m_ShowCustomSorter: 1
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
-  m_AfterStackBundles: []
+  m_AfterStackBundles:
+  - assemblyQualifiedName: Bed.PostProcessing.CustomVignette, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1732393640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7993,7 +7996,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8096d24bc6f86334286d1ddd16e2b913, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkMaterial: {fileID: 2100000, guid: 95df678b22bf8144292fd33622f209a4, type: 2}
+  blinkMat: {fileID: 2100000, guid: 95df678b22bf8144292fd33622f209a4, type: 2}
+  camera: {fileID: 1732393634}
 --- !u!1 &1737608015
 GameObject:
   m_ObjectHideFlags: 0

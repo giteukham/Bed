@@ -1,3 +1,4 @@
+using Bed.PostProcessing;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
@@ -17,8 +18,7 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    public const float BLINK_VALUE_MIN = 0.3f, BLINK_VALUE_MAX = 1.0f;   // Vignette의 Blink 값 최솟값, 최댓값.
-                                                                         // 최솟값을 0으로 하면 연산이 불가능.
+    public const float BLINK_VALUE_MIN = 0f, BLINK_VALUE_MAX = 1f;   // Vignette의 Blink 값 최솟값, 최댓값.
     public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Collider의 최대 값
     public const int MOUSE_SCROLL_VALUE = 120;    // 마우스 휠 값
     
@@ -26,13 +26,12 @@ public class PlayerEyeControl : IPlayerControl
     private PlayerEyeStates playerEyeStates;
 
     private float prevBlinkValue = 0f;
-
-    public int mouseCount = 0;
-    public float[] mouseBlinkValues = new float[] { BLINK_VALUE_MIN, 0.5f, 0.75f, 0.9f,  BLINK_VALUE_MAX};
-    private CancellationTokenSource blinkCancellationTokenSource;
     float elapsedTime = 0f;
-    float durationTime = 0.18f;
-    float currentValue;
+    float durationTime = 0.12f;
+    float lastScrollTime = 0;
+    float moveValue = 0;
+    float? currentValue = null;
+    float? targetValue = BLINK_VALUE_MIN;
 
     public PlayerEyeControl(StateMachine playerEyeStateMachine)
     {
@@ -44,7 +43,7 @@ public class PlayerEyeControl : IPlayerControl
     
     public void SubscribeToEvents()
     {
-        InputSystem.OnMouseScrollEvent += OnLittleBlink;
+        InputSystem.OnMouseScrollEvent += OnEyelidMove;
         InputSystem.OnMouseWheelClickEvent += OnBlink;
     }
     
@@ -55,45 +54,55 @@ public class PlayerEyeControl : IPlayerControl
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
 
-    private async void OnLittleBlink(int mouseScrollValue)
+    private async void OnEyelidMove(int mouseScrollValue)
     {
         if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
 
-        currentValue = BlinkEffect.Blink;
-        
-        if (mouseScrollValue == -MOUSE_SCROLL_VALUE && BlinkEffect.Blink < BLINK_VALUE_MAX) // 마우스 휠을 아래로 내렸을 때
-        {
-            mouseCount++;
-            if (mouseCount >= mouseBlinkValues.Length) mouseCount = mouseBlinkValues.Length - 1;
-           
-            while (BlinkEffect.Blink < mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
-            {
-                if(mouseCount == 4) durationTime = 0.15f;
-                else durationTime = 0.18f;
+        if (currentValue == null) currentValue = BlinkEffect.Blink;
 
-                elapsedTime += Time.deltaTime;
-                BlinkEffect.Blink = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime); 
-                await UniTask.Yield();
-                UpdateEyeState();
-            }
-            elapsedTime = 0f;
+        if (mouseScrollValue != 0) 
+        {
+            float currentScrollTime = Time.time;
+            moveValue = 0.22f - (currentScrollTime - lastScrollTime);
+            if ( moveValue > 0.2f) moveValue = 0.2f;
+            if ( moveValue < 0.01f) moveValue = 0.01f;
+
+            lastScrollTime = currentScrollTime;
         }
-        if (mouseScrollValue == MOUSE_SCROLL_VALUE && BlinkEffect.Blink > BLINK_VALUE_MIN) // 마우스 휠을 위로 올렸을 때
+
+        if (mouseScrollValue < 0) // 휠 다운
         {
-            mouseCount--;
-            if (mouseCount < 0) mouseCount = 0;
+            targetValue += moveValue;
+            if (targetValue > 1) targetValue = 1; 
 
-            while (BlinkEffect.Blink > mouseBlinkValues[mouseCount] && elapsedTime < durationTime)
-            {   
-                if(mouseCount == 3) durationTime = 0.06f;
-                else durationTime = 0.18f;
-
+            if (elapsedTime > 0.07f) elapsedTime = 0.07f;
+            
+            while (currentValue < targetValue && elapsedTime < durationTime)
+            {
                 elapsedTime += Time.deltaTime;
-                BlinkEffect.Blink = Mathf.Lerp(currentValue, mouseBlinkValues[mouseCount], elapsedTime / durationTime); 
+                BlinkEffect.Blink = Mathf.Lerp((float)currentValue, (float)targetValue, elapsedTime / durationTime);
                 await UniTask.Yield();
-                UpdateEyeState();
             }
+            UpdateEyeState();
             elapsedTime = 0f;
+            currentValue = null;
+        }
+
+        if (mouseScrollValue > 0) // 휠 업
+        {
+            targetValue -= moveValue;
+            if (targetValue < 0) targetValue = 0;
+            if (elapsedTime > 0.07f) elapsedTime = 0.07f;
+
+            while (currentValue > targetValue && elapsedTime < durationTime)
+            {   
+                elapsedTime += Time.deltaTime;
+                BlinkEffect.Blink = Mathf.Lerp((float)currentValue, (float)targetValue, elapsedTime / durationTime);
+                await UniTask.Yield();
+            }
+            UpdateEyeState();
+            elapsedTime = 0f;
+            currentValue = null;
         }
     }
 
@@ -121,6 +130,6 @@ public class PlayerEyeControl : IPlayerControl
     
     public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);
     
-    public void UnsubscribeToEvents() => InputSystem.OnMouseScrollEvent -= OnLittleBlink;
+    public void UnsubscribeToEvents() => InputSystem.OnMouseScrollEvent -= OnEyelidMove;
     
 }

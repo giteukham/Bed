@@ -5,11 +5,7 @@ using UnityEngine;
 
 public class RadioGimmick : Gimmick
 {
-    //기믹 매니저 참조할 변수
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     private void Awake()
@@ -25,15 +21,13 @@ public class RadioGimmick : Gimmick
 
     public override void Activate()
     {
-        print("라디오기믹 실행");
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -64,4 +58,6 @@ public class RadioGimmick : Gimmick
         Deactivate();
 
     }
+
+    public override void Initialize(){}
 }

@@ -1,5 +1,8 @@
+
+using Bed.PostProcessing;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Bed.Collider;
 public class PlayerEyeStates
 {
     private static PlayerEyeControl playerEyeControl;
@@ -14,11 +17,12 @@ public class PlayerEyeStates
         public void Enter()
         {
             BlinkEffect.Blink = PlayerEyeControl.BLINK_VALUE_MIN;
+            PlayerConstant.isEyeOpen = true;
         }
 
         public void Execute()
         {
-
+            if(PlayerConstant.isEyeOpen == false) PlayerConstant.isEyeOpen = true;
         }
 
         public void Exit()
@@ -35,6 +39,7 @@ public class PlayerEyeStates
 
         public void Execute()
         {
+            if(PlayerConstant.isEyeOpen == false) PlayerConstant.isEyeOpen = true;
         }
 
         public void Exit()
@@ -47,16 +52,19 @@ public class PlayerEyeStates
         public void Enter()
         {
             BlinkEffect.Blink = PlayerEyeControl.BLINK_VALUE_MAX;
+            PlayerConstant.isEyeOpen = false;
         }
 
         public void Execute()
         {
             PlayerConstant.EyeClosedCAT += Time.deltaTime;
             PlayerConstant.EyeClosedLAT += Time.deltaTime;
+            if(PlayerConstant.isEyeOpen == true) PlayerConstant.isEyeOpen = false;
         }
 
         public void Exit()
         {
+            PlayerConstant.isEyeOpen = true;
         }
     }
     
@@ -80,29 +88,29 @@ public class PlayerEyeStates
     
     public class BlinkEyeState : IState     // ���콺 ���� ������ ���� ���Ҵٰ� �ߴ� ����
     {
-        
         public async void Enter()
         {
             float elapsedTime = 0f;
+            float currentBlinkValue = BlinkEffect.Blink;
+
             while (BlinkEffect.Blink < PlayerEyeControl.BLINK_VALUE_MAX)
             {
                 elapsedTime += Time.deltaTime;
-                BlinkEffect.Blink = Mathf.Lerp(playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
+                BlinkEffect.Blink = Mathf.Lerp(currentBlinkValue, PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
-            // ������ üũ
             playerEyeControl.UpdateEyeState();
-            
+
             PlayerConstant.EyeBlinkCAT++;
             PlayerConstant.EyeBlinkLAT++;
-            
+
             await UniTask.Delay(150);
             elapsedTime = 0f;
-            
-            while (BlinkEffect.Blink > playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount])
+
+            while (BlinkEffect.Blink > currentBlinkValue)
             {
                 elapsedTime += Time.deltaTime;
-                BlinkEffect.Blink = Mathf.Lerp(BlinkEffect.Blink, playerEyeControl.mouseBlinkValues[playerEyeControl.mouseCount], elapsedTime / PlayerConstant.blinkSpeed);
+                BlinkEffect.Blink = Mathf.Lerp(BlinkEffect.Blink, currentBlinkValue, elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
             await UniTask.Yield();

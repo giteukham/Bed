@@ -6,10 +6,7 @@ using AbstractGimmick;
 
 public class CoverGimcik : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
-
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
+    [field: SerializeField] public override GimmickType Type { get; protected set; }
     public override float Probability { get; set; } = 100;
 
     public Animator animator;
@@ -26,14 +23,13 @@ public class CoverGimcik : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
@@ -59,4 +55,6 @@ public class CoverGimcik : Gimmick
         yield return new WaitForSeconds(0.15f);
         Deactivate();
     }
+
+    public override void Initialize() {}
 }

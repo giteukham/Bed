@@ -30,6 +30,7 @@ public class BlinkEffect : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
+        camera = gameObject.GetComponent<Camera>();
         blinkMaterial = blinkMat;
         
         int temp = Shader.PropertyToID("_CameraOpaqueTexture");
