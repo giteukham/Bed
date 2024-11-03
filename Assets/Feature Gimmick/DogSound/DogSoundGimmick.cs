@@ -5,8 +5,15 @@ using UnityEngine;
 
 public class DogSoundGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [field: SerializeField] public override float probability { get; set; } = 100;
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
+
+    #region Variables
+    // 기믹 개인 변수
+    #endregion
 
     private void Awake()
     {
@@ -32,7 +39,7 @@ public class DogSoundGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()

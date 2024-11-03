@@ -7,32 +7,22 @@ using UnityEngine;
 public class GimmickManager : MonoBehaviour
 {
     public static GimmickManager instance { get; private set;}
-    public enum GameProgress
-    {
-        //같은 숫자로 설정시 역참조 불가한거 기억해두기
-        //(현재 End로 설정시 First로 설정되는 문제 있음 : 숫자 다 다르게 해야할듯)
-        First = 10,
-        Middle = 3,
-        End = 9
-    }
-
-    [SerializeField] private List<Gimmick> allGimicks;
+    [SerializeField] private List<Gimmick> AllGimicks;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
-    public GameProgress progress;
 
     private void Awake()
     {
         if (instance != null) Debug.LogError("Gimmick Manager already exists");
         instance = this;
 
-        foreach (Gimmick gimmick in allGimicks) 
+        foreach (Gimmick gimmick in AllGimicks) 
             if(gimmick.gameObject.activeSelf == false) 
             {
                 gimmick.gameObject.SetActive(true);
                 gimmick.gameObject.SetActive(false);
             }
 
-        StartCoroutine(GimmickCycleLogic());
+        //StartCoroutine(GimmickCycleLogic());
     }
 
     private void Update()
@@ -44,7 +34,7 @@ public class GimmickManager : MonoBehaviour
     // 타입 중복 검사
     private bool CheckDuplication(Gimmick gimmick)
     {
-        switch (gimmick.Type)
+        switch (gimmick.type)
         {
             case GimmickType.Unreal:
                 return unrealGimmick == null;
@@ -57,93 +47,72 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    private IEnumerator GimmickCycleLogic()
-    {
-        while (true)
-        {
-            //yield return new WaitForSeconds(3);
-            //현재 게임 진행상황에 따라서 기믹 뽑는 속도 조절
-            yield return new WaitForSeconds((int)progress);
-            RedefineProbability();  // 나올 확률 재정의
-            ChoiceGimmick();        // 기믹타입 3종류 중에 하나라도 실행이 안되고 있으면 자동으로 기믹 고르게 함
-        }
-    }
-
-    private void ChoiceGimmick()
+    // TimeManager에서 호출
+    public void PickGimmick()
     {
         if (unrealGimmick != null && humanGimmick != null && objectGimmick != null) return;
 
-        //1~10번 정도 리스트 무작위 섞기
-        int randomInt = Random.Range(1, 10);
-        for (int i = 0; i < randomInt; i++)
-        {
-            ShakeList();
-        }
         //무작위 확률값 구하기
-        randomInt = Random.Range(1, 101);
+        int randomInt = Random.Range(30, 101);
 
-        foreach (Gimmick gimmick in allGimicks)
+        foreach (Gimmick gimmick in AllGimicks)
         {
             //만약 확률이 무작위 확률값 보다 높으면서 같은 타입의 기믹이 실행되고 있지 않다면 뽑힌 기믹 실행
-            if (gimmick.Probability >= randomInt && CheckDuplication(gimmick) == true)
+            if (gimmick.probability >= randomInt && CheckDuplication(gimmick) == true)
             {
-                AssignGimmickTypeVariable(gimmick);
+                switch (gimmick.type)
+                {
+                    case GimmickType.Unreal:
+                        unrealGimmick = gimmick;
+                        break;
+                    case GimmickType.Human:
+                        humanGimmick = gimmick;
+                        break;
+                    case GimmickType.Object:
+                        objectGimmick = gimmick;
+                        break;
+                }
+
+                if(gimmick.ExclusionGimmickList != null) 
+                    foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
+                        AllGimicks.Remove(exclusionGimmick);
+
                 gimmick.Activate();
                 break;
             }
         }
     }
 
+    // TimeManager에서 호출
     // 기믹별 등장확률 재정의(UpdateProbability는 각 기믹 스크립트마다 다름)
-    private void RedefineProbability()
+    public void RedefineProbability()
     {
-        foreach (Gimmick item in allGimicks)
+        Debug.Log("재정의");
+        foreach (Gimmick gimmick in AllGimicks)
         {
-            item.UpdateProbability();
+            gimmick.UpdateProbability();
         }
     }
 
-    //allGimicks 리스트 무작위로 섞는 메소드
-    private void ShakeList()
+    public void ResetDeactivateGimmick(Gimmick gimmick)
     {
-        int randomInt = Random.Range(0, allGimicks.Count);
-        Gimmick temp = allGimicks[randomInt];
-
-        int randomInt2 = Random.Range(0, allGimicks.Count);
-        allGimicks[randomInt] = allGimicks[randomInt2];
-
-        allGimicks[randomInt2] = temp;
-    }
-
-    //등장확률 낮추는 메소드(리스트 맨 뒤로 옮기고 확률 0으로 낮춤)
-    public void LowerProbability(Gimmick gimmick)
-    {
-        allGimicks.Remove(gimmick);
-        allGimicks.Add(gimmick);
-        gimmick.Probability = 0;
-    }
-
-    // 실행중인 기믹 타입 변수에 해당 기믹 할당
-    public void AssignGimmickTypeVariable(Gimmick gimmick)
-    {
-        switch (gimmick.Type)
+        if(gimmick.ExclusionGimmickList != null) 
+            foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
+                AllGimicks.Add(exclusionGimmick);
+        AllGimicks.Remove(gimmick);
+        
+        for ( int i = AllGimicks.Count - 1; i > 0; i--) // 리스트 섞기 Fisher-Yates Shuffle
         {
-            case GimmickType.Unreal:
-                unrealGimmick = gimmick;
-                break;
-            case GimmickType.Human:
-                humanGimmick = gimmick;
-                break;
-            case GimmickType.Object:
-                objectGimmick = gimmick;
-                break;
+            int randomInt = Random.Range(0, i + 1);
+            Gimmick temp = AllGimicks[i];
+            AllGimicks[i] = AllGimicks[randomInt];
+            AllGimicks[randomInt] = temp;
         }
-    }
 
-    // 실행중인 기믹 타입 변수에서 해당 기믹 제거
-    public void RemoveGimmickTypeVariable(Gimmick gimmick)
-    {
-        switch (gimmick.Type)
+        AllGimicks.Add(gimmick); // 위치, 확률 초기화
+        gimmick.probability = 0;
+        
+        switch (gimmick.type)      // 타입변수에서 제거
         {
             case GimmickType.Unreal:
                 unrealGimmick = null;
@@ -154,12 +123,6 @@ public class GimmickManager : MonoBehaviour
             case GimmickType.Object:
                 objectGimmick = null;
                 break;
-        }
-    }
-
-    public void ResetDeactivateGimmick(Gimmick gimmick)
-    {
-        LowerProbability(gimmick); // 확률 0으로 초기화
-        RemoveGimmickTypeVariable(gimmick); // 변수에서 제거
+        } 
     }
 }

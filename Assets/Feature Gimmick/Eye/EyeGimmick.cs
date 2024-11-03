@@ -5,15 +5,18 @@ using UnityEngine;
 
 public class EyeGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [field: SerializeField] public override float probability { get; set; } = 100;
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-
-    [SerializeField]
-    private GameObject pupil; // 동공
+    #region Variables
+    [SerializeField] private GameObject pupil; // 동공
     Quaternion targetQuaternion; // 시선 회전 목표 각도
     float durationTime = 4f;    // 동공 커지는데 걸리는 시간
     float elapsedTime = 0f;     // 동공 커지는 경과 시간
+    #endregion
 
     private void Awake()
     {
@@ -40,7 +43,7 @@ public class EyeGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()

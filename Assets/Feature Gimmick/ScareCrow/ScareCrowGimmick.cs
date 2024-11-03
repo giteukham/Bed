@@ -5,16 +5,20 @@ using AbstractGimmick;
 
 public class ScareCrowGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [field: SerializeField] public override float probability { get; set; } = 100;
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     private float rotationX = 0;
     private bool isMinus = false;
-
     private Rigidbody rig;
     private BoxCollider boxColl;
     private Vector3 startPosition;
     private int soundNum = 0;
+    #endregion
 
     private void Awake()
     {
@@ -43,7 +47,7 @@ public class ScareCrowGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()

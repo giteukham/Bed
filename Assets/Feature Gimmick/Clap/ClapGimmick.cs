@@ -6,13 +6,16 @@ using AbstractGimmick;
 
 public class ClapGimcik : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [field: SerializeField] public override float probability { get; set; } = 100;
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    public override float Probability { get; set; } = 100;
-
+    #region Variables
     public Light houseLight;
-
     public Animator animator;
+    #endregion
 
     private void Awake()
     {
@@ -26,10 +29,10 @@ public class ClapGimcik : Gimmick
 
     private void ClapSoundPlay()
     {
-        // ¹Ú¼ö ¼Ò¸®´Â ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®·Î ½ÇÇà
+        // ë°•ìˆ˜ ì†Œë¦¬ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ë¡œ ì‹¤í–‰
         AudioManager.instance.PlaySound(AudioManager.instance.handClap, this.transform.position);
 
-        // Å×½ºÆ®·Î ¹æ ºÒµµ ÄÑÁö°í ²¨Áö°Ô
+        // í…ŒìŠ¤íŠ¸ë¡œ ë°© ë¶ˆë„ ì¼œì§€ê³  êº¼ì§€ê²Œ
         if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
         else BedRoomLightSwitch.SwitchAction(true);
     }
@@ -48,16 +51,16 @@ public class ClapGimcik : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     public override void Initialize(){}
 
     private IEnumerator MainCode()
     {
-        Door.Set(45, 0.7f); // ¹æ¹® ¿­±â
+        Door.Set(45, 0.7f); // ë°©ë¬¸ ì—´ê¸°
         yield return new WaitForSeconds(1.3f);
-        LivingRoomLightSwitch.SwitchAction(true);   // º¹µµ ºÒ ÄÑ±â
+        LivingRoomLightSwitch.SwitchAction(true);   // ë³µë„ ë¶ˆ ì¼œê¸°
 
         yield return new WaitForSeconds(0.4f);
         animator.Play("Clapping");
@@ -66,10 +69,10 @@ public class ClapGimcik : Gimmick
         animator.Play("ClapOff");
 
         yield return new WaitForSeconds(0.4f);
-        LivingRoomLightSwitch.SwitchAction(false);  // º¹µµ ºÒ ²ô±â
+        LivingRoomLightSwitch.SwitchAction(false);  // ë³µë„ ë¶ˆ ë„ê¸°
 
         yield return new WaitForSeconds(0.2f);
-        Door.Set(0, 0.2f); // ¹æ¹® ´İ±â
+        Door.Set(0, 0.2f); // ë°©ë¬¸ ë‹«ê¸°
 
         yield return new WaitForSeconds(0.4f);
         Deactivate();

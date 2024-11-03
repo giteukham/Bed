@@ -5,43 +5,27 @@ using UnityEngine;
 
 public class WhiteManGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [field: SerializeField]public override float probability { get; set; } = 100;
+    [field: SerializeField]public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    [SerializeField]
-    private Transform player;
-
-    [SerializeField]
-    private Transform waist;
-    
-    [SerializeField]
-    private Transform neck;
-
-    [SerializeField]
-    private Transform head;
-
-    [SerializeField]
-    private Transform leftArm;
-
-    [SerializeField]
-    private Transform rightArm;
-
-    [SerializeField]
-    private Transform clockKey;
-
-    [SerializeField]
-    private Transform movePoints;
-
-    [SerializeField]
-    private Transform[] pointsArray;
-
-    //기믹에서 플레이어 방향의 반대방향을 저장할 변수
-    private Vector3 dir;
-
+    #region Variables
+    [SerializeField] private Transform player;
+    [SerializeField] private Transform waist;
+    [SerializeField] private Transform neck;
+    [SerializeField] private Transform head;
+    [SerializeField] private Transform leftArm;
+    [SerializeField] private Transform rightArm;
+    [SerializeField] private Transform clockKey;
+    [SerializeField] private Transform movePoints;
+    [SerializeField] private Transform[] pointsArray;
+    private Vector3 dir; //기믹에서 플레이어 방향의 반대방향을 저장할 변수
     private float rotationY;
     private float rotationZ;
     private float currentY;
-
+    #endregion
     private void Awake()
     {
         pointsArray = movePoints.GetComponentsInChildren<Transform>();
@@ -78,7 +62,7 @@ public class WhiteManGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
