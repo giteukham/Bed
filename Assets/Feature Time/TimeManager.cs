@@ -8,16 +8,12 @@ public class TimeManager : MonoBehaviour
 
     #region Game Time Variables
     [Header("Game Time Variables")]
-    [SerializeField, Tooltip("기본 3초")]private float timeIntervalInitValue = 3f; // 시간 흐름 간격 값
-    private float timeInterval; // 시간 간격
-    [SerializeField]private float cycleInterval; // 사이클 간격
+    [SerializeField, Tooltip("기본 3초")]private float timeInterval; // 시간 흐름 간격 값
+    private float cycleInterval; // 사이클 간격
     private const int TARGET_TIME_TO_MIN = 480; // 게임 시간 480분(현실 시간1440초)이 흐르면 끝
     public static int playTimeToMin = 0;  // 게임 시간 기준 누적 분
     private float realTimeCounter; // 실제로 흐르는 시간
     private float gimmickPickTimeCounter; // 기믹 선택 시간
-    private float gimmickRedefineProbabilityTimeCounter; // 기믹 확률 재정의 시간
-    private static bool isGimmickRunning = false; //현재 기믹이 실행되고 있는지
-
     #endregion
 
     #region AlarmClock Related Variables
@@ -55,25 +51,54 @@ public class TimeManager : MonoBehaviour
         RenderSettings.ambientSkyColor = startSkyColor;
         RenderSettings.ambientEquatorColor = startEquatorColor;
 
-        timeInterval = timeIntervalInitValue;
-        cycleInterval = timeIntervalInitValue * 3;
+        realTimeCounter = 0;
+        gimmickPickTimeCounter = 0;
+        cycleInterval = timeInterval * 3;
     }
     private void Update()
     {
+        UpdateTime();
         UpdateClock(); 
         UpdateLighting();
-        UpdateGimmickCycle();
+    }
 
-        if(isGimmickRunning) timeInterval = timeIntervalInitValue * 3;
-        else timeInterval = timeIntervalInitValue;
+    private void UpdateTime() // 시간 갱신, 시간 관련 기능들
+    {
         realTimeCounter += Time.deltaTime;
+        gimmickPickTimeCounter +=  Time.deltaTime;
 
-        // 3초마다 (기믹이 실행중이면 3*3초마다) 게임 시간 1분 증가
         if (realTimeCounter >= timeInterval)
         {
-            playTimeToMin ++;     // 게임 시간 1초 증가
+            playTimeToMin ++; // 게임 시간 1분 증가
+            GimmickManager.instance.RedefineProbability(); // 기믹 확률 재정의
             realTimeCounter = 0;  
-            timeInterval = isGimmickRunning ? timeIntervalInitValue * 3 : timeIntervalInitValue; 
+        }
+
+        if (30 > playTimeToMin) // 30분 전
+        {
+            cycleInterval = timeInterval * 9;
+        }
+
+        if (120 >= playTimeToMin && playTimeToMin > 30) // 30분 지나고 2시간 전
+        {
+            cycleInterval = timeInterval * 6f;
+        }
+
+        if (240 > playTimeToMin && playTimeToMin > 120 ) // 2시간 지나고 4시간 전
+        {
+            cycleInterval = timeInterval * 3;
+        } 
+
+        if (playTimeToMin >= 240)// 4시간 지나면
+        {
+            cycleInterval = timeInterval * 6f;
+        }
+
+        // 사이클 간격마다 기믹 뽑기
+        if (gimmickPickTimeCounter >= cycleInterval)  
+        {
+            GimmickManager.instance.PickGimmick();
+            gimmickPickTimeCounter = 0;
         }
     }
 
@@ -133,55 +158,6 @@ public class TimeManager : MonoBehaviour
         moonLightObject.transform.rotation = Quaternion.Euler(20f-(0.09f * playTimeToMin), 110f+(0.09f * playTimeToMin), 0); // 조명 각도 갱신
         RenderSettings.ambientSkyColor = currentSkyColor;
         RenderSettings.ambientEquatorColor = currentEquatorColor;
-    }
-
-    private void UpdateGimmickCycle() // 기믹 사이클 갱신
-    {
-        gimmickPickTimeCounter +=  Time.deltaTime;
-        gimmickRedefineProbabilityTimeCounter += Time.deltaTime;
-
-        // timeIntervalValue마다 기믹 확률 재정의
-        if (gimmickRedefineProbabilityTimeCounter > timeIntervalInitValue) 
-        {
-            GimmickManager.instance.RedefineProbability();
-            gimmickRedefineProbabilityTimeCounter = 0;
-        }
-
-        // 사이클 간격마다 기믹 뽑기
-        if (gimmickPickTimeCounter >= cycleInterval)  
-        {
-            GimmickManager.instance.PickGimmick();
-            gimmickPickTimeCounter = 0;
-        }
-
-        if (30 > playTimeToMin) // 30분 전
-        {
-            cycleInterval = timeIntervalInitValue * 3;
-        }
-
-        else if (120 >= playTimeToMin && playTimeToMin > 30) // 30분 지나고 2시간 전
-        {
-            cycleInterval = timeIntervalInitValue * 1.5f;
-        }
-
-        else if (240 > playTimeToMin && playTimeToMin > 120 ) // 2시간 지나고 4시간 전
-        {
-            cycleInterval = timeIntervalInitValue;
-        } 
-
-        else if (playTimeToMin >= 240)// 4시간 지나면
-        {
-            cycleInterval = timeIntervalInitValue * 1.5f;
-        }
-    }
-
-    /// <summary>
-    /// 기믹 실행 여부 확인
-    /// </summary>
-    /// <param name="_isRunning"></param>
-    public static void GimmickRunningCheck(bool _isRunning)
-    {
-        isGimmickRunning = _isRunning;
     }
 
     /// <summary>

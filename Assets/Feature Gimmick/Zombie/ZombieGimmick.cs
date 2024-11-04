@@ -7,7 +7,7 @@ public class ZombieGimmick : Gimmick
 {
     #region Override Variables
     [field: SerializeField] public override GimmickType type { get; protected set; }
-    [field: SerializeField] public override float probability { get; set; } = 100;
+    [field: SerializeField] public override float probability { get; set; }
     [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
     #endregion
 

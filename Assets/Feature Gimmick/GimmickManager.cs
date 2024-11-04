@@ -21,14 +21,6 @@ public class GimmickManager : MonoBehaviour
                 gimmick.gameObject.SetActive(true);
                 gimmick.gameObject.SetActive(false);
             }
-
-        //StartCoroutine(GimmickCycleLogic());
-    }
-
-    private void Update()
-    {
-        if (unrealGimmick == null && humanGimmick == null && objectGimmick == null) TimeManager.GimmickRunningCheck(false);
-        else TimeManager.GimmickRunningCheck(true);
     }
 
     // 타입 중복 검사
@@ -87,7 +79,6 @@ public class GimmickManager : MonoBehaviour
     // 기믹별 등장확률 재정의(UpdateProbability는 각 기믹 스크립트마다 다름)
     public void RedefineProbability()
     {
-        Debug.Log("재정의");
         foreach (Gimmick gimmick in AllGimicks)
         {
             gimmick.UpdateProbability();
