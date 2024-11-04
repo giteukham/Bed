@@ -1,0 +1,129 @@
+//////////////////////////////////////
+///	DO NOT USE KOREAN IN THIS FILE ///
+//////////////////////////////////////
+
+#pragma kernel RadixSort
+
+#define THREAD_SIZE 256
+
+#include "ParallelScan.hlsl"
+
+RWStructuredBuffer<uint> _inputBuffer;
+RWStructuredBuffer<uint> _outputBuffer;
+
+RWStructuredBuffer<uint> _localBitScanBuffer;
+RWStructuredBuffer<uint> _blockSumsBuffer;
+RWStructuredBuffer<uint> _blockSumsScanBuffer;
+
+RWStructuredBuffer<uint> _testBuffer;
+
+int _numBlockSumsBlocks;
+int _bitShift;
+int _lastThreadID;
+uint _numUnSortedElement, _unsortedStride = 0;
+
+groupshared uint _maskData[THREAD_SIZE];
+
+void LocalMaskScan(uint threadID, uint groupThreadID, uint groupID)
+{
+	_inputBuffer.GetDimensions(_numUnSortedElement, _unsortedStride);
+
+	int element = threadID < _numUnSortedElement ? _inputBuffer[threadID] : 0;
+	uint extractBit = (element >> _bitShift) & 0x3;
+
+	if (_numUnSortedElement - THREAD_SIZE * groupID >= THREAD_SIZE)
+	{
+		_lastThreadID = THREAD_SIZE - 1;
+	}
+	else
+	{
+		_lastThreadID = _numUnSortedElement - THREAD_SIZE * groupID - 1;
+	}
+
+	_blockSumsBuffer[threadID] = 0;
+	GroupMemoryBarrierWithGroupSync();
+	
+	for (int i = 0; i < 4; i++)
+	{
+		uint mask = extractBit == i ? 1 : 0;
+		_maskData[groupThreadID] = mask;
+		GroupMemoryBarrierWithGroupSync();
+		
+		uint prefixSum = 0;
+		uint maxStep = log2(THREAD_SIZE);
+		for (uint shift = 0; shift < maxStep; shift++)
+		{
+			int temp = groupThreadID - (1 << shift);
+			
+			if (temp >= 0)
+			{
+				prefixSum = _maskData[groupThreadID] + _maskData[temp];
+			}
+			else
+			{
+				prefixSum = _maskData[groupThreadID];
+			}
+			GroupMemoryBarrierWithGroupSync();
+
+			_maskData[groupThreadID] = prefixSum;
+			GroupMemoryBarrierWithGroupSync();
+		}
+		
+		if (groupThreadID == _lastThreadID)
+		{
+			_blockSumsBuffer[i * _numBlockSumsBlocks + groupID] = prefixSum;
+		}
+		GroupMemoryBarrierWithGroupSync();
+
+		if (groupThreadID < _lastThreadID)
+		{
+			_maskData[groupThreadID + 1] = _maskData[groupThreadID];
+		}
+		GroupMemoryBarrierWithGroupSync();
+		
+		if (groupThreadID == 0)
+		{
+			_maskData[groupThreadID] = 0;
+		}
+		GroupMemoryBarrierWithGroupSync();
+		
+		if (threadID < _numUnSortedElement && mask)
+		{
+			_localBitScanBuffer[threadID] = _maskData[groupThreadID];
+		}
+	}
+	GroupMemoryBarrierWithGroupSync();
+	
+}
+
+[numthreads(THREAD_SIZE, 1, 1)]
+void RadixSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
+{
+	uint threadID = tid.x;
+	uint groupThreadID = gtid.x;
+	uint groupID = gid.x;
+
+	LocalMaskScan(threadID, groupThreadID, groupID);
+	
+	LocalBlockScan(groupThreadID, groupID, _blockSumsBuffer, _blockSumsScanBuffer, _numUnSortedElement, _testBuffer);
+	AddBlockSums(groupThreadID, groupID, _blockSumsScanBuffer, _numUnSortedElement, _testBuffer);
+
+	//_testBuffer[tid.x] = _blockSumsScanBuffer[tid.x];
+	_inputBuffer.GetDimensions(_numUnSortedElement, _unsortedStride);
+	
+	int element = tid.x < _numUnSortedElement ? _inputBuffer[tid.x] : 0;
+	uint extractBit = (element >> _bitShift) & 0x3;
+	
+	if (tid.x < _numUnSortedElement)
+	{
+		uint prefixSum = _localBitScanBuffer[tid.x];
+		uint pos = _blockSumsScanBuffer[extractBit * _numBlockSumsBlocks + gid.x] + prefixSum;
+		
+		_outputBuffer[pos] = element;
+	}
+	GroupMemoryBarrierWithGroupSync();
+	
+	_blockSumsScanBuffer[tid.x] = 0;
+	_outputBuffer[tid.x] = 0;
+}
+

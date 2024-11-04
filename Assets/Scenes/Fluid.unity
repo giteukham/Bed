@@ -328,6 +328,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1120165314}
+  - component: {fileID: 1120165316}
   - component: {fileID: 1120165315}
   m_Layer: 0
   m_Name: GameObject (1)
@@ -345,7 +346,7 @@ Transform:
   m_GameObject: {fileID: 1120165312}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.3908095, y: -10.720043, z: 33.085644}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -360,12 +361,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 1120165312}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9204d278994dd7b9e4c3c617edd7e6, type: 3}
+  m_Script: {fileID: 11500000, guid: 959b0dd3931c4f5eb4a21180bbbb4008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radixSortShader: {fileID: 7200000, guid: 91d38aebc3d944f1ada28a3b6a39bb4d, type: 3}
-  scanShader: {fileID: 7200000, guid: 373b58dc93d6454083cc17d74b36cb2b, type: 3}
-  checkSortShader: {fileID: 7200000, guid: f739ec8a20e649509afabdf096cd3dc5, type: 3}
+  particleRadius: 1
+  particleSpawnPoint: {x: 0, y: 0, z: 0}
+  particleNumOfSpawn: {x: 10, y: 10, z: 10}
+  particleBoundBox: {x: 30, y: 30, z: 30}
+  mass: 1
+  viscosity: 1
+  pressure: 1
+  restDensity: 1
+  gasConstant: 1
+  damping: 1
+  particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  particleMaterial: {fileID: 2100000, guid: 067830227be18a444bb4fde00cf6471f, type: 2}
+  particleCompute: {fileID: 7200000, guid: 3cedf3b8534e96945b5bb95821538df6, type: 3}
+--- !u!114 &1120165316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120165312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c24ea508a5a14442a92fa05f82023d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  oneSweep: {fileID: 7200000, guid: ada8f21ffa313c3458fb057e5638d084, type: 3}
 --- !u!1 &1286573508
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +431,7 @@ MonoBehaviour:
   damping: 1
   particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   particleMaterial: {fileID: 2100000, guid: 067830227be18a444bb4fde00cf6471f, type: 2}
-  computeShader: {fileID: 7200000, guid: 3cedf3b8534e96945b5bb95821538df6, type: 3}
+  particleCompute: {fileID: 0}
 --- !u!4 &1286573510
 Transform:
   m_ObjectHideFlags: 0

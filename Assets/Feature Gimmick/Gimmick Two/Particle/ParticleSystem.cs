@@ -1,20 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Bed.Gimmick
 {
+    [StructLayout(LayoutKind.Sequential, Size = 28)]
+    public struct Particle                  // TODO: 쉐이더 내 구조체와 동일하게 맞춰줘야함
+    {
+        public int id;
+        public Vector3 position;
+        public Vector4 color;
+    }
+    
     public class ParticleSystem : MonoBehaviour
     {
-        [StructLayout(LayoutKind.Sequential, Size = 28)]
-        public struct Particle                  // TODO: 쉐이더 내 구조체와 동일하게 맞춰줘야함
-        {
-            public int id;
-            public Vector3 position;
-            public Vector4 color;
-        }
-
         [Header("파티클 생성 옵션")]
         public float particleRadius = 0.1f;     // 파티클의 반지름
         public Vector3 particleSpawnPoint;      // 파티클이 생성되는 위치
@@ -30,7 +32,7 @@ namespace Bed.Gimmick
         [Header("파티클 생성에 필요한 것")]
         [SerializeField] private Mesh particleMesh;
         [SerializeField] private Material particleMaterial;
-        [SerializeField] private ComputeShader computeShader;
+        [SerializeField] private ComputeShader particleCompute;
         
         private Particle[] particles;
         private Vector3[] velocities;
@@ -51,6 +53,11 @@ namespace Bed.Gimmick
 
         private void Awake()
         {
+            if (particleNumOfSpawn == Vector3Int.zero || particleBoundBox == Vector3.zero)
+            {
+                throw new Exception("particleNumOfSpawn과 particleBoundBox를 설정해주세요");
+            }
+            
             velocities = new Vector3[particleCount];
             cellLists = new Vector2Int[cellCount];
         }
@@ -58,7 +65,6 @@ namespace Bed.Gimmick
         private void OnEnable()
         {
             SpawnParticles();
-            InitKernel();
         }
 
         private void Start()
@@ -69,8 +75,13 @@ namespace Bed.Gimmick
                 matProps = new MaterialPropertyBlock(),
                 worldBounds = new Bounds(Vector3.zero, Vector3.one * 1000f),
             };
+            InitKernel();
             InitBuffers();
             InitComputeShader();
+            
+            cellListBuffer.GetData(cellLists);
+            
+            Debug.Log(cellCount);
         }
 
         private void Update()
@@ -78,18 +89,15 @@ namespace Bed.Gimmick
             particleMaterial.SetBuffer("_particles", particleBuffer);
             particleMaterial.SetFloat("_particleRadius", particleRadius);
 
-            computeShader.Dispatch(updateHashKernel, 128 * (128 / cellCount + 1), 1, 1);
-            computeShader.Dispatch(integrateKernel, 128 * (128 / particleCount + 1), 1, 1);
+            particleCompute.Dispatch(updateHashKernel, 128 * (128 / cellCount + 1), 1, 1);
+            particleCompute.Dispatch(integrateKernel, 128 * (128 / particleCount + 1), 1, 1);
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
-            
-            cellListBuffer.GetData(cellLists);
-            
         }
 
         private void InitKernel()
         {
-            updateHashKernel = computeShader.FindKernel("UpdateHash");
-            integrateKernel = computeShader.FindKernel("Integrate");
+            updateHashKernel = particleCompute.FindKernel("UpdateHash");
+            integrateKernel = particleCompute.FindKernel("Integrate");
         }
         
         /// <summary>
@@ -149,26 +157,30 @@ namespace Bed.Gimmick
         
         private void InitComputeShader()
         {
-            computeShader.SetBuffer(integrateKernel, "_particles", particleBuffer);
-            computeShader.SetBuffer(integrateKernel, "_velocities", velocityBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_particles", particleBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_velocities", velocityBuffer);
             
-            computeShader.SetBuffer(updateHashKernel, "_particles", particleBuffer);
-            computeShader.SetBuffer(updateHashKernel, "_cellLists", cellListBuffer);
+            particleCompute.SetBuffer(updateHashKernel, "_particles", particleBuffer);
+            particleCompute.SetBuffer(updateHashKernel, "_cellLists", cellListBuffer);
             
-            computeShader.SetFloats("_boundingBox", particleBoundBox.x, particleBoundBox.y, particleBoundBox.z);
-            computeShader.SetFloat("_particleRadius", particleRadius);
-            computeShader.SetFloat("_damping", damping);
-            computeShader.SetFloat("_time", Time.deltaTime);
+            particleCompute.SetFloats("_boundingBox", particleBoundBox.x, particleBoundBox.y, particleBoundBox.z);
+            particleCompute.SetFloat("_particleRadius", particleRadius);
+            particleCompute.SetFloat("_damping", damping);
+            particleCompute.SetFloat("_time", Time.deltaTime);
         }
 
         private void OnDrawGizmos()
         {
+            float halfX = particleBoundBox.x / 2f;
+            float halfY = particleBoundBox.y / 2f;
+            float halfZ = particleBoundBox.z / 2f;
+            
             for (float i = 0; i < particleBoundBox.x; i++)
             for (float j = 0; j < particleBoundBox.y; j++)
             for (float k = 0; k < particleBoundBox.z; k++)
             {
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(new Vector3(i - 0.5f, j - 0.5f, k - 0.5f), Vector3.one * particleRadius);
+                Gizmos.DrawWireCube(new Vector3(i - halfX, j - halfY, k - halfZ), Vector3.one * particleRadius);
             }
         }
 

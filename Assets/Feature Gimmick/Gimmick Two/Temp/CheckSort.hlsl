@@ -2,8 +2,8 @@
 
 #define THREAD_SIZE 256
 
-RWStructuredBuffer<uint> _dataToCheckBuffer;
-RWStructuredBuffer<uint> _isSortedBuffer;
+StructuredBuffer<uint> _inputBuffer;
+RWStructuredBuffer<uint> _outputBuffer;
 
 uint _elementCount;
 groupshared int _checkedData[THREAD_SIZE];
@@ -50,8 +50,8 @@ void Reduction(uint groupThreadID, uint groupID)
 [numthreads(THREAD_SIZE, 1, 1)]
 void CheckSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	uint element = tid.x < _elementCount ? _dataToCheckBuffer[gtid.x] : 0;
-	uint next = tid.x < _elementCount - 1 ? _dataToCheckBuffer[gtid.x + 1] : 0;
+	uint element = tid.x < _elementCount ? _inputBuffer[gtid.x] : 0;
+	uint next = tid.x < _elementCount - 1 ? _inputBuffer[gtid.x + 1] : 0;
 
 	_tempInput[gtid.x] = element > next && tid.x < _elementCount - 1 ? 1 : 0;
 	GroupMemoryBarrierWithGroupSync();
@@ -60,6 +60,6 @@ void CheckSort(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, u
 
 	if (gtid.x == 0)
 	{
-		_isSortedBuffer[0] = _checkedData[gid.x] == 0;
+		_outputBuffer[0] = _checkedData[gid.x] == 0;
 	}
 }
