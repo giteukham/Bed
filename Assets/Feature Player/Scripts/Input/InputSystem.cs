@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 namespace Bed
 {
+    /// <summary>
+    /// 나중에 Player에서 빼고 main에 넣어야 할 것 같음.
+    /// </summary>
     public class InputSystem : MonoSingleton<InputSystem>
     {
         private float mouseDeltaX;

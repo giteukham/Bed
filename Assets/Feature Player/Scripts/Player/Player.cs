@@ -6,6 +6,7 @@ using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
 using Bed;
+using Cysharp.Threading.Tasks;
 
 public enum PlayerDirectionStateTypes
 {
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour
     #region Player Components
     [Header("Player Camera")]
     [SerializeField] private CinemachineVirtualCamera playerCamera;
+    private CinemachineBrain brainCamera;
     
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
@@ -101,6 +103,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         TryGetComponent(out playerAnimation);
+        brainCamera = mainCamera.GetComponent<CinemachineBrain>();
         
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
@@ -126,6 +129,7 @@ public class Player : MonoBehaviour
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
     }
 
+
     public void AnimationEvent_ChangeDirectionState(string toState)
     {
         switch (toState)
@@ -144,22 +148,40 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-
+    
     // TODO: 나중에 GameManager로 옮기기
-    private void StopPlayer()
+    private async void StopPlayer()
     {
-        if (Cursor.visible == true && PlayerConstant.isPlayerStop == false)             // 커서가 보이면 2번 카메라로 이동 및 현재 재생 중인 애니메이션 일시정지
+        if (playerDirectionStateMachine.IsCurrentState(
+                PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Switching])
+            && brainCamera.IsBlending == false)
+        {
+            ChangeBlend(CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
+        }
+        else
+        {
+            await UniTask.Delay(500);
+            ChangeBlend(CinemachineBlendDefinition.Style.Cut, 0.0f);
+        }
+        
+        await new WaitUntil(() => !playerDirectionStateMachine.IsCurrentState(PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Switching]));
+        
+        if (Cursor.visible == true && PlayerConstant.isPlayerStop == false)             // 커서가 보이면 2번 카메라로 이동
         {
             playerCamera.enabled = false;
             PlayerConstant.isPlayerStop = true;
-            PlayerAnimation.PauseAndResumeAnimation(true);
         }
-        else if (Cursor.visible == false && PlayerConstant.isPlayerStop == true)        // 커서가 안보이면 1번 카메라로 이동 및 애니메이션 재시작
+        else if (Cursor.visible == false && PlayerConstant.isPlayerStop == true)        // 커서가 안보이면 1번 카메라로 이동
         {
             playerCamera.enabled = true;
             PlayerConstant.isPlayerStop = false;
-            PlayerAnimation.PauseAndResumeAnimation(false);
         }
+    }
+    
+    private void ChangeBlend(CinemachineBlendDefinition.Style blend, float time)
+    {
+        brainCamera.m_DefaultBlend.m_Style = blend;
+        brainCamera.m_DefaultBlend.m_Time = time;
     }
 
     void Update()

@@ -36,6 +36,8 @@ public class StateMachine : MonoBehaviour
         currentState.Enter();
     }
     
+    
+    
     public bool IsCurrentState(IState currentState)
     {
         return this.currentState == currentState;
