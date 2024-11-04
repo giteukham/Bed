@@ -25,6 +25,7 @@ public class InputSystem : MonoBehaviour
 
     private void OnMouseDelta(InputValue value)
     {
+        if (PlayerConstant.isPlayerStop) return;
         if ( PlayerConstant.isParalysis ) 
         {
             MouseDeltaX = value.Get<Vector2>().x * 0.02f;

@@ -157,6 +157,7 @@ public class Player : MonoBehaviour
         SetPlayerState();
         UpdatePostProcessing();
         UpdateSFX();
+        StopPlayer();
         coneCollider.SetColider(BlinkEffect.Blink);
     }
 
@@ -423,6 +424,24 @@ public class Player : MonoBehaviour
         {
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 500f;
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 500f;
+        }
+    }
+
+    private void StopPlayer()
+    {
+        if (Cursor.visible == true && PlayerConstant.isPlayerStop == false)
+        {
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
+            PlayerConstant.isPlayerStop = true;
+        }
+        else if (Cursor.visible == false && PlayerConstant.isPlayerStop == true)
+        {
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
+            PlayerConstant.isPlayerStop = false;
         }
     }
 

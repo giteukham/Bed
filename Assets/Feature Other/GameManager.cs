@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if(Cursor.visible) Debug.Log("Cursor is visible");
+        else Debug.Log("Cursor is not visible");
+        
         if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
 
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();

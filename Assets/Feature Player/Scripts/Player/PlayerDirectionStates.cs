@@ -18,7 +18,7 @@ public class PlayerDirectionStates
             PlayerConstant.LeftStateCAT += Time.deltaTime;
             PlayerConstant.LeftStateLAT += Time.deltaTime;
 
-            if ( PlayerConstant.isParalysis ) return;
+            if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
             if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
@@ -47,7 +47,7 @@ public class PlayerDirectionStates
             PlayerConstant.MiddleStateCAT += Time.deltaTime;
             PlayerConstant.MiddleStateLAT += Time.deltaTime;
 
-            if ( PlayerConstant.isParalysis ) return;
+            if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
             if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle To Left");
@@ -79,7 +79,7 @@ public class PlayerDirectionStates
             PlayerConstant.RightStateCAT += Time.deltaTime;
             PlayerConstant.RightStateLAT += Time.deltaTime;
 
-            if ( PlayerConstant.isParalysis ) return;
+            if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
             if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
