@@ -414,6 +414,7 @@ public class Player : MonoBehaviour
 
     private void SetPlayerState()
     {   
+
         if (PlayerConstant.isParalysis)
         {
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
@@ -421,8 +422,11 @@ public class Player : MonoBehaviour
         }
         else
         {
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 500f;
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 500f;
+            //playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 500f;
+            //playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 500f;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+
         }
     }
 

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject menuScreen;
     [SerializeField] private GameObject soundSettingsScreen;
     [SerializeField] private GameObject resolutionSettingsScreen;
-    [SerializeField] private GameObject mouseSensitivitySettingsScreen;
+    [SerializeField] private GameObject mouseSettingsScreen;
     #endregion
 
     private void Awake() 
@@ -23,8 +24,24 @@ public class UIManager : MonoBehaviour
     {
         //Menu Screen에서 esc 누르면 종료하시겠습니까? 창이 열리면 좋겠음
         //그리고 다른 화면에서 esc창을 누르면 이전화면으로 가는걸로 바뀌면 좋겠음
-        if(Input.GetKeyDown(KeyCode.Backspace) || Input.GetMouseButtonDown(1)) ShowMenuScreen();
+        if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetMouseButtonDown(1))
+        {
+            ShowMenuScreen();
+        }
         if(Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
+
+        //나중에 적용키를 ui창 띄우는 키로 바꿔야함
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
     }
 
     private void OnEnable()
@@ -38,7 +55,7 @@ public class UIManager : MonoBehaviour
         menuScreen.SetActive(false);
         soundSettingsScreen.SetActive(false);
         resolutionSettingsScreen.SetActive(false);
-        mouseSensitivitySettingsScreen.SetActive(false);
+        mouseSettingsScreen.SetActive(false);
 
         _screen.SetActive(true);
     }
@@ -55,11 +72,11 @@ public class UIManager : MonoBehaviour
 
     public void ShowResolutionSettingsScreen()
     {
-
+        ShowScreen(resolutionSettingsScreen);
     }
 
-    public void ShowMouseSensitivitySettingsScreen()
+    public void ShowMouseSettingsScreen()
     {
-
+        ShowScreen(mouseSettingsScreen);
     }
 }
