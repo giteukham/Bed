@@ -8,6 +8,12 @@ public class InputSystem : MonoBehaviour
 {
     private static float mouseDeltaX;
     private static float mouseDeltaY;
+
+    /// <summary>
+    /// 움직임 반전용 변수
+    /// </summary>
+    public static int xBodyReverse = 1;
+
     public static float MouseDeltaX
     {
         get { return mouseDeltaX; }
@@ -32,7 +38,7 @@ public class InputSystem : MonoBehaviour
         }
         else
         {
-            MouseDeltaX = value.Get<Vector2>().x;
+            MouseDeltaX = value.Get<Vector2>().x * xBodyReverse;
             MouseDeltaY = value.Get<Vector2>().y;
         }
         

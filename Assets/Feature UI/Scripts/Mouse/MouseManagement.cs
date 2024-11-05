@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class MouseManagement : MonoBehaviour
 {
@@ -37,6 +38,9 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     public static float mouseSpeed = 500f;
 
+    /// <summary>
+    /// 실제값이 아닌 ui 요소만 초기화 함(실제값 초기화는 SaveManager에서 실행함)
+    /// </summary>
     private void OnEnable()
     {
         //슬라이더 조절바에 이전게임에 저장됐던 설정값 적용
@@ -90,6 +94,9 @@ public class MouseManagement : MonoBehaviour
     {
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = !virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput;
         saveManager.SaveMouseHorizontalReverse(virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput);
+
+        //InputSystem.xBodyReverse = virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput ? -1 : 1;
+        saveManager.SaveXBodyReverse(virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput ? -1 : 1);
         //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
         horizontalSwitch.sprite = saveManager.LoadMouseHorizontalReverse() ? onImage : offImage;
     }
