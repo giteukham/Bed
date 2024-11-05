@@ -78,20 +78,27 @@ namespace Bed.Gimmick
             InitKernel();
             InitBuffers();
             InitComputeShader();
-            
-            cellListBuffer.GetData(cellLists);
-            
-            Debug.Log(cellCount);
-        }
 
-        private void Update()
-        {
             particleMaterial.SetBuffer("_particles", particleBuffer);
             particleMaterial.SetFloat("_particleRadius", particleRadius);
 
             particleCompute.Dispatch(updateHashKernel, 128 * (128 / cellCount + 1), 1, 1);
             particleCompute.Dispatch(integrateKernel, 128 * (128 / particleCount + 1), 1, 1);
+            cellListBuffer.GetData(cellLists);
+
+            Sort.Instance.ExecutePairsSort(cellLists);
+
+            cellLists = Sort.Instance.GetSortedPairs();
+
+
+        }
+
+        private void Update()
+        {
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
+
+
+            
         }
 
         private void InitKernel()
@@ -115,7 +122,7 @@ namespace Bed.Gimmick
                 y = particleSpawnPoint.y - (particleNumOfSpawn.y * particleRadius),
                 z = particleSpawnPoint.z - (particleNumOfSpawn.z * particleRadius)
             };
-            particleSpawnPoint += Random.onUnitSphere * particleRadius * 0.2f;          // 구 표면에 한 점을 선택해서 그 점을 중심으로 0.2f 만큼 떨어진 점을 선택
+            //particleSpawnPoint += Random.onUnitSphere * particleRadius * 0.2f;          // 구 표면에 한 점을 선택해서 그 점을 중심으로 0.2f 만큼 떨어진 점을 선택
             
             for (int i = 0; i < particleNumOfSpawn.x; i++)
             for (int j = 0; j < particleNumOfSpawn.y; j++)
@@ -171,20 +178,22 @@ namespace Bed.Gimmick
 
         private void OnDrawGizmos()
         {
-            float halfX = particleBoundBox.x / 2f;
-            float halfY = particleBoundBox.y / 2f;
-            float halfZ = particleBoundBox.z / 2f;
+            float halfX = particleNumOfSpawn.x / 2f;
+            float halfY = particleNumOfSpawn.y / 2f;
+            float halfZ = particleNumOfSpawn.z / 2f;
             
-            for (float i = 0; i < particleBoundBox.x; i++)
-            for (float j = 0; j < particleBoundBox.y; j++)
-            for (float k = 0; k < particleBoundBox.z; k++)
+            for (float i = 0; i < particleNumOfSpawn.x; i++)
+            for (float j = 0; j < particleNumOfSpawn.y; j++)
+            for (float k = 0; k < particleNumOfSpawn.z; k++)
             {
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(new Vector3(i - halfX, j - halfY, k - halfZ), Vector3.one * particleRadius);
+                Gizmos.DrawWireCube(
+                    new Vector3(i - halfX, j - halfY, k - halfZ), 
+                    new Vector3(particleNumOfSpawn.x, particleNumOfSpawn.y, particleNumOfSpawn.z));
             }
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             graphicsBuffer?.Release();
             particleBuffer?.Release();
