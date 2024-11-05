@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,13 +25,25 @@ public class SaveManager : MonoBehaviour
         return PlayerPrefs.GetFloat("MouseSensitivity", 1f);
     }
 
-    public void SaveMouseReverse(int value)
+    //마우스 상하반전 관련
+    public void SaveMouseVerticalReverse(bool value)
     {
-        PlayerPrefs.SetInt("MouseReverse", value);
+        PlayerPrefs.SetInt("MouseVerticalReverse", Convert.ToInt32(value));
         PlayerPrefs.Save();
     }
-    public float LoadMouseReverse()
+    public bool LoadMouseVerticalReverse()
     {
-        return PlayerPrefs.GetInt("MouseReverse", 1);
+        return Convert.ToBoolean(PlayerPrefs.GetInt("MouseVerticalReverse", 1));
+    }
+
+    //마우스 좌우반전 관련
+    public void SaveMouseHorizontalReverse(bool value)
+    {
+        PlayerPrefs.SetInt("MouseHorizontalReverse", Convert.ToInt32(value));
+        PlayerPrefs.Save();
+    }
+    public bool LoadMouseHorizontalReverse()
+    {
+        return Convert.ToBoolean(PlayerPrefs.GetInt("MouseHorizontalReverse", 0));
     }
 }
