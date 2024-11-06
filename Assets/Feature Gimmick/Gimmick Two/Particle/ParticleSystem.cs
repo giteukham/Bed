@@ -33,23 +33,31 @@ namespace Bed.Gimmick
         [SerializeField] private Mesh particleMesh;
         [SerializeField] private Material particleMaterial;
         [SerializeField] private ComputeShader particleCompute;
+        [SerializeField] private ParticleSpawner spawner;
+
+        [Header("정렬")] 
+        [SerializeField] private ComputeShader oneSweep;
+        private Sort sorter;
         
         private Particle[] particles;
         private Vector3[] velocities;
         private Vector2Int[] cellLists;
-        private int particleCount => particleNumOfSpawn.x * particleNumOfSpawn.y * particleNumOfSpawn.z;
-        private int cellCount => Mathf.FloorToInt((particleBoundBox.x / particleRadius) * (particleBoundBox.y / particleRadius) * (particleBoundBox.z / particleRadius));
+        private uint[] cellStarts;
+        private int ParticleCount => particleNumOfSpawn.x * particleNumOfSpawn.y * particleNumOfSpawn.z;
+        private int CellCount => Mathf.FloorToInt((particleBoundBox.x / particleRadius) * (particleBoundBox.y / particleRadius) * (particleBoundBox.z / particleRadius));
         
         private ComputeBuffer particleBuffer;
         private ComputeBuffer velocityBuffer;
         private ComputeBuffer cellListBuffer;
+        private ComputeBuffer cellStartBuffer;
         private GraphicsBuffer graphicsBuffer;
         private const int commandCount = 1;
 
         private RenderParams renderParams;
         
         private int integrateKernel;
-        private int updateHashKernel;
+        private int insertParticleKernel;
+        private int insertCellStartKernel;
 
         private void Awake()
         {
@@ -58,23 +66,23 @@ namespace Bed.Gimmick
                 throw new Exception("particleNumOfSpawn과 particleBoundBox를 설정해주세요");
             }
             
-            velocities = new Vector3[particleCount];
-            cellLists = new Vector2Int[cellCount];
-        }
-
-        private void OnEnable()
-        {
-            SpawnParticles();
-        }
-
-        private void Start()
-        {
+            velocities = new Vector3[ParticleCount];
+            cellLists = new Vector2Int[CellCount];
+            cellStarts = new uint[CellCount];
+            sorter = new Sort(oneSweep, CellCount);
+            
             renderParams = new RenderParams()
             {
                 material = particleMaterial,
                 matProps = new MaterialPropertyBlock(),
                 worldBounds = new Bounds(Vector3.zero, Vector3.one * 1000f),
             };
+        }
+
+        private void Start()
+        {
+            spawner.SpawnParticles(particleNumOfSpawn, particleSpawnPoint, particleRadius, out particles);
+            
             InitKernel();
             InitBuffers();
             InitComputeShader();
@@ -82,63 +90,33 @@ namespace Bed.Gimmick
             particleMaterial.SetBuffer("_particles", particleBuffer);
             particleMaterial.SetFloat("_particleRadius", particleRadius);
 
-            particleCompute.Dispatch(updateHashKernel, 128 * (128 / cellCount + 1), 1, 1);
-            particleCompute.Dispatch(integrateKernel, 128 * (128 / particleCount + 1), 1, 1);
+            particleCompute.Dispatch(insertParticleKernel, 128 * (128 / CellCount + 1), 1, 1);
+            particleCompute.Dispatch(integrateKernel, 128 * (128 / ParticleCount + 1), 1, 1);
             cellListBuffer.GetData(cellLists);
 
-            Sort.Instance.ExecutePairsSort(cellLists);
+            sorter.ExecutePairsSort(cellLists);
+            cellLists = sorter.GetSortedPairs();
+            
+            cellListBuffer.SetData(cellLists);
+            particleCompute.Dispatch(insertCellStartKernel, 128 * (128 / CellCount + 1), 1, 1);
+            cellStartBuffer.GetData(cellStarts);
 
-            cellLists = Sort.Instance.GetSortedPairs();
-
-
+            // for (int i = 0; i < cellLists.Length; i++)
+            // {
+            //     Debug.Log(cellLists[i]);
+            // }
         }
 
         private void Update()
         {
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
-
-
-            
-        }
-
-        private void InitKernel()
-        {
-            updateHashKernel = particleCompute.FindKernel("UpdateHash");
-            integrateKernel = particleCompute.FindKernel("Integrate");
         }
         
-        /// <summary>
-        /// 박스의 중심을 다시 박스의 좌표를 빼서 박스의 시작점을 구함으로써 Center를 중심으로 좌우로 박스를 그리게 함
-        /// </summary>
-        private void SpawnParticles()
+        private void InitKernel()
         {
-            float x, y, z;
-            int index = 0;
-            List<Particle> particleList = new List<Particle>();
-            
-            particleSpawnPoint = new Vector3()
-            {
-                x = particleSpawnPoint.x - (particleNumOfSpawn.x * particleRadius),
-                y = particleSpawnPoint.y - (particleNumOfSpawn.y * particleRadius),
-                z = particleSpawnPoint.z - (particleNumOfSpawn.z * particleRadius)
-            };
-            //particleSpawnPoint += Random.onUnitSphere * particleRadius * 0.2f;          // 구 표면에 한 점을 선택해서 그 점을 중심으로 0.2f 만큼 떨어진 점을 선택
-            
-            for (int i = 0; i < particleNumOfSpawn.x; i++)
-            for (int j = 0; j < particleNumOfSpawn.y; j++)
-            for (int k = 0; k < particleNumOfSpawn.z; k++)
-            {
-                x = particleSpawnPoint.x + (i * particleRadius * 2f);
-                y = particleSpawnPoint.y + (j * particleRadius * 2f);
-                z = particleSpawnPoint.z + (k * particleRadius * 2f);
-                particleList.Add(new Particle()
-                {
-                    id = index,
-                    position = new Vector3(x, y, z)
-                });
-                index++;
-            }
-            particles = particleList.ToArray();
+            insertParticleKernel = particleCompute.FindKernel("InsertParticlesInCell");
+            insertCellStartKernel = particleCompute.FindKernel("InsertCellStartByCellId");
+            integrateKernel = particleCompute.FindKernel("Integrate");
         }
         
         private void InitBuffers()
@@ -147,16 +125,19 @@ namespace Bed.Gimmick
             commandData[0].indexCountPerInstance = particleMesh.GetIndexCount(0);
             commandData[0].startIndex = particleMesh.GetIndexStart(0);
             commandData[0].baseVertexIndex = particleMesh.GetBaseVertex(0);
-            commandData[0].instanceCount = (uint) particleCount;
+            commandData[0].instanceCount = (uint) ParticleCount;
             
-            particleBuffer = new ComputeBuffer(particleCount, Marshal.SizeOf(typeof(Particle)));
+            particleBuffer = new ComputeBuffer(ParticleCount, Marshal.SizeOf(typeof(Particle)));
             particleBuffer.SetData(particles);
             
-            velocityBuffer = new ComputeBuffer(particleCount, 12);      // Vector3의 크기는 4 * 3
+            velocityBuffer = new ComputeBuffer(ParticleCount, 12);      // Vector3의 크기는 4 * 3
             velocityBuffer.SetData(velocities);
             
-            cellListBuffer = new ComputeBuffer(cellCount, 8);           // Vector2Int의 크기는 4 * 2
+            cellListBuffer = new ComputeBuffer(CellCount, 8);           // Vector2Int의 크기는 4 * 2
             cellListBuffer.SetData(cellLists);
+            
+            cellStartBuffer = new ComputeBuffer(CellCount, 4);          // int의 크기는 4
+            cellStartBuffer.SetData(cellStarts);
             
             graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, 1, GraphicsBuffer.IndirectDrawIndexedArgs.size);
             graphicsBuffer.SetData(commandData);
@@ -167,34 +148,42 @@ namespace Bed.Gimmick
             particleCompute.SetBuffer(integrateKernel, "_particles", particleBuffer);
             particleCompute.SetBuffer(integrateKernel, "_velocities", velocityBuffer);
             
-            particleCompute.SetBuffer(updateHashKernel, "_particles", particleBuffer);
-            particleCompute.SetBuffer(updateHashKernel, "_cellLists", cellListBuffer);
+            particleCompute.SetBuffer(insertParticleKernel, "_particles", particleBuffer);
+            particleCompute.SetBuffer(insertParticleKernel, "_cellLists", cellListBuffer);
+            
+            particleCompute.SetBuffer(insertCellStartKernel, "_cellLists", cellListBuffer);
+            particleCompute.SetBuffer(insertCellStartKernel, "_cellStartIndices", cellStartBuffer);
             
             particleCompute.SetFloats("_boundingBox", particleBoundBox.x, particleBoundBox.y, particleBoundBox.z);
             particleCompute.SetFloat("_particleRadius", particleRadius);
             particleCompute.SetFloat("_damping", damping);
             particleCompute.SetFloat("_time", Time.deltaTime);
+            particleCompute.SetInt("_particleCount", ParticleCount);
         }
 
         private void OnDrawGizmos()
         {
-            float halfX = particleNumOfSpawn.x / 2f;
-            float halfY = particleNumOfSpawn.y / 2f;
-            float halfZ = particleNumOfSpawn.z / 2f;
+            float x, y, z;
             
-            for (float i = 0; i < particleNumOfSpawn.x; i++)
-            for (float j = 0; j < particleNumOfSpawn.y; j++)
-            for (float k = 0; k < particleNumOfSpawn.z; k++)
+            for (float i = 0; i < particleBoundBox.x; i++)
+            for (float j = 0; j < particleBoundBox.y; j++)
+            for (float k = 0; k < particleBoundBox.z; k++)
             {
-                Gizmos.color = Color.green;
+                x = ((i * particleRadius * 2f) - particleNumOfSpawn.x) + particleSpawnPoint.x;
+                y = ((j * particleRadius * 2f) - particleNumOfSpawn.y) + particleSpawnPoint.y;
+                z = ((k * particleRadius * 2f) - particleNumOfSpawn.z) + particleSpawnPoint.z;
+                
+                Gizmos.color = Color.blue;
                 Gizmos.DrawWireCube(
-                    new Vector3(i - halfX, j - halfY, k - halfZ), 
-                    new Vector3(particleNumOfSpawn.x, particleNumOfSpawn.y, particleNumOfSpawn.z));
+                    new Vector3(x, y, z),
+                    new Vector3(particleRadius * 2f, particleRadius * 2f, particleRadius * 2f));
             }
+            
         }
 
         private void OnDestroy()
         {
+            sorter.Dispose();
             graphicsBuffer?.Release();
             particleBuffer?.Release();
             velocityBuffer?.Release();

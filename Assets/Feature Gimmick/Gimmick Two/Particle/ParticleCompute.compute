@@ -2,7 +2,8 @@
 ///	DO NOT USE KOREAN IN THIS FILE ///
 //////////////////////////////////////
 
-#pragma kernel UpdateHash
+#pragma kernel InsertParticlesInCell
+#pragma kernel InsertCellStartByCellId
 #pragma kernel Integrate
 
 #define GRAVITY 9.81
@@ -20,20 +21,56 @@ struct Particle
 RWStructuredBuffer<Particle> _particles;
 RWStructuredBuffer<float3> _velocities;
 RWStructuredBuffer<uint2> _cellLists;					// x is the cell index, y is the particle index
+RWStructuredBuffer<uint> _cellStartIndices;
 
 float3 _boundingBox;
 float _particleRadius;
 float _damping;
 float _time;
+uint _particleCount;
+
+groupshared uint2 _cellId[THREAD_SIZE];
 
 [numthreads(THREAD_SIZE, 1, 1)]
-void UpdateHash(uint3 id : SV_DispatchThreadID)
+void InsertParticlesInCell(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	int tableSize = floor((_boundingBox.x / _particleRadius) * (_boundingBox.y / _particleRadius) * (_boundingBox.z / _particleRadius));
-	int3 cellPosition = GetCellCoord(_particles[id.x].position, _particleRadius);
+	uint threadId = tid.x, groupThreadId = gtid.x, groupId = gid.x;
 	
-	_cellLists[id.x].x = HashFunction(cellPosition, tableSize);
-	_cellLists[id.x].y = _particles[id.x].id;
+	int tableSize = floor((_boundingBox.x / _particleRadius) * (_boundingBox.y / _particleRadius) * (_boundingBox.z / _particleRadius));
+
+	uint particleId = _particles[threadId].id;
+	Particle particle = _particles[threadId];
+	
+	int3 cellCoord = GetCellCoord(particle.position, _particleRadius);
+	uint cellIndex = HashFunction(cellCoord, tableSize);
+	
+	_cellId[groupThreadId].x = cellIndex;
+	_cellId[groupThreadId].y = 0xFFFFFFFF;
+	GroupMemoryBarrierWithGroupSync();
+
+	if (tid.x < _particleCount)
+	{
+		_cellId[groupThreadId].y = particleId;
+	}
+	else
+	{
+		_cellId[groupThreadId].y = 0xFFFFFFFF;
+	}
+	GroupMemoryBarrierWithGroupSync();
+	
+	
+	_cellLists[threadId].x = _cellId[groupThreadId].x;
+	_cellLists[threadId].y = _cellId[groupThreadId].y;
+}
+
+[numthreads(THREAD_SIZE, 1, 1)]
+void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
+{
+	uint threadId = tid.x;
+	uint cellId = _cellLists[threadId].x;
+	uint particleId = _cellLists[threadId].y;
+
+	_cellStartIndices[cellId] = cellId;
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]

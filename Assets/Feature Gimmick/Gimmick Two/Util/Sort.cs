@@ -3,26 +3,34 @@ using UnityEngine;
 
 namespace Bed.Gimmick
 {
-    public class Sort : MonoSingleton<Sort>
+    public class Sort
     {
-        public ComputeShader oneSweep;
+        private ComputeShader oneSweep;
         
         private ComputeBuffer keyBuffer, valueBuffer, globalHistBuffer, passHistBuffer, indexBuffer;
         private ComputeBuffer sortKeysBuffer, sortValuesBuffer;
         private OneSweep sorter;
-
-        public void ExecuteKeysSort<T>(T[] keys)
+        private int numElements;
+        
+        public Sort(ComputeShader oneSweep, int numElements)
         {
-            int numKeys = keys.Length;
+            this.oneSweep = oneSweep;
+            this.numElements = numElements;
             
-            sortKeysBuffer = new ComputeBuffer(numKeys, sizeof(uint));
-            keyBuffer = new ComputeBuffer(numKeys, sizeof(uint));
-            globalHistBuffer = new ComputeBuffer(numKeys, sizeof(uint));
-            passHistBuffer = new ComputeBuffer(numKeys, sizeof(uint));
-            indexBuffer = new ComputeBuffer(numKeys, sizeof(uint));
+            sortKeysBuffer = new ComputeBuffer(numElements, sizeof(uint));
+            sortValuesBuffer = new ComputeBuffer(numElements, sizeof(uint));
+            keyBuffer = new ComputeBuffer(numElements, sizeof(uint));
+            valueBuffer = new ComputeBuffer(numElements, sizeof(uint));
+            globalHistBuffer = new ComputeBuffer(numElements, sizeof(uint));
+            passHistBuffer = new ComputeBuffer(numElements, sizeof(uint));
+            indexBuffer = new ComputeBuffer(numElements, sizeof(uint));
+        }
+
+        public void ExecuteKeysSort<T>(in T[] keys)
+        {
             sorter = new OneSweep(
                 oneSweep,
-                numKeys,
+                numElements,
                 ref keyBuffer,
                 ref globalHistBuffer,
                 ref passHistBuffer,
@@ -31,37 +39,27 @@ namespace Bed.Gimmick
             sortKeysBuffer.SetData(keys);
 
             sorter.Sort(
-                numKeys,
+                numElements,
                 sortKeysBuffer, keyBuffer, globalHistBuffer, passHistBuffer, indexBuffer,
                 typeof(T),
                 true);
         }
 
-        public void ExecutePairsSort(Vector2Int[] pairs)
+        public void ExecutePairsSort(in Vector2Int[] pairs)
         {
-            int numPairs = pairs.Length;
-
-            sortKeysBuffer = new ComputeBuffer(numPairs, sizeof(uint));
-            sortValuesBuffer = new ComputeBuffer(numPairs, sizeof(uint));
-            keyBuffer = new ComputeBuffer(numPairs, sizeof(uint));
-            valueBuffer = new ComputeBuffer(numPairs, sizeof(uint));
-            globalHistBuffer = new ComputeBuffer(numPairs, sizeof(uint));
-            passHistBuffer = new ComputeBuffer(numPairs, sizeof(uint));
-            indexBuffer = new ComputeBuffer(numPairs, sizeof(uint));
             sorter = new OneSweep(
                 oneSweep,
-                numPairs,
+                numElements,
                 ref keyBuffer,
                 ref valueBuffer,
                 ref globalHistBuffer,
                 ref passHistBuffer,
                 ref indexBuffer);
 
-            int[] keys = new int[numPairs];
-            int[] values = new int[numPairs];
-
-
-            for (int i = 0; i < numPairs; i++)
+            int[] keys = new int[numElements];
+            int[] values = new int[numElements];
+            
+            for (int i = 0; i < numElements; i++)
             {
                 keys[i] = (int) pairs[i].x;
                 values[i] = (int) pairs[i].y;
@@ -71,7 +69,7 @@ namespace Bed.Gimmick
             sortValuesBuffer.SetData(values);
 
             sorter.Sort(
-                numPairs,
+                numElements,
                 sortKeysBuffer, sortValuesBuffer, 
                 keyBuffer, valueBuffer, globalHistBuffer, passHistBuffer, indexBuffer,
                 keys[0].GetType(),
@@ -92,17 +90,11 @@ namespace Bed.Gimmick
             int[] keys = new int[sortKeysBuffer.count];
             int[] values = new int[sortValuesBuffer.count];
 
-            for (int i = 0; i < 1000; i++)
-            {
-                Debug.Log(keys[i]);
-            }
-
             sortKeysBuffer.GetData(keys);
             sortValuesBuffer.GetData(values);
 
             Vector2Int[] pairs = new Vector2Int[sortKeysBuffer.count];
-
-
+            
             for (int i = 0; i < sortKeysBuffer.count; i++)
             {
                 pairs[i] = new Vector2Int(keys[i], values[i]);
@@ -110,8 +102,8 @@ namespace Bed.Gimmick
 
             return pairs;
         }
-
-        private void OnDestroy()
+        
+        public void Dispose()
         {
             keyBuffer?.Dispose();
             valueBuffer?.Dispose();
