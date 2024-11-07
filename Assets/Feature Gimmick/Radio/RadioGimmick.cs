@@ -53,7 +53,7 @@ public class RadioGimmick : Gimmick
             //±â¹Í ÆÄÈÑ ¼º°ø½Ã
             if (false)
             {
-                Deactivate();
+                //Deactivate();
             }
         }
 

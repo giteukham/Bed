@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
     [SerializeField] private StateMachine playerEyeStateMachine;
-
+    
     private PlayerAnimation playerAnimation;
     
     [Header("Input System")]
@@ -95,6 +95,9 @@ public class Player : MonoBehaviour
     private bool exhaleCheck = false; // false면 들숨, true면 날숨
     private Coroutine headMoveSFXCoroutine;
     #endregion
+
+    // UI manager로 옮기기
+    [SerializeField] GameObject uiCanvas;
 
     private void Start()
     {
@@ -189,44 +192,48 @@ public class Player : MonoBehaviour
         // ----------------- Head Movement -----------------
 
         // ----------------- Look Value -----------------
-        float eulerY = mainCamera.transform.eulerAngles.y;
-        float eulerX = mainCamera.transform.eulerAngles.x;
-
-        if (eulerY < 105f) 
-        {
-            PlayerConstant.LeftLookCAT += timeSinceLastUpdate;
-            PlayerConstant.LeftLookLAT += timeSinceLastUpdate;
-        }
-        else if (eulerY < 175f)
-        {
-            PlayerConstant.LeftFrontLookCAT += timeSinceLastUpdate;
-            PlayerConstant.LeftFrontLookLAT += timeSinceLastUpdate;
-        }
-        else if (eulerY <= 185f)
-        {
-            PlayerConstant.FrontLookCAT += timeSinceLastUpdate;
-            PlayerConstant.FrontLookLAT += timeSinceLastUpdate;
-        }
-        else if (eulerY <= 250f)
-        {
-            PlayerConstant.RightFrontLookCAT += timeSinceLastUpdate;
-            PlayerConstant.RightFrontLookLAT += timeSinceLastUpdate;
-        }
+        if (PlayerConstant.isEyeOpen == false) return;
         else
         {
-            PlayerConstant.RightLookCAT += timeSinceLastUpdate;
-            PlayerConstant.RightLookLAT += timeSinceLastUpdate;
-        }
+            float eulerY = mainCamera.transform.eulerAngles.y;
+            float eulerX = mainCamera.transform.eulerAngles.x;
 
-        if (eulerX > 330f)
-        {
-            PlayerConstant.UpLookCAT += timeSinceLastUpdate;
-            PlayerConstant.UpLookLAT += timeSinceLastUpdate;
-        }
-        else
-        {
-            PlayerConstant.DownLookCAT += timeSinceLastUpdate;
-            PlayerConstant.DownLookLAT += timeSinceLastUpdate;
+            if (eulerY < 105f) 
+            {
+                PlayerConstant.LeftLookCAT += timeSinceLastUpdate;
+                PlayerConstant.LeftLookLAT += timeSinceLastUpdate;
+            }
+            else if (eulerY < 175f)
+            {
+                PlayerConstant.LeftFrontLookCAT += timeSinceLastUpdate;
+                PlayerConstant.LeftFrontLookLAT += timeSinceLastUpdate;
+            }
+            else if (eulerY <= 185f)
+            {
+                PlayerConstant.FrontLookCAT += timeSinceLastUpdate;
+                PlayerConstant.FrontLookLAT += timeSinceLastUpdate;
+            }
+            else if (eulerY <= 250f)
+            {
+                PlayerConstant.RightFrontLookCAT += timeSinceLastUpdate;
+                PlayerConstant.RightFrontLookLAT += timeSinceLastUpdate;
+            }
+            else
+            {
+                PlayerConstant.RightLookCAT += timeSinceLastUpdate;
+                PlayerConstant.RightLookLAT += timeSinceLastUpdate;
+            }
+
+            if (eulerX > 330f)
+            {
+                PlayerConstant.UpLookCAT += timeSinceLastUpdate;
+                PlayerConstant.UpLookLAT += timeSinceLastUpdate;
+            }
+            else
+            {
+                PlayerConstant.DownLookCAT += timeSinceLastUpdate;
+                PlayerConstant.DownLookLAT += timeSinceLastUpdate;
+            }
         }
         // ----------------- Look Value -----------------
     }
@@ -429,19 +436,32 @@ public class Player : MonoBehaviour
 
     private void StopPlayer()
     {
-        if (Cursor.visible == true && PlayerConstant.isPlayerStop == false)
+        if (PlayerConstant.isPlayerStop == true)
         {
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
-            PlayerConstant.isPlayerStop = true;
+            if (PlayerConstant.isEyeOpen) playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
+
+            // UI manager로 옮기기
+            if (PlayerConstant.isEyeOpen == false) 
+            {
+                uiCanvas.SetActive(true);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            
         }
-        else if (Cursor.visible == false && PlayerConstant.isPlayerStop == true)
+        if (PlayerConstant.isPlayerStop == false)
         {
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
-            PlayerConstant.isPlayerStop = false;
+
+            // UI manager로 옮기기
+            uiCanvas.SetActive(false);
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 

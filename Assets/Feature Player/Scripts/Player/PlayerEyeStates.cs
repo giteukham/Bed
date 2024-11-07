@@ -14,15 +14,25 @@ public class PlayerEyeStates
     
     public class OpenEyeState : IState      // ?��?�� ?��?��?�� ?�� ?��?��
     {
-        public void Enter()
+        public async void Enter()
         {
-            BlinkEffect.Blink = PlayerEyeControl.BLINK_VALUE_MIN;
+            float elapsedTime = 0f;
+            float currentBlinkValue = BlinkEffect.Blink;
+
+            while (BlinkEffect.Blink > currentBlinkValue)
+            {
+                elapsedTime += Time.deltaTime;
+                BlinkEffect.Blink = Mathf.Lerp(BlinkEffect.Blink, currentBlinkValue, elapsedTime / PlayerConstant.blinkSpeed);
+                await UniTask.Yield();
+            } 
             PlayerConstant.isEyeOpen = true;
+            playerEyeControl.UpdateEyeState();
         }
 
         public void Execute()
         {
-            if(PlayerConstant.isEyeOpen == false) PlayerConstant.isEyeOpen = true;
+            if(PlayerConstant.isEyeOpen) return;
+            PlayerConstant.isEyeOpen = true;
         }
 
         public void Exit()
@@ -39,7 +49,6 @@ public class PlayerEyeStates
 
         public void Execute()
         {
-            if(PlayerConstant.isEyeOpen == false) PlayerConstant.isEyeOpen = true;
         }
 
         public void Exit()
@@ -49,21 +58,39 @@ public class PlayerEyeStates
     
     public class CloseEyeState : IState     // ?��?�� ?��?��?�� 감�?? ?��?��
     {
-        public void Enter()
+        public async void Enter()
         {
-            BlinkEffect.Blink = PlayerEyeControl.BLINK_VALUE_MAX;
-            PlayerConstant.isEyeOpen = false;
+            float elapsedTime = 0f;
+            float currentBlinkValue = BlinkEffect.Blink;
+
+            while (BlinkEffect.Blink < PlayerEyeControl.BLINK_VALUE_MAX)
+            {
+                elapsedTime += Time.deltaTime;
+                BlinkEffect.Blink = Mathf.Lerp(currentBlinkValue, PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
+                await UniTask.Yield();
+            } 
+            playerEyeControl.UpdateEyeState();
+            playerEyeControl.targetValue = 1;
+
+            if (BlinkEffect.Blink == PlayerEyeControl.BLINK_VALUE_MAX)
+            {
+                await UniTask.Delay(100);
+                PlayerConstant.isEyeOpen = false;
+            }
         }
 
         public void Execute()
         {
-            PlayerConstant.EyeClosedCAT += Time.deltaTime;
-            PlayerConstant.EyeClosedLAT += Time.deltaTime;
-            if(PlayerConstant.isEyeOpen == true) PlayerConstant.isEyeOpen = false;
+            if (PlayerConstant.isEyeOpen == false) 
+            {
+                PlayerConstant.EyeClosedCAT += Time.deltaTime;
+                PlayerConstant.EyeClosedLAT += Time.deltaTime;
+            }
         }
 
         public void Exit()
         {
+            
             PlayerConstant.isEyeOpen = true;
         }
     }
@@ -99,11 +126,12 @@ public class PlayerEyeStates
                 BlinkEffect.Blink = Mathf.Lerp(currentBlinkValue, PlayerEyeControl.BLINK_VALUE_MAX, elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
-            playerEyeControl.UpdateEyeState();
+            //playerEyeControl.UpdateEyeState();
 
             PlayerConstant.EyeBlinkCAT++;
             PlayerConstant.EyeBlinkLAT++;
-
+            PlayerConstant.EyeClosedCAT += Time.deltaTime;
+            PlayerConstant.EyeClosedLAT += Time.deltaTime;
             await UniTask.Delay(150);
             elapsedTime = 0f;
 

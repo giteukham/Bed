@@ -19,8 +19,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
     }
 
     void Start()
@@ -32,8 +31,16 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if(Cursor.visible) Debug.Log("Cursor is visible");
-        else Debug.Log("Cursor is not visible");
+        if(Input.GetMouseButton(0) && Input.GetMouseButton(1)) 
+        {
+            if (PlayerConstant.isPlayerStop) return;
+            PlayerConstant.isPlayerStop = true;
+        }
+        // if(Input.GetKeyDown(KeyCode.Escape) || (Input.GetMouseButton(0) && Input.GetMouseButton(1))) 
+        // {
+        //     if (PlayerConstant.isPlayerStop) return;
+        //     PlayerConstant.isPlayerStop = true;
+        // }
         
         if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
 
