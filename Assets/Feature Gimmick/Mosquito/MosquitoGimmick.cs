@@ -52,7 +52,7 @@ public class MosquitoGimmick : Gimmick
     private IEnumerator MainCode()
     {
         //소리재생
-        AudioManager.instance.PlaySound(AudioManager.instance.mosquito, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.mosquito, transform.position);
 
         yield return new WaitForSeconds(1);
 

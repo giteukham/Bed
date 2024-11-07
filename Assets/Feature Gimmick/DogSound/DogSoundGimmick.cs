@@ -45,12 +45,12 @@ public class DogSoundGimmick : Gimmick
     private IEnumerator MainCode()
     {
         //개 짖다가
-        AudioManager.instance.PlaySound(AudioManager.instance.dogBark, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.dogBark, transform.position);
 
         yield return new WaitForSeconds(21);
 
         //소리 끝나면 바로 개 비명 지름(맞는 소리 넣으면 뭔가 이상할듯)
-        AudioManager.instance.PlaySound(AudioManager.instance.dogWhine, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.dogWhine, transform.position);
 
         yield return new WaitForSeconds(10);
         //스트레스 데미지 주고 끝냄

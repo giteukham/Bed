@@ -92,7 +92,7 @@ public class ScareCrowGimmick : Gimmick
         yield return new WaitForSeconds(3);
 
         //까마귀 소리 내고 끝냄
-        AudioManager.instance.PlaySound(AudioManager.instance.crows, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.crows, transform.position);
         yield return new WaitForSeconds(9);
 
         //공포 데미지 상승
@@ -138,11 +138,11 @@ public class ScareCrowGimmick : Gimmick
             soundNum++;
             if (soundNum == 1)
             {
-                AudioManager.instance.PlaySound(AudioManager.instance.woodDrop1, transform.position);
+                AudioManager.Instance.PlaySound(AudioManager.Instance.woodDrop1, transform.position);
             }
             else
             {
-                AudioManager.instance.PlaySound(AudioManager.instance.woodDrop2, transform.position);
+                AudioManager.Instance.PlaySound(AudioManager.Instance.woodDrop2, transform.position);
             }
         }
     }

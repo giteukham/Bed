@@ -46,7 +46,7 @@ public class RadioGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.radio, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.radio, transform.position);
         while (timeLimit < 10)
         {
             yield return null;

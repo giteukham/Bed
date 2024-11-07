@@ -43,7 +43,7 @@ namespace AbstractGimmick
         /// </summary>
         public virtual void Deactivate()
         {
-            GimmickManager.instance.ResetDeactivateGimmick(gameObject.GetComponent<Gimmick>());
+            GimmickManager.Instance.ResetDeactivateGimmick(gameObject.GetComponent<Gimmick>());
             Initialize();
         }
         

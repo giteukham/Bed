@@ -119,9 +119,9 @@ public class Player : MonoBehaviour
         cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
-        AudioManager.instance.PlaySound(AudioManager.instance.fearHal, transform.position);
-        AudioManager.instance.PlaySound(AudioManager.instance.stressHal, transform.position);
-        AudioManager.instance.PlaySound(AudioManager.instance.headMove, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.headMove, transform.position);
 
         playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
@@ -309,18 +309,18 @@ public class Player : MonoBehaviour
         playerPillowSoundPosition.eulerAngles = new Vector3(playerPillowSoundInitRotation.x, playerPillowSoundInitRotation.y, playerPillowSoundInitRotation.z);
         
         // 위치 조정
-        AudioManager.instance.SetPosition(AudioManager.instance.fearHal, transform.position);
-        AudioManager.instance.SetPosition(AudioManager.instance.stressHal, transform.position);
-        AudioManager.instance.SetPosition(AudioManager.instance.headMove, playerPillowSoundPosition.position);
+        AudioManager.Instance.SetPosition(AudioManager.Instance.fearHal, transform.position);
+        AudioManager.Instance.SetPosition(AudioManager.Instance.stressHal, transform.position);
+        AudioManager.Instance.SetPosition(AudioManager.Instance.headMove, playerPillowSoundPosition.position);
         // 위치 조정
 
         // --------머리 움직임 소리
         if (deltaHorizontalMouseMovement > 0f || deltaVerticalMouseMovement > 0f || PlayerConstant.isMovingState)  
         {
-            if (PlayerConstant.isRightState || PlayerConstant.isLeftState) AudioManager.instance.SetParameter(AudioManager.instance.headMove, "Lowpass", 1.6f);
-            else AudioManager.instance.SetParameter(AudioManager.instance.headMove, "Lowpass", 4.5f);
+            if (PlayerConstant.isRightState || PlayerConstant.isLeftState) AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 1.6f);
+            else AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 4.5f);
 
-            if(AudioManager.instance.GetVolume(AudioManager.instance.headMove) < 1.0f) 
+            if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f) 
             {
                 if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
                 headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
@@ -328,7 +328,7 @@ public class Player : MonoBehaviour
         }
         else 
         {
-            if(AudioManager.instance.GetVolume(AudioManager.instance.headMove) > 0.0f) 
+            if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) > 0.0f) 
             {
                 if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
                 headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
@@ -337,16 +337,16 @@ public class Player : MonoBehaviour
 
         IEnumerator headMoveSFXSet(bool _Up)
         {
-            float volume = AudioManager.instance.GetVolume(AudioManager.instance.headMove);
+            float volume = AudioManager.Instance.GetVolume(AudioManager.Instance.headMove);
 
             if(_Up)
             {
-                AudioManager.instance.ResumeSound(AudioManager.instance.headMove);
+                AudioManager.Instance.ResumeSound(AudioManager.Instance.headMove);
                 while(volume < 1.0f)
                 {
                     volume += 0.1f;
                     volume = Mathf.Clamp(volume, 0.0f, 1.0f);
-                    AudioManager.instance.VolumeControl(AudioManager.instance.headMove, volume);
+                    AudioManager.Instance.VolumeControl(AudioManager.Instance.headMove, volume);
                     yield return new WaitForSeconds(0.1f);
                 }
                 headMoveSFXCoroutine = null;
@@ -357,10 +357,10 @@ public class Player : MonoBehaviour
                 {
                     volume -= 0.1f;
                     volume = Mathf.Clamp(volume, 0.0f, 1.0f);
-                    AudioManager.instance.VolumeControl(AudioManager.instance.headMove, volume);
+                    AudioManager.Instance.VolumeControl(AudioManager.Instance.headMove, volume);
                     yield return new WaitForSeconds(0.1f);
                 }
-                AudioManager.instance.PauseSound(AudioManager.instance.headMove);
+                AudioManager.Instance.PauseSound(AudioManager.Instance.headMove);
                 headMoveSFXCoroutine = null;
             }
         }   
@@ -371,13 +371,13 @@ public class Player : MonoBehaviour
         if (breathTime >= 0.5f && exhaleCheck == false) 
         { 
             breathTime = 0.0f; 
-            AudioManager.instance.PlayOneShot(AudioManager.instance.inhale, transform.position);
+            AudioManager.Instance.PlayOneShot(AudioManager.Instance.inhale, transform.position);
             exhaleCheck = true;
         }
         if (breathTime >= 0.5f && exhaleCheck == true)
         {
             breathTime = 0.0f;
-            AudioManager.instance.PlayOneShot(AudioManager.instance.exhale, transform.position);
+            AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
             exhaleCheck = false;
         }
         // --------------------숨소리
@@ -415,8 +415,8 @@ public class Player : MonoBehaviour
             currentStressSFXVolume = Mathf.Min(currentStressSFXVolume, targetStressSFXVolume);
         }
 
-        AudioManager.instance.VolumeControl(AudioManager.instance.fearHal, currentFearSFXVolume);
-        AudioManager.instance.VolumeControl(AudioManager.instance.stressHal, currentStressSFXVolume);
+        AudioManager.Instance.VolumeControl(AudioManager.Instance.fearHal, currentFearSFXVolume);
+        AudioManager.Instance.VolumeControl(AudioManager.Instance.stressHal, currentStressSFXVolume);
         // -------------------------------------게이지 효과음
     }
 

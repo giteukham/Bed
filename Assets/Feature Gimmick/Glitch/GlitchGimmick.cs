@@ -87,7 +87,7 @@ public class GlitchGimmick : Gimmick
     private IEnumerator GlitchOn()
     {
         //삐- 거리는 소리
-        AudioManager.instance.PlaySound(AudioManager.instance.lag2, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.lag2, transform.position);
         yield return new WaitForSeconds(6);
 
         //플레이어에게 데미지 주는 코드 삽입

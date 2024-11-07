@@ -89,15 +89,15 @@ public class RapistGimmick : Gimmick
             twoPhase = true;
         if (houseLight.activeSelf == true)
             houseLight.SetActive(false);
-        AudioManager.instance.PlaySound(AudioManager.instance.hornyBreath, this.transform.position);
-        AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.hornyBreath, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.pantRustle, this.transform.position);
 
         //3페이즈
         yield return new WaitForSeconds(3f);
         twoPhase = false;
         if (threePhase == false)
             threePhase = true;
-        AudioManager.instance.PlaySound(AudioManager.instance.windowOpenClose, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.windowOpenClose, this.transform.position);
 
 
         // 4페이즈 / 이땐 정면 고정
@@ -106,7 +106,7 @@ public class RapistGimmick : Gimmick
         if (fourPhase == false)
             fourPhase = true;
         hand.SetActive(true);
-        AudioManager.instance.PlaySound(AudioManager.instance.rapist4Phase, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.rapist4Phase, this.transform.position);
         
         yield return new WaitForSeconds(3f);
         hand.SetActive(false);
@@ -117,7 +117,7 @@ public class RapistGimmick : Gimmick
 
     private void RustleSoundPlay()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.pantRustle, this.transform.position);
     }
 
     public override void Initialize(){}

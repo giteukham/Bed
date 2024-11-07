@@ -70,7 +70,7 @@ public class TimeManager : MonoBehaviour
         if (realTimeCounter >= timeInterval)
         {
             playTimeToMin ++; // 게임 시간 1분 증가
-            GimmickManager.instance.RedefineProbability(); // 기믹 확률 재정의
+            GimmickManager.Instance.RedefineProbability(); // 기믹 확률 재정의
             realTimeCounter = 0;  
         }
 
@@ -97,7 +97,7 @@ public class TimeManager : MonoBehaviour
         // 사이클 간격마다 기믹 뽑기
         if (gimmickPickTimeCounter >= cycleInterval)  
         {
-            GimmickManager.instance.PickGimmick();
+            GimmickManager.Instance.PickGimmick();
             gimmickPickTimeCounter = 0;
         }
     }

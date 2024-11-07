@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GaugeController : MonoBehaviour
+public class GaugeController : MonoSingleton<GaugeController>
 {
     private Coroutine fearGaugeCoroutine, stressGaugeCoroutine;
 
@@ -13,14 +13,6 @@ public class GaugeController : MonoBehaviour
     }
     
     private float fearTargetValue, stressTargetValue = 0;
-
-    public static GaugeController instance { get; private set;}
-
-    private void Awake() 
-    {
-        if (instance != null) Debug.LogError("GaugeController already exists");
-        instance = this;
-    }
 
     /// <summary>
     /// 게이지 설정, 부호 붙여서 사용

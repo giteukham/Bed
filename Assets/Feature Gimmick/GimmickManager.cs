@@ -4,17 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class GimmickManager : MonoBehaviour
+public class GimmickManager : MonoSingleton<GimmickManager>
 {
-    public static GimmickManager instance { get; private set;}
     [SerializeField] private List<Gimmick> AllGimicks;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
 
     private void Awake()
     {
-        if (instance != null) Debug.LogError("Gimmick Manager already exists");
-        instance = this;
-
         foreach (Gimmick gimmick in AllGimicks) 
             if(gimmick.gameObject.activeSelf == false) 
             {

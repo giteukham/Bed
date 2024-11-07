@@ -45,7 +45,7 @@ public class ChairGimmick : Gimmick
     private IEnumerator MainCode()
     {
         //의자바퀴소리
-        AudioManager.instance.PlaySound(AudioManager.instance.chair1, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.chair1, transform.position);
         //약간 좌측으로 이동
         timeLimit = 0;
         while (timeLimit <= 1.3f)
@@ -57,7 +57,7 @@ public class ChairGimmick : Gimmick
         yield return new WaitForSeconds(1.1f);
 
         //의자바퀴소리
-        AudioManager.instance.PlaySound(AudioManager.instance.chair2, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.chair2, transform.position);
         //약간 좌측으로 이동
         timeLimit = 0;
         while (timeLimit <= 3f)
@@ -69,7 +69,7 @@ public class ChairGimmick : Gimmick
         yield return new WaitForSeconds(4);
 
         //의자바퀴소리
-        AudioManager.instance.PlaySound(AudioManager.instance.chair1, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.chair1, transform.position);
         //의자 돌아감
         timeLimit = 0;
         while (timeLimit <= 5)
