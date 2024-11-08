@@ -90,10 +90,9 @@ public class Player : MonoBehaviour
     [SerializeField]private Transform playerPillowSoundPosition;
     private Vector3 playerPillowSoundInitPosition;
     private Vector3 playerPillowSoundInitRotation;
-    private float breathTime;
     private float currentFearSFXVolume, currentStressSFXVolume, currentHeadMoveSFXVolume;
-    private bool exhaleCheck = false; // false면 들숨, true면 날숨
     private Coroutine headMoveSFXCoroutine;
+    [SerializeField]private Animator headAnimator;
     #endregion
 
     // UI manager로 옮기기
@@ -116,7 +115,7 @@ public class Player : MonoBehaviour
         psxPostProcessEffect = mainCamera.GetComponent<PSXPostProcessEffect>();
 
         // Camera Noise
-        cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
         AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
@@ -240,10 +239,10 @@ public class Player : MonoBehaviour
 
     private void UpdateCamera()
     {
-        if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 4f;
-        else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 3f;
-        else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 2f;
-        else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 1f;
+        // if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 4f;
+        // else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 3f;
+        // else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 2f;
+        // else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 1f;
 
         StartCoroutine(StressShake());
     }
@@ -365,21 +364,21 @@ public class Player : MonoBehaviour
             }
         }   
         // --------머리 움직임 소리
-
+        
         // --------------------숨소리
-        breathTime += Time.deltaTime * (cameraNoise.m_FrequencyGain * 0.25f);
-        if (breathTime >= 0.5f && exhaleCheck == false) 
-        { 
-            breathTime = 0.0f; 
-            AudioManager.Instance.PlayOneShot(AudioManager.Instance.inhale, transform.position);
-            exhaleCheck = true;
-        }
-        if (breathTime >= 0.5f && exhaleCheck == true)
-        {
-            breathTime = 0.0f;
-            AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
-            exhaleCheck = false;
-        }
+        // breathTime += Time.deltaTime * (cameraNoise.m_FrequencyGain * 0.25f);
+        // if (breathTime >= 0.5f && exhaleCheck == false) 
+        // { 
+        //     breathTime = 0.0f; 
+        //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.inhale, transform.position);
+        //     exhaleCheck = true;
+        // }
+        // if (breathTime >= 0.5f && exhaleCheck == true)
+        // {
+        //     breathTime = 0.0f;
+        //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
+        //     exhaleCheck = false;
+        // }
         // --------------------숨소리
 
         // -------------------------------------게이지 효과음
