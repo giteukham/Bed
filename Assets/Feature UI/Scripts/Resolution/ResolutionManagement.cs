@@ -13,7 +13,8 @@ public class ResolutionManagement : MonoBehaviour
     int nowWidth = 0;
     int nowHeight = 0;
 
-    const float CRITERIA_NUM = 16 / 9;
+    //const float CRITERIA_NUM = 16 / 9;
+    bool change = true;
 
     private void Awake()
     {
@@ -48,31 +49,34 @@ public class ResolutionManagement : MonoBehaviour
             switch (temp)
             {
                 case 0:
-                    print("눌림1");
                     temp++;
-                    print("눌림2");
-                    TestResolution(4, 3);
-                    print("눌림3");
+                    Screen.SetResolution(1440, 1080, change);
+                    TestResolution();
                     break;
 
                 case 1:
                     temp++;
-                    TestResolution(16, 10);
+                    Screen.SetResolution(1920, 1200, change);
+                    TestResolution();
                     break;
 
                 case 2:
                     temp++;
-                    TestResolution(16, 9);
+                    Screen.SetResolution(1920, 1080, change);
+                    TestResolution();
                     break;
 
                 case 3:
                     temp++;
-                    TestResolution(21, 9);
+                    Screen.SetResolution(2560, 1080, change);
+                    TestResolution();
                     break;
 
                 case 4:
                     temp = 0;
-                    TestResolution(32, 9);
+                    Screen.SetResolution(3840, 1080, change);
+                    TestResolution();
+                    change = !change;
                     break;
             }
 
@@ -84,13 +88,18 @@ public class ResolutionManagement : MonoBehaviour
     /// </summary>
     /// <param name="width">'목표' 가로비율로 명명함</param>
     /// <param name="height">'목표' 세로비율로 명명함</param>
-    private void TestResolution(float width, float height)
+    private void TestResolution()
     {
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
 
+        float width = Screen.width;
+        float height = Screen.height;
+
         //16 / 9값과 비교하여 16:9 화면에서 세로길이 혹은 가로길이 중에서
         //어느 길이가 더 긴지 알아내는 판별용 변수
-        float checkedValue = width / height;
+        float checkedValue = Screen.width / Screen.height;
+        float CRITERIA_NUM = 16f / 9f;
+
         Rect rect = new Rect(0, 0, 1, 1);
         float temp1 = 0;
         //세로 비율을 9로 통일 후 변경될 목표 가로 비율
