@@ -44,7 +44,7 @@ namespace Bed.Gimmick
         private Vector2Int[] cellLists;
         private uint[] cellStarts;
         private int ParticleCount => particleNumOfSpawn.x * particleNumOfSpawn.y * particleNumOfSpawn.z;
-        private int CellCount => Mathf.FloorToInt((particleBoundBox.x / particleRadius) * (particleBoundBox.y / particleRadius) * (particleBoundBox.z / particleRadius));
+        private int CellCount => Mathf.FloorToInt(particleBoundBox.x * particleBoundBox.y * particleBoundBox.z);
         
         private ComputeBuffer particleBuffer;
         private ComputeBuffer velocityBuffer;
@@ -58,6 +58,10 @@ namespace Bed.Gimmick
         private int integrateKernel;
         private int insertParticleKernel;
         private int insertCellStartKernel;
+        private int neighborSearchKernel;
+
+        private ComputeBuffer testBuffer;
+        private Vector3[] testArray;
 
         private void Awake()
         {
@@ -69,7 +73,8 @@ namespace Bed.Gimmick
             velocities = new Vector3[ParticleCount];
             cellLists = new Vector2Int[CellCount];
             cellStarts = new uint[CellCount];
-            sorter = new Sort(oneSweep, CellCount);
+            testArray = new Vector3[CellCount];
+            sorter = new Sort(oneSweep, ParticleCount);
             
             renderParams = new RenderParams()
             {
@@ -100,11 +105,14 @@ namespace Bed.Gimmick
             cellListBuffer.SetData(cellLists);
             particleCompute.Dispatch(insertCellStartKernel, 128 * (128 / CellCount + 1), 1, 1);
             cellStartBuffer.GetData(cellStarts);
+            
+            particleCompute.Dispatch(neighborSearchKernel, 128 * (128 / ParticleCount + 1), 1, 1);
+            testBuffer.GetData(testArray);
 
-            // for (int i = 0; i < cellLists.Length; i++)
-            // {
-            //     Debug.Log(cellLists[i]);
-            // }
+            for (int i = 0; i < testArray.Length; i++)
+            {
+                Debug.Log(testArray[i]);
+            }
         }
 
         private void Update()
@@ -116,6 +124,7 @@ namespace Bed.Gimmick
         {
             insertParticleKernel = particleCompute.FindKernel("InsertParticlesInCell");
             insertCellStartKernel = particleCompute.FindKernel("InsertCellStartByCellId");
+            neighborSearchKernel = particleCompute.FindKernel("NeighborSearch");
             integrateKernel = particleCompute.FindKernel("Integrate");
         }
         
@@ -139,6 +148,9 @@ namespace Bed.Gimmick
             cellStartBuffer = new ComputeBuffer(CellCount, 4);          // int의 크기는 4
             cellStartBuffer.SetData(cellStarts);
             
+            testBuffer = new ComputeBuffer(CellCount, 4 * 3);
+            testBuffer.SetData(testArray);
+            
             graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, 1, GraphicsBuffer.IndirectDrawIndexedArgs.size);
             graphicsBuffer.SetData(commandData);
         }
@@ -147,12 +159,20 @@ namespace Bed.Gimmick
         {
             particleCompute.SetBuffer(integrateKernel, "_particles", particleBuffer);
             particleCompute.SetBuffer(integrateKernel, "_velocities", velocityBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_test", testBuffer);
             
             particleCompute.SetBuffer(insertParticleKernel, "_particles", particleBuffer);
             particleCompute.SetBuffer(insertParticleKernel, "_cellLists", cellListBuffer);
+            particleCompute.SetBuffer(insertParticleKernel, "_test", testBuffer);
             
             particleCompute.SetBuffer(insertCellStartKernel, "_cellLists", cellListBuffer);
             particleCompute.SetBuffer(insertCellStartKernel, "_cellStartIndices", cellStartBuffer);
+            particleCompute.SetBuffer(insertCellStartKernel, "_test", testBuffer);
+            
+            particleCompute.SetBuffer(neighborSearchKernel, "_particles", particleBuffer);
+            particleCompute.SetBuffer(neighborSearchKernel, "_cellStartIndices", cellStartBuffer);
+            particleCompute.SetBuffer(neighborSearchKernel, "_cellLists", cellListBuffer);
+            particleCompute.SetBuffer(neighborSearchKernel, "_test", testBuffer);
             
             particleCompute.SetFloats("_boundingBox", particleBoundBox.x, particleBoundBox.y, particleBoundBox.z);
             particleCompute.SetFloat("_particleRadius", particleRadius);
@@ -169,9 +189,9 @@ namespace Bed.Gimmick
             for (float j = 0; j < particleBoundBox.y; j++)
             for (float k = 0; k < particleBoundBox.z; k++)
             {
-                x = ((i * particleRadius * 2f) - particleNumOfSpawn.x) + particleSpawnPoint.x;
-                y = ((j * particleRadius * 2f) - particleNumOfSpawn.y) + particleSpawnPoint.y;
-                z = ((k * particleRadius * 2f) - particleNumOfSpawn.z) + particleSpawnPoint.z;
+                x = (i * particleRadius * 2f) + particleSpawnPoint.x;
+                y = (j * particleRadius * 2f) + particleSpawnPoint.y;
+                z = (k * particleRadius * 2f) + particleSpawnPoint.z;
                 
                 Gizmos.color = Color.blue;
                 Gizmos.DrawWireCube(

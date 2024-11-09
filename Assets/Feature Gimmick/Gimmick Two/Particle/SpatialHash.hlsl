@@ -4,10 +4,10 @@
 /// <param name="position"></param>
 /// <param name="particleRadius"></param>
 /// <returns></returns>
-int3 GetCellCoord(in float3 position, float particleRadius)
+inline int3 GetCellCoord(in float3 position, float particleRadius)
 {
-	float space = particleRadius;					// cell의 한 변
-	return (int3) floor(position / space);
+	float space = particleRadius * 2;					// cell의 한 변
+	return floor(position / space);
 }
 
 /// <summary>
@@ -16,9 +16,9 @@ int3 GetCellCoord(in float3 position, float particleRadius)
 /// <param name="position"></param>
 /// <param name="particleBoundBox"></param>
 /// <returns></returns>
-uint GetCellIndex(in float3 position, in float3 particleBoundBox)
+inline uint GetCellIndex(in float3 position, in float3 particleBoundBox)
 {
-	return (int) (position.x + position.y * particleBoundBox.x + position.z * particleBoundBox.x * particleBoundBox.y);
+	return (int) ((position.x * particleBoundBox.y + position.y) * particleBoundBox.z + position.z);
 }
 
 
@@ -29,8 +29,12 @@ uint GetCellIndex(in float3 position, in float3 particleBoundBox)
 /// <param name="position"></param>
 /// <param name="hashTableSize"></param>
 /// <returns></returns>
-uint HashFunction(in int3 position, int hashTableSize)
+inline int HashFunction(in int3 position, int hashTableSize)
 {
-	uint hash = (position.x * 92837111) ^ (position.y * 689287499) ^ (position.z * 283923481);
-	return hash %= hashTableSize;
+	const uint p1 = 73856093;
+	const uint p2 = 19349663;
+	const uint p3 = 83492791;
+	int hash = p1 * position.x ^ p2 * position.y ^ p3 * position.z;
+	hash %= hashTableSize;
+	return hash;
 }

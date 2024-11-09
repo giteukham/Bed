@@ -5,13 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72432282-2788-4cc0-be74-5ef80e77a12e" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSpawner.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSpawner.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleCompute.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleCompute.compute" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleShader.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleShader.shader" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSpawner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSystem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/SpatialHash.hlsl" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/SpatialHash.hlsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Util/Sort.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Util/Sort.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fluid.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fluid.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,6 +24,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/asdf.b0nes.gpu_sorting@09a6081d96/Runtime/OneSweep.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.burst@1.8.17/Runtime/BurstCompiler.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.core@14.0.11/ShaderLibrary/SpaceTransforms.hlsl" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -43,6 +43,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;Unity 에디터에 연결.Unity 에디터에 연결.executor&quot;: &quot;Debug&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.5007874&quot;,
     &quot;git-widget-placeholder&quot;: &quot;feature/gimmicTwo&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -58,6 +59,14 @@
       <option name="EXE_PATH" value="C:\Program Files\2022.3.33f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath C:\Users\muryu\Desktop\Bed -testResults Logs/results.xml -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="C:\Users\muryu\Desktop\Bed" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <method v="2" />
+    </configuration>
+    <configuration name="독립실행형 플레이어" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../Build/Test1.exe" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="C:\Users\muryu\Desktop\Build" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <method v="2" />
@@ -86,10 +95,10 @@
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <method v="2" />
     </configuration>
-    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="9608">
+    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="9608" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -173,6 +182,9 @@
       <workItem from="1730717348705" duration="12130000" />
       <workItem from="1730798922527" duration="8090000" />
       <workItem from="1730871627226" duration="13778000" />
+      <workItem from="1731061803648" duration="16610000" />
+      <workItem from="1731108367610" duration="14845000" />
+      <workItem from="1731150684318" duration="7720000" />
     </task>
     <servers />
   </component>

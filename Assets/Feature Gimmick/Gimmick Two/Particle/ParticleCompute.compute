@@ -4,6 +4,7 @@
 
 #pragma kernel InsertParticlesInCell
 #pragma kernel InsertCellStartByCellId
+#pragma kernel NeighborSearch
 #pragma kernel Integrate
 
 #define GRAVITY 9.81
@@ -23,6 +24,8 @@ RWStructuredBuffer<float3> _velocities;
 RWStructuredBuffer<uint2> _cellLists;					// x is the cell index, y is the particle index
 RWStructuredBuffer<uint> _cellStartIndices;
 
+RWStructuredBuffer<float3> _test;
+
 float3 _boundingBox;
 float _particleRadius;
 float _damping;
@@ -36,82 +39,113 @@ void InsertParticlesInCell(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_Grou
 {
 	uint threadId = tid.x, groupThreadId = gtid.x, groupId = gid.x;
 	
-	int tableSize = floor((_boundingBox.x / _particleRadius) * (_boundingBox.y / _particleRadius) * (_boundingBox.z / _particleRadius));
+	int gridSize = _boundingBox.x * _boundingBox.y * _boundingBox.z;
 
 	uint particleId = _particles[threadId].id;
-	Particle particle = _particles[threadId];
+	Particle particle = _particles[particleId];
 	
 	int3 cellCoord = GetCellCoord(particle.position, _particleRadius);
-	uint cellIndex = HashFunction(cellCoord, tableSize);
-	
-	_cellId[groupThreadId].x = cellIndex;
-	_cellId[groupThreadId].y = 0xFFFFFFFF;
-	GroupMemoryBarrierWithGroupSync();
+	int cellIndex = GetCellIndex(cellCoord, _boundingBox);
 
-	if (tid.x < _particleCount)
+
+	_cellLists[threadId].y = 0xFFFFFFFF;
+
+	if (threadId < _particleCount)
 	{
-		_cellId[groupThreadId].y = particleId;
+		_cellLists[particleId] = uint2(cellIndex, particleId);
 	}
-	else
-	{
-		_cellId[groupThreadId].y = 0xFFFFFFFF;
-	}
-	GroupMemoryBarrierWithGroupSync();
-	
-	
-	_cellLists[threadId].x = _cellId[groupThreadId].x;
-	_cellLists[threadId].y = _cellId[groupThreadId].y;
+
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
 {
 	uint threadId = tid.x;
-	uint cellId = _cellLists[threadId].x;
 	uint particleId = _cellLists[threadId].y;
+	uint cellId = _cellLists[particleId].x;
+	
+	_cellStartIndices[threadId] = 0xFFFFFFFF;
+	GroupMemoryBarrierWithGroupSync();
+	
+	InterlockedMin(_cellStartIndices[cellId], threadId);
+}
 
-	_cellStartIndices[cellId] = cellId;
+[numthreads(THREAD_SIZE, 1, 1)]
+void NeighborSearch(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
+{
+	uint threadId = tid.x, groupThreadId = gtid.x, groupId = gid.x;
+	
+	Particle particle = _particles[threadId];
+
+	int3 cellCoord = 0xFFFFFFFF;
+	
+	if (particle.id == 0 && threadId < _particleCount)
+	{
+		cellCoord = GetCellCoord(particle.position, _particleRadius);
+	}
+			
+	for (int i = -1; i <= 1; i++)
+	for (int j = -1; j <= 1; j++)
+	for (int k = -1; k <= 1; k++)
+	{
+		int3 neighborCellCoord = cellCoord + int3(i, j, k);
+		uint neighborCellIndex = GetCellIndex(neighborCellCoord, _boundingBox);
+
+		uint start = _cellStartIndices[neighborCellIndex];
+		GroupMemoryBarrierWithGroupSync();
+		
+		while (start != 0xFFFFFFFF && start < _particleCount)
+		{
+			uint neighborParticleId = _cellLists[start].y;
+			
+			if (_cellLists[neighborParticleId].x != neighborCellIndex)
+			{
+				break;
+			}
+			start++;
+		}
+	}
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void Integrate (uint3 id : SV_DispatchThreadID)
 {
 	//_velocities[id.x] = float3(0, -GRAVITY, 0) * _time;
-	if (_particles[id.x].position.x < -(_boundingBox.x * 0.5))
-	{
-		_velocities[id.x].x *= _damping;
-		_particles[id.x].position.x = -(_boundingBox.x * 0.5);
-	}
-	
-	if (_particles[id.x].position.x > (_boundingBox.x * 0.5))
-	{
-		_velocities[id.x].x *= _damping;
-		_particles[id.x].position.x = (_boundingBox.x * 0.5);
-	}
-	
-	if (_particles[id.x].position.y < -(_boundingBox.y * 0.5))
-	{
-		_velocities[id.x].y *= _damping;
-		_particles[id.x].position.y = -(_boundingBox.y * 0.5);
-	}
-	
-	if (_particles[id.x].position.y > (_boundingBox.y * 0.5))
-	{
-		_velocities[id.x].y *= _damping;
-		_particles[id.x].position.y = (_boundingBox.y * 0.5);
-	}
-	
-	if (_particles[id.x].position.z < -(_boundingBox.z * 0.5))
-	{
-		_velocities[id.x].z *= _damping;
-		_particles[id.x].position.z = -(_boundingBox.z * 0.5);
-	}
-	
-	if (_particles[id.x].position.z > (_boundingBox.z * 0.5))
-	{
-		_velocities[id.x].z *= _damping;
-		_particles[id.x].position.z = (_boundingBox.z * 0.5);
-	}
-
-	_particles[id.x].position += _velocities[id.x];
+	// if (_particles[id.x].position.x < -(_boundingBox.x * 0.5))
+	// {
+	// 	_velocities[id.x].x *= _damping;
+	// 	_particles[id.x].position.x = -(_boundingBox.x * 0.5);
+	// }
+	//
+	// if (_particles[id.x].position.x > (_boundingBox.x * 0.5))
+	// {
+	// 	_velocities[id.x].x *= _damping;
+	// 	_particles[id.x].position.x = (_boundingBox.x * 0.5);
+	// }
+	//
+	// if (_particles[id.x].position.y < -(_boundingBox.y * 0.5))
+	// {
+	// 	_velocities[id.x].y *= _damping;
+	// 	_particles[id.x].position.y = -(_boundingBox.y * 0.5);
+	// }
+	//
+	// if (_particles[id.x].position.y > (_boundingBox.y * 0.5))
+	// {
+	// 	_velocities[id.x].y *= _damping;
+	// 	_particles[id.x].position.y = (_boundingBox.y * 0.5);
+	// }
+	//
+	// if (_particles[id.x].position.z < -(_boundingBox.z * 0.5))
+	// {
+	// 	_velocities[id.x].z *= _damping;
+	// 	_particles[id.x].position.z = -(_boundingBox.z * 0.5);
+	// }
+	//
+	// if (_particles[id.x].position.z > (_boundingBox.z * 0.5))
+	// {
+	// 	_velocities[id.x].z *= _damping;
+	// 	_particles[id.x].position.z = (_boundingBox.z * 0.5);
+	// }
+	//
+	// _particles[id.x].position += _velocities[id.x];
 }

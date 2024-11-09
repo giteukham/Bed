@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'glstate_matrix_projection' with 'UNITY_MATRIX_P'
+
 Shader "Custom/ParticleShader"
 {
     Properties
@@ -17,10 +19,18 @@ Shader "Custom/ParticleShader"
             #pragma target 4.5
             #include "UnityCG.cginc"
             
+            #define UNITY_INSTANCING_ENABLED
+
+            struct appdata
+			{
+				float4 vertex : POSITION;
+				UNITY_VERTEX_INPUT_INSTANCE_ID
+			};
+            
             struct v2f
             {
-                float4 pos : POSITION;
-                float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
+                uint id : SV_InstanceID;
             };
 
             struct Particle
@@ -33,27 +43,41 @@ Shader "Custom/ParticleShader"
             StructuredBuffer<Particle> _particles;
             float _particleRadius;
 
-            v2f vert(appdata_full v, uint id : SV_InstanceID)
+            v2f vert(appdata v, uint id : SV_InstanceID)
             {
-                v2f o;
-            #if SHADER_TARGET >= 45
-                float4 data = float4(_particles[id].position, 1.0);
-            #else
-                float4 data = 0;
+            #if defined(UNITY_INSTANCING_ENABLED)
+                float3 data = _particles[id].position;
             #endif
-
-                float3 localPosition = v.vertex.xyz * _particleRadius;      // 스케일 적용
-                float3 worldPosition = data.xyz + localPosition;            // 위치 적용
-
-                o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
-                o.uv  = v.texcoord;
+                
+                float3 worldPosition = data.xyz + v.vertex.xyz * _particleRadius;
+                
+                v2f o;
+                o.vertex = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0));
+                o.id  = id;
                 
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                return fixed4(float3(1.0, 1.0, 1.0), 1.0);
+                fixed4 col = fixed4(1.0, 1.0, 1.0, 1.0);
+
+                if (_particles[i.id].id == 1)
+                {
+                    col = fixed4(1.0, 0.0, 0.0, 1.0);
+                }
+
+                if (_particles[i.id].id == 2)
+                {
+                    col = fixed4(0.0, 1.0, 0.0, 1.0);
+                }
+
+                if (_particles[i.id].id == 3)
+                {
+                    col = fixed4(0.0, 0.0, 1.0, 1.0);
+                }
+                
+                return col;
             }
             ENDCG
         }
