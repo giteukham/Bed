@@ -12,17 +12,19 @@ public class ResolutionManagement : MonoBehaviour
     int temp = 0;
 
     bool change = true;
-    float nowWidthPixel = 0;
-    float nowHeightPixel = 0;
+    int nowWidthPixel = 0;
+    int nowHeightPixel = 0;
 
 
     private void Awake()
     {
-        //cam.clearFlags = CameraClearFlags.SolidColor;
-        //cam.backgroundColor = Color.black;
-        //GL.Clear(true, true, Color.black);
-        //ChangeResolution(32, 9);
-        //Hi();
+        // 1920 x 1080으로 시작
+        nowWidthPixel = 1920;
+        nowHeightPixel = 1080;
+        Screen.SetResolution(nowWidthPixel, nowHeightPixel, change);
+        RescaleWindow(nowWidthPixel, nowHeightPixel);
+        //screenText.text = nowWidthPixel + " x " + nowHeightPixel;
+
     }
 
     private void Update()
@@ -41,62 +43,47 @@ public class ResolutionManagement : MonoBehaviour
             {
                 case 0:
                     temp++;
-                    Screen.SetResolution(1440, 1080, change);
                     nowWidthPixel = 1440;
                     nowHeightPixel = 1080;
-                    TestResolution(nowWidthPixel, nowHeightPixel);
-                    //StartCoroutine(DDD(1440, 1080));
                     break;
 
                 case 1:
                     temp++;
-                    Screen.SetResolution(1920, 1200, change);
                     nowWidthPixel = 1920;
                     nowHeightPixel = 1200;
-                    TestResolution(nowWidthPixel, nowHeightPixel);
-                    //StartCoroutine(DDD(1920, 1200));
                     break;
 
                 case 2:
                     temp++;
-                    Screen.SetResolution(1920, 1080, change);
                     nowWidthPixel = 1920;
                     nowHeightPixel = 1080;
-                    TestResolution(nowWidthPixel, nowHeightPixel);
-                    //StartCoroutine(DDD(1920, 1080));
                     break;
 
                 case 3:
                     temp++;
-                    Screen.SetResolution(2560, 1080, change);
                     nowWidthPixel = 2560;
                     nowHeightPixel = 1080;
-                    TestResolution(nowWidthPixel, nowHeightPixel);
-                    //StartCoroutine(DDD(2560, 1080));
                     break;
 
                 case 4:
                     temp = 0;
-                    Screen.SetResolution(3840, 1080, change);
                     nowWidthPixel = 3840;
                     nowHeightPixel = 1080;
-                    TestResolution(nowWidthPixel, nowHeightPixel);
-                    //StartCoroutine(DDD(3840, 1080));
                     change = !change;
                     break;
             }
-            //TestResolution(Screen.width, Screen.height);
+            StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
         }
-
-        //TestResolution(Screen.width, Screen.height);
 
     }
 
-    private IEnumerator DDD(float width, float height)
+    private IEnumerator ResolutionWindow(float width, float height)
     {
         Screen.SetResolution((int)width, (int)height, change);
-        yield return new WaitForSeconds(0.1f);
-        TestResolution(width, height);
+
+        yield return null;
+
+        RescaleWindow(width, height);
         yield break;
     }
 
@@ -105,7 +92,7 @@ public class ResolutionManagement : MonoBehaviour
     /// </summary>
     /// <param name="width">'목표' 가로비율로 명명함</param>
     /// <param name="height">'목표' 세로비율로 명명함</param>
-    private void TestResolution(float width, float height)
+    private void RescaleWindow(float width, float height)
     {
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
 
