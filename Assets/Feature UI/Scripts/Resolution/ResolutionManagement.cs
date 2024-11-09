@@ -10,11 +10,11 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] Text screenText;
 
     int temp = 0;
-    int nowWidth = 0;
-    int nowHeight = 0;
 
-    //const float CRITERIA_NUM = 16 / 9;
     bool change = true;
+    float nowWidthPixel = 0;
+    float nowHeightPixel = 0;
+
 
     private void Awake()
     {
@@ -27,19 +27,10 @@ public class ResolutionManagement : MonoBehaviour
 
     private void Update()
     {
-
-        //screenText.text = Screen.width + "";
-        screenText.text = nowWidth + " : " + nowHeight;
-
-        if (Input.GetKeyDown(KeyCode.N))
+        if (Input.GetKeyDown(KeyCode.M))
         {
-            //GL.Clear(true, true, Color.black);
-            //print("black");
-            Hi();
-        }
-        else if (Input.GetKeyDown(KeyCode.M))
-        {
-            Bye();
+            Screen.SetResolution(100, 100, change);
+            change = !change;
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -51,53 +42,81 @@ public class ResolutionManagement : MonoBehaviour
                 case 0:
                     temp++;
                     Screen.SetResolution(1440, 1080, change);
-                    TestResolution();
+                    nowWidthPixel = 1440;
+                    nowHeightPixel = 1080;
+                    TestResolution(nowWidthPixel, nowHeightPixel);
+                    //StartCoroutine(DDD(1440, 1080));
                     break;
 
                 case 1:
                     temp++;
                     Screen.SetResolution(1920, 1200, change);
-                    TestResolution();
+                    nowWidthPixel = 1920;
+                    nowHeightPixel = 1200;
+                    TestResolution(nowWidthPixel, nowHeightPixel);
+                    //StartCoroutine(DDD(1920, 1200));
                     break;
 
                 case 2:
                     temp++;
                     Screen.SetResolution(1920, 1080, change);
-                    TestResolution();
+                    nowWidthPixel = 1920;
+                    nowHeightPixel = 1080;
+                    TestResolution(nowWidthPixel, nowHeightPixel);
+                    //StartCoroutine(DDD(1920, 1080));
                     break;
 
                 case 3:
                     temp++;
                     Screen.SetResolution(2560, 1080, change);
-                    TestResolution();
+                    nowWidthPixel = 2560;
+                    nowHeightPixel = 1080;
+                    TestResolution(nowWidthPixel, nowHeightPixel);
+                    //StartCoroutine(DDD(2560, 1080));
                     break;
 
                 case 4:
                     temp = 0;
                     Screen.SetResolution(3840, 1080, change);
-                    TestResolution();
+                    nowWidthPixel = 3840;
+                    nowHeightPixel = 1080;
+                    TestResolution(nowWidthPixel, nowHeightPixel);
+                    //StartCoroutine(DDD(3840, 1080));
                     change = !change;
                     break;
             }
-
+            //TestResolution(Screen.width, Screen.height);
         }
+
+        //TestResolution(Screen.width, Screen.height);
+
+    }
+
+    private IEnumerator DDD(float width, float height)
+    {
+        Screen.SetResolution((int)width, (int)height, change);
+        yield return new WaitForSeconds(0.1f);
+        TestResolution(width, height);
+        yield break;
     }
 
     /// <summary>
-    /// 
+    /// 화면 크기 조절 메소드
     /// </summary>
     /// <param name="width">'목표' 가로비율로 명명함</param>
     /// <param name="height">'목표' 세로비율로 명명함</param>
-    private void TestResolution()
+    private void TestResolution(float width, float height)
     {
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
 
-        float width = Screen.width;
-        float height = Screen.height;
+        //만약 Screen.SetResolution(3840, 1080, change);가 실행됐다면
+        //width는 3840, height는 1080임
+        //float width = Screen.width;
+        //float height = Screen.height;
 
         //16 / 9값과 비교하여 16:9 화면에서 세로길이 혹은 가로길이 중에서
         //어느 길이가 더 긴지 알아내는 판별용 변수
-        float checkedValue = Screen.width / Screen.height;
+        float checkedValue = width / height;
         float CRITERIA_NUM = 16f / 9f;
 
         Rect rect = new Rect(0, 0, 1, 1);
@@ -149,107 +168,6 @@ public class ResolutionManagement : MonoBehaviour
         cam.rect = rect;
     }
 
-    private void Hi()
-    {
-        Screen.SetResolution(1440, 1080, true);
-        print("dd");
-    }
-
-    private void Bye()
-    {
-        Screen.SetResolution(1920, 1080, true);
-        print("dd");
-    }
-
     //레터박스 완전 검은색으로 나오게 함
-    //void OnPreCull() => GL.Clear(true, true, Color.black);
-
-    public void ChangeResolution(float width, float height)
-    {
-        nowWidth = (int)width;
-        nowHeight = (int)height;
-        //cam = GetComponent<Camera>();
-        //Rect rect = cam.rect;
-        Rect rect = new Rect(0, 0, 1, 1);
-        float scaleheight = ((float)Screen.width / Screen.height) / ((float)width / height); // (가로 / 세로)
-        float scalewidth = 1f / scaleheight;
-        if (scaleheight < 1)
-        {
-            rect.height = scaleheight;
-            rect.y = (1f - scaleheight) / 2f;
-        }
-        else
-        {
-            rect.width = scalewidth;
-            rect.x = (1f - scalewidth) / 2f;
-        }
-        cam.rect = rect;
-
-        print(cam.rect);
-    }
-
-    //void OnPreCull() => GL.Clear(true, true, Color.black);
-
-
-    private int ScreenSizeX = 0;
-    private int ScreenSizeY = 0;
-
-    private void RescaleCamera(float width, float height)
-    {
-
-        //if (Screen.width == ScreenSizeX && Screen.height == ScreenSizeY) return;
-        //Camera cam2 = Camera.main;
-        //cam2.Render();  // 카메라가 현재 프레임을 다시 렌더링하게 함
-        GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
-        print("asdfafdd");
-        nowWidth = (int)width;
-        nowHeight = (int)height;
-
-        //float targetaspect = 16.0f / 9.0f;
-        float targetaspect = width / height;
-        float windowaspect = (float)Screen.width / (float)Screen.height;
-        float scaleheight = windowaspect / targetaspect;
-        //Camera camera = GetComponent<Camera>();
-
-        if (scaleheight < 1.0f)
-        {
-            Rect rect = cam.rect;
-
-            rect.width = 1.0f;
-            rect.height = scaleheight;
-            rect.x = 0;
-            rect.y = (1.0f - scaleheight) / 2.0f;
-
-            cam.rect = rect;
-        }
-        else // add pillarbox
-        {
-            float scalewidth = 1.0f / scaleheight;
-
-            Rect rect = cam.rect;
-
-            rect.width = scalewidth;
-            rect.height = 1.0f;
-            rect.x = (1.0f - scalewidth) / 2.0f;
-            rect.y = 0;
-
-            cam.rect = rect;
-        }
-
-        ScreenSizeX = Screen.width;
-        ScreenSizeY = Screen.height;
-    }
-
-    void OnPreCull()
-    {
-        if (Application.isEditor) return;
-        Rect wp = Camera.main.rect;
-        Rect nr = new Rect(0, 0, 1, 1);
-
-        Camera.main.rect = nr;
-        GL.Clear(true, true, Color.red);
-
-        Camera.main.rect = wp;
-
-    }
+    void OnPreCull() => GL.Clear(true, true, Color.black);
 }
