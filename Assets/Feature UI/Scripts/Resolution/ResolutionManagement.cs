@@ -22,13 +22,15 @@ public class ResolutionManagement : MonoBehaviour
         nowWidthPixel = 1920;
         nowHeightPixel = 1080;
         Screen.SetResolution(nowWidthPixel, nowHeightPixel, change);
-        RescaleWindow(nowWidthPixel, nowHeightPixel);
         //screenText.text = nowWidthPixel + " x " + nowHeightPixel;
 
     }
 
     private void Update()
     {
+        //'모니터'의 현재 해상도를 가져옴
+        screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
+
         if (Input.GetKeyDown(KeyCode.M))
         {
             Screen.SetResolution(100, 100, change);
@@ -157,4 +159,31 @@ public class ResolutionManagement : MonoBehaviour
 
     //레터박스 완전 검은색으로 나오게 함
     void OnPreCull() => GL.Clear(true, true, Color.black);
+
+    //드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
+    public void EnterResolution(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                StartCoroutine(ResolutionWindow(1440, 1080));
+                break;
+            case 1:
+                StartCoroutine(ResolutionWindow(1920, 1200));
+                break;
+            case 2:
+                StartCoroutine(ResolutionWindow(1920, 1080));
+                break;
+            case 3:
+                StartCoroutine(ResolutionWindow(2560, 1080));
+                break;
+            case 4:
+                StartCoroutine(ResolutionWindow(3840, 1080));
+                break;
+            default:
+                break;
+        }
+
+        //StartCoroutine(ResolutionWindow(float.Parse(nums[0]), float.Parse(nums[1])));
+    }
 }
