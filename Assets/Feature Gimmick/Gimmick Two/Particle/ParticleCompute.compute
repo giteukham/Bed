@@ -5,12 +5,16 @@
 #pragma kernel InsertParticlesInCell
 #pragma kernel InsertCellStartByCellId
 #pragma kernel NeighborSearch
+#pragma kernel CalculateDensityAndPressures
+#pragma kernel ForceBasePressure
 #pragma kernel Integrate
 
 #define GRAVITY 9.81
 #define THREAD_SIZE 256
+#define NEIGHBOR_COUNT 8
 
 #include "SpatialHash.hlsl"
+#include "ParticleUtils.hlsl"
 
 struct Particle
 {
@@ -19,10 +23,15 @@ struct Particle
 	float4 color;
 };
 
-RWStructuredBuffer<Particle> _particles;
+StructuredBuffer<Particle> _particles;
 RWStructuredBuffer<float3> _velocities;
+RWStructuredBuffer<float> _densities;
+RWStructuredBuffer<float> _pressures;
+RWStructuredBuffer<float> _forcesBasePressure;
+
 RWStructuredBuffer<uint2> _cellLists;					// x is the cell index, y is the particle index
 RWStructuredBuffer<uint> _cellStartIndices;
+RWStructuredBuffer<uint> _neighbors;
 
 RWStructuredBuffer<float3> _test;
 
@@ -30,31 +39,28 @@ float3 _boundingBox;
 float _particleRadius;
 float _damping;
 float _time;
-uint _particleCount;
 
-groupshared uint2 _cellId[THREAD_SIZE];
+float _mass;
+float _restDensity;
+float _gasConstant;
+
+uint _particleCount;
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void InsertParticlesInCell(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
 	uint threadId = tid.x, groupThreadId = gtid.x, groupId = gid.x;
-	
-	int gridSize = _boundingBox.x * _boundingBox.y * _boundingBox.z;
 
 	uint particleId = _particles[threadId].id;
 	Particle particle = _particles[particleId];
 	
-	int3 cellCoord = GetCellCoord(particle.position, _particleRadius);
-	int cellIndex = GetCellIndex(cellCoord, _boundingBox);
-
-
-	_cellLists[threadId].y = 0xFFFFFFFF;
+	int3 cellDimIndex = GetCellCoord(particle.position, _particleRadius);				// the cell index of 3d grid
+	int cellIndex = GetCellIndex(cellDimIndex, _boundingBox);					// the cell index of flat grid
 
 	if (threadId < _particleCount)
 	{
 		_cellLists[particleId] = uint2(cellIndex, particleId);
 	}
-
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
@@ -63,7 +69,7 @@ void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
 	uint threadId = tid.x;
 	uint particleId = _cellLists[threadId].y;
 	uint cellId = _cellLists[particleId].x;
-	
+
 	_cellStartIndices[threadId] = 0xFFFFFFFF;
 	GroupMemoryBarrierWithGroupSync();
 	
@@ -73,38 +79,91 @@ void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
 [numthreads(THREAD_SIZE, 1, 1)]
 void NeighborSearch(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	uint threadId = tid.x, groupThreadId = gtid.x, groupId = gid.x;
-	
+	uint threadId = tid.x;
 	Particle particle = _particles[threadId];
-
-	int3 cellCoord = 0xFFFFFFFF;
+	int3 cellDimIndex = GetCellCoord(particle.position, _particleRadius);
+	uint cellIndex = GetCellIndex(cellDimIndex, _boundingBox);
 	
-	if (particle.id == 0 && threadId < _particleCount)
-	{
-		cellCoord = GetCellCoord(particle.position, _particleRadius);
-	}
-			
+	int neighborCount = 0;
 	for (int i = -1; i <= 1; i++)
 	for (int j = -1; j <= 1; j++)
 	for (int k = -1; k <= 1; k++)
 	{
-		int3 neighborCellCoord = cellCoord + int3(i, j, k);
-		uint neighborCellIndex = GetCellIndex(neighborCellCoord, _boundingBox);
-
+		int3 neighborCellDimIndex = cellDimIndex + int3(i, j, k);
+		uint neighborCellIndex = GetCellIndex(neighborCellDimIndex, _boundingBox);
+		
 		uint start = _cellStartIndices[neighborCellIndex];
 		GroupMemoryBarrierWithGroupSync();
-		
-		while (start != 0xFFFFFFFF && start < _particleCount)
+
+		while (start != 0xFFFFFFFF &&
+			start < _particleCount &&
+			_cellLists[_cellLists[start].y].x == neighborCellIndex)
 		{
 			uint neighborParticleId = _cellLists[start].y;
 			
-			if (_cellLists[neighborParticleId].x != neighborCellIndex)
-			{
-				break;
-			}
+			_neighbors[cellIndex * NEIGHBOR_COUNT + neighborCount] = neighborParticleId;
+			neighborCount++;
 			start++;
 		}
 	}
+}
+
+[numthreads(THREAD_SIZE, 1, 1)]
+void CalculateDensityAndPressures(uint3 tid : SV_DispatchThreadID)
+{
+	uint threadId = tid.x;
+	Particle particle = _particles[threadId];
+	
+	int3 cellDimIndex = GetCellCoord(particle.position, _particleRadius);
+	uint cellIndex = GetCellIndex(cellDimIndex, _boundingBox);
+	
+	for (int i = 0; i < NEIGHBOR_COUNT; i++)
+	{
+		uint neighborId = _neighbors[cellIndex * NEIGHBOR_COUNT + i];
+		Particle neighbor = _particles[neighborId];
+		const float3 diff = particle.position - neighbor.position;
+		const float r2 = dot(diff, diff);
+		const float h2 = _particleRadius * _particleRadius;
+		//_test[cellIndex * NEIGHBOR_COUNT + i] = diff;
+
+		if (r2 < h2)
+		{
+			const float rho = _mass * CalculatePoly6Kernel(r2, h2);
+			_densities[threadId] += rho;
+		}
+	}
+	_densities[threadId] = max(_densities[threadId], _restDensity);
+	_pressures[threadId] = _gasConstant * (_densities[threadId] - _restDensity);
+}
+
+[numthreads(THREAD_SIZE, 1, 1)]
+void ForceBasePressure(uint3 tid : SV_DispatchThreadID)
+{
+	uint threadId = tid.x;
+	Particle particle = _particles[threadId];
+	
+	int3 cellDimIndex = GetCellCoord(particle.position, _particleRadius);
+	uint cellIndex = GetCellIndex(cellDimIndex, _boundingBox);
+
+	for (int i = 0; i < NEIGHBOR_COUNT; i++)
+	{
+		uint neighborId = _neighbors[cellIndex * NEIGHBOR_COUNT + i];
+		Particle neighbor = _particles[neighborId];
+		const float3 diff = particle.position - neighbor.position;
+		const float r2 = dot(diff, diff);
+		const float r = sqrt(r2);
+		_test[cellIndex * NEIGHBOR_COUNT + i] = diff;
+		if (r > 0 && r < _particleRadius)
+		{
+			const float3 dir = diff / r;
+			const float w = CalculateSpikyKernel(r, _particleRadius);
+
+			_forcesBasePressure[threadId] += _mass * ((_pressures[particle.id] + _pressures[neighborId]) / (2 * _densities[particle.id] + _densities[neighborId])) * w * dir;
+		}
+	}
+	_forcesBasePressure[threadId] = -_forcesBasePressure[threadId];
+
+	//_test[threadId] = _forcesBasePressure[threadId];
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
