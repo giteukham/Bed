@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,22 +7,32 @@ using UnityEngine.UI;
 public class ResolutionManagement : MonoBehaviour
 {
 
-    [SerializeField] Camera cam;
-    [SerializeField] Text screenText;
+    [SerializeField] private Camera cam;
+    [SerializeField] private Text screenText;
+    [SerializeField] private SaveManager saveManager;
+    [SerializeField] private Image fullScreenSwitch;
 
-    int temp = 0;
+    [SerializeField] private Sprite onImage;
+    [SerializeField] private Sprite offImage;
 
-    bool change = true;
+    bool isFullScreen = true;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
 
 
     private void Awake()
     {
+        isFullScreen = saveManager.LoadIsFullScreen();
+        fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+
+        string[] parts = saveManager.LoadResolution().Split(' ');
+        nowWidthPixel = int.Parse(parts[0]);
+        nowHeightPixel = int.Parse(parts[1]);
+
         // 1920 x 1080으로 시작
-        nowWidthPixel = 1920;
-        nowHeightPixel = 1080;
-        Screen.SetResolution(nowWidthPixel, nowHeightPixel, change);
+        //nowWidthPixel = 1920;
+        //nowHeightPixel = 1080;
+        Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
         //screenText.text = nowWidthPixel + " x " + nowHeightPixel;
 
     }
@@ -31,13 +42,7 @@ public class ResolutionManagement : MonoBehaviour
         //'모니터'의 현재 해상도를 가져옴
         screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            Screen.SetResolution(100, 100, change);
-            change = !change;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        /*if (Input.GetKeyDown(KeyCode.Space))
         {
             print("눌림");
 
@@ -71,21 +76,45 @@ public class ResolutionManagement : MonoBehaviour
                     temp = 0;
                     nowWidthPixel = 3840;
                     nowHeightPixel = 1080;
-                    change = !change;
+                    isFullScreen = !isFullScreen;
                     break;
             }
             StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
-        }
+        }*/
 
+    }
+
+    //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
+    public void FullScreenSwitch()
+    {
+        isFullScreen = !isFullScreen;
+        saveManager.SaveIsFullScreen(isFullScreen);
+        fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+
+        //창모드에서 전체화면 전환시
+        /*if (isFullScreen == true)
+        {
+            //모니터 화면에 맞게 재정의
+            nowWidthPixel = Display.main.systemWidth;
+            nowHeightPixel = Display.main.systemHeight;
+            //현재 게임화면 픽셀에 맞는 옵션으로 선택
+            //강제로 추천 픽셀로 변경한다면?
+        }*/
+        //창 크기, 풀스크린 여부 적용
+        StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
     }
 
     private IEnumerator ResolutionWindow(float width, float height)
     {
-        Screen.SetResolution((int)width, (int)height, change);
+        Screen.SetResolution((int)width, (int)height, isFullScreen);
 
         yield return null;
 
         RescaleWindow(width, height);
+
+        saveManager.SaveResolution((int)width, (int)height);
+        nowWidthPixel = (int)width;
+        nowHeightPixel = (int)height;
         yield break;
     }
 
@@ -98,7 +127,7 @@ public class ResolutionManagement : MonoBehaviour
     {
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
 
-        //만약 Screen.SetResolution(3840, 1080, change);가 실행됐다면
+        //만약 Screen.SetResolution(3840, 1080, isFullScreen);가 실행됐다면
         //width는 3840, height는 1080임
         //float width = Screen.width;
         //float height = Screen.height;
@@ -180,10 +209,7 @@ public class ResolutionManagement : MonoBehaviour
             case 4:
                 StartCoroutine(ResolutionWindow(3840, 1080));
                 break;
-            default:
-                break;
         }
 
-        //StartCoroutine(ResolutionWindow(float.Parse(nums[0]), float.Parse(nums[1])));
     }
 }

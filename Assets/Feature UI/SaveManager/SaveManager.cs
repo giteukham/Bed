@@ -66,4 +66,26 @@ public class SaveManager : MonoBehaviour
     {
         return PlayerPrefs.GetInt("XBodyReverse", 1);
     }
+
+    //화면 해상도 관련
+    public void SaveResolution(int value1, int value2)
+    {
+        PlayerPrefs.SetString("Resolution", value1 + " " + value2);
+        PlayerPrefs.Save();
+    }
+    public string LoadResolution()
+    {
+        return PlayerPrefs.GetString("Resolution", "1920 1080");
+    }
+
+    //화면 풀스크린 여부 관련
+    public void SaveIsFullScreen(bool value)
+    {
+        PlayerPrefs.SetInt("IsFullScreen", Convert.ToInt32(value));
+        PlayerPrefs.Save();
+    }
+    public bool LoadIsFullScreen()
+    {
+        return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
+    }
 }
