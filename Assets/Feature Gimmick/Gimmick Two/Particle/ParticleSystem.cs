@@ -1,12 +1,12 @@
+#define __DEBUG__
+
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 namespace Bed.Gimmick
 {
+   
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Particle                  // TODO: 쉐이더 내 구조체와 동일하게 맞춰줘야함
     {
@@ -17,6 +17,8 @@ namespace Bed.Gimmick
     
     public class ParticleSystem : MonoBehaviour
     {
+        private const int THREAD_SIZE = 256;
+        
         [Header("파티클 생성 옵션")]
         public float particleRadius = 0.1f;     // 파티클의 반지름
         public Vector3 particleSpawnPoint;      // 파티클이 생성되는 위치
@@ -88,9 +90,9 @@ namespace Bed.Gimmick
             pressures = new float[ParticleCount];
             forces = new Vector3[ParticleCount];
             
-            cellLists = new Vector2Int[CellCount];
-            cellStarts = new uint[CellCount];
-            neighbors = new uint[CellCount * 8];
+            cellLists = new Vector2Int[CellCount * ParticleCount];
+            cellStarts = new uint[CellCount * ParticleCount];
+            neighbors = new uint[CellCount * ParticleCount * 8];
             
             testArray = new Vector3[256];
         }
@@ -119,25 +121,25 @@ namespace Bed.Gimmick
             viscosityBuffer = new ComputeBuffer(ParticleCount, 4 * 3);                      // Vector3의 크기는 4 * 3
             viscosityBuffer.SetData(viscosities);
             
-            velocitiesBuffer = new ComputeBuffer(ParticleCount, 4 * 3);                      // Vector3의 크기는 4 * 3
+            velocitiesBuffer = new ComputeBuffer(ParticleCount, 4 * 3);
             velocitiesBuffer.SetData(velocities);
             
             densitiesBuffer = new ComputeBuffer(ParticleCount, 4);                      // float의 크기는 4
             densitiesBuffer.SetData(densities);
             
-            pressuresBuffer = new ComputeBuffer(ParticleCount, 4);                      // float의 크기는 4
+            pressuresBuffer = new ComputeBuffer(ParticleCount, 4);
             pressuresBuffer.SetData(pressures);
             
-            forcesBuffer = new ComputeBuffer(ParticleCount, 4 * 3);         // Vector3의 크기는 4 * 3
+            forcesBuffer = new ComputeBuffer(ParticleCount, 4 * 3);                     // Vector3의 크기는 4 * 3
             forcesBuffer.SetData(forces);
             
-            cellListBuffer = new ComputeBuffer(CellCount, 8);                           // Vector2Int의 크기는 4 * 2
+            cellListBuffer = new ComputeBuffer(CellCount * ParticleCount, 8);      // Vector2Int의 크기는 4 * 2
             cellListBuffer.SetData(cellLists);
             
-            cellStartBuffer = new ComputeBuffer(CellCount, 4);                          // int의 크기는 4
+            cellStartBuffer = new ComputeBuffer(CellCount * ParticleCount, 4);
             cellStartBuffer.SetData(cellStarts);
             
-            neighborsBuffer = new ComputeBuffer(CellCount * 8, 4);                 // 한 칸 당 8개의 Cell 이웃을 가질 수 있고 거기에 전체 Cell의 개수를 곱해주면 총 이웃의 개수가 나옴
+            neighborsBuffer = new ComputeBuffer(CellCount * ParticleCount * 8, 4);                 // 한 칸 당 8개의 Cell 이웃을 가질 수 있고 거기에 전체 Cell의 개수를 곱해주면 총 이웃의 개수가 나옴
             neighborsBuffer.SetData(neighbors);
             
             testBuffer = new ComputeBuffer(256, 4 * 3);
@@ -228,23 +230,23 @@ namespace Bed.Gimmick
             particleMaterial.SetBuffer("_particles", particleBuffer);
             particleMaterial.SetFloat("_particleRadius", particleRadius);
             
-            particleCompute.Dispatch(insertParticleKernel, 128 * (128 / CellCount + 1), 1, 1);
+            particleCompute.Dispatch(insertParticleKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             cellListBuffer.GetData(cellLists);
 
             sorter.ExecutePairsSort(cellLists);
             cellLists = sorter.GetSortedPairs();
             
             cellListBuffer.SetData(cellLists);
-            particleCompute.Dispatch(insertCellStartKernel, 128 * (128 / CellCount + 1), 1, 1);
+            particleCompute.Dispatch(insertCellStartKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             cellStartBuffer.GetData(cellStarts);
             
-            particleCompute.Dispatch(neighborSearchKernel, 128 * (128 / ParticleCount + 1), 1, 1);
+            particleCompute.Dispatch(neighborSearchKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             
-            particleCompute.Dispatch(densityAndPressuresKernel, 128 * (128 / CellCount + 1), 1, 1);
+            particleCompute.Dispatch(densityAndPressuresKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             
-            particleCompute.Dispatch(forcesKernel, 128 * (128 / ParticleCount + 1), 1, 1);
+            particleCompute.Dispatch(forcesKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             
-            particleCompute.Dispatch(integrateKernel, 128 * (128 / ParticleCount + 1), 1, 1);
+            particleCompute.Dispatch(integrateKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
             
@@ -255,26 +257,40 @@ namespace Bed.Gimmick
             //     Debug.Log(testArray[i]);
             // }
         }
-
+        
+    #if __DEBUG__
         private void OnDrawGizmos()
         {
-            float x, y, z;
-            
+            DrawOneBoundBox();
+            //DrawBoxPerCell();
+        }
+
+        private void DrawBoxPerCell()
+        {
+            Vector3 particleSpawnPoint = this.particleSpawnPoint;
             for (float i = 0; i < particleBoundBox.x; i++)
             for (float j = 0; j < particleBoundBox.y; j++)
             for (float k = 0; k < particleBoundBox.z; k++)
             {
-                x = (i * particleRadius * 2f) + particleSpawnPoint.x;
-                y = (j * particleRadius * 2f) + particleSpawnPoint.y;
-                z = (k * particleRadius * 2f) + particleSpawnPoint.z;
+                particleSpawnPoint.x = (i * particleRadius * 2f) + particleSpawnPoint.x;
+                particleSpawnPoint.y = (j * particleRadius * 2f) + particleSpawnPoint.y;
+                particleSpawnPoint.z = (k * particleRadius * 2f) + particleSpawnPoint.z;
                 
                 Gizmos.color = Color.blue;
                 Gizmos.DrawWireCube(
-                    new Vector3(x, y, z),
+                    new Vector3(particleSpawnPoint.x, particleSpawnPoint.y, particleSpawnPoint.z),
                     new Vector3(particleRadius * 2f, particleRadius * 2f, particleRadius * 2f));
             }
-            
         }
+
+        private void DrawOneBoundBox()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(
+                new Vector3(particleSpawnPoint.x + (particleBoundBox.x / 2f), particleSpawnPoint.y + (particleBoundBox.y / 2f), particleSpawnPoint.z + (particleBoundBox.z / 2f)),
+                new Vector3(particleBoundBox.x * 2f, particleBoundBox.y * 2f, particleBoundBox.z * 2f));
+        }
+    #endif
 
         private void OnDestroy()
         {

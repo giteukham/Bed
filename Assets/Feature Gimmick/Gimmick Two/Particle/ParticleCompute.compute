@@ -181,42 +181,40 @@ void Integrate (uint3 tid : SV_DispatchThreadID)
 	_velocities[threadId] += deltaTime * (_forces[threadId] / _densities[threadId] + g);
 	_particles[threadId].position += deltaTime * _velocities[threadId];
 	GroupMemoryBarrierWithGroupSync();
-	_test[threadId] = _forces[threadId];
-	
-	if (_particles[threadId].position.x < -(_boundingBox.x * 0.5))
-	{
-		_velocities[threadId].x *= _damping;
-		_particles[threadId].position.x = -(_boundingBox.x * 0.5);
-	}
-	
-	if (_particles[threadId].position.x > (_boundingBox.x * 0.5))
-	{
-		_velocities[threadId].x *= _damping;
-		_particles[threadId].position.x = (_boundingBox.x * 0.5);
-	}
-	
-	if (_particles[threadId].position.y < -(_boundingBox.y * 0.5))
-	{
-		_velocities[threadId].y *= _damping;
-		_particles[threadId].position.y = -(_boundingBox.y * 0.5);
-	}
-	
-	if (_particles[threadId].position.y > (_boundingBox.y * 0.5))
-	{
-		_velocities[threadId].y *= _damping;
-		_particles[threadId].position.y = (_boundingBox.y * 0.5);
-	}
-	
-	if (_particles[threadId].position.z < -(_boundingBox.z * 0.5))
-	{
-		_velocities[threadId].z *= _damping;
-		_particles[threadId].position.z = -(_boundingBox.z * 0.5);
-	}
-	
-	if (_particles[threadId].position.z > (_boundingBox.z * 0.5))
-	{
-		_velocities[threadId].z *= _damping;
-		_particles[threadId].position.z = (_boundingBox.z * 0.5);
-	}
 
+	_forces[threadId] = float3(0, 0, 0);
+	GroupMemoryBarrierWithGroupSync();
+	
+	if (_particles[threadId].position.x < -(_boundingBox.x * 0.5) + _particleRadius)
+	{
+		_velocities[threadId].x *= _damping;
+		_particles[threadId].position.x = -(_boundingBox.x * 0.5) + _particleRadius;
+	}
+	else if (_particles[threadId].position.x > (_boundingBox.x * 0.5) + _boundingBox.x)
+	{
+		_velocities[threadId].x *= _damping;
+		_particles[threadId].position.x = (_boundingBox.x * 0.5) + _boundingBox.x;
+	}
+	
+	if (_particles[threadId].position.y < -(_boundingBox.y * 0.5) + _particleRadius)
+	{
+		_velocities[threadId].y *= _damping;
+		_particles[threadId].position.y = -(_boundingBox.y * 0.5) + _particleRadius;
+	}
+	else if (_particles[threadId].position.y > (_boundingBox.y * 0.5) + _boundingBox.y)
+	{
+		_velocities[threadId].y *= _damping;
+		_particles[threadId].position.y = (_boundingBox.y * 0.5) + _boundingBox.y;
+	}
+	
+	// if (_particles[threadId].position.z < -(_boundingBox.z * 0.5) + _particleRadius)
+	// {
+	// 	_velocities[threadId].z *= _damping;
+	// 	_particles[threadId].position.z = -(_boundingBox.z * 0.5) + _particleRadius;
+	// }
+	// else if (_particles[threadId].position.z > (_boundingBox.z * 0.5) + _boundingBox.z)
+	// {
+	// 	_velocities[threadId].z *= _damping;
+	// 	_particles[threadId].position.z = (_boundingBox.z * 0.5) + _boundingBox.z;
+	// }
 }
