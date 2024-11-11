@@ -13,3 +13,13 @@ inline float CalculateSpikyKernel(float3 r, float h)
 
 	return -45.0f / (PI * h6) * pow(h - r, 2);
 }
+
+inline float CalculateLaplacianKernel(float3 r, float h)
+{
+	float h2 = pow(h, 2);
+	float h3 = pow(h, 3);
+	float r2 = dot(r, r);
+	float r3 = r2 * sqrt(r2);
+	
+	return -(r3 / (2 * h3)) + (r2 / h2) + (h / (2 * r)) - 1;
+}

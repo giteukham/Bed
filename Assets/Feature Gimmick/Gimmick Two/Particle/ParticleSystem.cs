@@ -23,10 +23,10 @@ namespace Bed.Gimmick
         public Vector3Int particleNumOfSpawn;   // 파티클이 생성되는 개수 3차원으로 생성
         public Vector3 particleBoundBox;        // 파티클을 가두는 박스
         public float mass = 1f;                 // 파티클의 질량
-        public float viscosity = 1f;            // 파티클의 점성
+        public float viscosity = 0.018f;        // 파티클의 점성
         public float pressure = 1f;             // 파티클의 압력
         public float restDensity = 1f;          // 파티클의 정지 밀도
-        public float gasConstant = 250f;          // 파티클의 가스 상수
+        public float gasConstant = 250f;        // 파티클의 가스 상수
         public float damping = 1f;              // 파티클의 감쇠
 
         [Header("파티클 생성에 필요한 것")]
@@ -40,11 +40,12 @@ namespace Bed.Gimmick
         private Sort sorter;
         
         private Particle[] particles;
+        private Vector3[] viscosities;
         private Vector3[] velocities;
         private float[] densities;
         private float[] pressures;
-        private float[] forces1;
-        
+        private Vector3[] forces;
+ 
         private Vector2Int[] cellLists;
         private uint[] cellStarts;
         private uint[] neighbors;
@@ -53,10 +54,11 @@ namespace Bed.Gimmick
         private int CellCount => Mathf.FloorToInt(particleBoundBox.x * particleBoundBox.y * particleBoundBox.z);
         
         private ComputeBuffer particleBuffer;
-        private ComputeBuffer velocityBuffer;
+        private ComputeBuffer viscosityBuffer;
+        private ComputeBuffer velocitiesBuffer;
         private ComputeBuffer densitiesBuffer;
         private ComputeBuffer pressuresBuffer;
-        private ComputeBuffer forcesBasePressureBuffer;
+        private ComputeBuffer forcesBuffer;
         
         private ComputeBuffer cellListBuffer;
         private ComputeBuffer cellStartBuffer;
@@ -72,7 +74,7 @@ namespace Bed.Gimmick
         private int insertCellStartKernel;
         private int neighborSearchKernel;
         private int densityAndPressuresKernel;
-        private int forceBasePressureKernel;
+        private int forcesKernel;
 
         private ComputeBuffer testBuffer;
         private Vector3[] testArray;
@@ -80,10 +82,11 @@ namespace Bed.Gimmick
         private void InitArrays()
         {
             particles = new Particle[ParticleCount];
+            viscosities = new Vector3[ParticleCount];
             velocities = new Vector3[ParticleCount];
             densities = new float[ParticleCount];
             pressures = new float[ParticleCount];
-            forces1 = new float[ParticleCount];
+            forces = new Vector3[ParticleCount];
             
             cellLists = new Vector2Int[CellCount];
             cellStarts = new uint[CellCount];
@@ -98,7 +101,7 @@ namespace Bed.Gimmick
             insertCellStartKernel = particleCompute.FindKernel("InsertCellStartByCellId");
             neighborSearchKernel = particleCompute.FindKernel("NeighborSearch");
             densityAndPressuresKernel = particleCompute.FindKernel("CalculateDensityAndPressures");
-            forceBasePressureKernel = particleCompute.FindKernel("ForceBasePressure");
+            forcesKernel = particleCompute.FindKernel("CalculateForces");
             integrateKernel = particleCompute.FindKernel("Integrate");
         }
         
@@ -113,8 +116,11 @@ namespace Bed.Gimmick
             particleBuffer = new ComputeBuffer(ParticleCount, Marshal.SizeOf(typeof(Particle)));
             particleBuffer.SetData(particles);
             
-            velocityBuffer = new ComputeBuffer(ParticleCount, 12);                      // Vector3의 크기는 4 * 3
-            velocityBuffer.SetData(velocities);
+            viscosityBuffer = new ComputeBuffer(ParticleCount, 4 * 3);                      // Vector3의 크기는 4 * 3
+            viscosityBuffer.SetData(viscosities);
+            
+            velocitiesBuffer = new ComputeBuffer(ParticleCount, 4 * 3);                      // Vector3의 크기는 4 * 3
+            velocitiesBuffer.SetData(velocities);
             
             densitiesBuffer = new ComputeBuffer(ParticleCount, 4);                      // float의 크기는 4
             densitiesBuffer.SetData(densities);
@@ -122,8 +128,8 @@ namespace Bed.Gimmick
             pressuresBuffer = new ComputeBuffer(ParticleCount, 4);                      // float의 크기는 4
             pressuresBuffer.SetData(pressures);
             
-            forcesBasePressureBuffer = new ComputeBuffer(ParticleCount, 4);              // float의 크기는 4
-            forcesBasePressureBuffer.SetData(forces1);
+            forcesBuffer = new ComputeBuffer(ParticleCount, 4 * 3);         // Vector3의 크기는 4 * 3
+            forcesBuffer.SetData(forces);
             
             cellListBuffer = new ComputeBuffer(CellCount, 8);                           // Vector2Int의 크기는 4 * 2
             cellListBuffer.SetData(cellLists);
@@ -146,16 +152,12 @@ namespace Bed.Gimmick
             particleCompute.SetFloats("_boundingBox", particleBoundBox.x, particleBoundBox.y, particleBoundBox.z);
             particleCompute.SetFloat("_particleRadius", particleRadius);
             particleCompute.SetFloat("_damping", damping);
-            particleCompute.SetFloat("_time", Time.deltaTime);
             particleCompute.SetInt("_particleCount", ParticleCount);
             
             particleCompute.SetFloat("_mass", mass);
             particleCompute.SetFloat("_restDensity", restDensity);
+            particleCompute.SetFloat("_viscosity", viscosity);
             particleCompute.SetFloat("_gasConstant", gasConstant);
-            
-            particleCompute.SetBuffer(integrateKernel, "_particles", particleBuffer);
-            particleCompute.SetBuffer(integrateKernel, "_velocities", velocityBuffer);
-            particleCompute.SetBuffer(integrateKernel, "_test", testBuffer);
             
             particleCompute.SetBuffer(insertParticleKernel, "_particles", particleBuffer);
             particleCompute.SetBuffer(insertParticleKernel, "_cellLists", cellListBuffer);
@@ -177,12 +179,20 @@ namespace Bed.Gimmick
             particleCompute.SetBuffer(densityAndPressuresKernel, "_pressures", pressuresBuffer);
             particleCompute.SetBuffer(densityAndPressuresKernel, "_test", testBuffer);
             
-            particleCompute.SetBuffer(forceBasePressureKernel, "_particles", particleBuffer);
-            particleCompute.SetBuffer(forceBasePressureKernel, "_neighbors", neighborsBuffer);
-            particleCompute.SetBuffer(forceBasePressureKernel, "_densities", densitiesBuffer);
-            particleCompute.SetBuffer(forceBasePressureKernel, "_pressures", pressuresBuffer);
-            particleCompute.SetBuffer(forceBasePressureKernel, "_forcesBasePressure", forcesBasePressureBuffer);
-            particleCompute.SetBuffer(forceBasePressureKernel, "_test", testBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_particles", particleBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_neighbors", neighborsBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_densities", densitiesBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_pressures", pressuresBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_viscosities", viscosityBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_velocities", velocitiesBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_forces", forcesBuffer);
+            particleCompute.SetBuffer(forcesKernel, "_test", testBuffer);
+            
+            particleCompute.SetBuffer(integrateKernel, "_particles", particleBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_densities", densitiesBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_forces", forcesBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_velocities", velocitiesBuffer);
+            particleCompute.SetBuffer(integrateKernel, "_test", testBuffer);
         }
         
         private void Awake()
@@ -209,13 +219,16 @@ namespace Bed.Gimmick
             
             InitKernel();
             InitBuffers();
+        }
+        
+        private void Update()
+        {
             InitComputeShader();
 
             particleMaterial.SetBuffer("_particles", particleBuffer);
             particleMaterial.SetFloat("_particleRadius", particleRadius);
             
             particleCompute.Dispatch(insertParticleKernel, 128 * (128 / CellCount + 1), 1, 1);
-            particleCompute.Dispatch(integrateKernel, 128 * (128 / ParticleCount + 1), 1, 1);
             cellListBuffer.GetData(cellLists);
 
             sorter.ExecutePairsSort(cellLists);
@@ -229,18 +242,18 @@ namespace Bed.Gimmick
             
             particleCompute.Dispatch(densityAndPressuresKernel, 128 * (128 / CellCount + 1), 1, 1);
             
-            particleCompute.Dispatch(forceBasePressureKernel, 128 * (128 / ParticleCount + 1), 1, 1);
-            testBuffer.GetData(testArray);
-
-            for (int i = 0; i < testArray.Length; i++)
-            {
-                Debug.Log(testArray[i]);
-            }
-        }
-        
-        private void Update()
-        {
+            particleCompute.Dispatch(forcesKernel, 128 * (128 / ParticleCount + 1), 1, 1);
+            
+            particleCompute.Dispatch(integrateKernel, 128 * (128 / ParticleCount + 1), 1, 1);
+            
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
+            
+            testBuffer.GetData(testArray);
+            Debug.Log(testArray[0]);
+            // for (int i = 0; i < testArray.Length; i++)
+            // {
+            //     Debug.Log(testArray[i]);
+            // }
         }
 
         private void OnDrawGizmos()
@@ -268,13 +281,22 @@ namespace Bed.Gimmick
             sorter.Dispose();
             graphicsBuffer?.Release();
             particleBuffer?.Release();
-            velocityBuffer?.Release();
+            viscosityBuffer?.Release();
+            velocitiesBuffer?.Release();
+            densitiesBuffer?.Release();
+            pressuresBuffer?.Release();
+            forcesBuffer?.Release();
             cellListBuffer?.Release();
             cellStartBuffer?.Release();
             testBuffer?.Release();
+            
             graphicsBuffer = null;
             particleBuffer = null;
-            velocityBuffer = null;
+            viscosityBuffer = null;
+            velocitiesBuffer = null;
+            densitiesBuffer = null;
+            pressuresBuffer = null;
+            forcesBuffer = null;
             cellListBuffer = null;
             cellStartBuffer = null;
             testBuffer = null;

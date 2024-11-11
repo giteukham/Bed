@@ -369,10 +369,10 @@ MonoBehaviour:
   particleNumOfSpawn: {x: 2, y: 2, z: 2}
   particleBoundBox: {x: 3, y: 3, z: 3}
   mass: 1
-  viscosity: 1
+  viscosity: 0.018
   pressure: 1
   restDensity: 1
-  gasConstant: 1
+  gasConstant: 250
   damping: 1
   particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   particleMaterial: {fileID: 2100000, guid: 067830227be18a444bb4fde00cf6471f, type: 2}
@@ -468,7 +468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1542289864
 BoxCollider:
   m_ObjectHideFlags: 0
