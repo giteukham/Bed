@@ -24,6 +24,14 @@ public class SaveManager : MonoBehaviour
         InputSystem.xBodyReverse = LoadXBodyReverse();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PlayerPrefs.DeleteAll();
+        }
+    }
+
     //마우스 감도 관련
     public void SaveMouseSensitivity(float value)
     {
@@ -70,12 +78,18 @@ public class SaveManager : MonoBehaviour
     //화면 해상도 관련
     public void SaveResolution(int value1, int value2)
     {
-        PlayerPrefs.SetString("Resolution", value1 + " " + value2);
+        //PlayerPrefs.SetString("Resolution", value1 + " " + value2);
+
+        PlayerPrefs.SetInt("ResolutionWidth", value1);
+        PlayerPrefs.SetInt("ResolutionHeight", value2);
+
         PlayerPrefs.Save();
     }
-    public string LoadResolution()
+    public void LoadResolution(out int value1, out int value2)
     {
-        return PlayerPrefs.GetString("Resolution", "1920 1080");
+        value1 = PlayerPrefs.GetInt("ResolutionWidth", 1920);
+        value2 = PlayerPrefs.GetInt("ResolutionHeight", 1080);
+        //return PlayerPrefs.GetString("Resolution", "1920 1080");
     }
 
     //화면 풀스크린 여부 관련

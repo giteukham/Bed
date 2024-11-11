@@ -44,20 +44,7 @@ public class ResolutionInteractable : MonoBehaviour
             return;
         }*/
 
-        StartCoroutine(ComparePixelSize());
-
-        //만약 전체화면인 동시에 해상도 선택지의 width, height가 사용자의 모니터 규격을 벗어난다면
-        //선택지 비활성화
-        //string[] parts = itemLabel.text.Split(" X ");
-        //print(itemLabel.text);
-        /*print(parts[0] + " " + parts[1]);
-        pixelWidth = int.Parse(parts[0]);
-        pixelHeight = int.Parse(parts[1]);
-
-        if ((pixelWidth > monitorWidth) || (pixelHeight > monitorHeight))
-        {
-            item.interactable = false;
-        }*/
+        //StartCoroutine(ComparePixelSize());
     }
 
     private IEnumerator ComparePixelSize()

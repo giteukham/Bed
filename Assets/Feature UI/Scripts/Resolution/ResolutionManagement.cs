@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
+using static UnityEngine.Rendering.DebugUI;
 
 public class ResolutionManagement : MonoBehaviour
 {
@@ -11,6 +14,7 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Text screenText;
     [SerializeField] private SaveManager saveManager;
     [SerializeField] private Image fullScreenSwitch;
+    [SerializeField] private TMP_Dropdown dropdown;
 
     [SerializeField] private Sprite onImage;
     [SerializeField] private Sprite offImage;
@@ -19,69 +23,107 @@ public class ResolutionManagement : MonoBehaviour
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
 
+    List<Vector2> hdList = new List<Vector2>
+    {
+        new Vector2(1280, 720),
+        new Vector2(1600, 900),
+        new Vector2(1920, 1080),
+        new Vector2(2560, 1440),
+        new Vector2(3840, 2160)
+    };
+
+    List<Vector2> currentList = new List<Vector2>();
 
     private void Awake()
     {
+        //저장된 풀스크린 여부 불러와서 적용
         isFullScreen = saveManager.LoadIsFullScreen();
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
 
-        string[] parts = saveManager.LoadResolution().Split(' ');
-        nowWidthPixel = int.Parse(parts[0]);
-        nowHeightPixel = int.Parse(parts[1]);
-
-        // 1920 x 1080으로 시작
-        //nowWidthPixel = 1920;
-        //nowHeightPixel = 1080;
+        saveManager.LoadResolution(out nowWidthPixel, out nowHeightPixel);
         Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
-        //screenText.text = nowWidthPixel + " x " + nowHeightPixel;
 
+        print(Display.main.systemWidth + " : " + Display.main.systemHeight);
+
+        int temp = 480;
+        for (int i = 0; i < 5; i++)
+        {
+            //모니터 가로 픽셀 / 모니터 세로 픽셀이 1.77보다 작을 경우 적용할 드롭다운 리스트 제작
+            currentList.Add(new Vector2(Display.main.systemWidth - temp, Display.main.systemHeight - temp));
+
+            if (i == 2)
+            {
+                temp -= 60;
+            }
+            else if (i == 3)
+            {
+                temp -= 180;
+            }
+            else
+            {
+                temp -= 120;
+            }
+        }
+
+        //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
+        RedefineResolutionMenu();
+        //어떻게 드롭다운에 있는 해상도 text를 가져올 것인가?
+
+    }
+
+    private void OnEnable()
+    {
+        //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
+        RedefineResolutionMenu();
+        //어떻게 드롭다운에 있는 해상도 text를 가져올 것인가?
+        for (int i = 0; i < 5; i++)
+        {
+
+        }
+        print(dropdown.options[0].text);
+
+        print("온인애이블");
     }
 
     private void Update()
     {
         //'모니터'의 현재 해상도를 가져옴
-        screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
+        //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
+        screenText.text = nowWidthPixel + " " + nowHeightPixel;
+    }
 
-        /*if (Input.GetKeyDown(KeyCode.Space))
+    private void RedefineResolutionMenu()
+    {
+        float CRITERIA_NUM = 16f / 9f;
+
+        //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
+        if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
-            print("눌림");
+            dropdown.ClearOptions();
 
-            switch (temp)
+            List<string> temp = new List<string>();
+            for (int i = 0; i < currentList.Count; i++)
             {
-                case 0:
-                    temp++;
-                    nowWidthPixel = 1440;
-                    nowHeightPixel = 1080;
-                    break;
-
-                case 1:
-                    temp++;
-                    nowWidthPixel = 1920;
-                    nowHeightPixel = 1200;
-                    break;
-
-                case 2:
-                    temp++;
-                    nowWidthPixel = 1920;
-                    nowHeightPixel = 1080;
-                    break;
-
-                case 3:
-                    temp++;
-                    nowWidthPixel = 2560;
-                    nowHeightPixel = 1080;
-                    break;
-
-                case 4:
-                    temp = 0;
-                    nowWidthPixel = 3840;
-                    nowHeightPixel = 1080;
-                    isFullScreen = !isFullScreen;
-                    break;
+                temp.Add($"{currentList[i].x} X {currentList[i].y}");
             }
-            StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
-        }*/
 
+            dropdown.AddOptions(temp);
+            dropdown.RefreshShownValue();
+        }
+        //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
+        else
+        {
+            dropdown.ClearOptions();
+
+            List<string> temp = new List<string>();
+            for (int i = 0; i < hdList.Count; i++)
+            {
+                temp.Add($"{hdList[i].x} X {hdList[i].y}");
+            }
+
+            dropdown.AddOptions(temp);
+            dropdown.RefreshShownValue();
+        }
     }
 
     //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
@@ -91,17 +133,10 @@ public class ResolutionManagement : MonoBehaviour
         saveManager.SaveIsFullScreen(isFullScreen);
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
 
-        //창모드에서 전체화면 전환시
-        /*if (isFullScreen == true)
-        {
-            //모니터 화면에 맞게 재정의
-            nowWidthPixel = Display.main.systemWidth;
-            nowHeightPixel = Display.main.systemHeight;
-            //현재 게임화면 픽셀에 맞는 옵션으로 선택
-            //강제로 추천 픽셀로 변경한다면?
-        }*/
         //창 크기, 풀스크린 여부 적용
         StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
+        //해상도 메뉴 목록 재정의
+        RedefineResolutionMenu();
     }
 
     private IEnumerator ResolutionWindow(float width, float height)
@@ -126,11 +161,6 @@ public class ResolutionManagement : MonoBehaviour
     private void RescaleWindow(float width, float height)
     {
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
-
-        //만약 Screen.SetResolution(3840, 1080, isFullScreen);가 실행됐다면
-        //width는 3840, height는 1080임
-        //float width = Screen.width;
-        //float height = Screen.height;
 
         //16 / 9값과 비교하여 16:9 화면에서 세로길이 혹은 가로길이 중에서
         //어느 길이가 더 긴지 알아내는 판별용 변수
@@ -192,24 +222,22 @@ public class ResolutionManagement : MonoBehaviour
     //드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
     public void EnterResolution(int value)
     {
-        switch (value)
+        float CRITERIA_NUM = 16f / 9f;
+
+        //리스트값으로 매개변수 받아서 넣어주면 될듯
+        //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
+        if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
-            case 0:
-                StartCoroutine(ResolutionWindow(1440, 1080));
-                break;
-            case 1:
-                StartCoroutine(ResolutionWindow(1920, 1200));
-                break;
-            case 2:
-                StartCoroutine(ResolutionWindow(1920, 1080));
-                break;
-            case 3:
-                StartCoroutine(ResolutionWindow(2560, 1080));
-                break;
-            case 4:
-                StartCoroutine(ResolutionWindow(3840, 1080));
-                break;
+            StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
+            print("위");
         }
+        //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
+        else
+        {
+            StartCoroutine(ResolutionWindow(hdList[value].x, hdList[value].y));
+            print("아래");
+        }
+
 
     }
 }
