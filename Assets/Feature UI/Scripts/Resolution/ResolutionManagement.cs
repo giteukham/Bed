@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -68,6 +69,42 @@ public class ResolutionManagement : MonoBehaviour
                 temp -= 120;
             }
         }
+
+        ///////////////////////////////////////////////////////////////////
+        ///
+        hdList.Clear();
+        currentList.Clear();
+
+        Resolution[] resolutions = Screen.resolutions;
+        List<Resolution> monitorResolutions = Screen.resolutions.ToList();
+
+        for (int i = 0; i < monitorResolutions.Count; i++)
+        {
+            print($"목록 {monitorResolutions[i].width} : {monitorResolutions[i].height}");
+        }
+
+        foreach (Resolution item in monitorResolutions)
+        {
+            //두수의 최대공약수 구함
+            int a = GCD(item.width, item.height);
+            int b = GCD(Display.main.systemWidth, Display.main.systemHeight);
+
+            //비율 16:9인 것만 리스트에 넣음
+            if (item.width / a == 16 && item.height / a == 9)
+            {
+                hdList.Add(new Vector2(item.width, item.height));
+                print($"들어감 {item.width} : {item.height}");
+            }
+
+            //본인 모니터 비율과 같은 것만 리스트에 넣음
+            if (item.width / a == Display.main.systemWidth / b && item.height / a == Display.main.systemHeight / b)
+            {
+                currentList.Add(new Vector2(item.width, item.height));
+            }
+        }
+
+
+
     }
 
     private void OnEnable()
@@ -86,7 +123,7 @@ public class ResolutionManagement : MonoBehaviour
                 return;
             }
         }
-        print(dropdown.options[0].text + "zfasdfasdfasdfasd");
+        //print(dropdown.options[0].text + "zfasdfasdfasdfasd");
     }
 
     private void Update()
@@ -100,6 +137,18 @@ public class ResolutionManagement : MonoBehaviour
             //이 코드 실행시 실제로 드롭다운 아이템에 해당하는 해상도로 변경됨
             dropdown.value = 2;
         }
+    }
+
+    //최대공약수 계산 메소드
+    public int GCD(int a, int b)
+    {
+        while (b != 0)
+        {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
     }
 
     private void RedefineDropdown()
