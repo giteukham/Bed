@@ -34,13 +34,17 @@ public class ResolutionManagement : MonoBehaviour
 
     List<Vector2> currentList = new List<Vector2>();
 
+    List<Vector2> nowList = new List<Vector2>();
+
     private void Awake()
     {
-        //저장된 풀스크린 여부 불러와서 적용
+        //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = saveManager.LoadIsFullScreen();
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
 
+        //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         saveManager.LoadResolution(out nowWidthPixel, out nowHeightPixel);
+        //불러온 변수값들을 이용해 이전에 쓰던 해상도 설정 반영
         Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
 
         print(Display.main.systemWidth + " : " + Display.main.systemHeight);
@@ -64,25 +68,25 @@ public class ResolutionManagement : MonoBehaviour
                 temp -= 120;
             }
         }
-
-        //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
-        RedefineResolutionMenu();
-        //어떻게 드롭다운에 있는 해상도 text를 가져올 것인가?
-
     }
 
     private void OnEnable()
     {
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
-        RedefineResolutionMenu();
-        //어떻게 드롭다운에 있는 해상도 text를 가져올 것인가?
-        for (int i = 0; i < 5; i++)
+        //드롭다운 아이템 현재 리스트로 교체
+        RedefineDropdown();
+
+        for (int i = 0; i < nowList.Count; i++)
         {
-
+            if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
+            {
+                //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
+                dropdown.value = i;
+                //메소드 종료
+                return;
+            }
         }
-        print(dropdown.options[0].text);
-
-        print("온인애이블");
+        print(dropdown.options[0].text + "zfasdfasdfasdfasd");
     }
 
     private void Update()
@@ -90,25 +94,37 @@ public class ResolutionManagement : MonoBehaviour
         //'모니터'의 현재 해상도를 가져옴
         //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
         screenText.text = nowWidthPixel + " " + nowHeightPixel;
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            //이 코드 실행시 실제로 드롭다운 아이템에 해당하는 해상도로 변경됨
+            dropdown.value = 2;
+        }
     }
 
-    private void RedefineResolutionMenu()
+    private void RedefineDropdown()
     {
         float CRITERIA_NUM = 16f / 9f;
 
         //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
         if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
+            //드롭다운 아이템 모두 제거
             dropdown.ClearOptions();
 
+            //드롭다운에 들어갈 아이템 리스트 제작
             List<string> temp = new List<string>();
             for (int i = 0; i < currentList.Count; i++)
             {
                 temp.Add($"{currentList[i].x} X {currentList[i].y}");
             }
 
+            //드롭다운에 아이템 리스트 삽입
             dropdown.AddOptions(temp);
+            //드롭다운 새로고침
             dropdown.RefreshShownValue();
+
+            nowList = currentList;
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
@@ -123,10 +139,13 @@ public class ResolutionManagement : MonoBehaviour
 
             dropdown.AddOptions(temp);
             dropdown.RefreshShownValue();
+
+            nowList = hdList;
         }
     }
 
     //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
+    //풀스크린과 창모드 드롭다운 아이템이 다르니 스위치 눌리면 드롭다운 인덱스 0번으로 적용하는 걸로
     public void FullScreenSwitch()
     {
         isFullScreen = !isFullScreen;
@@ -134,9 +153,13 @@ public class ResolutionManagement : MonoBehaviour
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
 
         //창 크기, 풀스크린 여부 적용
-        StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
+        //StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
         //해상도 메뉴 목록 재정의
-        RedefineResolutionMenu();
+        RedefineDropdown();
+        //아마처음부터 0이라 바꿀필요없어서 적용안되는듯
+        //그래서 적용하려면 0이 아닌값을 적용하거나, 혹은 다른값으로 잠깐 바꾼뒤에 0을 다시 적용해야함
+        dropdown.value = 1;
+        dropdown.value = 0;
     }
 
     private IEnumerator ResolutionWindow(float width, float height)
@@ -229,13 +252,11 @@ public class ResolutionManagement : MonoBehaviour
         if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
             StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
-            print("위");
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
         {
             StartCoroutine(ResolutionWindow(hdList[value].x, hdList[value].y));
-            print("아래");
         }
 
 
