@@ -37,6 +37,9 @@ public class ResolutionManagement : MonoBehaviour
 
     List<Vector2> nowList = new List<Vector2>();
 
+    [SerializeField] private TMP_Dropdown testDropdown;
+    [SerializeField] private Text testText;
+
     private void Awake()
     {
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
@@ -75,32 +78,55 @@ public class ResolutionManagement : MonoBehaviour
         hdList.Clear();
         currentList.Clear();
 
-        Resolution[] resolutions = Screen.resolutions;
+        //Resolution[] resolutions = Screen.resolutions;
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
+
+        List<string> testList = new List<string>();
+
 
         for (int i = 0; i < monitorResolutions.Count; i++)
         {
-            print($"목록 {monitorResolutions[i].width} : {monitorResolutions[i].height}");
+            //print($"목록 {monitorResolutions[i].width} : {monitorResolutions[i].height}");
+            testList.Add($"{monitorResolutions[i].width} : {monitorResolutions[i].height} : {monitorResolutions[i].refreshRate}");
         }
 
+        testDropdown.ClearOptions();
+        testDropdown.AddOptions(testList);
+        dropdown.RefreshShownValue();
+
+        float hdNum = 16f / 9f;
+        float monitorNum = (float)Display.main.systemWidth / (float)Display.main.systemHeight;
+        float itemNum = 0f;
         foreach (Resolution item in monitorResolutions)
         {
             //두수의 최대공약수 구함
-            int a = GCD(item.width, item.height);
+            /*int a = GCD(item.width, item.height);
             int b = GCD(Display.main.systemWidth, Display.main.systemHeight);
 
             //비율 16:9인 것만 리스트에 넣음
             if (item.width / a == 16 && item.height / a == 9)
             {
                 hdList.Add(new Vector2(item.width, item.height));
-                print($"들어감 {item.width} : {item.height}");
             }
 
             //본인 모니터 비율과 같은 것만 리스트에 넣음
             if (item.width / a == Display.main.systemWidth / b && item.height / a == Display.main.systemHeight / b)
             {
                 currentList.Add(new Vector2(item.width, item.height));
+            }*/
+
+            itemNum = (float)item.width / (float)item.height;
+
+            if (Mathf.Approximately(hdNum, itemNum))
+            {
+                hdList.Add(new Vector2(item.width, item.height));
             }
+
+            if (Mathf.Approximately(monitorNum, itemNum))
+            {
+                currentList.Add(new Vector2(item.width, item.height));
+            }
+
         }
 
 
@@ -131,6 +157,14 @@ public class ResolutionManagement : MonoBehaviour
         //'모니터'의 현재 해상도를 가져옴
         //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
         screenText.text = nowWidthPixel + " " + nowHeightPixel;
+        if (nowList == hdList)
+        {
+            testText.text = "hdList";
+        }
+        else if (nowList == currentList)
+        {
+            testText.text = "currentList";
+        }
 
         if (Input.GetKeyDown(KeyCode.M))
         {
@@ -156,7 +190,7 @@ public class ResolutionManagement : MonoBehaviour
         float CRITERIA_NUM = 16f / 9f;
 
         //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
-        if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
+        /*if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
             //드롭다운 아이템 모두 제거
             dropdown.ClearOptions();
@@ -190,7 +224,45 @@ public class ResolutionManagement : MonoBehaviour
             dropdown.RefreshShownValue();
 
             nowList = hdList;
+        }*/
+
+        //16:9보다 가로가 더 긴 모니터의 경우 16:9 해상도만 나옴
+        if (CRITERIA_NUM < Display.main.systemWidth / Display.main.systemHeight || isFullScreen == false)
+        {
+            dropdown.ClearOptions();
+
+            List<string> temp = new List<string>();
+            for (int i = 0; i < hdList.Count; i++)
+            {
+                temp.Add($"{hdList[i].x} X {hdList[i].y}");
+            }
+
+            dropdown.AddOptions(temp);
+            dropdown.RefreshShownValue();
+
+            nowList = hdList;
         }
+        else if (isFullScreen == true)
+        {
+            //드롭다운 아이템 모두 제거
+            dropdown.ClearOptions();
+
+            //드롭다운에 들어갈 아이템 리스트 제작
+            List<string> temp = new List<string>();
+            for (int i = 0; i < currentList.Count; i++)
+            {
+                temp.Add($"{currentList[i].x} X {currentList[i].y}");
+            }
+
+            //드롭다운에 아이템 리스트 삽입
+            dropdown.AddOptions(temp);
+            //드롭다운 새로고침
+            dropdown.RefreshShownValue();
+
+            nowList = currentList;
+        }
+
+
     }
 
     //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
@@ -207,8 +279,12 @@ public class ResolutionManagement : MonoBehaviour
         RedefineDropdown();
         //아마처음부터 0이라 바꿀필요없어서 적용안되는듯
         //그래서 적용하려면 0이 아닌값을 적용하거나, 혹은 다른값으로 잠깐 바꾼뒤에 0을 다시 적용해야함
-        dropdown.value = 1;
+        //dropdown.value = 1;
+        //dropdown.value = 0;
+
+        //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
         dropdown.value = 0;
+        dropdown.value = nowList.Count - 1;
     }
 
     private IEnumerator ResolutionWindow(float width, float height)
