@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
+        //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
     }
 
     void Start()
@@ -30,18 +30,13 @@ public class GameManager : MonoBehaviour
     }
 
     void Update()
-    {
-        if(Input.GetMouseButton(0) && Input.GetMouseButton(1)) 
+    { 
+        if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1))) 
         {
-            if (PlayerConstant.isPlayerStop) return;
-            PlayerConstant.isPlayerStop = true;
+            if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
+            else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
         }
-        // if(Input.GetKeyDown(KeyCode.Escape) || (Input.GetMouseButton(0) && Input.GetMouseButton(1))) 
-        // {
-        //     if (PlayerConstant.isPlayerStop) return;
-        //     PlayerConstant.isPlayerStop = true;
-        // }
-        
+
         if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
 
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();

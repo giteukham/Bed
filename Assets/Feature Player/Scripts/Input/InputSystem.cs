@@ -17,6 +17,7 @@ public class InputSystem : MonoSingleton<InputSystem>
         get { return mouseDeltaY; }
         private set { mouseDeltaY = value; }
     }
+    public static int xBodyReverse;
 
     #region Mouse Events
     public static event Action OnMouseWheelClickEvent; 

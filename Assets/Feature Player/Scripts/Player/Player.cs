@@ -95,9 +95,6 @@ public class Player : MonoBehaviour
     [SerializeField]private Animator headAnimator;
     #endregion
 
-    // UI manager로 옮기기
-    [SerializeField] GameObject uiCanvas;
-
     private void Start()
     {
         TryGetComponent(out playerAnimation);
@@ -442,25 +439,11 @@ public class Player : MonoBehaviour
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
             if (PlayerConstant.isEyeOpen) playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
-
-            // UI manager로 옮기기
-            if (PlayerConstant.isEyeOpen == false) 
-            {
-                uiCanvas.SetActive(true);
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-            
         }
         if (PlayerConstant.isPlayerStop == false)
         {
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
             playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
-
-            // UI manager로 옮기기
-            uiCanvas.SetActive(false);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 
