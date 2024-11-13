@@ -52,78 +52,41 @@ public class ResolutionManagement : MonoBehaviour
 
         print(Display.main.systemWidth + " : " + Display.main.systemHeight);
 
-        int temp = 480;
-        for (int i = 0; i < 5; i++)
-        {
-            //모니터 가로 픽셀 / 모니터 세로 픽셀이 1.77보다 작을 경우 적용할 드롭다운 리스트 제작
-            currentList.Add(new Vector2(Display.main.systemWidth - temp, Display.main.systemHeight - temp));
-
-            if (i == 2)
-            {
-                temp -= 60;
-            }
-            else if (i == 3)
-            {
-                temp -= 180;
-            }
-            else
-            {
-                temp -= 120;
-            }
-        }
-
-        ///////////////////////////////////////////////////////////////////
-        ///
+        //////////////////////////////////////////////////////////////////////////
+        
         hdList.Clear();
         currentList.Clear();
 
         //Resolution[] resolutions = Screen.resolutions;
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
 
+        #region 테스트용 코드
         List<string> testList = new List<string>();
-
-
         for (int i = 0; i < monitorResolutions.Count; i++)
         {
             //print($"목록 {monitorResolutions[i].width} : {monitorResolutions[i].height}");
             testList.Add($"{monitorResolutions[i].width} : {monitorResolutions[i].height} : {monitorResolutions[i].refreshRate}");
         }
-
         testDropdown.ClearOptions();
         testDropdown.AddOptions(testList);
-        dropdown.RefreshShownValue();
+        testDropdown.RefreshShownValue();
+        #endregion
 
         float hdNum = 16f / 9f;
         float monitorNum = (float)Display.main.systemWidth / (float)Display.main.systemHeight;
         float itemNum = 0f;
         foreach (Resolution item in monitorResolutions)
         {
-            //두수의 최대공약수 구함
-            /*int a = GCD(item.width, item.height);
-            int b = GCD(Display.main.systemWidth, Display.main.systemHeight);
-
-            //비율 16:9인 것만 리스트에 넣음
-            if (item.width / a == 16 && item.height / a == 9)
-            {
-                hdList.Add(new Vector2(item.width, item.height));
-            }
-
-            //본인 모니터 비율과 같은 것만 리스트에 넣음
-            if (item.width / a == Display.main.systemWidth / b && item.height / a == Display.main.systemHeight / b)
-            {
-                currentList.Add(new Vector2(item.width, item.height));
-            }*/
-
             itemNum = (float)item.width / (float)item.height;
 
             if (Mathf.Approximately(hdNum, itemNum))
             {
-                hdList.Add(new Vector2(item.width, item.height));
+                ListValueDuplicateCheck(hdList, item);
             }
 
             if (Mathf.Approximately(monitorNum, itemNum))
             {
-                currentList.Add(new Vector2(item.width, item.height));
+                ListValueDuplicateCheck(currentList, item);
             }
 
         }
@@ -170,6 +133,20 @@ public class ResolutionManagement : MonoBehaviour
             //이 코드 실행시 실제로 드롭다운 아이템에 해당하는 해상도로 변경됨
             dropdown.value = 2;
         }
+    }
+
+    private void ListValueDuplicateCheck(List<Vector2> list, Resolution item)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            //같은게 있으면 넣지 않고 for문 종료
+            if (list[i].x == item.width)
+            {
+                return;
+            }
+        }
+        //리스트 안에 같은게 없으면 리스트에 삽입
+        list.Add(new Vector2(item.width, item.height));
     }
 
     //최대공약수 계산 메소드
