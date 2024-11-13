@@ -221,6 +221,14 @@ namespace Bed.Gimmick
             
             InitKernel();
             InitBuffers();
+
+            
+            testBuffer.GetData(testArray);
+            //Debug.Log(testArray[0]);
+            for (int i = 0; i < testArray.Length; i++)
+            {
+                Debug.Log(testArray[i]);
+            }
         }
         
         private void Update()
@@ -247,15 +255,9 @@ namespace Bed.Gimmick
             particleCompute.Dispatch(forcesKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
             
             particleCompute.Dispatch(integrateKernel, Mathf.CeilToInt(ParticleCount * CellCount / THREAD_SIZE), 1, 1);
-            
+
             Graphics.RenderMeshIndirect(renderParams, particleMesh, graphicsBuffer, commandCount);
-            
-            testBuffer.GetData(testArray);
-            Debug.Log(testArray[0]);
-            // for (int i = 0; i < testArray.Length; i++)
-            // {
-            //     Debug.Log(testArray[i]);
-            // }
+
         }
         
     #if __DEBUG__

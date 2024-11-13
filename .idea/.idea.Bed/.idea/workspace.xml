@@ -9,8 +9,8 @@
       <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleCompute.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleCompute.compute" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSpawner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/ParticleSystem.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/SPH.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/SPH.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/SpatialHash.hlsl" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Gimmick/Gimmick Two/Particle/SpatialHash.hlsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fluid.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fluid.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,10 +94,10 @@
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <method v="2" />
     </configuration>
-    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="19592">
+    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="19592" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -189,6 +189,8 @@
       <workItem from="1731287836109" duration="12554000" />
       <workItem from="1731306563505" duration="92000" />
       <workItem from="1731319685217" duration="8764000" />
+      <workItem from="1731400941839" duration="1202000" />
+      <workItem from="1731477111903" duration="16691000" />
     </task>
     <servers />
   </component>

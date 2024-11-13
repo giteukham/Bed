@@ -16,7 +16,7 @@ namespace Bed.Gimmick
             int index = 0;
             List<Particle> particleList = new List<Particle>();
             
-            particleSpawnPoint += Random.onUnitSphere * particleRadius * 0.2f;          // 구 표면에 한 점을 선택해서 그 점을 중심으로 0.2f 만큼 떨어진 점을 선택
+            //particleSpawnPoint += Random.onUnitSphere * particleRadius * 0.2f;          // 구 표면에 한 점을 선택해서 그 점을 중심으로 0.2f 만큼 떨어진 점을 선택
             
             for (int i = 0; i < particleNumOfSpawn.x; i++)
             for (int j = 0; j < particleNumOfSpawn.y; j++)
