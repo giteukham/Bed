@@ -19,6 +19,7 @@ public class SaveManager : MonoBehaviour
     private void Awake()
     {
         MouseManagement.mouseSensitivity = LoadMouseSensitivity();
+        MouseManagement.mouseSpeed = MouseManagement.mouseSensitivity * 500f;
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = LoadMouseVerticalReverse();
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = LoadMouseHorizontalReverse();
         InputSystem.xBodyReverse = LoadXBodyReverse();
