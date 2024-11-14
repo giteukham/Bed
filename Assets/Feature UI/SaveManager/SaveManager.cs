@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
@@ -15,12 +16,13 @@ public class SaveManager : MonoSingleton<SaveManager>
     /// </summary>
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
-    //게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
-    private void Awake()
+    /// <summary>
+    /// 수정 날짜 : 2024-11-14 최무령
+    /// 게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
+    /// </summary>
+    private void Start()
     {
-        MouseManagement.mouseSensitivity = LoadMouseSensitivity();
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = LoadMouseVerticalReverse();
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = LoadMouseHorizontalReverse();
+        MouseManagement.InitMouseSetting(LoadMouseSensitivity(), LoadMouseVerticalReverse(), LoadMouseHorizontalReverse());
         InputSystem.xBodyReverse = LoadXBodyReverse();
     }
 

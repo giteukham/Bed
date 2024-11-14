@@ -10,6 +10,7 @@ using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
 using Unity.VisualScripting;
+using UnityEngine.InputSystem;
 
 public enum PlayerDirectionStateTypes
 {
@@ -31,10 +32,13 @@ public enum PlayerEyeStateTypes
 [RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
 {
+    private static Player instance;
+
     #region Player Components
     [Header("Player Camera")]
     [SerializeField] private CinemachineVirtualCamera playerCamera;
-    
+    public static CinemachinePOV POVCamera { get; private set; }
+
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
     [SerializeField] private StateMachine playerEyeStateMachine;
@@ -94,6 +98,12 @@ public class Player : MonoBehaviour
     private Coroutine headMoveSFXCoroutine;
     [SerializeField]private Animator headAnimator;
     #endregion
+
+    private void Awake()
+    {
+        instance = this;
+        POVCamera = instance.playerCamera.GetCinemachineComponent<CinemachinePOV>();
+    }
 
     private void Start()
     {
@@ -416,6 +426,9 @@ public class Player : MonoBehaviour
         // -------------------------------------게이지 효과음
     }
 
+    /// <summary>
+    /// 수정 날짜 : 2024-11-14 최무령
+    /// </summary>
     private void SetPlayerState()
     {   
         if (PlayerConstant.isParalysis)
@@ -425,8 +438,8 @@ public class Player : MonoBehaviour
         }
         else
         {
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 500f;
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 500f;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
         }
     }
 

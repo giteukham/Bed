@@ -1,20 +1,20 @@
+using System;
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.Rendering.PostProcessing;
 
+/// <summary>
+/// 수정 날짜 : 2024-11-14 최무령
+/// </summary>
 public class MouseManagement : MonoBehaviour
 {
     [SerializeField] private Slider slider;
     [SerializeField] private Image verticalSwitch;
     [SerializeField] private Image horizontalSwitch;
-
-    /// <summary>
-    /// 플레이어의 버츄얼 카메라에 접근
-    /// </summary>
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
     /// <summary>
     /// 초록 스위치 이미지
     /// </summary>
@@ -35,34 +35,40 @@ public class MouseManagement : MonoBehaviour
     /// <summary>
     /// 최종 적용되는 마우스 감도
     /// </summary>
-    public static float mouseSpeed = 500f;
+    public static float mouseSpeed;
+
+    private const float mouseSpeedMultiplier = 500f;        // 마우스 감도 상수
+
+    public static void InitMouseSetting(float sensitivity, bool verticalReverse, bool horizontalReverse)
+    {
+        mouseSensitivity = sensitivity;
+        mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
+        Player.POVCamera.m_VerticalAxis.m_InvertInput = verticalReverse;
+        Player.POVCamera.m_HorizontalAxis.m_InvertInput = horizontalReverse;
+    }
 
     /// <summary>
     /// 실제값이 아닌 ui 요소만 초기화 함(실제값 초기화는 SaveManager에서 실행함)
     /// </summary>
     private void OnEnable()
     {
-        //슬라이더 조절바에 이전게임에 저장됐던 설정값 적용
-        slider.value = SaveManager.Instance.LoadMouseSensitivity();
-        //마우스 반전에 따른 버튼 이미지 변경
-        verticalSwitch.sprite = SaveManager.Instance.LoadMouseVerticalReverse() ? offImage : onImage;
-        horizontalSwitch.sprite = SaveManager.Instance.LoadMouseHorizontalReverse() ? onImage : offImage;
+        Player.POVCamera.m_VerticalAxis.m_InputAxisName = "Mouse Y";
+        Player.POVCamera.m_HorizontalAxis.m_InputAxisName = "Mouse X";
+        ChangeUI();
     }
 
-    //마우스 설정창 비활성화시 업데이트 문은 안돌아감
-    private void Update()
+    private void OnDisable()
     {
-        //mouseSpeed = mouseSensitivity * 500f;
-        /*if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = false;
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = true;
-        }
+        Player.POVCamera.m_VerticalAxis.m_InputAxisName = "";
+        Player.POVCamera.m_HorizontalAxis.m_InputAxisName = "";
+    }
 
-        print(virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput);*/
+    private void ChangeUI()
+    {
+        slider.value = mouseSensitivity;
+        //마우스 반전에 따른 버튼 이미지 변경
+        verticalSwitch.sprite = Player.POVCamera.m_VerticalAxis.m_InvertInput ? offImage : onImage;
+        horizontalSwitch.sprite = Player.POVCamera.m_HorizontalAxis.m_InvertInput ? onImage : offImage;
     }
 
     /// <summary>
@@ -71,7 +77,10 @@ public class MouseManagement : MonoBehaviour
     public void ChangeSensitivity()
     {
         mouseSensitivity = slider.value;
-        mouseSpeed = mouseSensitivity * 500f;
+        mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
+
+        Player.POVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
+        Player.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
         SaveManager.Instance.SaveMouseSensitivity(mouseSensitivity);
     }
 
@@ -80,10 +89,10 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     public void MouseVerticalReverse()
     {
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = !virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput;
-        SaveManager.Instance.SaveMouseVerticalReverse(virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput);
+        Player.POVCamera.m_VerticalAxis.m_InvertInput = !Player.POVCamera.m_VerticalAxis.m_InvertInput;
+        SaveManager.Instance.SaveMouseVerticalReverse(Player.POVCamera.m_VerticalAxis.m_InvertInput);
         //버튼 이미지 변경(true일 경우 빨강, false일 경우 초록)
-        verticalSwitch.sprite = SaveManager.Instance.LoadMouseVerticalReverse() ? offImage : onImage;
+        verticalSwitch.sprite = Player.POVCamera.m_VerticalAxis.m_InvertInput ? offImage : onImage;
     }
 
     /// <summary>
@@ -91,14 +100,12 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     public void MouseHorizontalReverse()
     {
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = !virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput;
-        SaveManager.Instance.SaveMouseHorizontalReverse(virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput);
+        Player.POVCamera.m_HorizontalAxis.m_InvertInput = !Player.POVCamera.m_HorizontalAxis.m_InvertInput;
+        SaveManager.Instance.SaveMouseHorizontalReverse(Player.POVCamera.m_HorizontalAxis.m_InvertInput);
 
         //InputSystem.xBodyReverse = virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput ? -1 : 1;
-        SaveManager.Instance.SaveXBodyReverse(virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput ? -1 : 1);
+        SaveManager.Instance.SaveXBodyReverse(Player.POVCamera.m_HorizontalAxis.m_InvertInput ? -1 : 1);
         //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
-        horizontalSwitch.sprite = SaveManager.Instance.LoadMouseHorizontalReverse() ? onImage : offImage;
+        horizontalSwitch.sprite = Player.POVCamera.m_HorizontalAxis.m_InvertInput ? onImage : offImage;
     }
-
-
 }
