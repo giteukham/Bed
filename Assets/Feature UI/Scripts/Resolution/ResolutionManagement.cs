@@ -38,7 +38,6 @@ public class ResolutionManagement : MonoBehaviour
 
     List<Vector2> nowList = new List<Vector2>();
 
-    [SerializeField] private TMP_Dropdown testDropdown;
     [SerializeField] private Text testText;
     [SerializeField] private Text testText2;
 
@@ -69,18 +68,6 @@ public class ResolutionManagement : MonoBehaviour
 
         //Resolution[] resolutions = Screen.resolutions;
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
-
-        #region 테스트용 코드
-        List<string> testList = new List<string>();
-        for (int i = 0; i < monitorResolutions.Count; i++)
-        {
-            //print($"목록 {monitorResolutions[i].width} : {monitorResolutions[i].height}");
-            testList.Add($"{monitorResolutions[i].width} : {monitorResolutions[i].height} : {monitorResolutions[i].refreshRate}");
-        }
-        testDropdown.ClearOptions();
-        testDropdown.AddOptions(testList);
-        testDropdown.RefreshShownValue();
-        #endregion
 
         float hdNum = 16f / 9f;
         float monitorNum = (float)Display.main.systemWidth / (float)Display.main.systemHeight;
