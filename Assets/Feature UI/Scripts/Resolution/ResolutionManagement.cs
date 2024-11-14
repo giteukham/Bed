@@ -14,7 +14,8 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private Text screenText;
     [SerializeField] private Image fullScreenSwitch;
-    [SerializeField] private TMP_Dropdown dropdown;
+    [SerializeField] private TMP_Dropdown resolutiondropdown;
+    [SerializeField] private TMP_Dropdown frameRateDropdown;
 
     [SerializeField] private Sprite onImage;
     [SerializeField] private Sprite offImage;
@@ -22,6 +23,7 @@ public class ResolutionManagement : MonoBehaviour
     bool isFullScreen = true;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
+    int frameRate = 60;
 
     List<Vector2> hdList = new List<Vector2>
     {
@@ -38,9 +40,17 @@ public class ResolutionManagement : MonoBehaviour
 
     [SerializeField] private TMP_Dropdown testDropdown;
     [SerializeField] private Text testText;
+    [SerializeField] private Text testText2;
 
     private void Awake()
     {
+        // V-Sync 비활성화
+        QualitySettings.vSyncCount = 0;
+        //저장된 프레임 레이트 적용
+        Application.targetFrameRate = SaveManager.Instance.LoadFrameRate();
+        //프레임 드롭다운 아이템 저장된 값으로 변경
+        frameRateDropdown.value = SaveManager.Instance.LoadFrameRate() / 30 - 1;
+
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = SaveManager.Instance.LoadIsFullScreen();
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
@@ -106,12 +116,12 @@ public class ResolutionManagement : MonoBehaviour
             if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
             {
                 //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
-                dropdown.value = i;
+                resolutiondropdown.value = i;
                 //메소드 종료
                 return;
             }
         }
-        //print(dropdown.options[0].text + "zfasdfasdfasdfasd");
+        //print(resolutiondropdown.options[0].text + "zfasdfasdfasdfasd");
     }
 
     private void Update()
@@ -119,6 +129,7 @@ public class ResolutionManagement : MonoBehaviour
         //'모니터'의 현재 해상도를 가져옴
         //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
         screenText.text = nowWidthPixel + " " + nowHeightPixel;
+        testText2.text = Application.targetFrameRate + "";
         if (nowList == hdList)
         {
             testText.text = "hdList";
@@ -131,7 +142,7 @@ public class ResolutionManagement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             //이 코드 실행시 실제로 드롭다운 아이템에 해당하는 해상도로 변경됨
-            dropdown.value = 2;
+            resolutiondropdown.value = 2;
         }
     }
 
@@ -149,63 +160,14 @@ public class ResolutionManagement : MonoBehaviour
         list.Add(new Vector2(item.width, item.height));
     }
 
-    //최대공약수 계산 메소드
-    public int GCD(int a, int b)
-    {
-        while (b != 0)
-        {
-            int temp = b;
-            b = a % b;
-            a = temp;
-        }
-        return a;
-    }
-
     private void RedefineDropdown()
     {
         float CRITERIA_NUM = 16f / 9f;
 
-        //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
-        /*if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
-        {
-            //드롭다운 아이템 모두 제거
-            dropdown.ClearOptions();
-
-            //드롭다운에 들어갈 아이템 리스트 제작
-            List<string> temp = new List<string>();
-            for (int i = 0; i < currentList.Count; i++)
-            {
-                temp.Add($"{currentList[i].x} X {currentList[i].y}");
-            }
-
-            //드롭다운에 아이템 리스트 삽입
-            dropdown.AddOptions(temp);
-            //드롭다운 새로고침
-            dropdown.RefreshShownValue();
-
-            nowList = currentList;
-        }
-        //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
-        else
-        {
-            dropdown.ClearOptions();
-
-            List<string> temp = new List<string>();
-            for (int i = 0; i < hdList.Count; i++)
-            {
-                temp.Add($"{hdList[i].x} X {hdList[i].y}");
-            }
-
-            dropdown.AddOptions(temp);
-            dropdown.RefreshShownValue();
-
-            nowList = hdList;
-        }*/
-
         //16:9보다 가로가 더 긴 모니터의 경우 16:9 해상도만 나옴
         if (CRITERIA_NUM < Display.main.systemWidth / Display.main.systemHeight || isFullScreen == false)
         {
-            dropdown.ClearOptions();
+            resolutiondropdown.ClearOptions();
 
             List<string> temp = new List<string>();
             for (int i = 0; i < hdList.Count; i++)
@@ -213,15 +175,15 @@ public class ResolutionManagement : MonoBehaviour
                 temp.Add($"{hdList[i].x} X {hdList[i].y}");
             }
 
-            dropdown.AddOptions(temp);
-            dropdown.RefreshShownValue();
+            resolutiondropdown.AddOptions(temp);
+            resolutiondropdown.RefreshShownValue();
 
             nowList = hdList;
         }
         else if (isFullScreen == true)
         {
             //드롭다운 아이템 모두 제거
-            dropdown.ClearOptions();
+            resolutiondropdown.ClearOptions();
 
             //드롭다운에 들어갈 아이템 리스트 제작
             List<string> temp = new List<string>();
@@ -231,9 +193,9 @@ public class ResolutionManagement : MonoBehaviour
             }
 
             //드롭다운에 아이템 리스트 삽입
-            dropdown.AddOptions(temp);
+            resolutiondropdown.AddOptions(temp);
             //드롭다운 새로고침
-            dropdown.RefreshShownValue();
+            resolutiondropdown.RefreshShownValue();
 
             nowList = currentList;
         }
@@ -249,18 +211,12 @@ public class ResolutionManagement : MonoBehaviour
         SaveManager.Instance.SaveIsFullScreen(isFullScreen);
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
 
-        //창 크기, 풀스크린 여부 적용
-        //StartCoroutine(ResolutionWindow(nowWidthPixel, nowHeightPixel));
         //해상도 메뉴 목록 재정의
         RedefineDropdown();
-        //아마처음부터 0이라 바꿀필요없어서 적용안되는듯
-        //그래서 적용하려면 0이 아닌값을 적용하거나, 혹은 다른값으로 잠깐 바꾼뒤에 0을 다시 적용해야함
-        //dropdown.value = 1;
-        //dropdown.value = 0;
 
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
-        dropdown.value = 0;
-        dropdown.value = nowList.Count - 1;
+        resolutiondropdown.value = 0;
+        resolutiondropdown.value = nowList.Count - 1;
     }
 
     private IEnumerator ResolutionWindow(float width, float height)
@@ -343,7 +299,7 @@ public class ResolutionManagement : MonoBehaviour
     //레터박스 완전 검은색으로 나오게 함
     void OnPreCull() => GL.Clear(true, true, Color.black);
 
-    //드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
+    //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
     public void EnterResolution(int value)
     {
         float CRITERIA_NUM = 16f / 9f;
@@ -361,5 +317,23 @@ public class ResolutionManagement : MonoBehaviour
         }
 
 
+    }
+
+    //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
+    public void EnterFrameRate(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 30;
+                SaveManager.Instance.SaveFrameRate(30);
+                break;
+            case 1:
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 60;
+                SaveManager.Instance.SaveFrameRate(60);
+                break;
+        }
     }
 }

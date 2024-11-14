@@ -18,14 +18,21 @@ public class SaveManager : MonoSingleton<SaveManager>
     //게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
     private void Awake()
     {
+        //마우스 관련 변수
         MouseManagement.mouseSensitivity = LoadMouseSensitivity();
+        MouseManagement.mouseSpeed = MouseManagement.mouseSensitivity * 500f;
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = LoadMouseVerticalReverse();
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = LoadMouseHorizontalReverse();
         InputSystem.xBodyReverse = LoadXBodyReverse();
+
+        //프레임 관련 변수
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = LoadFrameRate();
     }
 
     private void Update()
     {
+        print(Application.targetFrameRate);
         if (Input.GetKeyDown(KeyCode.Space))
         {
             PlayerPrefs.DeleteAll();
@@ -101,5 +108,15 @@ public class SaveManager : MonoSingleton<SaveManager>
     public bool LoadIsFullScreen()
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
+    }
+
+    //프레임 레이트 관련
+    public void SaveFrameRate(int value)
+    {
+        PlayerPrefs.SetInt("FrameRate", value);
+    }
+    public int LoadFrameRate()
+    {
+        return PlayerPrefs.GetInt("FrameRate", 60);
     }
 }
