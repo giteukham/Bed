@@ -45,7 +45,7 @@ public class BlinkEffect : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        camera.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
-        blinkMaterial.SetFloat("_Blink", 0.3f);
+        if (commandBuffer != null) camera?.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
+        blinkMaterial?.SetFloat("_Blink", 0.3f);
     }
 }

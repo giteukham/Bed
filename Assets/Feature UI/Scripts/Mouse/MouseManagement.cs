@@ -1,18 +1,36 @@
 using System;
-using Cinemachine;
-using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using AYellowpaper.SerializedCollections;
+using Cinemachine;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
-using UnityEngine.Rendering.PostProcessing;
 
 /// <summary>
 /// 수정 날짜 : 2024-11-14 최무령
 /// </summary>
+public enum Arrow
+{
+    Up,
+    Down,
+    Left,
+    Right
+}
+
+//기본값 정리
+//감도 1f, 상하반전 true(1), 좌우반전 false(0)
 public class MouseManagement : MonoBehaviour
 {
+    [Header("Preview Settings")]
+    [SerializeField] private CinemachineVirtualCamera previewVirtualCamera;
+    [SerializeField] private GameObject previewPlayer;
+
+    private CinemachinePOV previewPOVCamera;
+    
+    [Header("Mouse UI")]
     [SerializeField] private Slider slider;
+    [SerializeField] private TMP_Text sensitivityText;
     [SerializeField] private Image verticalSwitch;
     [SerializeField] private Image horizontalSwitch;
     /// <summary>
@@ -23,11 +41,13 @@ public class MouseManagement : MonoBehaviour
     /// 빨강 스위치 이미지
     /// </summary>
     [SerializeField] private Sprite offImage;
+    
+    [Header("Arrow")] 
+    [SerializedDictionary("Arrow", "GameObject")]
+    [SerializeField] private SerializedDictionary<Arrow, GameObject> arrows;
 
-
-    //기본값 정리
-    //감도 1f, 상하반전 true(1), 좌우반전 false(0)
-
+    private Dictionary<Arrow, Image> arrowImages;
+    private readonly Color arrowMoveColor = Color.gray;
     /// <summary>
     /// 마우스 감도 전역 변수
     /// </summary>
@@ -36,6 +56,8 @@ public class MouseManagement : MonoBehaviour
     /// 최종 적용되는 마우스 감도
     /// </summary>
     public static float mouseSpeed;
+    
+    private static bool isVerticalReverse = true, isHorizontalReverse = false;
 
     private const float mouseSpeedMultiplier = 500f;        // 마우스 감도 상수
 
@@ -43,8 +65,8 @@ public class MouseManagement : MonoBehaviour
     {
         mouseSensitivity = sensitivity;
         mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
-        Player.POVCamera.m_VerticalAxis.m_InvertInput = verticalReverse;
-        Player.POVCamera.m_HorizontalAxis.m_InvertInput = horizontalReverse;
+        isVerticalReverse = verticalReverse;
+        isHorizontalReverse = horizontalReverse;
     }
 
     /// <summary>
@@ -52,23 +74,74 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        Player.POVCamera.m_VerticalAxis.m_InputAxisName = "Mouse Y";
-        Player.POVCamera.m_HorizontalAxis.m_InputAxisName = "Mouse X";
+        arrowImages = new Dictionary<Arrow, Image>
+        {
+            { Arrow.Up, arrows[Arrow.Up].GetComponent<Image>() },
+            { Arrow.Down, arrows[Arrow.Down].GetComponent<Image>() },
+            { Arrow.Left, arrows[Arrow.Left].GetComponent<Image>() },
+            { Arrow.Right, arrows[Arrow.Right].GetComponent<Image>() }
+        };
+
+        previewPOVCamera = previewVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        previewPOVCamera.m_VerticalAxis.Value = 0f;
+        previewPOVCamera.m_HorizontalAxis.Value = 0f;
+        previewPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
+        previewPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        
+        previewPlayer.SetActive(true);
         ChangeUI();
     }
 
     private void OnDisable()
     {
-        Player.POVCamera.m_VerticalAxis.m_InputAxisName = "";
-        Player.POVCamera.m_HorizontalAxis.m_InputAxisName = "";
+        previewPlayer.SetActive(false);
+    }
+
+    private void Update()
+    {
+        ChangeArrowColor();
+    }
+    
+    private void ChangeArrowColor()
+    {
+        int invertVerticalConstant = isVerticalReverse ? 1 : -1;
+        int invertHorizontalConstant = isHorizontalReverse ? -1 : 1;
+        
+        switch (InputSystem.MouseDeltaY * invertVerticalConstant)
+        {
+            case float y when y > 0f:
+                arrowImages[Arrow.Up].color = arrowMoveColor;
+                break;
+            case float y when y < 0f:
+                arrowImages[Arrow.Down].color = arrowMoveColor;
+                break;
+            default:
+                arrowImages[Arrow.Up].color = Color.white;
+                arrowImages[Arrow.Down].color = Color.white;
+                break;
+        }
+        switch (InputSystem.MouseDeltaX * invertHorizontalConstant)
+        {
+            case float x when x > 0f:
+                arrowImages[Arrow.Right].color = arrowMoveColor;
+                break;
+            case float x when x < 0f:
+                arrowImages[Arrow.Left].color = arrowMoveColor;
+                break;
+            default:
+                arrowImages[Arrow.Right].color = Color.white;
+                arrowImages[Arrow.Left].color = Color.white;
+                break;
+        }
     }
 
     private void ChangeUI()
     {
         slider.value = mouseSensitivity;
+        sensitivityText.text = mouseSensitivity.ToString(CultureInfo.CurrentCulture);
         //마우스 반전에 따른 버튼 이미지 변경
-        verticalSwitch.sprite = Player.POVCamera.m_VerticalAxis.m_InvertInput ? offImage : onImage;
-        horizontalSwitch.sprite = Player.POVCamera.m_HorizontalAxis.m_InvertInput ? onImage : offImage;
+        verticalSwitch.sprite = isVerticalReverse ? offImage : onImage;
+        horizontalSwitch.sprite = isHorizontalReverse ? onImage : offImage;
     }
 
     /// <summary>
@@ -78,9 +151,13 @@ public class MouseManagement : MonoBehaviour
     {
         mouseSensitivity = slider.value;
         mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
-
+        sensitivityText.text = mouseSensitivity.ToString(CultureInfo.CurrentCulture);
+        
         Player.POVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
         Player.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
+        previewPOVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
+        previewPOVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
+        
         SaveManager.Instance.SaveMouseSensitivity(mouseSensitivity);
     }
 
@@ -89,10 +166,13 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     public void MouseVerticalReverse()
     {
-        Player.POVCamera.m_VerticalAxis.m_InvertInput = !Player.POVCamera.m_VerticalAxis.m_InvertInput;
-        SaveManager.Instance.SaveMouseVerticalReverse(Player.POVCamera.m_VerticalAxis.m_InvertInput);
+        isVerticalReverse = !isVerticalReverse;
+        Player.POVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
+        previewPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
+        
+        SaveManager.Instance.SaveMouseVerticalReverse(isVerticalReverse);
         //버튼 이미지 변경(true일 경우 빨강, false일 경우 초록)
-        verticalSwitch.sprite = Player.POVCamera.m_VerticalAxis.m_InvertInput ? offImage : onImage;
+        verticalSwitch.sprite = isVerticalReverse ? offImage : onImage;
     }
 
     /// <summary>
@@ -100,12 +180,15 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     public void MouseHorizontalReverse()
     {
-        Player.POVCamera.m_HorizontalAxis.m_InvertInput = !Player.POVCamera.m_HorizontalAxis.m_InvertInput;
-        SaveManager.Instance.SaveMouseHorizontalReverse(Player.POVCamera.m_HorizontalAxis.m_InvertInput);
+        isHorizontalReverse = !isHorizontalReverse;
+        Player.POVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        previewPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        
+        SaveManager.Instance.SaveMouseHorizontalReverse(isHorizontalReverse);
 
         //InputSystem.xBodyReverse = virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput ? -1 : 1;
-        SaveManager.Instance.SaveXBodyReverse(Player.POVCamera.m_HorizontalAxis.m_InvertInput ? -1 : 1);
+        SaveManager.Instance.SaveXBodyReverse(isHorizontalReverse ? -1 : 1);
         //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
-        horizontalSwitch.sprite = Player.POVCamera.m_HorizontalAxis.m_InvertInput ? onImage : offImage;
+        horizontalSwitch.sprite = isHorizontalReverse ? onImage : offImage;
     }
 }

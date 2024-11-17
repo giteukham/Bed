@@ -57,6 +57,9 @@ public class UIManager : MonoSingleton<UIManager>
         ShowScreen(mouseSettingsScreen);
     }
 
+    /// <summary>
+    /// 수정 날짜 : 2024-11-14 최무령
+    /// </summary>
     void ActivateUICanvas()
     {
         if (PlayerConstant.isPlayerStop == true)
@@ -68,7 +71,7 @@ public class UIManager : MonoSingleton<UIManager>
                 Cursor.lockState = CursorLockMode.None;
             }
         }
-        if (PlayerConstant.isPlayerStop == false)
+        if (PlayerConstant.isPlayerStop == false && mouseSettingsScreen.activeSelf == false)
         {
             uiCanvas.SetActive(false);
             Cursor.visible = false;

@@ -29,6 +29,9 @@ public enum PlayerEyeStateTypes
     Blink
 }
 
+/// <summary>
+/// 수정 날짜 : 2024-11-17 최무령
+/// </summary>
 [RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
 {
@@ -36,7 +39,10 @@ public class Player : MonoBehaviour
 
     #region Player Components
     [Header("Player Camera")]
-    [SerializeField] private CinemachineVirtualCamera playerCamera;
+    [SerializeField] private GameObject mainCamera;
+    
+    [Space]
+    [SerializeField] private CinemachineVirtualCamera mainVirtualCamera;
     public static CinemachinePOV POVCamera { get; private set; }
 
     [Header("State Machine")]
@@ -65,11 +71,6 @@ public class Player : MonoBehaviour
     #region Player Control Classes
     private PlayerDirectionControl playerDirectionControl;
     private PlayerEyeControl playerEyeControl;
-    #endregion
-
-    #region Main Camera
-    [Header("Main Camera")]
-    [SerializeField] private Camera mainCamera;
     #endregion
 
     #region Player Stats Updtae Variables
@@ -102,19 +103,20 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        POVCamera = instance.playerCamera.GetCinemachineComponent<CinemachinePOV>();
     }
 
     private void Start()
     {
         TryGetComponent(out playerAnimation);
         
+        POVCamera = instance.mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
 
         // Post Processing
-        postProcessing = playerCamera.GetComponent<CinemachinePostProcessing>();
+        postProcessing = mainVirtualCamera.GetComponent<CinemachinePostProcessing>();
         postProcessing.m_Profile.TryGetSettings(out colorGrading);
         postProcessing.m_Profile.TryGetSettings(out grain);
         postProcessing.m_Profile.TryGetSettings(out chromaticAberration);
@@ -173,8 +175,8 @@ public class Player : MonoBehaviour
     private void UpdateStats()
     {
         // ----------------- Head Movement -----------------
-        float cameraDeltaX = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
-        float cameraDeltaY = playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
+        float cameraDeltaX = mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
+        float cameraDeltaY = mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
         recentHorizontalCameraMovement = currentHorizontalCameraMovement;
         recentVerticalCameraMovement = currentVerticalCameraMovement;
         currentHorizontalCameraMovement = cameraDeltaX;
@@ -266,7 +268,7 @@ public class Player : MonoBehaviour
             else if (PlayerConstant.stressGauge >= 25) shakeIntensity = 0.1f;
             else if (PlayerConstant.stressGauge < 25)  shakeIntensity = 0f;
 
-            playerCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
+            mainVirtualCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
             yield return new WaitForSeconds(0.1f);
         }
     }
@@ -425,21 +427,18 @@ public class Player : MonoBehaviour
         AudioManager.Instance.VolumeControl(AudioManager.Instance.stressHal, currentStressSFXVolume);
         // -------------------------------------게이지 효과음
     }
-
-    /// <summary>
-    /// 수정 날짜 : 2024-11-14 최무령
-    /// </summary>
+    
     private void SetPlayerState()
     {   
         if (PlayerConstant.isParalysis)
         {
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 5f;
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 5f;
         }
         else
         {
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
         }
     }
 
@@ -447,22 +446,25 @@ public class Player : MonoBehaviour
     {
         if (PlayerConstant.isPlayerStop == true)
         {
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
             if (PlayerConstant.isEyeOpen) playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
         }
         if (PlayerConstant.isPlayerStop == false)
         {
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
-            playerCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
+            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
         }
     }
 
-    private void OnApplicationQuit()
+    public static void EnableMainCamera(bool isEnabled)
     {
-        BlinkEffect.Blink = 0.001f;
+        instance.mainVirtualCamera.enabled = isEnabled;
+        instance.mainCamera?.SetActive(isEnabled);
     }
+
+    public static void EnablePlayer(bool isEnabled) => instance.gameObject.SetActive(isEnabled);
 }
 
