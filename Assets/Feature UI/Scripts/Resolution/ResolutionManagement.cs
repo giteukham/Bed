@@ -14,11 +14,16 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private Text screenText;
     [SerializeField] private Image fullScreenSwitch;
+    [SerializeField] private Image insideImage;
     [SerializeField] private TMP_Dropdown resolutiondropdown;
     [SerializeField] private TMP_Dropdown frameRateDropdown;
+    [SerializeField] private RectTransform outside;
+    [SerializeField] private RectTransform inside;
 
     [SerializeField] private Sprite onImage;
     [SerializeField] private Sprite offImage;
+    [SerializeField] private Sprite fullscreenInside;
+    [SerializeField] private Sprite windowedInside;
 
     bool isFullScreen = true;
     int nowWidthPixel = 0;
@@ -53,11 +58,12 @@ public class ResolutionManagement : MonoBehaviour
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = SaveManager.Instance.LoadIsFullScreen();
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
         //불러온 변수값들을 이용해 이전에 쓰던 해상도 설정 반영
-        Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
+        //Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
 
         print(Display.main.systemWidth + " : " + Display.main.systemHeight);
 
@@ -66,7 +72,6 @@ public class ResolutionManagement : MonoBehaviour
         hdList.Clear();
         currentList.Clear();
 
-        //Resolution[] resolutions = Screen.resolutions;
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
 
         float hdNum = 16f / 9f;
@@ -97,11 +102,18 @@ public class ResolutionManagement : MonoBehaviour
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
         RedefineDropdown();
-
+        print(nowList.Count);
         for (int i = 0; i < nowList.Count; i++)
         {
             if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
             {
+                print(nowWidthPixel + " : " + nowList[i].x + " : " + nowHeightPixel + " : " + nowList[i].y);
+                //0일때 0으로 드롭다운 value를 바꿔도 변화가 없기 때문에 수동으로 메소드 실행해줌
+                if (i == 0)
+                {
+                    resolutiondropdown.value = i;
+                    EnterResolution(i);
+                }
                 //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
                 resolutiondropdown.value = i;
                 //메소드 종료
@@ -149,6 +161,7 @@ public class ResolutionManagement : MonoBehaviour
 
     private void RedefineDropdown()
     {
+        print("리디파인 드롭다운");
         float CRITERIA_NUM = 16f / 9f;
 
         //16:9보다 가로가 더 긴 모니터의 경우 16:9 해상도만 나옴
@@ -197,6 +210,7 @@ public class ResolutionManagement : MonoBehaviour
         isFullScreen = !isFullScreen;
         SaveManager.Instance.SaveIsFullScreen(isFullScreen);
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         //해상도 메뉴 목록 재정의
         RedefineDropdown();
@@ -289,6 +303,7 @@ public class ResolutionManagement : MonoBehaviour
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
     public void EnterResolution(int value)
     {
+        print("엔터 리솔루션");
         float CRITERIA_NUM = 16f / 9f;
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
@@ -296,14 +311,111 @@ public class ResolutionManagement : MonoBehaviour
         if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
             StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
+            //항상 아웃사이드 먼저 해줘야함
+            ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+            ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
         {
             StartCoroutine(ResolutionWindow(hdList[value].x, hdList[value].y));
+            //항상 아웃사이드 먼저 해줘야함
+            ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+            ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
+        }
+    }
+
+    private void ResizePreviewImage(int width, int height, RectTransform rect)
+    {
+        //가로와 세로의 최대공약수 구함
+        int gcd = GCD(width, height);
+        //각 세로와 가로를 최대공약수로 나누어 해상도의 비율을 알아냄
+        width = width / gcd;
+        height = height / gcd;
+
+        //비율에 곱해야하는 기준값
+        int temp = 0;
+        //자신을 감싸고 있는 부모의 가로 혹은 세로
+        int parentWidth = 0;
+        int parentHeight = 0;
+
+        //자신을 감싸고 있는 오브젝트의 가로, 세로 길이를 대입
+        //부모가 패널일 때
+        if (rect == outside)
+        {
+            parentWidth = 1000;
+            parentHeight = 1000;
+        }
+        //부모가 outside일 때
+        else
+        {
+            parentWidth = (int)outside.rect.width;
+            parentHeight = (int)outside.rect.height;
         }
 
+        //목표 해상도 가로가 세로 수치 이상일때(가로로 길거나 1:1 비율의 화면이라는 뜻)
+        if (width >= height)
+        {
+            //부모 영역에 최대한 꽉 차게 채울 수 있는 기준값을 구함
+            temp = parentWidth / width;
+            //세로값이 벗어날 수 있으니 기준값 조정해줌
+            while (temp * height > parentHeight)
+            {
+                temp--;
+            }
+        }
+        //목표 해상도 가로가 세로 수치 미만일때(세로가 길쭉한 화면이라는 뜻)
+        else
+        {
+            //부모 영역에 최대한 꽉 차게 채울 수 있는 기준값을 구함
+            temp = parentHeight / height;
+            //가로값이 벗어날 수 있으니 기준값 조정해줌
+            while (temp * height > parentWidth)
+            {
+                temp--;
+            }
+        }
 
+        if (rect == inside)
+        {
+            print("temp : " + temp);
+        }
+
+        //비율에 기준값을 곱하여 부모 영역에 최대한 꽉 채울 width와 height를 구함
+        width *= temp;
+        height *= temp;
+
+        if (rect == inside)
+        {
+            print("width : " + width);
+            print("height : " + height);
+        }
+
+        if (rect == outside)
+        {
+            rect.sizeDelta = new Vector2(width, height);
+        }
+        else if (rect == inside)
+        {
+            //inside의 테두리가 outside와 겹칠 우려 있으므로 50씩 빼줌
+            rect.sizeDelta = new Vector2(width - 50, height - 50);
+        }
+    }
+
+    private int GCD(int a, int b)
+    {
+        if (a == b)
+        {
+            return a;
+        }
+
+        while (b != 0)
+        {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
     }
 
     //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)

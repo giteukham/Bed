@@ -32,7 +32,6 @@ public class SaveManager : MonoSingleton<SaveManager>
 
     private void Update()
     {
-        print(Application.targetFrameRate);
         if (Input.GetKeyDown(KeyCode.Space))
         {
             PlayerPrefs.DeleteAll();
