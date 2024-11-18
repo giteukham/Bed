@@ -312,16 +312,58 @@ public class ResolutionManagement : MonoBehaviour
         {
             StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
             //항상 아웃사이드 먼저 해줘야함
-            ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
-            ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
+            ResizePreviewImage2(Display.main.systemWidth, Display.main.systemHeight, outside);
+            ResizePreviewImage2((int)currentList[value].x, (int)currentList[value].y, inside);
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
         {
             StartCoroutine(ResolutionWindow(hdList[value].x, hdList[value].y));
             //항상 아웃사이드 먼저 해줘야함
-            ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
-            ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
+            ResizePreviewImage2(Display.main.systemWidth, Display.main.systemHeight, outside);
+            ResizePreviewImage2((int)hdList[value].x, (int)hdList[value].y, inside);
+        }
+    }
+
+    private void ResizePreviewImage2(float targetWidth, float targetHeight, RectTransform rect)
+    {
+        float ratio = 0;
+        if (rect == outside)
+        {
+            if (targetWidth >= targetHeight)
+            {
+                //목표 해상도는 1 : ratio로 표현 가능함
+                ratio = 1 / (targetWidth / targetHeight);
+                rect.sizeDelta = new Vector2(1000, 1000 * ratio);
+            }
+            else
+            {
+                ratio = 1 / (targetHeight / targetWidth);
+                rect.sizeDelta = new Vector2(1000 * ratio, 1000);
+            }
+        }
+        else //rect == inside
+        {
+            if (targetWidth >= targetHeight)
+            {
+                //바깥 테두리와 안쪽 테두리가 몇배 차이나는지 조사후 1에서 그 값을 나눔
+                ratio = 1 / (Display.main.systemWidth / targetWidth);
+            }
+            else
+            {
+                //바깥 테두리와 안쪽 테두리가 몇배 차이나는지 조사후 1에서 그 값을 나눔
+                ratio = 1 / (Display.main.systemHeight / targetHeight);
+            }
+            //scaleDifference를 바깥 테두리의 가로와 세로에 곱해서 적용함
+            if (Display.main.systemWidth == targetWidth)
+            {
+                //목표 해상도가 내 모니터 크기와 같을때 안쪽,바깥쪽 테두리가 겹쳐보이기에 -50 적당히 빼줌
+                rect.sizeDelta = new Vector2(outside.rect.width * ratio - 50, outside.rect.height * ratio - 50);
+            }
+            else
+            {
+                rect.sizeDelta = new Vector2(outside.rect.width * ratio, outside.rect.height * ratio);
+            }
         }
     }
 
@@ -387,8 +429,8 @@ public class ResolutionManagement : MonoBehaviour
 
         if (rect == inside)
         {
-            print("width : " + width);
-            print("height : " + height);
+            print("targetWidth : " + width);
+            print("targetHeight : " + height);
         }
 
         if (rect == outside)
