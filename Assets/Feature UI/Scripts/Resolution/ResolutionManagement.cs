@@ -13,6 +13,7 @@ public class ResolutionManagement : MonoBehaviour
 
     [SerializeField] private Camera cam;
     [SerializeField] private Text screenText;
+    [SerializeField] private TMP_Text previewText;
     [SerializeField] private Image fullScreenSwitch;
     [SerializeField] private Image insideImage;
     [SerializeField] private TMP_Dropdown resolutiondropdown;
@@ -26,6 +27,7 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Sprite windowedInside;
 
     bool isFullScreen = true;
+    bool isFullScreenReady = true;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
     int frameRate = 60;
@@ -57,8 +59,9 @@ public class ResolutionManagement : MonoBehaviour
 
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = SaveManager.Instance.LoadIsFullScreen();
+        /*isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
-        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;*/
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
@@ -71,6 +74,17 @@ public class ResolutionManagement : MonoBehaviour
         
         hdList.Clear();
         currentList.Clear();
+
+        int temp = 540;
+        for (int i = 0; i < 9; i++)
+        {
+            currentList.Add(new Vector2(Display.main.systemWidth - temp, Display.main.systemHeight - temp));
+            temp -= 60;
+            if (i == 7)
+            {
+                temp = 0;
+            }
+        }
 
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
 
@@ -99,23 +113,23 @@ public class ResolutionManagement : MonoBehaviour
 
     private void OnEnable()
     {
+        isFullScreenReady = isFullScreen;
+        fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
-        RedefineDropdown();
-        print(nowList.Count);
+        RedefineDropdown(isFullScreen);
+        print("nowList : " + nowList.Count);
         for (int i = 0; i < nowList.Count; i++)
         {
             if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
             {
                 print(nowWidthPixel + " : " + nowList[i].x + " : " + nowHeightPixel + " : " + nowList[i].y);
-                //0일때 0으로 드롭다운 value를 바꿔도 변화가 없기 때문에 수동으로 메소드 실행해줌
-                if (i == 0)
-                {
-                    resolutiondropdown.value = i;
-                    EnterResolution(i);
-                }
+
                 //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
                 resolutiondropdown.value = i;
+                ApplyResolution();
                 //메소드 종료
                 return;
             }
@@ -137,12 +151,6 @@ public class ResolutionManagement : MonoBehaviour
         {
             testText.text = "currentList";
         }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            //이 코드 실행시 실제로 드롭다운 아이템에 해당하는 해상도로 변경됨
-            resolutiondropdown.value = 2;
-        }
     }
 
     private void ListValueDuplicateCheck(List<Vector2> list, Resolution item)
@@ -159,13 +167,12 @@ public class ResolutionManagement : MonoBehaviour
         list.Add(new Vector2(item.width, item.height));
     }
 
-    private void RedefineDropdown()
+    private void RedefineDropdown(bool checkFullScreen)
     {
-        print("리디파인 드롭다운");
         float CRITERIA_NUM = 16f / 9f;
 
         //16:9보다 가로가 더 긴 모니터의 경우 16:9 해상도만 나옴
-        if (CRITERIA_NUM < Display.main.systemWidth / Display.main.systemHeight || isFullScreen == false)
+        if (CRITERIA_NUM < Display.main.systemWidth / Display.main.systemHeight || checkFullScreen == false)
         {
             resolutiondropdown.ClearOptions();
 
@@ -180,7 +187,7 @@ public class ResolutionManagement : MonoBehaviour
 
             nowList = hdList;
         }
-        else if (isFullScreen == true)
+        else if (checkFullScreen == true)
         {
             //드롭다운 아이템 모두 제거
             resolutiondropdown.ClearOptions();
@@ -203,27 +210,11 @@ public class ResolutionManagement : MonoBehaviour
 
     }
 
-    //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
-    //풀스크린과 창모드 드롭다운 아이템이 다르니 스위치 눌리면 드롭다운 인덱스 0번으로 적용하는 걸로
-    public void FullScreenSwitch()
-    {
-        isFullScreen = !isFullScreen;
-        SaveManager.Instance.SaveIsFullScreen(isFullScreen);
-        fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
-        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
-
-        //해상도 메뉴 목록 재정의
-        RedefineDropdown();
-
-        //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
-        resolutiondropdown.value = 0;
-        resolutiondropdown.value = nowList.Count - 1;
-    }
-
     private IEnumerator ResolutionWindow(float width, float height)
     {
         Screen.SetResolution((int)width, (int)height, isFullScreen);
 
+        //SetResolution하고 바로 RescaleWindow 실행하면 적용 제대로 안되는 버그 있어서 1프레임 쉬었다 시작
         yield return null;
 
         RescaleWindow(width, height);
@@ -241,6 +232,7 @@ public class ResolutionManagement : MonoBehaviour
     /// <param name="height">'목표' 세로비율로 명명함</param>
     private void RescaleWindow(float width, float height)
     {
+        print("리스케일 윈도우");
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
 
         //16 / 9값과 비교하여 16:9 화면에서 세로길이 혹은 가로길이 중에서
@@ -301,9 +293,34 @@ public class ResolutionManagement : MonoBehaviour
     void OnPreCull() => GL.Clear(true, true, Color.black);
 
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
-    public void EnterResolution(int value)
+    //해상도 프리뷰만 건드림
+    public void ReadyResolution(int value)
     {
-        print("엔터 리솔루션");
+        float CRITERIA_NUM = 16f / 9f;
+
+        //리스트값으로 매개변수 받아서 넣어주면 될듯
+        //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
+        if (isFullScreenReady == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
+        {
+            //항상 아웃사이드 먼저 해줘야함
+            ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+            ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
+            previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
+        }
+        //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
+        else
+        {
+            //항상 아웃사이드 먼저 해줘야함
+            ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+            ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
+            previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
+        }
+    }
+
+    //확인버튼 누를시 실행
+    private void ApplyResolution()
+    {
+        int value = resolutiondropdown.value;
         float CRITERIA_NUM = 16f / 9f;
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
@@ -311,21 +328,71 @@ public class ResolutionManagement : MonoBehaviour
         if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
         {
             StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
-            //항상 아웃사이드 먼저 해줘야함
-            ResizePreviewImage2(Display.main.systemWidth, Display.main.systemHeight, outside);
-            ResizePreviewImage2((int)currentList[value].x, (int)currentList[value].y, inside);
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
         {
             StartCoroutine(ResolutionWindow(hdList[value].x, hdList[value].y));
-            //항상 아웃사이드 먼저 해줘야함
-            ResizePreviewImage2(Display.main.systemWidth, Display.main.systemHeight, outside);
-            ResizePreviewImage2((int)hdList[value].x, (int)hdList[value].y, inside);
         }
     }
 
-    private void ResizePreviewImage2(float targetWidth, float targetHeight, RectTransform rect)
+    //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
+    public void ReadyFullScreenSwitch()
+    {
+        //isFullScreen = !isFullScreen;
+        //SaveManager.Instance.SaveIsFullScreen(isFullScreen);
+        //fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+
+        isFullScreenReady = !isFullScreenReady;
+        fullScreenSwitch.sprite = isFullScreenReady ? onImage : offImage;
+        insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
+
+        /*if (fullScreenSwitch.sprite == onImage)
+        {
+            fullScreenSwitch.sprite = offImage;
+            insideImage.sprite = windowedInside;
+        }
+        else
+        {
+            fullScreenSwitch.sprite = onImage;
+            insideImage.sprite = fullscreenInside;
+        }*/
+
+        //해상도 메뉴 목록 재정의
+        //isFullScreenReady = !isFullScreenReady;
+        RedefineDropdown(isFullScreenReady);
+
+        //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
+        resolutiondropdown.value = 0;
+        resolutiondropdown.value = nowList.Count - 1;
+        //ApplyResolution();
+    }
+
+    //확인버튼 누를시 실행
+    public void ApplyFullScreenSwitch()
+    {
+        //isFullScreen = !isFullScreen;
+        isFullScreen = isFullScreenReady;
+        SaveManager.Instance.SaveIsFullScreen(isFullScreen);
+        //fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+
+        //해상도 메뉴 목록 재정의
+        //RedefineDropdown(!isFullScreen);
+
+        //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
+        //resolutiondropdown.value = nowList.Count - 1;
+        ApplyResolution();
+    }
+
+    public void PressApply()
+    {
+        ApplyFullScreenSwitch();
+        ApplyResolution();
+    }
+
+    private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
         float ratio = 0;
         if (rect == outside)
@@ -365,99 +432,6 @@ public class ResolutionManagement : MonoBehaviour
                 rect.sizeDelta = new Vector2(outside.rect.width * ratio, outside.rect.height * ratio);
             }
         }
-    }
-
-    private void ResizePreviewImage(int width, int height, RectTransform rect)
-    {
-        //가로와 세로의 최대공약수 구함
-        int gcd = GCD(width, height);
-        //각 세로와 가로를 최대공약수로 나누어 해상도의 비율을 알아냄
-        width = width / gcd;
-        height = height / gcd;
-
-        //비율에 곱해야하는 기준값
-        int temp = 0;
-        //자신을 감싸고 있는 부모의 가로 혹은 세로
-        int parentWidth = 0;
-        int parentHeight = 0;
-
-        //자신을 감싸고 있는 오브젝트의 가로, 세로 길이를 대입
-        //부모가 패널일 때
-        if (rect == outside)
-        {
-            parentWidth = 1000;
-            parentHeight = 1000;
-        }
-        //부모가 outside일 때
-        else
-        {
-            parentWidth = (int)outside.rect.width;
-            parentHeight = (int)outside.rect.height;
-        }
-
-        //목표 해상도 가로가 세로 수치 이상일때(가로로 길거나 1:1 비율의 화면이라는 뜻)
-        if (width >= height)
-        {
-            //부모 영역에 최대한 꽉 차게 채울 수 있는 기준값을 구함
-            temp = parentWidth / width;
-            //세로값이 벗어날 수 있으니 기준값 조정해줌
-            while (temp * height > parentHeight)
-            {
-                temp--;
-            }
-        }
-        //목표 해상도 가로가 세로 수치 미만일때(세로가 길쭉한 화면이라는 뜻)
-        else
-        {
-            //부모 영역에 최대한 꽉 차게 채울 수 있는 기준값을 구함
-            temp = parentHeight / height;
-            //가로값이 벗어날 수 있으니 기준값 조정해줌
-            while (temp * height > parentWidth)
-            {
-                temp--;
-            }
-        }
-
-        if (rect == inside)
-        {
-            print("temp : " + temp);
-        }
-
-        //비율에 기준값을 곱하여 부모 영역에 최대한 꽉 채울 width와 height를 구함
-        width *= temp;
-        height *= temp;
-
-        if (rect == inside)
-        {
-            print("targetWidth : " + width);
-            print("targetHeight : " + height);
-        }
-
-        if (rect == outside)
-        {
-            rect.sizeDelta = new Vector2(width, height);
-        }
-        else if (rect == inside)
-        {
-            //inside의 테두리가 outside와 겹칠 우려 있으므로 50씩 빼줌
-            rect.sizeDelta = new Vector2(width - 50, height - 50);
-        }
-    }
-
-    private int GCD(int a, int b)
-    {
-        if (a == b)
-        {
-            return a;
-        }
-
-        while (b != 0)
-        {
-            int temp = b;
-            b = a % b;
-            a = temp;
-        }
-        return a;
     }
 
     //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
