@@ -6,10 +6,7 @@ using UnityEngine;
 
 public class MouseSettingsPreviewPlayer : MonoBehaviour
 {
-    private Animator playerAnimator, blanketAnimator;
-    
-    [SerializeField] private Transform blanket;
-    private Vector3 blanketPosition;
+    private Animator playerAnimator;
     
     [SerializeField] protected StateMachine playerDirectionStateMachine;
     private PreviewPlayerDirectionStates previewPlayerDirectionStates;
@@ -29,9 +26,7 @@ public class MouseSettingsPreviewPlayer : MonoBehaviour
     private void OnEnable()
     {
         TryGetComponent(out playerAnimator);
-        blanketAnimator = blanket.GetComponent<Animator>();
-        blanketPosition = blanket.transform.position;
-        previewPlayerDirectionStates = new PreviewPlayerDirectionStates(playerAnimator, blanketAnimator);
+        previewPlayerDirectionStates = new PreviewPlayerDirectionStates(playerAnimator);
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine, directionStates);
     }
 
@@ -39,7 +34,6 @@ public class MouseSettingsPreviewPlayer : MonoBehaviour
     {
         playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
         playerAnimator.SetTrigger("To Middle");
-        blanketAnimator.SetTrigger("To Middle");
     }
     
     public void EnablePlayerObject(bool isActivate)
@@ -75,12 +69,11 @@ public class MouseSettingsPreviewPlayer : MonoBehaviour
 
 public class PreviewPlayerDirectionStates
 {
-    private static Animator playerAnimator, blanketAnimator;
+    private static Animator playerAnimator;
     
-    public PreviewPlayerDirectionStates(Animator playerAnimator, Animator blanketAnimator)
+    public PreviewPlayerDirectionStates(Animator playerAnimator)
     {
         PreviewPlayerDirectionStates.playerAnimator = playerAnimator;
-        PreviewPlayerDirectionStates.blanketAnimator = blanketAnimator;
     }
     
     public class LeftDirectionState : IState
@@ -92,10 +85,9 @@ public class PreviewPlayerDirectionStates
         
         public void Execute()
         {
-            if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            if (InputSystem.MouseDeltaHorizontal >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 playerAnimator.SetTrigger("Middle From Left");
-                blanketAnimator.SetTrigger("Middle From Left");
             }
         }
         
@@ -114,15 +106,13 @@ public class PreviewPlayerDirectionStates
         
         public void Execute()
         {
-            if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if (InputSystem.MouseDeltaHorizontal <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 playerAnimator.SetTrigger("Middle To Left");
-                blanketAnimator.SetTrigger("Middle To Left");
             }
-            else if (InputSystem.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            else if (InputSystem.MouseDeltaHorizontal >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
             {
                 playerAnimator.SetTrigger("Middle To Right");
-                blanketAnimator.SetTrigger("Middle To Right");
             }
             
         }
@@ -141,10 +131,9 @@ public class PreviewPlayerDirectionStates
         }
         public void Execute()
         {
-            if (InputSystem.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if (InputSystem.MouseDeltaHorizontal <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
             {
                 playerAnimator.SetTrigger("Middle From Right");
-                blanketAnimator.SetTrigger("Middle From Right");
             }
             
         }

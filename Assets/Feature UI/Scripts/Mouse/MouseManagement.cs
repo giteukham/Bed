@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
-/// 수정 날짜 : 2024-11-14 최무령
+/// 수정 날짜 : 2024-11-18 최무령
 /// </summary>
 public enum Arrow
 {
@@ -34,7 +34,7 @@ public class MouseManagement : MonoBehaviour
     
     [Header("Mouse UI")]
     [SerializeField] private Slider slider;
-    [SerializeField] private TMP_Text sensitivityText;
+    [SerializeField] private TMP_InputField sensitivityValue;
     [SerializeField] private Image verticalSwitch;
     [SerializeField] private Image horizontalSwitch;
     /// <summary>
@@ -60,17 +60,13 @@ public class MouseManagement : MonoBehaviour
     /// 최종 적용되는 마우스 감도
     /// </summary>
     public static float mouseSpeed;
-    
-    private static bool isVerticalReverse = true, isHorizontalReverse = false;
 
     private const float mouseSpeedMultiplier = 500f;        // 마우스 감도 상수
 
-    public static void InitMouseSetting(float sensitivity, bool verticalReverse, bool horizontalReverse)
+    public static void InitMouseSetting(float sensitivity)
     {
         mouseSensitivity = sensitivity;
         mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
-        isVerticalReverse = verticalReverse;
-        isHorizontalReverse = horizontalReverse;
     }
 
     /// <summary>
@@ -89,12 +85,12 @@ public class MouseManagement : MonoBehaviour
         globalPlayersPos.position = meshesPos.position;
         
         previewPOVCamera = previewPlayer.POVCamera;
-        playerPOVCamera = player.playerPOVCamera;
+        playerPOVCamera = player?.POVCamera;
         
         previewPOVCamera.m_VerticalAxis.Value = 0f;
         previewPOVCamera.m_HorizontalAxis.Value = 0f;
-        previewPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
-        previewPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        previewPOVCamera.m_VerticalAxis.m_InvertInput = !InputSystem.IsVerticalReverse;
+        previewPOVCamera.m_HorizontalAxis.m_InvertInput = InputSystem.IsHorizontalReverse;
         
         player?.EnablePlayerObject(false);
         previewPlayer?.EnablePlayerObject(true);
@@ -119,10 +115,7 @@ public class MouseManagement : MonoBehaviour
     
     private void ChangeArrowColor()
     {
-        int invertVerticalConstant = isVerticalReverse ? 1 : -1;
-        int invertHorizontalConstant = isHorizontalReverse ? -1 : 1;
-
-        switch (InputSystem.MouseDeltaY * invertVerticalConstant)
+        switch (InputSystem.MouseDeltaVertical)
         {
             case float y when y > 0f:
                 arrowImages[Arrow.Up].color = arrowMoveColor;
@@ -135,7 +128,7 @@ public class MouseManagement : MonoBehaviour
                 arrowImages[Arrow.Down].color = Color.white;
                 break;
         }
-        switch (InputSystem.MouseDeltaX * invertHorizontalConstant)
+        switch (InputSystem.MouseDeltaHorizontal)
         {
             case float x when x > 0f:
                 arrowImages[Arrow.Right].color = arrowMoveColor;
@@ -153,10 +146,10 @@ public class MouseManagement : MonoBehaviour
     private void ChangeUI()
     {
         slider.value = mouseSensitivity;
-        sensitivityText.text = mouseSensitivity.ToString(CultureInfo.CurrentCulture);
+        sensitivityValue.text = (Mathf.Floor(mouseSensitivity * 100f) / 100f).ToString(CultureInfo.CurrentCulture);
         //마우스 반전에 따른 버튼 이미지 변경
-        verticalSwitch.sprite = isVerticalReverse ? offImage : onImage;
-        horizontalSwitch.sprite = isHorizontalReverse ? onImage : offImage;
+        verticalSwitch.sprite = InputSystem.IsVerticalReverse ? onImage : offImage;
+        horizontalSwitch.sprite = InputSystem.IsHorizontalReverse ? onImage : offImage;
     }
 
     /// <summary>
@@ -166,7 +159,7 @@ public class MouseManagement : MonoBehaviour
     {
         mouseSensitivity = slider.value;
         mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
-        sensitivityText.text = mouseSensitivity.ToString(CultureInfo.CurrentCulture);
+        sensitivityValue.text = (Mathf.Floor(mouseSensitivity * 100f) / 100f).ToString(CultureInfo.CurrentCulture);
         
         playerPOVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
         playerPOVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
@@ -175,19 +168,41 @@ public class MouseManagement : MonoBehaviour
         
         SaveManager.Instance.SaveMouseSensitivity(mouseSensitivity);
     }
+    
+    public void ChangeSensitivityOnSlider()
+    {
+        ChangeSensitivity();
+    }
+    
+    public void ChangeSensitivityOnInputField()
+    {
+        if (float.TryParse(sensitivityValue.text, out float value))
+        {
+            if (value < slider.minValue)
+            {
+                value = slider.minValue;
+            }
+            else if (value > slider.maxValue)
+            {
+                value = slider.maxValue;
+            }
+            slider.value = value;
+            ChangeSensitivity();
+        }
+    }
 
     /// <summary>
     /// 마우스 상하반전
     /// </summary>
     public void MouseVerticalReverse()
     {
-        isVerticalReverse = !isVerticalReverse;
-        playerPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
-        previewPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
+        InputSystem.ToggleVerticalReverse();
+        bool isVerticalReverse = InputSystem.IsVerticalReverse;
+        playerPOVCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
+        previewPOVCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
         
-        SaveManager.Instance.SaveMouseVerticalReverse(isVerticalReverse);
-        //버튼 이미지 변경(true일 경우 빨강, false일 경우 초록)
-        verticalSwitch.sprite = isVerticalReverse ? offImage : onImage;
+        //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
+        verticalSwitch.sprite = isVerticalReverse ? onImage : offImage;
     }
 
     /// <summary>
@@ -195,14 +210,11 @@ public class MouseManagement : MonoBehaviour
     /// </summary>
     public void MouseHorizontalReverse()
     {
-        isHorizontalReverse = !isHorizontalReverse;
+        InputSystem.ToggleHorizontalReverse();
+        bool isHorizontalReverse = InputSystem.IsHorizontalReverse;
         playerPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         previewPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         
-        SaveManager.Instance.SaveMouseHorizontalReverse(isHorizontalReverse);
-
-        //InputSystem.xBodyReverse = virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput ? -1 : 1;
-        SaveManager.Instance.SaveXBodyReverse(isHorizontalReverse ? -1 : 1);
         //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
         horizontalSwitch.sprite = isHorizontalReverse ? onImage : offImage;
     }

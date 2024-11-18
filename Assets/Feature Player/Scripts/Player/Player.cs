@@ -25,7 +25,7 @@ public enum PlayerEyeStateTypes
 }
 
 /// <summary>
-/// 수정 날짜 : 2024-11-17 최무령
+/// 수정 날짜 : 2024-11-18 최무령
 /// </summary>
 [RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private CinemachineVirtualCamera playerVirtualCamera;
     
-    public CinemachinePOV playerPOVCamera => playerVirtualCamera?.GetCinemachineComponent<CinemachinePOV>();
+    public CinemachinePOV POVCamera => playerVirtualCamera?.GetCinemachineComponent<CinemachinePOV>();
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
@@ -110,6 +110,9 @@ public class Player : MonoBehaviour
 
         playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
+        
+        POVCamera.m_VerticalAxis.m_InvertInput = !InputSystem.IsVerticalReverse;
+        POVCamera.m_HorizontalAxis.m_InvertInput = InputSystem.IsHorizontalReverse;
     }
 
     void Update() 
@@ -161,8 +164,8 @@ public class Player : MonoBehaviour
         if(currentVerticalCameraMovement == recentVerticalCameraMovement && currentHorizontalCameraMovement == recentHorizontalCameraMovement) isCameraMovement = 0;
         else isCameraMovement = 1;
         
-        float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaX);
-        float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaY);
+        float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaHorizontal);
+        float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaVertical);
         recentHorizontalMouseMovement = currentHorizontalMouseMovement;
         recentVerticalMouseMovement = currentVerticalMouseMovement;
         currentHorizontalMouseMovement = mouseDeltaX;

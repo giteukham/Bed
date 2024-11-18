@@ -17,13 +17,12 @@ public class SaveManager : MonoSingleton<SaveManager>
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
     /// <summary>
-    /// 수정 날짜 : 2024-11-14 최무령
+    /// 수정 날짜 : 2024-11-18 최무령
     /// 게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
     /// </summary>
     private void Start()
     {
-        MouseManagement.InitMouseSetting(LoadMouseSensitivity(), LoadMouseVerticalReverse(), LoadMouseHorizontalReverse());
-        InputSystem.xBodyReverse = LoadXBodyReverse();
+        MouseManagement.InitMouseSetting(LoadMouseSensitivity());
     }
 
     private void Update()

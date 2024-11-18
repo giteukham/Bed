@@ -1,23 +1,33 @@
 using System;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputSystem : MonoSingleton<InputSystem>
+
+/// <summary>
+/// 수정 날짜 : 2024-11-18 최무령
+/// </summary>
+public class InputSystem : MonoBehaviour
 {
-    private static float mouseDeltaX;
-    private static float mouseDeltaY;
-    public static float MouseDeltaX
+    private static int verticalConstant = 1, horizontalConstant = 1;                    // 1은 정상, -1은 반전
+    private static float mouseDeltaHorizontal;
+    private static float mouseDeltaVertical;
+    public static float MouseDeltaHorizontal
     {
-        get { return mouseDeltaX; }
-        private set { mouseDeltaX = value; }
+        get { return mouseDeltaHorizontal; }
+        private set { mouseDeltaHorizontal = value; }
     }
 
-    public static float MouseDeltaY
+    public static float MouseDeltaVertical
     {
-        get { return mouseDeltaY; }
-        private set { mouseDeltaY = value; }
+        get { return mouseDeltaVertical; }
+        private set { mouseDeltaVertical = value; }
     }
     public static int xBodyReverse;
+    
+    private static bool isVerticalReverse = false, isHorizontalReverse = false;         // false는 정상, true는 반전
+    public static bool IsVerticalReverse => isVerticalReverse;
+    public static bool IsHorizontalReverse => isHorizontalReverse;
 
     #region Mouse Events
     public static event Action OnMouseWheelClickEvent; 
@@ -25,22 +35,44 @@ public class InputSystem : MonoSingleton<InputSystem>
     public event Action OnMouseClickEvent;   
     #endregion
 
+    private void Awake()
+    {
+        isVerticalReverse = SaveManager.Instance.LoadMouseVerticalReverse();
+        verticalConstant = isVerticalReverse ? -1 : 1;
+        isHorizontalReverse = SaveManager.Instance.LoadMouseHorizontalReverse();
+        horizontalConstant = isHorizontalReverse ? -1 : 1;
+    }
+
+    public static void ToggleVerticalReverse()
+    {
+        isVerticalReverse = !isVerticalReverse;
+        verticalConstant = isVerticalReverse ? -1 : 1;
+        SaveManager.Instance.SaveMouseVerticalReverse(isVerticalReverse);
+    }
+    
+    public static void ToggleHorizontalReverse()
+    {
+        isHorizontalReverse = !isHorizontalReverse;
+        horizontalConstant = isHorizontalReverse ? -1 : 1;
+        SaveManager.Instance.SaveMouseHorizontalReverse(isHorizontalReverse);
+    }
+
     private void OnMouseDelta(InputValue value)
     {
         if (PlayerConstant.isPlayerStop) 
         {
-            MouseDeltaX = 0;
-            MouseDeltaY = 0;
+            MouseDeltaHorizontal = 0;
+            MouseDeltaVertical = 0;
         }
         if ( PlayerConstant.isParalysis ) 
         {
-            MouseDeltaX = value.Get<Vector2>().x * 0.02f;
-            MouseDeltaY = value.Get<Vector2>().y * 0.02f;
+            MouseDeltaHorizontal = value.Get<Vector2>().x * 0.02f * horizontalConstant;
+            MouseDeltaVertical = value.Get<Vector2>().y * 0.02f * verticalConstant;
         }
         else
         {
-            MouseDeltaX = value.Get<Vector2>().x;
-            MouseDeltaY = value.Get<Vector2>().y;
+            MouseDeltaHorizontal = value.Get<Vector2>().x * horizontalConstant;
+            MouseDeltaVertical = value.Get<Vector2>().y * verticalConstant;
         }
     }
 
