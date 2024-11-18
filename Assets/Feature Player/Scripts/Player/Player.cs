@@ -1,16 +1,11 @@
-using Bed.PostProcessing;
+using System;
 using Cinemachine;
 using Cinemachine.PostFX;
-using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem;
 
 public enum PlayerDirectionStateTypes
 {
@@ -35,24 +30,16 @@ public enum PlayerEyeStateTypes
 [RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
 {
-    private static Player instance;
-
     #region Player Components
-    [Header("Player Camera")]
-    [SerializeField] private GameObject mainCamera;
-    
-    [Space]
-    [SerializeField] private CinemachineVirtualCamera mainVirtualCamera;
-    public static CinemachinePOV POVCamera { get; private set; }
-
     [Header("State Machine")]
     [SerializeField] private StateMachine playerDirectionStateMachine;
     [SerializeField] private StateMachine playerEyeStateMachine;
     
-    private PlayerAnimation playerAnimation;
+    [Header("Player Camera")]
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private CinemachineVirtualCamera playerVirtualCamera;
     
-    [Header("Input System")]
-    [SerializeField] private InputSystem inputSystem;
+    public CinemachinePOV playerPOVCamera => playerVirtualCamera?.GetCinemachineComponent<CinemachinePOV>();
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
@@ -66,11 +53,6 @@ public class Player : MonoBehaviour
     private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
     private CinemachineBasicMultiChannelPerlin cameraNoise;
-    #endregion
-    
-    #region Player Control Classes
-    private PlayerDirectionControl playerDirectionControl;
-    private PlayerEyeControl playerEyeControl;
     #endregion
 
     #region Player Stats Updtae Variables
@@ -91,6 +73,11 @@ public class Player : MonoBehaviour
     private float deltaVerticalMouseMovement;
     #endregion
     
+    #region State Machine
+    private PlayerDirectionControl playerDirectionControl;
+    private PlayerEyeControl playerEyeControl;
+    #endregion
+    
     #region Sound Effect Variables
     [SerializeField]private Transform playerPillowSoundPosition;
     private Vector3 playerPillowSoundInitPosition;
@@ -99,29 +86,19 @@ public class Player : MonoBehaviour
     private Coroutine headMoveSFXCoroutine;
     [SerializeField]private Animator headAnimator;
     #endregion
-
-    private void Awake()
-    {
-        instance = this;
-    }
-
+    
     private void Start()
     {
-        TryGetComponent(out playerAnimation);
-        
-        POVCamera = instance.mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
-        
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
-
         // Post Processing
-        postProcessing = mainVirtualCamera.GetComponent<CinemachinePostProcessing>();
+        postProcessing = playerVirtualCamera.GetComponent<CinemachinePostProcessing>();
         postProcessing.m_Profile.TryGetSettings(out colorGrading);
         postProcessing.m_Profile.TryGetSettings(out grain);
         postProcessing.m_Profile.TryGetSettings(out chromaticAberration);
         postProcessing.m_Profile.TryGetSettings(out depthOfField);
-        psxPostProcessEffect = mainCamera.GetComponent<PSXPostProcessEffect>();
+        psxPostProcessEffect = playerCamera.GetComponent<PSXPostProcessEffect>();
 
         // Camera Noise
         //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
@@ -133,25 +110,6 @@ public class Player : MonoBehaviour
 
         playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
-    }
-
-    public void AnimationEvent_ChangeDirectionState(string toState)
-    {
-        switch (toState)
-        {   
-            case "Left":
-                playerDirectionStateMachine.ChangeState(PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Left]);
-                break;
-            case "Middle":
-                playerDirectionStateMachine.ChangeState(PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Middle]);
-                break;
-            case "Right":
-                playerDirectionStateMachine.ChangeState(PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Right]);
-                break;
-            case "Switching":
-                playerDirectionStateMachine.ChangeState(PlayerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Switching]);
-                break;
-        }
     }
 
     void Update() 
@@ -171,12 +129,31 @@ public class Player : MonoBehaviour
         StopPlayer();
         coneCollider.SetColider(BlinkEffect.Blink);
     }
+    
+    public void AnimationEvent_ChangeDirectionState(string toState)
+    {
+        switch (toState)
+        {   
+            case "Left":
+                playerDirectionStateMachine.ChangeState(playerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Left]);
+                break;
+            case "Middle":
+                playerDirectionStateMachine.ChangeState(playerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Middle]);
+                break;
+            case "Right":
+                playerDirectionStateMachine.ChangeState(playerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Right]);
+                break;
+            case "Switching":
+                playerDirectionStateMachine.ChangeState(playerDirectionControl.DirectionStates[PlayerDirectionStateTypes.Switching]);
+                break;
+        }
+    }
 
     private void UpdateStats()
     {
         // ----------------- Head Movement -----------------
-        float cameraDeltaX = mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
-        float cameraDeltaY = mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
+        float cameraDeltaX = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
+        float cameraDeltaY = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
         recentHorizontalCameraMovement = currentHorizontalCameraMovement;
         recentVerticalCameraMovement = currentVerticalCameraMovement;
         currentHorizontalCameraMovement = cameraDeltaX;
@@ -203,8 +180,8 @@ public class Player : MonoBehaviour
         if (PlayerConstant.isEyeOpen == false) return;
         else
         {
-            float eulerY = mainCamera.transform.eulerAngles.y;
-            float eulerX = mainCamera.transform.eulerAngles.x;
+            float eulerY = playerCamera.transform.eulerAngles.y;
+            float eulerX = playerCamera.transform.eulerAngles.x;
 
             if (eulerY < 105f) 
             {
@@ -268,7 +245,7 @@ public class Player : MonoBehaviour
             else if (PlayerConstant.stressGauge >= 25) shakeIntensity = 0.1f;
             else if (PlayerConstant.stressGauge < 25)  shakeIntensity = 0f;
 
-            mainVirtualCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
+            playerVirtualCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
             yield return new WaitForSeconds(0.1f);
         }
     }
@@ -428,43 +405,47 @@ public class Player : MonoBehaviour
         // -------------------------------------게이지 효과음
     }
     
-    private void SetPlayerState()
-    {   
-        if (PlayerConstant.isParalysis)
-        {
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 5f;
-        }
-        else
-        {
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
-        }
-    }
-
     private void StopPlayer()
     {
         if (PlayerConstant.isPlayerStop == true)
         {
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
             if (PlayerConstant.isEyeOpen) playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
         }
         if (PlayerConstant.isPlayerStop == false)
         {
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
-            mainVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
         }
     }
-
-    public static void EnableMainCamera(bool isEnabled)
-    {
-        instance.mainVirtualCamera.enabled = isEnabled;
-        instance.mainCamera?.SetActive(isEnabled);
+    
+    private void SetPlayerState()
+    {   
+        if (PlayerConstant.isParalysis)
+        {
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 5f;
+        }
+        else
+        {
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+        }
     }
+    
+    public void EnablePlayerObject(bool isActivate)
+    {
+        try
+        {
+            gameObject?.SetActive(isActivate);
+        }
+        catch (Exception e)
+        {
 
-    public static void EnablePlayer(bool isEnabled) => instance.gameObject.SetActive(isEnabled);
+        }
+    }
 }
 

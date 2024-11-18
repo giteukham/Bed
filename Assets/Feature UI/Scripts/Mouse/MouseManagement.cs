@@ -5,6 +5,7 @@ using AYellowpaper.SerializedCollections;
 using Cinemachine;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -22,11 +23,14 @@ public enum Arrow
 //감도 1f, 상하반전 true(1), 좌우반전 false(0)
 public class MouseManagement : MonoBehaviour
 {
-    [Header("Preview Settings")]
-    [SerializeField] private CinemachineVirtualCamera previewVirtualCamera;
-    [SerializeField] private GameObject previewPlayer;
+    [Header("Preview Settings")] 
+    [SerializeField] private Transform globalPlayersPos, meshesPos;
+    [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
+    [SerializeField] private Player player;
 
+    private Vector3 tmpPos;
     private CinemachinePOV previewPOVCamera;
+    private CinemachinePOV playerPOVCamera;
     
     [Header("Mouse UI")]
     [SerializeField] private Slider slider;
@@ -81,20 +85,31 @@ public class MouseManagement : MonoBehaviour
             { Arrow.Left, arrows[Arrow.Left].GetComponent<Image>() },
             { Arrow.Right, arrows[Arrow.Right].GetComponent<Image>() }
         };
-
-        previewPOVCamera = previewVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        tmpPos = globalPlayersPos.position;
+        globalPlayersPos.position = meshesPos.position;
+        
+        previewPOVCamera = previewPlayer.POVCamera;
+        playerPOVCamera = player.playerPOVCamera;
+        
         previewPOVCamera.m_VerticalAxis.Value = 0f;
         previewPOVCamera.m_HorizontalAxis.Value = 0f;
         previewPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
         previewPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         
-        previewPlayer.SetActive(true);
+        player?.EnablePlayerObject(false);
+        previewPlayer?.EnablePlayerObject(true);
         ChangeUI();
     }
 
     private void OnDisable()
     {
-        previewPlayer.SetActive(false);
+        if (globalPlayersPos != null)
+        {
+            globalPlayersPos.position = tmpPos;
+        }
+        
+        previewPlayer?.EnablePlayerObject(false);
+        player?.EnablePlayerObject(true);
     }
 
     private void Update()
@@ -106,7 +121,7 @@ public class MouseManagement : MonoBehaviour
     {
         int invertVerticalConstant = isVerticalReverse ? 1 : -1;
         int invertHorizontalConstant = isHorizontalReverse ? -1 : 1;
-        
+
         switch (InputSystem.MouseDeltaY * invertVerticalConstant)
         {
             case float y when y > 0f:
@@ -153,8 +168,8 @@ public class MouseManagement : MonoBehaviour
         mouseSpeed = mouseSensitivity * mouseSpeedMultiplier;
         sensitivityText.text = mouseSensitivity.ToString(CultureInfo.CurrentCulture);
         
-        Player.POVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
-        Player.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
+        playerPOVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
+        playerPOVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
         previewPOVCamera.m_VerticalAxis.m_MaxSpeed = mouseSpeed;
         previewPOVCamera.m_HorizontalAxis.m_MaxSpeed = mouseSpeed;
         
@@ -167,7 +182,7 @@ public class MouseManagement : MonoBehaviour
     public void MouseVerticalReverse()
     {
         isVerticalReverse = !isVerticalReverse;
-        Player.POVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
+        playerPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
         previewPOVCamera.m_VerticalAxis.m_InvertInput = isVerticalReverse;
         
         SaveManager.Instance.SaveMouseVerticalReverse(isVerticalReverse);
@@ -181,7 +196,7 @@ public class MouseManagement : MonoBehaviour
     public void MouseHorizontalReverse()
     {
         isHorizontalReverse = !isHorizontalReverse;
-        Player.POVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        playerPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         previewPOVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         
         SaveManager.Instance.SaveMouseHorizontalReverse(isHorizontalReverse);
