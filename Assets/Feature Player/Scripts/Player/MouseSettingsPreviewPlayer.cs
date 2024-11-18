@@ -25,13 +25,6 @@ public class MouseSettingsPreviewPlayer : MonoBehaviour
         { PlayerDirectionStateTypes.Right, new PreviewPlayerDirectionStates.RightDirectionState() },
         { PlayerDirectionStateTypes.Switching, new PreviewPlayerDirectionStates.SwitchingState() }
     };
-    
-    private Vector3[] playerOriginTransform = new []
-    {
-        new Vector3(1.8f, 2.5f, 5.1f),                      // origin position
-        new Vector3(2.25f, -180, 0),                        // origin rotation
-        new Vector3(0.5f, 0.5f, 0.5f)                       // origin scale
-    };
 
     private void OnEnable()
     {
@@ -40,14 +33,13 @@ public class MouseSettingsPreviewPlayer : MonoBehaviour
         blanketPosition = blanket.transform.position;
         previewPlayerDirectionStates = new PreviewPlayerDirectionStates(playerAnimator, blanketAnimator);
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine, directionStates);
-        playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
     }
 
     private void OnDisable()
     {
-        gameObject.transform.position = playerOriginTransform[0];
-        gameObject.transform.eulerAngles = playerOriginTransform[1];
-        gameObject.transform.localScale = playerOriginTransform[2];
+        playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
+        playerAnimator.SetTrigger("To Middle");
+        blanketAnimator.SetTrigger("To Middle");
     }
     
     public void EnablePlayerObject(bool isActivate)
