@@ -68,7 +68,28 @@ public class ResolutionManagement : MonoBehaviour
         hdList.Clear();
         currentList.Clear();
 
-        int temp = 540;
+        //모니터 해상도 가로,세로의 최대공약수 구함
+        int gcd = GCD(Display.main.systemWidth, Display.main.systemHeight);
+        //내 모니터의 비율 구한 뒤에 20을 곱해줌
+        int value1 = Display.main.systemWidth / gcd * 20;
+        int value2 = Display.main.systemHeight / gcd * 20;
+        //드롭다운에 들어갈 최소값을 정함
+        int startWidth = Display.main.systemWidth / 4;
+        int startHeight = Display.main.systemHeight / 4;
+
+        while (true)
+        {
+            currentList.Add(new Vector2(startWidth, startHeight));
+            startWidth += value1;
+            startHeight += value2;
+            if (startWidth >= Display.main.systemWidth && startHeight >= Display.main.systemHeight)
+            {
+                currentList.Add(new Vector2(Display.main.systemWidth, Display.main.systemHeight));
+                break;
+            }
+        }
+
+        /*int temp = 540;
         for (int i = 0; i < 9; i++)
         {
             currentList.Add(new Vector2(Display.main.systemWidth - temp, Display.main.systemHeight - temp));
@@ -78,7 +99,7 @@ public class ResolutionManagement : MonoBehaviour
             {
                 temp = 0;
             }
-        }
+        }*/
 
         //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
@@ -101,10 +122,12 @@ public class ResolutionManagement : MonoBehaviour
             {
                 ListValueDuplicateCheck(currentList, item);
             }
-
         }
 
-
+        for (int i = 0; i < currentList.Count; i++)
+        {
+            print($"커런트 리스트 : {currentList[i].x} : {currentList[i].y}");
+        }
 
     }
 
@@ -161,7 +184,7 @@ public class ResolutionManagement : MonoBehaviour
     private void ListValueDuplicateCheck(List<Vector2> list, Resolution item)
     {
         //temp기본값은 list 마지막 인덱스
-        int temp = list.Count;
+        //int temp = list.Count;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -170,21 +193,25 @@ public class ResolutionManagement : MonoBehaviour
             {
                 return;
             }
+            //아래 else if문은 드롭다운 리스트가 낮은 숫자부터 시작된다는 가정하에 작동함
             //리스트 가로보다 아이템 가로가 짧을때
             else if (list[i].x > item.width)
             {
-                temp = i;
-                //뒷자리로 갈수록 계속 짧아져서 다른 방법 찾아야함
+                //temp = i;
                 print($"{item.width}는 {list[i].x} 보다 짧음");
+                list.Insert(i, new Vector2(item.width, item.height));
+                return;
             }
             else if (list[i].x == item.width && list[i].y > item.height)
             {
-                temp = i;
+                //temp = i;
+                list.Insert(i, new Vector2(item.width, item.height));
+                return;
             }
         }
-        //리스트 안에 같은게 없으면 리스트에 삽입
-        //list.Add(new Vector2(item.width, item.height));
-        list.Insert(temp, new Vector2(item.width, item.height));
+        //리스트 안에 같은게 없으면서 가장 큰 width를 가지고 있을때 리스트 마지막에 삽입
+        list.Add(new Vector2(item.width, item.height));
+        //list.Insert(temp, new Vector2(item.width, item.height));
     }
 
     private void RedefineDropdown(bool checkFullScreen)
@@ -484,6 +511,34 @@ public class ResolutionManagement : MonoBehaviour
             {
                 rect.sizeDelta = new Vector2(outside.rect.width * ratio, outside.rect.height * ratio);
             }
+        }
+    }
+
+    private int GCD(int a, int b)
+    {
+        if (a == b)
+        {
+            return a;
+        }
+        else if (a > b)
+        {
+            while (b != 0)
+            {
+                int temp = a % b;
+                a = b;
+                b = temp;
+            }
+            return a;
+        }
+        else
+        {
+            while (a != 0)
+            {
+                int temp = b % a;
+                b = a;
+                a = temp;
+            }
+            return b;
         }
     }
 
