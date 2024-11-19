@@ -9,53 +9,12 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class InputSystem : MonoBehaviour
 {
-    private static int verticalConstant = 1, horizontalConstant = 1;                    // 1은 정상, -1은 반전
-    private static float mouseDeltaHorizontal;
-    private static float mouseDeltaVertical;
-    public static float MouseDeltaHorizontal
-    {
-        get { return mouseDeltaHorizontal; }
-        private set { mouseDeltaHorizontal = value; }
-    }
-
-    public static float MouseDeltaVertical
-    {
-        get { return mouseDeltaVertical; }
-        private set { mouseDeltaVertical = value; }
-    }
-    public static int xBodyReverse;
-    
-    private static bool isVerticalReverse = false, isHorizontalReverse = false;         // false는 정상, true는 반전
-    public static bool IsVerticalReverse => isVerticalReverse;
-    public static bool IsHorizontalReverse => isHorizontalReverse;
 
     #region Mouse Events
     public static event Action OnMouseWheelClickEvent; 
     public static event Action<int> OnMouseScrollEvent;
     public event Action OnMouseClickEvent;   
     #endregion
-
-    private void Awake()
-    {
-        isVerticalReverse = SaveManager.Instance.LoadMouseVerticalReverse();
-        verticalConstant = isVerticalReverse ? -1 : 1;
-        isHorizontalReverse = SaveManager.Instance.LoadMouseHorizontalReverse();
-        horizontalConstant = isHorizontalReverse ? -1 : 1;
-    }
-
-    public static void ToggleVerticalReverse()
-    {
-        isVerticalReverse = !isVerticalReverse;
-        verticalConstant = isVerticalReverse ? -1 : 1;
-        SaveManager.Instance.SaveMouseVerticalReverse(isVerticalReverse);
-    }
-    
-    public static void ToggleHorizontalReverse()
-    {
-        isHorizontalReverse = !isHorizontalReverse;
-        horizontalConstant = isHorizontalReverse ? -1 : 1;
-        SaveManager.Instance.SaveMouseHorizontalReverse(isHorizontalReverse);
-    }
 
     private void OnMouseDelta(InputValue value)
     {

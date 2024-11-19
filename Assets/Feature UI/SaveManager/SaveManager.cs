@@ -11,20 +11,6 @@ using static UnityEngine.Rendering.DebugUI;
 /// </summary>
 public class SaveManager : MonoSingleton<SaveManager>
 {
-    /// <summary>
-    /// 플레이어의 버츄얼 카메라에 접근
-    /// </summary>
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
-
-    /// <summary>
-    /// 수정 날짜 : 2024-11-18 최무령
-    /// 게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
-    /// </summary>
-    private void Start()
-    {
-        MouseManagement.InitMouseSetting(LoadMouseSensitivity());
-    }
-
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
