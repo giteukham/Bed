@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
@@ -14,6 +15,10 @@ public class SaveManager : MonoSingleton<SaveManager>
     /// 플레이어의 버츄얼 카메라에 접근
     /// </summary>
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
+
+    [SerializeField] private Text screenText;
+    [SerializeField] private Text testText2;
+    [SerializeField] private GameObject resolutionManagement;
 
     //게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
     private void Awake()
@@ -28,6 +33,9 @@ public class SaveManager : MonoSingleton<SaveManager>
         //프레임 관련 변수
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = LoadFrameRate();
+
+        //해상도와 프레임은 자동으로 적용됨
+        //하지만 카메라의 viewport Rect는 적용되지 않으므로 수동으로 불러옴
     }
 
     private void Update()
@@ -36,6 +44,19 @@ public class SaveManager : MonoSingleton<SaveManager>
         {
             PlayerPrefs.DeleteAll();
         }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            print("j 누름");
+            GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
+        }
+
+        if (resolutionManagement.activeSelf == false)
+        {
+            testText2.text = Application.targetFrameRate + "";
+            screenText.text = Screen.width + " " + Screen.height;
+        }
+
     }
 
     //마우스 감도 관련

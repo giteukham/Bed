@@ -21,16 +21,16 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private RectTransform outside;
     [SerializeField] private RectTransform inside;
 
-    [SerializeField] private Sprite onImage;
-    [SerializeField] private Sprite offImage;
+    [SerializeField] private Sprite checkImage;
+    [SerializeField] private Sprite nonCheckImage;
     [SerializeField] private Sprite fullscreenInside;
     [SerializeField] private Sprite windowedInside;
 
     bool isFullScreen = true;
     bool isFullScreenReady = true;
+    int frameRateReady = 60;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
-    int frameRate = 60;
 
     List<Vector2> hdList = new List<Vector2>
     {
@@ -60,7 +60,7 @@ public class ResolutionManagement : MonoBehaviour
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = SaveManager.Instance.LoadIsFullScreen();
         /*isFullScreenReady = isFullScreen;
-        fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;*/
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
@@ -86,6 +86,7 @@ public class ResolutionManagement : MonoBehaviour
             }
         }
 
+        //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
 
         float hdNum = 16f / 9f;
@@ -95,12 +96,12 @@ public class ResolutionManagement : MonoBehaviour
         {
             itemNum = (float)item.width / (float)item.height;
 
-            if (Mathf.Approximately(hdNum, itemNum))
+            if (Mathf.Approximately(hdNum, itemNum) && Display.main.systemWidth >= item.width && Display.main.systemHeight >= item.height)
             {
                 ListValueDuplicateCheck(hdList, item);
             }
 
-            if (Mathf.Approximately(monitorNum, itemNum))
+            if (Mathf.Approximately(monitorNum, itemNum) && Display.main.systemWidth >= item.width && Display.main.systemHeight >= item.height)
             {
                 ListValueDuplicateCheck(currentList, item);
             }
@@ -114,7 +115,7 @@ public class ResolutionManagement : MonoBehaviour
     private void OnEnable()
     {
         isFullScreenReady = isFullScreen;
-        fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
@@ -157,8 +158,8 @@ public class ResolutionManagement : MonoBehaviour
     {
         for (int i = 0; i < list.Count; i++)
         {
-            //같은게 있으면 넣지 않고 for문 종료
-            if (list[i].x == item.width)
+            //같은게 있으면 넣지 않고 메소드 종료
+            if (list[i].x == item.width && list[i].y == item.height)
             {
                 return;
             }
@@ -210,6 +211,7 @@ public class ResolutionManagement : MonoBehaviour
 
     }
 
+    //해상도 설정 메소드
     private IEnumerator ResolutionWindow(float width, float height)
     {
         Screen.SetResolution((int)width, (int)height, isFullScreen);
@@ -289,9 +291,6 @@ public class ResolutionManagement : MonoBehaviour
         cam.rect = rect;
     }
 
-    //레터박스 완전 검은색으로 나오게 함
-    void OnPreCull() => GL.Clear(true, true, Color.black);
-
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
     //해상도 프리뷰만 건드림
     public void ReadyResolution(int value)
@@ -317,7 +316,7 @@ public class ResolutionManagement : MonoBehaviour
         }
     }
 
-    //확인버튼 누를시 실행
+    //확인버튼 누를시 해상도 적용
     private void ApplyResolution()
     {
         int value = resolutiondropdown.value;
@@ -336,26 +335,26 @@ public class ResolutionManagement : MonoBehaviour
         }
     }
 
-    //풀스크린으로 만드는 버튼(스위치 버튼 누를때 자동호출)
+    //해상도 프리뷰, 체크버튼 모양만 건드림(체크 버튼 누를때 자동호출)
     public void ReadyFullScreenSwitch()
     {
         //isFullScreen = !isFullScreen;
         //SaveManager.Instance.SaveIsFullScreen(isFullScreen);
-        //fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        //fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         isFullScreenReady = !isFullScreenReady;
-        fullScreenSwitch.sprite = isFullScreenReady ? onImage : offImage;
+        fullScreenSwitch.sprite = isFullScreenReady ? checkImage : nonCheckImage;
         insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
 
-        /*if (fullScreenSwitch.sprite == onImage)
+        /*if (fullScreenSwitch.sprite == checkImage)
         {
-            fullScreenSwitch.sprite = offImage;
+            fullScreenSwitch.sprite = nonCheckImage;
             insideImage.sprite = windowedInside;
         }
         else
         {
-            fullScreenSwitch.sprite = onImage;
+            fullScreenSwitch.sprite = checkImage;
             insideImage.sprite = fullscreenInside;
         }*/
 
@@ -369,13 +368,13 @@ public class ResolutionManagement : MonoBehaviour
         //ApplyResolution();
     }
 
-    //확인버튼 누를시 실행
-    public void ApplyFullScreenSwitch()
+    //확인버튼 누를시 풀스크린 여부 적용
+    private void ApplyFullScreenSwitch()
     {
         //isFullScreen = !isFullScreen;
         isFullScreen = isFullScreenReady;
         SaveManager.Instance.SaveIsFullScreen(isFullScreen);
-        //fullScreenSwitch.sprite = isFullScreen ? onImage : offImage;
+        //fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         //해상도 메뉴 목록 재정의
@@ -386,12 +385,43 @@ public class ResolutionManagement : MonoBehaviour
         ApplyResolution();
     }
 
+    //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
+    public void ReadyFrameRate(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                frameRateReady = 30;
+                //QualitySettings.vSyncCount = 0;
+                //Application.targetFrameRate = 30;
+                //SaveManager.Instance.SaveFrameRate(30);
+                break;
+            case 1:
+                frameRateReady = 60;
+                //QualitySettings.vSyncCount = 0;
+                //Application.targetFrameRate = 60;
+                //SaveManager.Instance.SaveFrameRate(60);
+                break;
+        }
+    }
+
+    //확인버튼 누를시 프레임 적용
+    private void ApplyFrameRate()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = frameRateReady;
+        SaveManager.Instance.SaveFrameRate(frameRateReady);
+    }
+
+    //확인버튼 누를 때 자동 실행
     public void PressApply()
     {
         ApplyFullScreenSwitch();
         ApplyResolution();
+        ApplyFrameRate();
     }
 
+    //프리뷰 화면 사이즈 조정 메소드
     private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
         float ratio = 0;
@@ -434,21 +464,8 @@ public class ResolutionManagement : MonoBehaviour
         }
     }
 
-    //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
-    public void EnterFrameRate(int value)
-    {
-        switch (value)
-        {
-            case 0:
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = 30;
-                SaveManager.Instance.SaveFrameRate(30);
-                break;
-            case 1:
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = 60;
-                SaveManager.Instance.SaveFrameRate(60);
-                break;
-        }
-    }
+    //레터박스 완전 검은색으로 나오게 함
+    void OnPreCull() => GL.Clear(true, true, Color.black);
+
+
 }
