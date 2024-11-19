@@ -289,6 +289,8 @@ public class ResolutionManagement : MonoBehaviour
 
         //카메라에 최종적용
         cam.rect = rect;
+        //camRect 저장
+        SaveManager.Instance.SaveCamRect(rect.x, rect.y, rect.width, rect.height);
     }
 
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
@@ -382,7 +384,8 @@ public class ResolutionManagement : MonoBehaviour
 
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
         //resolutiondropdown.value = nowList.Count - 1;
-        ApplyResolution();
+        //이미 ApplyResolution에서 호출중
+        //ApplyResolution();
     }
 
     //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
@@ -417,6 +420,7 @@ public class ResolutionManagement : MonoBehaviour
     public void PressApply()
     {
         ApplyFullScreenSwitch();
+        //ApplyFullScreenSwitch 다음에 ApplyResolution 실행 할 것
         ApplyResolution();
         ApplyFrameRate();
     }

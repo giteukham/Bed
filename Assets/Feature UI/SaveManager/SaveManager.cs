@@ -15,7 +15,12 @@ public class SaveManager : MonoSingleton<SaveManager>
     /// 플레이어의 버츄얼 카메라에 접근
     /// </summary>
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    /// <summary>
+    /// 메인카메라에 접근
+    /// </summary>
+    [SerializeField] private Camera cam;
 
+    //아래는 디버그용 변수들
     [SerializeField] private Text screenText;
     [SerializeField] private Text testText2;
     [SerializeField] private GameObject resolutionManagement;
@@ -36,6 +41,13 @@ public class SaveManager : MonoSingleton<SaveManager>
 
         //해상도와 프레임은 자동으로 적용됨
         //하지만 카메라의 viewport Rect는 적용되지 않으므로 수동으로 불러옴
+        //cam.rect = LoadCamRect();
+    }
+
+    private void Start()
+    {
+        print($"{LoadCamRect().x} : {LoadCamRect().y} : {LoadCamRect().width} : {LoadCamRect().height}");
+        cam.rect = LoadCamRect();
     }
 
     private void Update()
@@ -128,6 +140,26 @@ public class SaveManager : MonoSingleton<SaveManager>
     public bool LoadIsFullScreen()
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
+    }
+
+    //camRect 관련
+    public void SaveCamRect(float value1, float value2, float value3, float value4)
+    {
+        PlayerPrefs.SetFloat("CamX", value1);
+        PlayerPrefs.SetFloat("CamY", value2);
+        PlayerPrefs.SetFloat("CamWidth", value3);
+        PlayerPrefs.SetFloat("CamHeight", value4);
+        PlayerPrefs.Save();
+    }
+
+    public Rect LoadCamRect()
+    {
+        Rect rect = new Rect
+            (
+            PlayerPrefs.GetFloat("CamX", 0), PlayerPrefs.GetFloat("CamY", 0),
+            PlayerPrefs.GetFloat("CamWidth", 1), PlayerPrefs.GetFloat("CamHeight", 1)
+            );
+        return rect;
     }
 
     //프레임 레이트 관련
