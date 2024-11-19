@@ -50,13 +50,6 @@ public class ResolutionManagement : MonoBehaviour
 
     private void Awake()
     {
-        // V-Sync 비활성화
-        QualitySettings.vSyncCount = 0;
-        //저장된 프레임 레이트 적용
-        Application.targetFrameRate = SaveManager.Instance.LoadFrameRate();
-        //프레임 드롭다운 아이템 저장된 값으로 변경
-        frameRateDropdown.value = SaveManager.Instance.LoadFrameRate() / 30 - 1;
-
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = SaveManager.Instance.LoadIsFullScreen();
         /*isFullScreenReady = isFullScreen;
@@ -79,6 +72,7 @@ public class ResolutionManagement : MonoBehaviour
         for (int i = 0; i < 9; i++)
         {
             currentList.Add(new Vector2(Display.main.systemWidth - temp, Display.main.systemHeight - temp));
+            print("추가 : " + (Display.main.systemWidth - temp) + " " + (Display.main.systemHeight - temp));
             temp -= 60;
             if (i == 7)
             {
@@ -92,6 +86,7 @@ public class ResolutionManagement : MonoBehaviour
         float hdNum = 16f / 9f;
         float monitorNum = (float)Display.main.systemWidth / (float)Display.main.systemHeight;
         float itemNum = 0f;
+
         foreach (Resolution item in monitorResolutions)
         {
             itemNum = (float)item.width / (float)item.height;
@@ -101,6 +96,7 @@ public class ResolutionManagement : MonoBehaviour
                 ListValueDuplicateCheck(hdList, item);
             }
 
+            //내 모니터 비율과 근사값인가? && item 해상도가 내 모니터 이하 해상도인가?
             if (Mathf.Approximately(monitorNum, itemNum) && Display.main.systemWidth >= item.width && Display.main.systemHeight >= item.height)
             {
                 ListValueDuplicateCheck(currentList, item);
@@ -114,6 +110,14 @@ public class ResolutionManagement : MonoBehaviour
 
     private void OnEnable()
     {
+        // V-Sync 비활성화
+        //QualitySettings.vSyncCount = 0;
+        //저장된 프레임 레이트 적용
+        //Application.targetFrameRate = SaveManager.Instance.LoadFrameRate();
+        frameRateReady = SaveManager.Instance.LoadFrameRate();
+        //프레임 드롭다운 아이템 저장된 값으로 변경
+        frameRateDropdown.value = frameRateReady / 30 - 1;
+
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -156,6 +160,9 @@ public class ResolutionManagement : MonoBehaviour
 
     private void ListValueDuplicateCheck(List<Vector2> list, Resolution item)
     {
+        //temp기본값은 list 마지막 인덱스
+        int temp = list.Count;
+
         for (int i = 0; i < list.Count; i++)
         {
             //같은게 있으면 넣지 않고 메소드 종료
@@ -163,9 +170,21 @@ public class ResolutionManagement : MonoBehaviour
             {
                 return;
             }
+            //리스트 가로보다 아이템 가로가 짧을때
+            else if (list[i].x > item.width)
+            {
+                temp = i;
+                //뒷자리로 갈수록 계속 짧아져서 다른 방법 찾아야함
+                print($"{item.width}는 {list[i].x} 보다 짧음");
+            }
+            else if (list[i].x == item.width && list[i].y > item.height)
+            {
+                temp = i;
+            }
         }
         //리스트 안에 같은게 없으면 리스트에 삽입
-        list.Add(new Vector2(item.width, item.height));
+        //list.Add(new Vector2(item.width, item.height));
+        list.Insert(temp, new Vector2(item.width, item.height));
     }
 
     private void RedefineDropdown(bool checkFullScreen)
