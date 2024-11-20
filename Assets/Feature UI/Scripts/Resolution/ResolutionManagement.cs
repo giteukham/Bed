@@ -91,8 +91,8 @@ public class ResolutionManagement : MonoBehaviour
         }*/
 
         //모니터 해상도에 맞는 currentList 추가
-        int widthNum = (Display.main.systemWidth - Display.main.systemWidth / 4) / 9;
-        int heightNum = (Display.main.systemHeight - Display.main.systemHeight / 4) / 9;
+        int widthNum = (int)Math.Round((Display.main.systemWidth - Display.main.systemWidth / 4) / 9f);
+        int heightNum = (int)Math.Round((Display.main.systemHeight - Display.main.systemHeight / 4) / 9f);
 
         for (int i = 9; i > 0; i--)
         {
