@@ -46,7 +46,14 @@ public class SaveManager : MonoSingleton<SaveManager>
 
     private void Start()
     {
-        print($"{LoadCamRect().x} : {LoadCamRect().y} : {LoadCamRect().width} : {LoadCamRect().height}");
+        //print($"{LoadCamRect().x} : {LoadCamRect().y} : {LoadCamRect().width} : {LoadCamRect().height}");
+        cam.rect = LoadCamRect();
+        //StartCoroutine(testCamRectLoad());
+    }
+
+    private IEnumerator testCamRectLoad()
+    {
+        yield return null;
         cam.rect = LoadCamRect();
     }
 
@@ -66,7 +73,8 @@ public class SaveManager : MonoSingleton<SaveManager>
         if (resolutionManagement.activeSelf == false)
         {
             testText2.text = Application.targetFrameRate + "";
-            screenText.text = Screen.width + " " + Screen.height;
+            //screenText.text = Screen.width + " " + Screen.height;
+            screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
         }
 
     }

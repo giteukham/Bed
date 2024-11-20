@@ -61,7 +61,9 @@ public class ResolutionManagement : MonoBehaviour
         //불러온 변수값들을 이용해 이전에 쓰던 해상도 설정 반영
         //Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
 
-        print(Display.main.systemWidth + " : " + Display.main.systemHeight);
+        //print(Display.main.systemWidth + " : " + Display.main.systemHeight);
+
+
 
         //////////////////////////////////////////////////////////////////////////
         
@@ -69,13 +71,13 @@ public class ResolutionManagement : MonoBehaviour
         currentList.Clear();
 
         //모니터 해상도 가로,세로의 최대공약수 구함
-        int gcd = GCD(Display.main.systemWidth, Display.main.systemHeight);
+        /*int gcd = GCD(Display.main.systemWidth, Display.main.systemHeight);
         //내 모니터의 비율 구한 뒤에 20을 곱해줌
         int value1 = Display.main.systemWidth / gcd * 20;
         int value2 = Display.main.systemHeight / gcd * 20;
         //드롭다운에 들어갈 최소값을 정함
         int startWidth = Display.main.systemWidth / 4;
-        int startHeight = Display.main.systemHeight / 4;
+        int startHeight = Display.main.systemHeight / 4;*/
 
         //모니터 해상도에 맞는 currentList 추가
         /*while (true)
@@ -91,13 +93,27 @@ public class ResolutionManagement : MonoBehaviour
         }*/
 
         //모니터 해상도에 맞는 currentList 추가
-        int widthNum = (int)Math.Round((Display.main.systemWidth - Display.main.systemWidth / 4) / 9f);
-        int heightNum = (int)Math.Round((Display.main.systemHeight - Display.main.systemHeight / 4) / 9f);
+        int widthNum = (int)Math.Round((Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f);
+        int heightNum = (int)Math.Round((Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f);
 
-        for (int i = 9; i > 0; i--)
+        for (int i = 9; i >= 0; i--)
         {
             currentList.Add(new Vector2(Display.main.systemWidth - widthNum * i, Display.main.systemHeight - heightNum * i));
         }
+
+        //모니터 해상도에 맞는 hdList 추가
+        //1712 : 960
+        widthNum = (int)Math.Round(Display.main.systemHeight / 9f) * 16;
+        heightNum = Display.main.systemHeight;
+
+        int num1 = (int)Math.Round((widthNum - widthNum / 4f) / 9f);
+        int num2 = (int)Math.Round((heightNum - heightNum / 4f) / 9f);
+
+        for (int i = 9; i >= 0; i--)
+        {
+            hdList.Add(new Vector2(widthNum - num1 * i, heightNum - num2 * i));
+        }
+        hdList.Add(new Vector2(Display.main.systemWidth, Display.main.systemHeight));
 
         //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
@@ -124,7 +140,7 @@ public class ResolutionManagement : MonoBehaviour
 
         for (int i = 0; i < currentList.Count; i++)
         {
-            print($"커런트 리스트 : {currentList[i].x} : {currentList[i].y}");
+            //print($"커런트 리스트 : {currentList[i].x} : {currentList[i].y}");
         }
 
     }
@@ -146,21 +162,22 @@ public class ResolutionManagement : MonoBehaviour
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
         RedefineDropdown(isFullScreen);
-        print("nowList : " + nowList.Count);
         for (int i = 0; i < nowList.Count; i++)
         {
             if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
             {
-                print(nowWidthPixel + " : " + nowList[i].x + " : " + nowHeightPixel + " : " + nowList[i].y);
+                //print(nowWidthPixel + " : " + nowList[i].x + " : " + nowHeightPixel + " : " + nowList[i].y);
 
                 //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
                 resolutiondropdown.value = i;
+                //프리뷰 설정
+                ReadyResolution(i);
+                //해상도 설정
                 ApplyResolution();
                 //메소드 종료
                 return;
             }
         }
-        //print(resolutiondropdown.options[0].text + "zfasdfasdfasdfasd");
     }
 
     private void Update()
@@ -278,7 +295,7 @@ public class ResolutionManagement : MonoBehaviour
     /// <param name="height">'목표' 세로비율로 명명함</param>
     private void RescaleWindow(float width, float height)
     {
-        print("리스케일 윈도우");
+        //print("리스케일 윈도우");
         GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
 
         //16 / 9값과 비교하여 16:9 화면에서 세로길이 혹은 가로길이 중에서
@@ -295,7 +312,7 @@ public class ResolutionManagement : MonoBehaviour
         if (checkedValue == CRITERIA_NUM)
         {
             cam.rect = rect;
-            print("16 : 9");
+            //print("16 : 9");
             return;
         }
         //목표 비율의 '가로 비율'이 16 : 9보다 클때
