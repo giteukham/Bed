@@ -93,30 +93,35 @@ public class ResolutionManagement : MonoBehaviour
         }*/
 
         //모니터 해상도에 맞는 currentList 추가
-        int widthNum = (int)Math.Round((Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f);
-        int heightNum = (int)Math.Round((Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f);
+        float widthNum = (Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f;
+        float heightNum = (Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f;
 
         for (int i = 9; i >= 0; i--)
         {
-            currentList.Add(new Vector2(Display.main.systemWidth - widthNum * i, Display.main.systemHeight - heightNum * i));
+            currentList.Add(new Vector2((int)Math.Round(Display.main.systemWidth - widthNum * i), (int)Math.Round(Display.main.systemHeight - heightNum * i)));
         }
 
         //모니터 해상도에 맞는 hdList 추가
         //1712 : 960
-        widthNum = (int)Math.Round(Display.main.systemHeight / 9f) * 16;
+        widthNum = Display.main.systemHeight / 9f * 16;
         heightNum = Display.main.systemHeight;
 
-        int num1 = (int)Math.Round((widthNum - widthNum / 4f) / 9f);
-        int num2 = (int)Math.Round((heightNum - heightNum / 4f) / 9f);
+        float num1 = (widthNum - widthNum / 4f) / 9f;
+        float num2 = (heightNum - heightNum / 4f) / 9f;
 
         for (int i = 9; i >= 0; i--)
         {
-            hdList.Add(new Vector2(widthNum - num1 * i, heightNum - num2 * i));
+            //현재 모니터보다 큰 해상도는 리스트에 넣지 않음
+            if (Display.main.systemWidth < (int)Math.Round(widthNum - num1 * i) || Display.main.systemHeight < (int)Math.Round(heightNum - num2 * i))
+            {
+                //첫번째로 if문에 걸린 해상도 이후에 나오는 것들도 조건에 부합하니 바로 break로 탈출
+                break;
+            }
+            hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
         }
-        hdList.Add(new Vector2(Display.main.systemWidth, Display.main.systemHeight));
 
         //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
-        List<Resolution> monitorResolutions = Screen.resolutions.ToList();
+        /*List<Resolution> monitorResolutions = Screen.resolutions.ToList();
 
         float hdNum = 16f / 9f;
         float monitorNum = (float)Display.main.systemWidth / (float)Display.main.systemHeight;
@@ -136,7 +141,7 @@ public class ResolutionManagement : MonoBehaviour
             {
                 ListValueDuplicateCheck(currentList, item);
             }
-        }
+        }*/
 
         for (int i = 0; i < currentList.Count; i++)
         {
@@ -489,42 +494,53 @@ public class ResolutionManagement : MonoBehaviour
     //프리뷰 화면 사이즈 조정 메소드
     private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
-        float ratio = 0;
+        float ratio1 = 0;
+        float ratio2 = 0;
         if (rect == outside)
         {
             if (targetWidth >= targetHeight)
             {
                 //목표 해상도는 1 : ratio로 표현 가능함
-                ratio = 1 / (targetWidth / targetHeight);
-                rect.sizeDelta = new Vector2(1000, 1000 * ratio);
+                ratio1 = 1 / (targetWidth / targetHeight);
+                rect.sizeDelta = new Vector2(1000, 1000 * ratio1);
             }
             else
             {
-                ratio = 1 / (targetHeight / targetWidth);
-                rect.sizeDelta = new Vector2(1000 * ratio, 1000);
+                ratio1 = 1 / (targetHeight / targetWidth);
+                rect.sizeDelta = new Vector2(1000 * ratio1, 1000);
             }
         }
         else //rect == inside
         {
-            if (targetWidth >= targetHeight)
+            ratio1 = 1 / (Display.main.systemWidth / targetWidth);
+            ratio2 = 1 / (Display.main.systemHeight / targetHeight);
+            print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
+
+            /*if (targetWidth >= targetHeight)
             {
                 //바깥 테두리와 안쪽 테두리가 몇배 차이나는지 조사후 1에서 그 값을 나눔
-                ratio = 1 / (Display.main.systemWidth / targetWidth);
+                ratio1 = 1 / (Display.main.systemWidth / targetWidth);
+                ratio2 = 1 / (Display.main.systemHeight / targetHeight);
+                print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
             }
             else
             {
                 //바깥 테두리와 안쪽 테두리가 몇배 차이나는지 조사후 1에서 그 값을 나눔
-                ratio = 1 / (Display.main.systemHeight / targetHeight);
-            }
+                ratio1 = 1 / (Display.main.systemHeight / targetHeight);
+                print("2");
+            }*/
             //scaleDifference를 바깥 테두리의 가로와 세로에 곱해서 적용함
-            if (Display.main.systemWidth == targetWidth)
+            if (Display.main.systemWidth == targetWidth || Display.main.systemHeight == targetHeight)
             {
-                //목표 해상도가 내 모니터 크기와 같을때 안쪽,바깥쪽 테두리가 겹쳐보이기에 -50 적당히 빼줌
-                rect.sizeDelta = new Vector2(outside.rect.width * ratio - 50, outside.rect.height * ratio - 50);
+                //목표 해상도가 내 모니터 크기와 같을때 안쪽,바깥쪽 테두리가 겹쳐보이기에 바깥쪽 테두리 50 적당히 더함
+                outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
+                rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+                print("3");
             }
             else
             {
-                rect.sizeDelta = new Vector2(outside.rect.width * ratio, outside.rect.height * ratio);
+                rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+                print($"{outside.rect.width} * {ratio1}, {outside.rect.height} * {ratio1} = {outside.rect.width * ratio1}, {outside.rect.height * ratio1}");
             }
         }
     }
