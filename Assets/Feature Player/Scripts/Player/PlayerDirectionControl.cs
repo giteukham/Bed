@@ -19,8 +19,6 @@ public class PlayerDirectionControl : IPlayerControl
     };
     public Dictionary<PlayerDirectionStateTypes, IState> DirectionStates => directionStates;
     
-    public const float TURN_RIGHT_DELTA_POWER = 50f, TURN_LEFT_DELTA_POWER = -50f;  // 마우스 Delta X값이 50이상이면 Right State로, -50이하이면 Left State로 변경
-    
     /// <summary>
     /// 11월 18일 최무령 수정
     /// </summary>

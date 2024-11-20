@@ -24,11 +24,8 @@ public enum PlayerEyeStateTypes
     Blink
 }
 
-/// <summary>
-/// 수정 날짜 : 2024-11-18 최무령
-/// </summary>
 [RequireComponent(typeof(PlayerAnimation))]
-public class Player : MonoBehaviour
+public class Player : PlayerBase
 {
     #region Player Components
     [Header("State Machine")]
@@ -38,8 +35,6 @@ public class Player : MonoBehaviour
     [Header("Player Camera")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private CinemachineVirtualCamera playerVirtualCamera;
-    
-    public CinemachinePOV POVCamera => playerVirtualCamera?.GetCinemachineComponent<CinemachinePOV>();
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
@@ -86,7 +81,12 @@ public class Player : MonoBehaviour
     private Coroutine headMoveSFXCoroutine;
     [SerializeField]private Animator headAnimator;
     #endregion
-    
+
+    private void Awake()
+    {
+        POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+    }
+
     private void Start()
     {
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
@@ -110,9 +110,6 @@ public class Player : MonoBehaviour
 
         playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
-        
-        POVCamera.m_VerticalAxis.m_InvertInput = !InputSystem.IsVerticalReverse;
-        POVCamera.m_HorizontalAxis.m_InvertInput = InputSystem.IsHorizontalReverse;
     }
 
     void Update() 
@@ -164,8 +161,8 @@ public class Player : MonoBehaviour
         if(currentVerticalCameraMovement == recentVerticalCameraMovement && currentHorizontalCameraMovement == recentHorizontalCameraMovement) isCameraMovement = 0;
         else isCameraMovement = 1;
         
-        float mouseDeltaX = Mathf.Abs(InputSystem.MouseDeltaHorizontal);
-        float mouseDeltaY = Mathf.Abs(InputSystem.MouseDeltaVertical);
+        float mouseDeltaX = Mathf.Abs(MouseSettings.Instance.MouseHorizontalSpeed);
+        float mouseDeltaY = Mathf.Abs(MouseSettings.Instance.MouseVerticalSpeed);
         recentHorizontalMouseMovement = currentHorizontalMouseMovement;
         recentVerticalMouseMovement = currentVerticalMouseMovement;
         currentHorizontalMouseMovement = mouseDeltaX;
@@ -434,21 +431,14 @@ public class Player : MonoBehaviour
         }
         else
         {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseManagement.mouseSpeed;
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
+            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
         }
     }
     
     public void EnablePlayerObject(bool isActivate)
     {
-        try
-        {
-            gameObject?.SetActive(isActivate);
-        }
-        catch (Exception e)
-        {
-
-        }
+        gameObject?.SetActive(isActivate);
     }
 }
 

@@ -16,25 +16,6 @@ public class InputSystem : MonoBehaviour
     public event Action OnMouseClickEvent;   
     #endregion
 
-    private void OnMouseDelta(InputValue value)
-    {
-        if (PlayerConstant.isPlayerStop) 
-        {
-            MouseDeltaHorizontal = 0;
-            MouseDeltaVertical = 0;
-        }
-        if ( PlayerConstant.isParalysis ) 
-        {
-            MouseDeltaHorizontal = value.Get<Vector2>().x * 0.02f * horizontalConstant;
-            MouseDeltaVertical = value.Get<Vector2>().y * 0.02f * verticalConstant;
-        }
-        else
-        {
-            MouseDeltaHorizontal = value.Get<Vector2>().x * horizontalConstant;
-            MouseDeltaVertical = value.Get<Vector2>().y * verticalConstant;
-        }
-    }
-
     private void OnMouseScroll(InputValue value)
     {
         if (PlayerConstant.isPlayerStop) return;

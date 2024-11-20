@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerDirectionStates
 {
+    private static MouseSettings mouseSettings = MouseSettings.Instance;
     public class LeftDirectionState : IState
     {
         public void Enter()
@@ -19,7 +20,7 @@ public class PlayerDirectionStates
             PlayerConstant.LeftStateLAT += Time.deltaTime;
 
             if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
-            if (InputSystem.MouseDeltaHorizontal >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            if (mouseSettings.MouseHorizontalSpeed >= mouseSettings.TurnRightSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
             }
@@ -48,11 +49,11 @@ public class PlayerDirectionStates
             PlayerConstant.MiddleStateLAT += Time.deltaTime;
 
             if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
-            if (InputSystem.MouseDeltaHorizontal <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if (mouseSettings.MouseHorizontalSpeed <= mouseSettings.TurnLeftSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle To Left");
             }
-            else if (InputSystem.MouseDeltaHorizontal >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            else if (mouseSettings.MouseHorizontalSpeed >= mouseSettings.TurnRightSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle To Right");
             }
@@ -80,7 +81,7 @@ public class PlayerDirectionStates
             PlayerConstant.RightStateLAT += Time.deltaTime;
 
             if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
-            if (InputSystem.MouseDeltaHorizontal <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if (mouseSettings.MouseHorizontalSpeed <= mouseSettings.TurnLeftSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
             }

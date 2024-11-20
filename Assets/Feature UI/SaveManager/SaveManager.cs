@@ -51,16 +51,6 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt("MouseHorizontalReverse", 0));
     }
-    public void SaveXBodyReverse(int value)
-    {
-        InputSystem.xBodyReverse = value;
-        PlayerPrefs.SetInt("XBodyReverse", value);
-        PlayerPrefs.Save();
-    }
-    public int LoadXBodyReverse()
-    {
-        return PlayerPrefs.GetInt("XBodyReverse", 1);
-    }
 
     //화면 해상도 관련
     public void SaveResolution(int value1, int value2)
@@ -88,5 +78,12 @@ public class SaveManager : MonoSingleton<SaveManager>
     public bool LoadIsFullScreen()
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
+    }
+
+    public void SaveTurnDeltaPower(float right, float left)
+    {
+        PlayerPrefs.SetFloat("TurnRightDeltaPower", right);
+        PlayerPrefs.SetFloat("TurnLeftDeltaPower", left);
+        PlayerPrefs.Save();
     }
 }
