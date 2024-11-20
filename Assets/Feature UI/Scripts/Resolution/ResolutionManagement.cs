@@ -77,7 +77,8 @@ public class ResolutionManagement : MonoBehaviour
         int startWidth = Display.main.systemWidth / 4;
         int startHeight = Display.main.systemHeight / 4;
 
-        while (true)
+        //모니터 해상도에 맞는 currentList 추가
+        /*while (true)
         {
             currentList.Add(new Vector2(startWidth, startHeight));
             startWidth += value1;
@@ -87,19 +88,16 @@ public class ResolutionManagement : MonoBehaviour
                 currentList.Add(new Vector2(Display.main.systemWidth, Display.main.systemHeight));
                 break;
             }
-        }
-
-        /*int temp = 540;
-        for (int i = 0; i < 9; i++)
-        {
-            currentList.Add(new Vector2(Display.main.systemWidth - temp, Display.main.systemHeight - temp));
-            print("추가 : " + (Display.main.systemWidth - temp) + " " + (Display.main.systemHeight - temp));
-            temp -= 60;
-            if (i == 7)
-            {
-                temp = 0;
-            }
         }*/
+
+        //모니터 해상도에 맞는 currentList 추가
+        int widthNum = (Display.main.systemWidth - Display.main.systemWidth / 4) / 9;
+        int heightNum = (Display.main.systemHeight - Display.main.systemHeight / 4) / 9;
+
+        for (int i = 9; i > 0; i--)
+        {
+            currentList.Add(new Vector2(Display.main.systemWidth - widthNum * i, Display.main.systemHeight - heightNum * i));
+        }
 
         //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
         List<Resolution> monitorResolutions = Screen.resolutions.ToList();
