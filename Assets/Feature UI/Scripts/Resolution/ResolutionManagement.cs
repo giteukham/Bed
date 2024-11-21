@@ -101,22 +101,22 @@ public class ResolutionManagement : MonoBehaviour
             currentList.Add(new Vector2((int)Math.Round(Display.main.systemWidth - widthNum * i), (int)Math.Round(Display.main.systemHeight - heightNum * i)));
         }
 
-        //모니터 해상도에 맞는 hdList 추가
-        //1712 : 960
-        widthNum = Display.main.systemHeight / 9f * 16;
-        heightNum = Display.main.systemHeight;
+        if (Display.main.systemWidth / Display.main.systemHeight > 16f / 9f)
+        {
+            widthNum = Display.main.systemHeight / 9f * 16;
+            heightNum = Display.main.systemHeight;
+        }
+        else if (Display.main.systemWidth / Display.main.systemHeight <= 16f / 9f)
+        {
+            widthNum = Display.main.systemWidth;
+            heightNum = Display.main.systemWidth / 16f * 9;
+        }
 
         float num1 = (widthNum - widthNum / 4f) / 9f;
         float num2 = (heightNum - heightNum / 4f) / 9f;
 
         for (int i = 9; i >= 0; i--)
         {
-            //현재 모니터보다 큰 해상도는 리스트에 넣지 않음
-            if (Display.main.systemWidth < (int)Math.Round(widthNum - num1 * i) || Display.main.systemHeight < (int)Math.Round(heightNum - num2 * i))
-            {
-                //첫번째로 if문에 걸린 해상도 이후에 나오는 것들도 조건에 부합하니 바로 break로 탈출
-                break;
-            }
             hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
         }
 
