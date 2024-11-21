@@ -516,6 +516,10 @@ public class ResolutionManagement : MonoBehaviour
             ratio2 = 1 / (Display.main.systemHeight / targetHeight);
             print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
 
+            rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+            //바깥테두리는 항상 약간 더 크게 그림
+            outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
+
             /*if (targetWidth >= targetHeight)
             {
                 //바깥 테두리와 안쪽 테두리가 몇배 차이나는지 조사후 1에서 그 값을 나눔
@@ -530,19 +534,19 @@ public class ResolutionManagement : MonoBehaviour
                 print("2");
             }*/
             //scaleDifference를 바깥 테두리의 가로와 세로에 곱해서 적용함
-            if (Display.main.systemWidth == targetWidth || Display.main.systemHeight == targetHeight)
+            /*if (Display.main.systemWidth == targetWidth || Display.main.systemHeight == targetHeight)
             {
                 //목표 해상도가 내 모니터 크기와 같을때 안쪽,바깥쪽 테두리가 겹쳐보이기에 바깥쪽 테두리 50 적당히 더함
                 outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
                 //원래 outside값을 적용하기 위해 위의 숫자와 같은 값을 빼줌
                 rect.sizeDelta = new Vector2(outside.rect.width - 50, outside.rect.height - 50);
-                print("3");
+                //print("3");
             }
             else
             {
                 rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
-                print($"{outside.rect.width} * {ratio1}, {outside.rect.height} * {ratio2} = {outside.rect.width * ratio1}, {outside.rect.height * ratio2}");
-            }
+                //print($"{outside.rect.width} * {ratio1}, {outside.rect.height} * {ratio2} = {outside.rect.width * ratio1}, {outside.rect.height * ratio2}");
+            }*/
         }
     }
 
