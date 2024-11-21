@@ -534,13 +534,14 @@ public class ResolutionManagement : MonoBehaviour
             {
                 //목표 해상도가 내 모니터 크기와 같을때 안쪽,바깥쪽 테두리가 겹쳐보이기에 바깥쪽 테두리 50 적당히 더함
                 outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
-                rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+                //원래 outside값을 적용하기 위해 위의 숫자와 같은 값을 빼줌
+                rect.sizeDelta = new Vector2(outside.rect.width - 50, outside.rect.height - 50);
                 print("3");
             }
             else
             {
                 rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
-                print($"{outside.rect.width} * {ratio1}, {outside.rect.height} * {ratio1} = {outside.rect.width * ratio1}, {outside.rect.height * ratio1}");
+                print($"{outside.rect.width} * {ratio1}, {outside.rect.height} * {ratio2} = {outside.rect.width * ratio1}, {outside.rect.height * ratio2}");
             }
         }
     }
