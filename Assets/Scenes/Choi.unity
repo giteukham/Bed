@@ -5108,8 +5108,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1104375699}
   - {fileID: 1377947101}
+  - {fileID: 1104375699}
   m_Father: {fileID: 2014844637}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6049,6 +6049,8 @@ MonoBehaviour:
   previewPlayer: {fileID: 1647553765}
   turnRightSpeed: 3
   turnLeftSpeed: -3
+  minMouseAxis: 0.1
+  maxMouseAxis: 10
 --- !u!4 &881774373
 Transform:
   m_ObjectHideFlags: 0
@@ -14943,10 +14945,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valueBarTransform: {fileID: 1104375699}
-  deadZoneAreaTransform: {fileID: 1377947101}
   backgroundTransform: {fileID: 713726062}
+  deadZoneAreaTransform: {fileID: 1377947101}
   deadZoneInputField: {fileID: 2034882341}
   deadZoneSlider: {fileID: 1615978395}
+  deadZoneLimit: 0.1
 --- !u!1 &2029981840
 GameObject:
   m_ObjectHideFlags: 0

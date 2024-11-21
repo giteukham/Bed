@@ -73,8 +73,6 @@ public class MouseWindowUI : MonoBehaviour
         OnMouseSettingsScreenDeactive?.Invoke();
         sensitivitySlider.onValueChanged.RemoveAllListeners();
         sensitivityValue.onEndEdit.RemoveAllListeners();
-        OnMouseSettingsScreenActive = null;
-        OnMouseSettingsScreenDeactive = null;
     }
 
     private void Update()

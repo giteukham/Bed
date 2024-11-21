@@ -13,18 +13,22 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
     
     [Tooltip("기본 값은 오른쪽 방향으로 3, 왼쪽 방향으로 -3")]
-    [SerializeField] private float turnRightSpeed = 3f, turnLeftSpeed = -3f;                // 마우스 Delta X값이 5이상이면 Right State로, -5이하이면 Left State로 변경
+    [SerializeField] private float turnRightSpeed = 3f, turnLeftSpeed = -3f;
+
+    [Tooltip("마우스 속도 최대값. 기본 값은 max = 10f")]
+    [SerializeField] private float mouseAxisLimit = 10f;
     
-    private const float mouseSpeedMultiplier = 500f;                                // 마우스 감도 상수
+    private const float mouseSpeedMultiplier = 500f;                                        // 마우스 감도 상수
     private float mouseSensitivity = 1f;
     private float mouseMaxSpeed;
     private float mouseHorizontalSpeed, mouseVerticalSpeed;
-    private bool isVerticalReverse, isHorizontalReverse;                            // false는 정상, true는 반전
+    private bool isVerticalReverse, isHorizontalReverse;                                    // false는 정상, true는 반전
     
     public float MouseSensitivity => mouseSensitivity;
     public float MouseMaxSpeed => mouseMaxSpeed;
-    public float MouseHorizontalSpeed => mouseHorizontalSpeed;
-    public float MouseVerticalSpeed => mouseVerticalSpeed;
+    public float MouseAxisLimit => mouseAxisLimit;
+    public float MouseHorizontalSpeed => Mathf.Clamp(mouseHorizontalSpeed, -mouseAxisLimit, mouseAxisLimit);
+    public float MouseVerticalSpeed => Mathf.Clamp(mouseVerticalSpeed, -mouseAxisLimit, mouseAxisLimit);
     public float TurnRightSpeed => turnRightSpeed;
     public float TurnLeftSpeed => turnLeftSpeed;
     public bool IsVerticalReverse => isVerticalReverse;
@@ -151,5 +155,11 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         previewPlayer.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
         
         SaveManager.Instance.SaveMouseSensitivity(mouseSensitivity);
+    }
+
+    public void ChangeTurnAxisSpeed(float value)
+    {
+        turnRightSpeed = value;
+        turnLeftSpeed = -value;
     }
 }
