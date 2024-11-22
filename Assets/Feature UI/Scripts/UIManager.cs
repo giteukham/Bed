@@ -22,6 +22,35 @@ public class UIManager : MonoSingleton<UIManager>
         if (Input.GetMouseButton(1)) ShowMenuScreen();
     }
 
+    private void Awake()
+    {
+        DeActivateActivatedScreen();
+    }
+
+    /// <summary>
+    /// 처음 시작할 때 메뉴 안에 있는 화면을 비활성화 시키는 함수
+    /// 11-22 최무령
+    /// </summary>
+    private void DeActivateActivatedScreen()
+    {
+        if (menuScreen.activeSelf)
+        {
+            menuScreen.SetActive(false);
+        }
+        if (soundSettingsScreen.activeSelf)
+        {
+            soundSettingsScreen.SetActive(false);
+        }
+        if (resolutionSettingsScreen.activeSelf)
+        {
+            resolutionSettingsScreen.SetActive(false);
+        }
+        if (mouseSettingsScreen.activeSelf)
+        {
+            mouseSettingsScreen.SetActive(false);
+        }
+    }
+
     private void OnEnable()
     {
         ShowMenuScreen();

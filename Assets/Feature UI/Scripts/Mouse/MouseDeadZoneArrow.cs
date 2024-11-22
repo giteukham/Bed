@@ -20,16 +20,17 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
         TryGetComponent(out arrowTransform);
         
         MouseDeadZoneUI.OnDeadZoneOffsetChange += ChangeArrowPosition;
+        MouseWindowUI.OnScreenActive += ChangeArrowPosition;
 
         int temp = Mathf.FloorToInt((mouseDeadZoneUI.BackgroundTransform.rect.width * 0.5f) - 5f);
         minPosX = -temp;
         maxPosX = temp;
     }
     
-    private void ChangeArrowPosition(float offset)
+    private void ChangeArrowPosition()
     {
-        float normalValue = Mathf.InverseLerp(mouseDeadZoneUI.BackgroundTransform.rect.width - 5f,
-            (mouseDeadZoneUI.BackgroundTransform.rect.width - 5f) * mouseSettings.DeadZoneLimit, offset);
+        float normalValue = Mathf.InverseLerp(0f, mouseSettings.MouseAxisLimit, mouseSettings.DeadZoneSliderValue);
+
         arrowPos.x = Mathf.Lerp(maxPosX, minPosX, normalValue);
         arrowPos.y = arrowTransform.anchoredPosition.y;
         arrowTransform.anchoredPosition = arrowPos;

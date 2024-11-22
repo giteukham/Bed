@@ -17,10 +17,10 @@ public class MouseDeadZoneUI : MonoBehaviour
 
     private MouseSettings mouseSettings;
     private float normalValue;
-    
+
     public RectTransform BackgroundTransform => backgroundTransform;
 
-    public static event Action<float> OnDeadZoneOffsetChange;
+    public static event Action OnDeadZoneOffsetChange;
 
     private void OnEnable()
     {
@@ -56,8 +56,8 @@ public class MouseDeadZoneUI : MonoBehaviour
     /// <param name="value">슬라이더 값 0 ~ MouseAxisLimit 까지</param>
     private void ChangeDeadZoneArea(float value)
     {
-        CalculateDeadZoneOffset(value);
         ChangeDeadZoneValue(value);
+        CalculateDeadZoneOffset(value);
         mouseSettings.ChangeTurnAxisSpeed(Mathf.Lerp(mouseSettings.MouseAxisLimit, 0.1f, normalValue));
     }
 
@@ -86,7 +86,7 @@ public class MouseDeadZoneUI : MonoBehaviour
     private void ChangeDeadZoneOffset(float offset)
     {
         deadZoneAreaTransform.offsetMin = new Vector2(offset, deadZoneAreaTransform.offsetMin.y);
-        OnDeadZoneOffsetChange?.Invoke(offset);
+        OnDeadZoneOffsetChange?.Invoke();
     }
     
     private void ChangeDeadZoneValueOnInputField(string value)

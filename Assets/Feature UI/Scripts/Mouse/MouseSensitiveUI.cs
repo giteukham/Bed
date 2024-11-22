@@ -47,14 +47,13 @@ public class MouseSensitiveUI : MonoBehaviour
         };
         mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, horizontalSwitch);
         mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, verticalSwitch);
+        MouseWindowUI.OnScreenActive += () => ChangeSensitive(mouseSettings.MouseSensitivity);
         
         sensitivitySlider.onValueChanged.AddListener(ChangeSensitive);
         sensitivityValue.onEndEdit.AddListener(ChangeSensitivityOnInputField);
         
         verticalSwitch.sprite = mouseSettings.IsVerticalReverse ? onImage : offImage;
         horizontalSwitch.sprite = mouseSettings.IsHorizontalReverse ? onImage : offImage;
-        
-        MouseWindowUI.OnScreenActive += () => ChangeSensitive(mouseSettings.MouseSensitivity);
     }
     
     private void OnDisable()

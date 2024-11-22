@@ -22,14 +22,10 @@ public class MouseSettingsPreviewPlayer : PlayerBase
         { PlayerDirectionStateTypes.Switching, new PreviewPlayerDirectionStates.SwitchingState() }
     };
 
-    private void Awake()
-    {
-        POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
-    }
-
     private void OnEnable()
     {
         TryGetComponent(out playerAnimator);
+        POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
         previewPlayerDirectionStates = new PreviewPlayerDirectionStates(playerAnimator);
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine, directionStates);
     }
@@ -42,7 +38,7 @@ public class MouseSettingsPreviewPlayer : PlayerBase
     
     public void EnablePlayerObject(bool isActivate)
     {
-        if (gameObject != null) gameObject.SetActive(isActivate);
+        if (gameObject != null) gameObject?.SetActive(isActivate);
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)

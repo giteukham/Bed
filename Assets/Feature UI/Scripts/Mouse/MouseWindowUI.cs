@@ -1,22 +1,18 @@
 using System;
 using UnityEngine;
 
+// 해당 클래스가 들어 있는 오브젝트가 시작할 때 활성화 되어 있으면 오류 뜸.
 public class MouseWindowUI : MonoBehaviour, IWindowUIBase
 {
     public static event Action OnScreenActive, OnScreenDeactive;
 
-    private void Awake()
+    private void Start()
     {
-        gameObject.SetActive(false);
-    }
-
-    private void OnEnable()
-    {
-        if (Application.isPlaying) OnScreenActive?.Invoke();
+        OnScreenActive?.Invoke();
     }
     
     private void OnDisable()
     {
-        if (Application.isPlaying) OnScreenDeactive?.Invoke();
+        OnScreenDeactive?.Invoke();
     }
 }

@@ -27,7 +27,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     private float mouseMaxSpeed;                                                            // 마우스 최대 속도
     private float mouseHorizontalSpeed, mouseVerticalSpeed;                                     
     private bool isVerticalReverse, isHorizontalReverse;                                    // false는 정상, true는 반전
-    private float deadZoneSliderValue;                                                            // 현재 Deadzone 영역의 값
+    private float deadZoneSliderValue;                                                      // 현재 Deadzone 영역의 값
     
     #region Properties
     public float MouseSensitivity => mouseSensitivity;
@@ -49,8 +49,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     {
         MouseWindowUI.OnScreenActive += () =>
         {
-            player.EnablePlayerObject(false);
-            previewPlayer.EnablePlayerObject(true);
+            player?.EnablePlayerObject(false);
+            previewPlayer?.EnablePlayerObject(true);
             
             mainPlayerPos = globalPlayersPos.position;
             globalPlayersPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
@@ -58,8 +58,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         };
         MouseWindowUI.OnScreenDeactive += () =>
         {
-            if (player != null) player.EnablePlayerObject(true);
-            if (previewPlayer != null) previewPlayer.EnablePlayerObject(false);
+            if (player != null) player?.EnablePlayerObject(true);
+            if (previewPlayer != null) previewPlayer?.EnablePlayerObject(false);
             
             if (globalPlayersPos != null) globalPlayersPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
         };
