@@ -47,7 +47,7 @@ public class UIManager : MonoSingleton<UIManager>
         }
         if (mouseSettingsScreen.activeSelf)
         {
-            mouseSettingsScreen.SetActive(false);
+            Debug.LogError("마우스 설정 스크린은 게임 시작 전에 비활성화 되어야 합니다.");
         }
     }
 

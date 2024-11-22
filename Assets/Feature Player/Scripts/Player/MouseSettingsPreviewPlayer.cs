@@ -38,7 +38,7 @@ public class MouseSettingsPreviewPlayer : PlayerBase
     
     public void EnablePlayerObject(bool isActivate)
     {
-        if (gameObject != null) gameObject?.SetActive(isActivate);
+        gameObject?.SetActive(isActivate);
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)

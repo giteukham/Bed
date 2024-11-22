@@ -6079,7 +6079,7 @@ MonoBehaviour:
   turnRightSpeed: 3
   turnLeftSpeed: -3
   mouseAxisLimit: 8.5
-  deadZoneLimit: 0
+  deadZoneLimit: 1
 --- !u!4 &881774373
 Transform:
   m_ObjectHideFlags: 0
@@ -10250,10 +10250,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 713726062}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 795, y: 2.5}
-  m_SizeDelta: {x: -797, y: 45}
+  m_AnchoredPosition: {x: -4, y: 2.5}
+  m_SizeDelta: {x: 1, y: 45}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1377947102
 MonoBehaviour:

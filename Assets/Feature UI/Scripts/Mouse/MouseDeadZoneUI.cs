@@ -79,13 +79,14 @@ public class MouseDeadZoneUI : MonoBehaviour
     private void CalculateDeadZoneOffset(float newSliderValue)
     {
         normalValue = Mathf.InverseLerp(0f, mouseSettings.MouseAxisLimit, newSliderValue);
-        float deadZoneSpriteOffset = Mathf.Lerp(backgroundTransform.rect.width - 5f, (backgroundTransform.rect.width - 5f) * mouseSettings.DeadZoneLimit, normalValue);
+        float deadZoneSpriteOffset = Mathf.Lerp(1f, -(backgroundTransform.rect.width - 5f) * mouseSettings.DeadZoneLimit, normalValue);
         ChangeDeadZoneOffset(deadZoneSpriteOffset);
     }
 
     private void ChangeDeadZoneOffset(float offset)
     {
-        deadZoneAreaTransform.offsetMin = new Vector2(offset, deadZoneAreaTransform.offsetMin.y);
+        deadZoneAreaTransform.localScale = new Vector3(offset, deadZoneAreaTransform.localScale.y, deadZoneAreaTransform.localScale.z);;
+        //deadZoneAreaTransform.offsetMin = new Vector2(offset, deadZoneAreaTransform.offsetMin.y);
         OnDeadZoneOffsetChange?.Invoke();
     }
     
