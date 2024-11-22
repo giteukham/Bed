@@ -31,6 +31,7 @@ public class ResolutionManagement : MonoBehaviour
     int frameRateReady = 60;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
+    int maxLength = 1000;
 
     List<Vector2> hdList = new List<Vector2>
     {
@@ -99,6 +100,7 @@ public class ResolutionManagement : MonoBehaviour
         for (int i = 9; i >= 0; i--)
         {
             currentList.Add(new Vector2((int)Math.Round(Display.main.systemWidth - widthNum * i), (int)Math.Round(Display.main.systemHeight - heightNum * i)));
+            print("currentList : " + (int)Math.Round(Display.main.systemWidth - widthNum * i) + " : " + (int)Math.Round(Display.main.systemHeight - heightNum * i));
         }
 
         if (Display.main.systemWidth / Display.main.systemHeight > 16f / 9f)
@@ -118,6 +120,7 @@ public class ResolutionManagement : MonoBehaviour
         for (int i = 9; i >= 0; i--)
         {
             hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
+            print("hdList : " + (int)Math.Round(widthNum - num1 * i) + " : " + (int)Math.Round(heightNum - num2 * i));
         }
 
         //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
@@ -502,12 +505,12 @@ public class ResolutionManagement : MonoBehaviour
             {
                 //목표 해상도는 1 : ratio로 표현 가능함
                 ratio1 = 1 / (targetWidth / targetHeight);
-                rect.sizeDelta = new Vector2(1000, 1000 * ratio1);
+                rect.sizeDelta = new Vector2(maxLength, maxLength * ratio1);
             }
             else
             {
                 ratio1 = 1 / (targetHeight / targetWidth);
-                rect.sizeDelta = new Vector2(1000 * ratio1, 1000);
+                rect.sizeDelta = new Vector2(maxLength * ratio1, maxLength);
             }
         }
         else //rect == inside
