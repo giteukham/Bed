@@ -2427,6 +2427,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 203647462}
+  - component: {fileID: 203647463}
   m_Layer: 5
   m_Name: Sensitivity UI
   m_TagString: Untagged
@@ -2455,6 +2456,34 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &203647463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203647461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b88b746f006cd946bdf6556ccc562ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensitivitySlider: {fileID: 5235725850556143412}
+  sensitivityValue: {fileID: 644223129}
+  verticalSwitch: {fileID: 8483392629946974520}
+  horizontalSwitch: {fileID: 8900220577137410100}
+  onImage: {fileID: 21300000, guid: 7cd1297fa84869342b3f00ec3a1ec497, type: 3}
+  offImage: {fileID: 21300000, guid: eb67048f1dd394b42ac5ae2e7ffc974a, type: 3}
+  arrows:
+    _serializedList:
+    - Key: 0
+      Value: {fileID: 448146784}
+    - Key: 1
+      Value: {fileID: 1764921200}
+    - Key: 2
+      Value: {fileID: 187710442}
+    - Key: 3
+      Value: {fileID: 504752272}
 --- !u!1 &230726874
 GameObject:
   m_ObjectHideFlags: 0
@@ -5888,7 +5917,7 @@ RectTransform:
   m_Father: {fileID: 1193114076}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -6049,8 +6078,8 @@ MonoBehaviour:
   previewPlayer: {fileID: 1647553765}
   turnRightSpeed: 3
   turnLeftSpeed: -3
-  minMouseAxis: 0.1
-  maxMouseAxis: 10
+  mouseAxisLimit: 10
+  deadZoneLimit: 0
 --- !u!4 &881774373
 Transform:
   m_ObjectHideFlags: 0
@@ -6554,7 +6583,7 @@ RectTransform:
   m_Father: {fileID: 543417050}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -13794,6 +13823,95 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1797771274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1797771275}
+  - component: {fileID: 1797771278}
+  - component: {fileID: 1797771277}
+  - component: {fileID: 1797771276}
+  m_Layer: 5
+  m_Name: Deadzone Arrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1797771275
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797771274}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2014844637}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 395, y: 50}
+  m_SizeDelta: {x: 30, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1797771276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797771274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ef63b88225e45abba3eb33c63fdc083, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseDeadZoneUI: {fileID: 2014844638}
+--- !u!114 &1797771277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797771274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 90e526485ff9ab34881345bb8a0caeee, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1797771278
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797771274}
+  m_CullTransparentMesh: 1
 --- !u!1 &1812956914
 GameObject:
   m_ObjectHideFlags: 0
@@ -14925,6 +15043,7 @@ RectTransform:
   - {fileID: 713726062}
   - {fileID: 2034882340}
   - {fileID: 1615978394}
+  - {fileID: 1797771275}
   m_Father: {fileID: 7721698464330953988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -14949,7 +15068,6 @@ MonoBehaviour:
   deadZoneAreaTransform: {fileID: 1377947101}
   deadZoneInputField: {fileID: 2034882341}
   deadZoneSlider: {fileID: 1615978395}
-  deadZoneLimit: 0.1
 --- !u!1 &2029981840
 GameObject:
   m_ObjectHideFlags: 0
@@ -17808,7 +17926,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1847403537765105136
 GameObject:
   m_ObjectHideFlags: 0
@@ -18624,8 +18742,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5313190596653579031}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.47368422, y: 0}
+  m_AnchorMax: {x: 0.47368422, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -19210,7 +19328,7 @@ RectTransform:
   m_Father: {fileID: 1169895216712514336}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.47368422, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -22683,25 +22801,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1811092869836967947}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b88b746f006cd946bdf6556ccc562ae, type: 3}
+  m_Script: {fileID: 11500000, guid: 2dc3e631cd8d4b34bd3b68ddb57d81c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivitySlider: {fileID: 5235725850556143412}
-  sensitivityValue: {fileID: 644223129}
-  verticalSwitch: {fileID: 8483392629946974520}
-  horizontalSwitch: {fileID: 8900220577137410100}
-  onImage: {fileID: 21300000, guid: 7cd1297fa84869342b3f00ec3a1ec497, type: 3}
-  offImage: {fileID: 21300000, guid: eb67048f1dd394b42ac5ae2e7ffc974a, type: 3}
-  arrows:
-    _serializedList:
-    - Key: 0
-      Value: {fileID: 448146784}
-    - Key: 1
-      Value: {fileID: 1764921200}
-    - Key: 2
-      Value: {fileID: 187710442}
-    - Key: 3
-      Value: {fileID: 504752272}
 --- !u!224 &7735157044965452902
 RectTransform:
   m_ObjectHideFlags: 0

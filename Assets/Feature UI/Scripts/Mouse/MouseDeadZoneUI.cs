@@ -1,9 +1,11 @@
 
 using System;
+using System.Globalization;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
@@ -12,19 +14,32 @@ public class MouseDeadZoneUI : MonoBehaviour
     [SerializeField] private RectTransform valueBarTransform, backgroundTransform, deadZoneAreaTransform;
     [SerializeField] private TMP_InputField deadZoneInputField;
     [SerializeField] private Slider deadZoneSlider;
-    [SerializeField, Range(0.1f, 1f), Tooltip("Deadzone 영역의 한계값")] private float deadZoneLimit;
+
     private MouseSettings mouseSettings;
+    private float normalValue;
     
+    public RectTransform BackgroundTransform => backgroundTransform;
+
+    public static event Action<float> OnDeadZoneOffsetChange;
+
     private void OnEnable()
     {
         mouseSettings = MouseSettings.Instance;
-
-        deadZoneSlider.minValue = -mouseSettings.MouseAxisLimit;
+        MouseDeadZoneArrow.OnArrowDrag += ChangeDeadZoneArea;
+        
+        deadZoneSlider.minValue = 0f;
         deadZoneSlider.maxValue = mouseSettings.MouseAxisLimit;
         deadZoneSlider.onValueChanged.AddListener(ChangeDeadZoneArea);
-
-        ChangeBarPosition();
+        deadZoneInputField.onEndEdit.AddListener(ChangeDeadZoneValueOnInputField);
         
+        ChangeDeadZoneArea(mouseSettings.DeadZoneSliderValue);
+        ChangeBarPosition();
+    }
+    
+    private void OnDisable()
+    {
+        deadZoneSlider.onValueChanged.RemoveAllListeners();
+        deadZoneInputField.onEndEdit.RemoveAllListeners();
     }
 
     private void OnValidate()
@@ -35,30 +50,91 @@ public class MouseDeadZoneUI : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// DeadZone 이미지의 크기를 조절
+    /// </summary>
+    /// <param name="value">슬라이더 값 0 ~ MouseAxisLimit 까지</param>
     private void ChangeDeadZoneArea(float value)
     {
-        float minMouseAxis = -mouseSettings.MouseAxisLimit;
-        float maxMouseAxis = mouseSettings.MouseAxisLimit;
-        float lerpValue = Mathf.InverseLerp(minMouseAxis, maxMouseAxis, value);
-        float deadZoneValue = Mathf.Lerp(backgroundTransform.rect.width - 5f, (backgroundTransform.rect.width - 5f) * deadZoneLimit, lerpValue);
+        CalculateDeadZoneOffset(value);
+        ChangeDeadZoneValue(value);
+        mouseSettings.ChangeTurnAxisSpeed(Mathf.Lerp(mouseSettings.MouseAxisLimit, 0.1f, normalValue));
+    }
 
-        mouseSettings.ChangeTurnAxisSpeed(Mathf.Lerp(mouseSettings.MouseAxisLimit, 0.1f, lerpValue));
-        deadZoneAreaTransform.offsetMin = new Vector2(deadZoneValue, deadZoneAreaTransform.offsetMin.y);
+    /// <summary>
+    /// 슬라이더의 값을 변경
+    /// </summary>
+    /// <param name="newSliderValue"></param>
+    private void ChangeDeadZoneValue(float newSliderValue)
+    {
+        mouseSettings.ChangeDeadZoneSliderValue(newSliderValue);
+        deadZoneSlider.value = newSliderValue;
+        deadZoneInputField.text = (Mathf.Floor(newSliderValue * 100f) / 100f).ToString(CultureInfo.CurrentCulture);
     }
     
+    /// <summary>
+    /// DeadZone 이미지의 Left 값을 계산
+    /// </summary>
+    /// <param name="newSliderValue"></param>
+    private void CalculateDeadZoneOffset(float newSliderValue)
+    {
+        normalValue = Mathf.InverseLerp(0f, mouseSettings.MouseAxisLimit, newSliderValue);
+        float deadZoneSpriteOffset = Mathf.Lerp(backgroundTransform.rect.width - 5f, (backgroundTransform.rect.width - 5f) * mouseSettings.DeadZoneLimit, normalValue);
+        ChangeDeadZoneOffset(deadZoneSpriteOffset);
+    }
+
+    private void ChangeDeadZoneOffset(float offset)
+    {
+        deadZoneAreaTransform.offsetMin = new Vector2(offset, deadZoneAreaTransform.offsetMin.y);
+        OnDeadZoneOffsetChange?.Invoke(offset);
+    }
+    
+    private void ChangeDeadZoneValueOnInputField(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            deadZoneInputField.text = "0";
+            return;
+        }
+
+        if (float.TryParse(value, out float result))
+        {
+            if (result < 0f)
+            {
+                deadZoneInputField.text = "0";
+                return;
+            }
+
+            if (result > mouseSettings.MouseAxisLimit)
+            {
+                deadZoneInputField.text = mouseSettings.MouseAxisLimit.ToString(CultureInfo.CurrentCulture);
+                return;
+            }
+
+            ChangeDeadZoneValue(result);
+        }
+        else
+        {
+            deadZoneInputField.text = "0";
+        }
+    }
+    
+    /// <summary>
+    /// OnEnable에서 호출하면 자동으로 Update에서 실행
+    /// </summary>
     private async void ChangeBarPosition()
     {
         float targetValue = 0f;
-        float x;
+        Vector2 barPos = valueBarTransform.anchoredPosition;
+        
         while (true)
         {
             targetValue = Mathf.Abs(mouseSettings.MouseHorizontalSpeed) * ((backgroundTransform.rect.width - 5f) / mouseSettings.MouseAxisLimit);
 
             // 현재 슬라이더 값을 목표 값으로 부드럽게 보간합니다.
-            x = Mathf.Lerp(valueBarTransform.anchoredPosition.x, targetValue, Time.deltaTime * 5f);
-            x = Mathf.Floor(x * 100f) * 0.01f;
-            valueBarTransform.anchoredPosition = new Vector2(x, 0f);
+            barPos.x = Mathf.Lerp(valueBarTransform.anchoredPosition.x, targetValue, Time.deltaTime * 100f);
+            barPos.x = Mathf.Floor(barPos.x * 1000f) * 0.001f;
+            valueBarTransform.anchoredPosition = barPos;
 
             await UniTask.Yield(PlayerLoopTiming.Update);
         }
