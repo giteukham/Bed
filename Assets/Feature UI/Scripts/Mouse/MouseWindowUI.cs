@@ -6,7 +6,7 @@ public class MouseWindowUI : MonoBehaviour, IWindowUIBase
 {
     public static event Action OnScreenActive, OnScreenDeactive;
 
-    private void Start()
+    private void OnEnable()
     {
         OnScreenActive?.Invoke();
     }

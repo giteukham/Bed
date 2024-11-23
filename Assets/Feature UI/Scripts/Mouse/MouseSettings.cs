@@ -45,8 +45,10 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     
     public event Action<bool> OnVerticalReverse, OnHorizontalReverse;
 
-    private void OnEnable()
+    private void Awake()
     {
+        InitMouseSetting();
+        
         MouseWindowUI.OnScreenActive += () =>
         {
             player?.EnablePlayerObject(false);
@@ -67,7 +69,6 @@ public class MouseSettings : MonoSingleton<MouseSettings>
 
     private void Start()
     {
-        InitMouseSetting();
         InitCameraSettings(player);
     }
     
