@@ -31,7 +31,8 @@ public class ResolutionManagement : MonoBehaviour
     int frameRateReady = 60;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
-    int maxLength = 1000;
+    int previewMaxLength = 1000;
+    float previewFontRatio = 11.25f;
 
     List<Vector2> hdList = new List<Vector2>
     {
@@ -51,6 +52,7 @@ public class ResolutionManagement : MonoBehaviour
 
     private void Awake()
     {
+        previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
         isFullScreen = SaveManager.Instance.LoadIsFullScreen();
         /*isFullScreenReady = isFullScreen;
@@ -155,14 +157,6 @@ public class ResolutionManagement : MonoBehaviour
 
     private void OnEnable()
     {
-        // V-Sync 비활성화
-        //QualitySettings.vSyncCount = 0;
-        //저장된 프레임 레이트 적용
-        //Application.targetFrameRate = SaveManager.Instance.LoadFrameRate();
-        frameRateReady = SaveManager.Instance.LoadFrameRate();
-        //프레임 드롭다운 아이템 저장된 값으로 변경
-        frameRateDropdown.value = frameRateReady / 30 - 1;
-
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -182,10 +176,18 @@ public class ResolutionManagement : MonoBehaviour
                 ReadyResolution(i);
                 //해상도 설정
                 ApplyResolution();
-                //메소드 종료
-                return;
+                //반복문 종료
+                break;
             }
         }
+
+        // V-Sync 비활성화
+        //QualitySettings.vSyncCount = 0;
+        //저장된 프레임 레이트 적용
+        //Application.targetFrameRate = SaveManager.Instance.LoadFrameRate();
+        frameRateReady = SaveManager.Instance.LoadFrameRate();
+        //프레임 드롭다운 아이템 저장된 값으로 변경
+        frameRateDropdown.value = frameRateReady / 30 - 1;
     }
 
     private void Update()
@@ -366,6 +368,7 @@ public class ResolutionManagement : MonoBehaviour
     //해상도 프리뷰만 건드림
     public void ReadyResolution(int value)
     {
+        print("ReadyResolution 실행");
         float CRITERIA_NUM = 16f / 9f;
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
@@ -375,7 +378,9 @@ public class ResolutionManagement : MonoBehaviour
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
-            previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
+            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+            previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}\n{frameRateReady}hz";
+            //previewText.rectTransform.sizeDelta = Vector2();
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
@@ -383,7 +388,8 @@ public class ResolutionManagement : MonoBehaviour
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
-            previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
+            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+            previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}\n{frameRateReady}hz";
         }
     }
 
@@ -475,6 +481,7 @@ public class ResolutionManagement : MonoBehaviour
                 //SaveManager.Instance.SaveFrameRate(60);
                 break;
         }
+        previewText.text = $"{(int)nowList[resolutiondropdown.value].x} X {(int)nowList[resolutiondropdown.value].y}\n{frameRateReady}hz";
     }
 
     //확인버튼 누를시 프레임 적용
@@ -505,12 +512,12 @@ public class ResolutionManagement : MonoBehaviour
             {
                 //목표 해상도는 1 : ratio로 표현 가능함
                 ratio1 = 1 / (targetWidth / targetHeight);
-                rect.sizeDelta = new Vector2(maxLength, maxLength * ratio1);
+                rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
             }
             else
             {
                 ratio1 = 1 / (targetHeight / targetWidth);
-                rect.sizeDelta = new Vector2(maxLength * ratio1, maxLength);
+                rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
             }
         }
         else //rect == inside
