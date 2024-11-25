@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MouseSettings : MonoSingleton<MouseSettings>
@@ -109,8 +110,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;
         isVerticalReverse = SaveManager.Instance.LoadMouseVerticalReverse();
         isHorizontalReverse = SaveManager.Instance.LoadMouseHorizontalReverse();
-        deadZoneSliderValue = SaveManager.Instance.LoadDeadZoneValue();
-        SaveManager.Instance.LoadTurnSpeed(out turnRightSpeed, out turnLeftSpeed);
+        deadZoneSliderValue = SaveManager.Instance.LoadDeadZoneValue() > deadZoneLimit ? deadZoneLimit : SaveManager.Instance.LoadDeadZoneValue();
+        ChangeTurnAxisSpeed(deadZoneSliderValue);
     }
 
     private void InitCameraSettings(PlayerBase player)
@@ -172,11 +173,12 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         SaveManager.Instance.SaveMouseSensitivity(mouseSensitivity);
     }
 
-    public void ChangeTurnAxisSpeed(float value)
+    public void ChangeTurnAxisSpeed(float newSliderValue)
     {
+        float normalValue = Mathf.InverseLerp(0f, deadZoneLimit, newSliderValue);
+        float value = Mathf.Lerp(mouseAxisLimit, mouseAxisLimit - (mouseAxisLimit * deadZoneLimit), normalValue);
         turnRightSpeed = value;
         turnLeftSpeed = -value;
-        SaveManager.Instance.SaveTurnSpeed(turnRightSpeed, turnLeftSpeed);
     }
     
     public void ChangeDeadZoneSliderValue(float value)

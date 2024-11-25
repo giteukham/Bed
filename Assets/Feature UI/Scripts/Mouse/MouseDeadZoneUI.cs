@@ -16,7 +16,6 @@ public class MouseDeadZoneUI : MonoBehaviour
     [SerializeField] private Slider deadZoneSlider;
 
     private MouseSettings mouseSettings;
-    private float normalValue;
 
     public RectTransform BackgroundTransform => backgroundTransform;
 
@@ -28,10 +27,11 @@ public class MouseDeadZoneUI : MonoBehaviour
         MouseDeadZoneArrow.OnArrowDrag += ChangeDeadZoneArea;
         
         deadZoneSlider.minValue = 0f;
-        deadZoneSlider.maxValue = mouseSettings.MouseAxisLimit;
+        deadZoneSlider.maxValue = mouseSettings.DeadZoneLimit;
         deadZoneSlider.onValueChanged.AddListener(ChangeDeadZoneArea);
         deadZoneInputField.onEndEdit.AddListener(ChangeDeadZoneValueOnInputField);
         
+        ChangeDeadZoneValueOnInputField(mouseSettings.DeadZoneSliderValue.ToString(CultureInfo.CurrentCulture));
         ChangeDeadZoneArea(mouseSettings.DeadZoneSliderValue);
         ChangeBarPosition();
     }
@@ -53,12 +53,12 @@ public class MouseDeadZoneUI : MonoBehaviour
     /// <summary>
     /// DeadZone 이미지의 크기를 조절
     /// </summary>
-    /// <param name="value">슬라이더 값 0 ~ MouseAxisLimit 까지</param>
-    private void ChangeDeadZoneArea(float value)
+    /// <param name="value">슬라이더 값 0 ~ DeadZoneLimit 까지</param>
+    private void ChangeDeadZoneArea(float newSliderValue)
     {
-        ChangeDeadZoneValue(value);
-        CalculateDeadZoneOffset(value);
-        mouseSettings.ChangeTurnAxisSpeed(Mathf.Lerp(mouseSettings.MouseAxisLimit, 0.1f, normalValue));
+        ChangeDeadZoneValue(newSliderValue);
+        CalculateDeadZoneOffset(newSliderValue);
+        mouseSettings.ChangeTurnAxisSpeed(newSliderValue);
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class MouseDeadZoneUI : MonoBehaviour
     /// <param name="newSliderValue"></param>
     private void CalculateDeadZoneOffset(float newSliderValue)
     {
-        normalValue = Mathf.InverseLerp(0f, mouseSettings.MouseAxisLimit, newSliderValue);
+        float normalValue = Mathf.InverseLerp(0f, mouseSettings.DeadZoneLimit, newSliderValue);
         float deadZoneSpriteOffset = Mathf.Lerp(1f, -(backgroundTransform.rect.width - 5f) * mouseSettings.DeadZoneLimit, normalValue);
         ChangeDeadZoneOffset(deadZoneSpriteOffset);
     }

@@ -80,19 +80,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
     }
     
-    public void SaveTurnSpeed(float rightSpeed, float leftSpeed)
-    {
-        PlayerPrefs.SetFloat("TurnRightSpeed", rightSpeed);
-        PlayerPrefs.SetFloat("TurnLeftSpeed", leftSpeed);
-        PlayerPrefs.Save();
-    }
-
-    public void LoadTurnSpeed(out float rightSpeed, out float leftSpeed)
-    {
-        rightSpeed = PlayerPrefs.GetFloat("TurnRightSpeed", 3f);
-        leftSpeed = PlayerPrefs.GetFloat("TurnLeftSpeed", -3f);
-    }
-    
     public void SaveDeadZoneValue(float value)
     {
         PlayerPrefs.SetFloat("DeadZoneValue", value);

@@ -29,7 +29,7 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
     
     private void ChangeArrowPosition()
     {
-        float normalValue = Mathf.InverseLerp(0f, mouseSettings.MouseAxisLimit, mouseSettings.DeadZoneSliderValue);
+        float normalValue = Mathf.InverseLerp(0f, mouseSettings.DeadZoneLimit, mouseSettings.DeadZoneSliderValue);
         arrowPos.x = Mathf.Lerp(maxPosX, minPosX, normalValue);
         arrowPos.y = arrowTransform.anchoredPosition.y;
         arrowTransform.anchoredPosition = arrowPos;
@@ -43,6 +43,6 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
         arrowTransform.anchoredPosition = arrowPos;
         
         float normalValue = Mathf.InverseLerp(maxPosX, minPosX, arrowPos.x);
-        OnArrowDrag?.Invoke(Mathf.Lerp(0f, mouseSettings.MouseAxisLimit, normalValue));
+        OnArrowDrag?.Invoke(Mathf.Lerp(0f, mouseSettings.DeadZoneLimit, normalValue));
     }
 }
