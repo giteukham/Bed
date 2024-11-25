@@ -30,22 +30,21 @@ public class BlinkEffect : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        camera = gameObject.GetComponent<Camera>();
         blinkMaterial = blinkMat;
         
         int temp = Shader.PropertyToID("_CameraOpaqueTexture");
         commandBuffer = new CommandBuffer();
-        commandBuffer.GetTemporaryRT(temp, -1, -1, 0, FilterMode.Bilinear);
-        commandBuffer.Blit(BuiltinRenderTextureType.CurrentActive, temp);
-        commandBuffer.Blit(temp, BuiltinRenderTextureType.CurrentActive, blinkMat);
+        commandBuffer.GetTemporaryRT(temp, Screen.width, Screen.height, 0, FilterMode.Bilinear);
+        commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, temp);
+        commandBuffer.Blit(temp, BuiltinRenderTextureType.CameraTarget, blinkMat);
         commandBuffer.ReleaseTemporaryRT(temp);
         
-        camera.AddCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
+        camera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, commandBuffer);
     }
 
     private void OnApplicationQuit()
     {
-        camera.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
+        camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, commandBuffer);
         blinkMaterial.SetFloat("_Blink", 0.3f);
     }
 }
