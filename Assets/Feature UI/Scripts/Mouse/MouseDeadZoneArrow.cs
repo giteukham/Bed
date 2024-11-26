@@ -21,9 +21,9 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
         
         MouseDeadZoneUI.OnDeadZoneOffsetChange += ChangeArrowPosition;
 
-        float temp = mouseDeadZoneUI.BackgroundTransform.rect.width - 5f;
-        minPosX = (-temp) * mouseSettings.DeadZoneLimit + (temp / 2);
-        maxPosX = temp * 0.5f;
+        float temp = mouseDeadZoneUI.BackgroundTransform.rect.width;
+        minPosX = (-temp) * mouseSettings.DeadZoneLimit + (temp / 2) + 10;
+        maxPosX = temp * 0.5f + 10;
         ChangeArrowPosition();
     }
     
