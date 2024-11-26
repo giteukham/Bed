@@ -18,8 +18,8 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Image insideImage;
     [SerializeField] private TMP_Dropdown resolutiondropdown;
     [SerializeField] private TMP_Dropdown frameRateDropdown;
-    [SerializeField] private SpriteRenderer outside;
-    [SerializeField] private SpriteRenderer inside;
+    [SerializeField] private RectTransform outside;
+    [SerializeField] private RectTransform inside;
 
     [SerializeField] private Sprite checkImage;
     [SerializeField] private Sprite nonCheckImage;
@@ -159,8 +159,8 @@ public class ResolutionManagement : MonoBehaviour
     {
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
-        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
-        inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
@@ -379,8 +379,8 @@ public class ResolutionManagement : MonoBehaviour
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
-            //previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
-            previewText.fontSize = inside.size.x * previewFontRatio;
+            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+            //previewText.fontSize = inside.size.x * previewFontRatio;
             previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}\n{frameRateReady}hz";
             //previewText.rectTransform.sizeDelta = Vector2();
         }
@@ -390,8 +390,8 @@ public class ResolutionManagement : MonoBehaviour
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
-            //previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
-            previewText.fontSize = inside.size.x * previewFontRatio;
+            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+            //previewText.fontSize = inside.size.x * previewFontRatio;
             previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}\n{frameRateReady}hz";
         }
     }
@@ -425,8 +425,8 @@ public class ResolutionManagement : MonoBehaviour
 
         isFullScreenReady = !isFullScreenReady;
         fullScreenSwitch.sprite = isFullScreenReady ? checkImage : nonCheckImage;
-        //insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
-        inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
+        //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         /*if (fullScreenSwitch.sprite == checkImage)
         {
@@ -506,7 +506,7 @@ public class ResolutionManagement : MonoBehaviour
     }
 
     //프리뷰 화면 사이즈 조정 메소드
-    private void ResizePreviewImage(float targetWidth, float targetHeight, SpriteRenderer rect)
+    private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
         float ratio1 = 0;
         float ratio2 = 0;
@@ -517,18 +517,18 @@ public class ResolutionManagement : MonoBehaviour
             {
                 //목표 해상도는 1 : ratio로 표현 가능함
                 ratio1 = 1 / (targetWidth / targetHeight);
-                //rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
+                rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
                 //1000을 1로 보고 있는 상태임 즉 우리 눈에 보이는 실제 가로 세로는 다음과 같음
                 //1 * 1000 : ratio1 * 1000
                 //하지만 rect.size의 x,y 표시는 다음과 같음
                 //1 : ratio1
-                rect.size = new Vector2(1, ratio1);
+                //rect.size = new Vector2(1, ratio1);
             }
             else
             {
                 ratio1 = 1 / (targetHeight / targetWidth);
-                //rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
-                rect.size = new Vector2(ratio1, 1);
+                rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
+                //rect.size = new Vector2(ratio1, 1);
             }
         }
         else //rect == inside
@@ -537,12 +537,12 @@ public class ResolutionManagement : MonoBehaviour
             ratio2 = 1 / (Display.main.systemHeight / targetHeight);
             print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
 
-            //rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+            rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
             //바깥테두리는 항상 약간 더 크게 그림
-            //outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
+            outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
 
-            ratio1 = 1 / (targetWidth / targetHeight);
-            ratio2 = 1 / (targetHeight / targetWidth);
+            //ratio1 = 1 / (targetWidth / targetHeight);
+            //ratio2 = 1 / (targetHeight / targetWidth);
 
             //inside 공식을 어떻게 할 것인가
             //inside의 크기는 항상 outside를 기준으로 하며 outside보다 작거나 같아야함
@@ -556,8 +556,8 @@ public class ResolutionManagement : MonoBehaviour
             //일단 나눗셈이 사칙연산으로 들어가야 할것 같다.
             //내 모니터 크기와 목표 해상도 사각형이 정확히 몇배인지 알아낼 방법도 없다
             //rect.size = new Vector2(ratio1 / (Display.main.systemWidth / targetWidth), ratio2 / (Display.main.systemHeight / targetHeight));
-            rect.size = new Vector2(1, ratio1);
-            //바깥테두리는 항상 약간 더 크게 그림(임시주석**************)
+            //rect.size = new Vector2(1, ratio1);
+            //바깥테두리는 항상 약간 더 크게 그림
             //outside.size = new Vector2(outside.size.x * 1.05f, outside.size.y * 1.05f);
         }
     }

@@ -4093,14 +4093,13 @@ GameObject:
   m_Component:
   - component: {fileID: 664982158}
   - component: {fileID: 664982160}
-  - component: {fileID: 664982159}
   m_Layer: 8
   m_Name: UiCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &664982158
 Transform:
   m_ObjectHideFlags: 0
@@ -4116,14 +4115,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1732393635}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!81 &664982159
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 664982157}
-  m_Enabled: 1
 --- !u!20 &664982160
 Camera:
   m_ObjectHideFlags: 0
@@ -10176,7 +10167,7 @@ Canvas:
   m_GameObject: {fileID: 1643402382}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1411787335}
   m_PlaneDistance: 0.1
   m_PixelPerfect: 0
@@ -11073,7 +11064,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 479
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -11279,7 +11270,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1732393631}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a160d838ff8b4b4693ac20007e008c7, type: 3}
   m_Name: 
@@ -13512,8 +13503,8 @@ MonoBehaviour:
   insideImage: {fileID: 1179379458}
   resolutiondropdown: {fileID: 7088351469477123627}
   frameRateDropdown: {fileID: 563732370}
-  outside: {fileID: 500298301}
-  inside: {fileID: 1646744729}
+  outside: {fileID: 1223893714}
+  inside: {fileID: 1179379457}
   checkImage: {fileID: 21300000, guid: a1c5dc6d9d5adde4e92f2196898e983e, type: 3}
   nonCheckImage: {fileID: 21300000, guid: fbb12ca2c5a7da741a626fa53ab1d8fd, type: 3}
   fullscreenInside: {fileID: 21300000, guid: f0507d7efa4076f44a29ffefdf87c0fd, type: 3}
