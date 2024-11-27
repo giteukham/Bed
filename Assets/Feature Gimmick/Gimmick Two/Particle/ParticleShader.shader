@@ -35,7 +35,6 @@ Shader "Custom/ParticleShader"
 
             struct Particle
             {
-                int id;
                 float3 position;
                 float4 color;
             };
@@ -62,19 +61,9 @@ Shader "Custom/ParticleShader"
             {
                 fixed4 col = fixed4(1.0, 1.0, 1.0, 1.0);
 
-                if (_particles[i.id].id == 1)
+                if (i.id == 1)
                 {
                     col = fixed4(1.0, 0.0, 0.0, 1.0);
-                }
-
-                if (_particles[i.id].id == 2)
-                {
-                    col = fixed4(0.0, 1.0, 0.0, 1.0);
-                }
-
-                if (_particles[i.id].id == 3)
-                {
-                    col = fixed4(0.0, 0.0, 1.0, 1.0);
                 }
                 
                 return col;

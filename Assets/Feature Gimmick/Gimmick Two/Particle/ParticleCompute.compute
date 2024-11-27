@@ -21,7 +21,6 @@
 
 struct Particle
 {
-	int id;
 	float3 position;
 	float4 color;
 };
@@ -41,6 +40,8 @@ RWStructuredBuffer<float3> _test;
 
 float3 _boundingBox;
 float _particleRadius;
+float _cellSize;
+uint _cellNumbers;
 float _damping;
 
 float _mass;
@@ -59,12 +60,11 @@ void InsertParticlesInCell(uint3 tid : SV_DispatchThreadID)
 	
 	if (threadId < _particleCount)
 	{
-		uint particleId = _particles[threadId].id;
-		Particle particle = _particles[particleId];
-		int3 cellDimIndex = GetCellDimIndex(particle.position, _particleRadius);		// the cell index of 3d grid
-		int cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);				// the cell index of flat grid
-		
-		_cellLists[particleId] = uint2(cellIndex, particleId);
+		Particle particle = _particles[threadId];
+		int3 gridPos = CalculateGridPosition(particle.position, _cellSize);
+		uint hash = HashFunction(gridPos);
+
+		_test[threadId] = hash;
 	}
 }
 
@@ -72,9 +72,8 @@ void InsertParticlesInCell(uint3 tid : SV_DispatchThreadID)
 void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
 {
 	uint threadId = tid.x;
-	uint particleId = _cellLists[threadId].y;
-	uint cellId = _cellLists[particleId].x;
-
+	uint cellId = _cellLists[threadId].x;
+	
 	_cellStartIndices[threadId] = 0xFFFFFFFF;
 	GroupMemoryBarrierWithGroupSync();
 	
@@ -85,29 +84,46 @@ void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
 void NeighborSearch(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
 	uint threadId = tid.x;
-
 	Particle particle = _particles[threadId];
-	int3 cellDimIndex = GetCellDimIndex(particle.position, _particleRadius);
+	int3 cellDimIndex = CalculateGridPosition(particle.position, _particleRadius);
 	uint cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);
-	
+
 	int neighborCount = 0;
-	for (int i = -1; i <= 1; i++)
-	for (int j = -1; j <= 1; j++)
-	for (int k = -1; k <= 1; k++)
+	uint test = 0;
+	for (int i = -1; i <= 1; ++i)
+	for (int j = -1; j <= 1; ++j)
+	for (int k = -1; k <= 1; ++k)
 	{
 		int3 neighborCellDimIndex = cellDimIndex + int3(i, j, k);
 		uint neighborCellIndex = HashFunction(neighborCellDimIndex, TABLE_SIZE);
-		
+		test++;
+
 		uint start = _cellStartIndices[neighborCellIndex];
 		GroupMemoryBarrierWithGroupSync();
-
-		while (start != 0xFFFFFFFF &&
-			start < _particleCount &&
-			_cellLists[_cellLists[start].y].x == neighborCellIndex)
+		
+		if (start == 0xFFFFFFFF)
 		{
+			continue;
+		}
+
+		while (start < _particleCount)
+		{
+			if (cellIndex == threadId)
+			{
+				cellIndex++;
+				continue;
+			}
 			uint neighborParticleId = _cellLists[start].y;
-			_neighbors[cellIndex * NEIGHBOR_COUNT + neighborCount] = neighborParticleId;
-			neighborCount++;
+			if (_cellLists[neighborParticleId].x != neighborCellIndex)
+			{
+				break;
+			}
+			float dist = length(particle.position - _particles[neighborParticleId].position);
+			if (dot(dist, dist) < pow(_particleRadius, 2))
+			{
+				_neighbors[cellIndex * NEIGHBOR_COUNT + neighborCount] = neighborParticleId;
+				neighborCount++;
+			}
 			start++;
 		}
 		GroupMemoryBarrierWithGroupSync();
@@ -121,7 +137,7 @@ void CalculateDensityAndPressures(uint3 tid : SV_DispatchThreadID, uint gidx : S
 	Particle particle = _particles[threadId];
 	uint numTiles = 1 + _particleCount / THREAD_SIZE;
 	
-	int3 cellDimIndex = GetCellDimIndex(particle.position, _particleRadius);
+	int3 cellDimIndex = CalculateGridPosition(particle.position, _particleRadius);
 	uint cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);
 
 	for (int tile = 0; tile < numTiles; ++tile)
@@ -159,12 +175,13 @@ void CalculateForces(uint3 tid : SV_DispatchThreadID, uint gidx : SV_GroupIndex)
 	Particle particle = _particles[threadId];
 	uint numTiles = 1 + _particleCount / THREAD_SIZE;
 	
-	int3 cellDimIndex = GetCellDimIndex(particle.position, _particleRadius);
+	int3 cellDimIndex = CalculateGridPosition(particle.position, _particleRadius);
 	uint cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);
 
 	_forces[threadId] = float3(0, 0, 0);
 	GroupMemoryBarrierWithGroupSync();
 
+	
 	for (int tile = 0; tile < numTiles; ++tile)
 	{
 		uint offset = tile * THREAD_SIZE;
@@ -174,6 +191,7 @@ void CalculateForces(uint3 tid : SV_DispatchThreadID, uint gidx : SV_GroupIndex)
 		for (int i = 0; i < NEIGHBOR_COUNT; i++)
 		{
 			uint neighborId = _neighbors[cellIndex * NEIGHBOR_COUNT + i];
+			
 			Particle neighbor = _groupParticles[neighborId];
 			const float3 diff = length(particle.position - neighbor.position);
 			const float r2 = dot(diff, diff);
@@ -185,8 +203,8 @@ void CalculateForces(uint3 tid : SV_DispatchThreadID, uint gidx : SV_GroupIndex)
 				const float sp = CalculateSpikyKernel(r, _particleRadius);
 				const float la = CalculateLaplacianKernel(r, _particleRadius);
 
-				_forces[threadId] -= _mass * ((_pressures[particle.id] + _pressures[neighborId]) / (2 * _densities[particle.id] + _densities[neighborId])) * sp * dir;
-				_forces[threadId] += _viscosity * (_mass * (1.0f / _densities[neighborId]) * (_velocities[neighborId] - _velocities[particle.id]) * la * dir);
+				_forces[threadId] -= _mass * ((_pressures[threadId] + _pressures[neighborId]) / (2 * _densities[threadId] + _densities[neighborId])) * sp * dir;
+				_forces[threadId] += _viscosity * (_mass * (1.0f / _densities[neighborId]) * (_velocities[neighborId] - _velocities[threadId]) * la * dir);
 			}
 			GroupMemoryBarrierWithGroupSync();
 		}

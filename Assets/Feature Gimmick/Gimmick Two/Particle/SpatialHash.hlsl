@@ -1,6 +1,6 @@
-inline int3 GetCellDimIndex(in float3 position, float particleRadius)
+inline int3 CalculateGridPosition(in float3 position, float cellSize)
 {
-	float space = particleRadius;					// cell의 한 변
+	float space = cellSize;					// cell의 한 변
 	return floor(position / space);
 }
 
@@ -10,8 +10,8 @@ inline uint GetCellFlatIndex(in float3 position, in float3 particleBoundBox)
 }
 
 // Infinite grid에선 이 함수를 통해 cell index를 구할 수 있다.
-inline int HashFunction(in int3 position, int hashTableSize)
+inline uint HashFunction(in int3 position)
 {
-	int hash = (73856093 * position.x) ^ (19349663 * position.y) ^ (83492791 * position.z);
-	return abs(hash) % hashTableSize;
+	uint hash = (73856093 * position.x) ^ (19349663 * position.y) ^ (83492791 * position.z);
+	return hash;
 }
