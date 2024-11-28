@@ -16,6 +16,7 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private TMP_Text previewText;
     [SerializeField] private Image fullScreenSwitch;
     [SerializeField] private Image insideImage;
+    [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TMP_Dropdown resolutiondropdown;
     [SerializeField] private TMP_Dropdown frameRateDropdown;
     [SerializeField] private RectTransform outside;
@@ -382,7 +383,7 @@ public class ResolutionManagement : MonoBehaviour
             previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
             //previewText.fontSize = inside.size.x * previewFontRatio;
             previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}\n{frameRateReady}hz";
-            //previewText.rectTransform.sizeDelta = Vector2();
+            inputField.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
@@ -393,6 +394,7 @@ public class ResolutionManagement : MonoBehaviour
             previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
             //previewText.fontSize = inside.size.x * previewFontRatio;
             previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}\n{frameRateReady}hz";
+            inputField.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
         }
     }
 
@@ -494,6 +496,36 @@ public class ResolutionManagement : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = frameRateReady;
         SaveManager.Instance.SaveFrameRate(frameRateReady);
+    }
+
+    private bool ReadyInputField()
+    {
+        char[] chars = inputField.text.ToCharArray();
+        char[] separators = { 'X', ' ' };
+
+        for (int i = 0; i < chars.Length; i++)
+        {
+            if (chars[i] ==' ' || chars[i] == 'X')
+            {
+                string[] result = inputField.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                inputField.text = $"{result[0]} X {result[1]}";
+                return true;
+            }
+        }
+
+        //입력값에 X 혹은 공백이 들어가 있지 않을 시
+        return false;
+    }
+
+    public void ApplyInputField()
+    {
+        //허용되지 않는 값 넣을 시 메소드 종료
+        if (ReadyInputField() == false)
+        {
+            return;
+        }
+
+
     }
 
     //확인버튼 누를 때 자동 실행
