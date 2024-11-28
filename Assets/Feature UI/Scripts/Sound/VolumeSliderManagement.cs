@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using FMODUnity;
 
 public class VolumeSliderManagement : MonoBehaviour
 {
@@ -74,19 +71,15 @@ public class VolumeSliderManagement : MonoBehaviour
 
     private void OnDisable()
     {
-        SaveSettings();
+        SaveManager.Instance.SaveVolumes(masterVolumeSlider.value, gimmickVolumeSlider.value, playerVolumeSlider.value);
     }
 
     private void LoadSettings()
     {
-        masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 1);
-        gimmickVolumeSlider.value = PlayerPrefs.GetFloat("GimmickVolume", 1);
-        playerVolumeSlider.value = PlayerPrefs.GetFloat("PlayerVolume", 1);
-    }
-    private void SaveSettings()
-    {
-        PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
-        PlayerPrefs.SetFloat("GimmickVolume", gimmickVolumeSlider.value);
-        PlayerPrefs.SetFloat("PlayerVolume", playerVolumeSlider.value);
+        SaveManager.Instance.LoadVolumes(out float masterVolume, out float gimmickVolume, out float playerVolume);
+
+        masterVolumeSlider.value = masterVolume;
+        gimmickVolumeSlider.value = gimmickVolume;
+        playerVolumeSlider.value = playerVolume;
     }
 }

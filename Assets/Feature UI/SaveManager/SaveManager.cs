@@ -102,4 +102,20 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
     }
+
+    // 사운드 관련
+    public void SaveVolumes(float _master, float _player, float _gimmick)
+    {
+        PlayerPrefs.SetFloat("MasterVolume", _master);
+        PlayerPrefs.SetFloat("PlayerVolume", _player);
+        PlayerPrefs.SetFloat("GimmickVolume", _gimmick);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadVolumes(out float _master, out float _player, out float _gimmick)
+    {
+        _master = PlayerPrefs.GetFloat("MasterVolume", 1);
+        _player = PlayerPrefs.GetFloat("PlayerVolume", 1);
+        _gimmick = PlayerPrefs.GetFloat("GimmickVolume", 1);
+    }
 }

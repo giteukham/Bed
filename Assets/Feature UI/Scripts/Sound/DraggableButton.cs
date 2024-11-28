@@ -54,6 +54,7 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         }
 
         testObjectParent= GameObject.Find("Floor").transform;
+        
         testObjectInstance = Instantiate(testObject, testObjectParent);
         testObjectInstance.transform.localPosition = new Vector3((rectTransform.anchoredPosition.y  + panelHeight / 2) / yRatio, 0.5f, (-rectTransform.anchoredPosition.x  +  panelWidth / 2) / xRatio);
     }
