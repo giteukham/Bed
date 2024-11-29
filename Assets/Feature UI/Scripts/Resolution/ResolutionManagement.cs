@@ -26,6 +26,11 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Sprite nonCheckImage;
     [SerializeField] private Sprite fullscreenInside;
     [SerializeField] private Sprite windowedInside;
+    
+    #region Properties
+    public RectTransform InSide => inside;
+    public RectTransform OutSide => outside;
+    #endregion
 
     bool isFullScreen = true;
     bool isFullScreenReady = true;
@@ -160,7 +165,7 @@ public class ResolutionManagement : MonoBehaviour
     {
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
-        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
         //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
@@ -427,7 +432,7 @@ public class ResolutionManagement : MonoBehaviour
 
         isFullScreenReady = !isFullScreenReady;
         fullScreenSwitch.sprite = isFullScreenReady ? checkImage : nonCheckImage;
-        insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
+        //insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
         //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
         /*if (fullScreenSwitch.sprite == checkImage)
