@@ -179,4 +179,17 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         return PlayerPrefs.GetInt("FrameRate", 60);
     }
+
+    //lastApplyObject 관련
+    public void SaveLastApplyObject(int value)
+    {
+        //0 : 드롭다운
+        //1 : 인풋필드
+        PlayerPrefs.SetInt("SaveLastApplyObject", value);
+    }
+
+    public int LoadLastApplyObject()
+    {
+        return PlayerPrefs.GetInt("SaveLastApplyObject", 0);
+    }
 }

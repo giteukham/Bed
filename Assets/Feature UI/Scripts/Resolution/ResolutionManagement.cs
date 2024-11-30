@@ -39,6 +39,9 @@ public class ResolutionManagement : MonoBehaviour
     int nowHeightPixel = 0;
     int previewMaxLength = 1000;
     float previewFontRatio = 11.25f;
+    const float CRITERIA_NUM = 16f / 9f;
+    //해상도 설정 제일 마지막에 사용된 오브젝트 저장하는 용도
+    GameObject lastApplyObject;
 
     List<Vector2> hdList = new List<Vector2>
     {
@@ -72,10 +75,18 @@ public class ResolutionManagement : MonoBehaviour
 
         //print(Display.main.systemWidth + " : " + Display.main.systemHeight);
 
-
+        switch (SaveManager.Instance.LoadLastApplyObject())
+        {
+            case 0:
+                lastApplyObject = resolutiondropdown.gameObject;
+                break;
+            case 1:
+                lastApplyObject = inputField.gameObject;
+                break;
+        }
 
         //////////////////////////////////////////////////////////////////////////
-        
+
         hdList.Clear();
         currentList.Clear();
 
@@ -111,12 +122,12 @@ public class ResolutionManagement : MonoBehaviour
             print("currentList : " + (int)Math.Round(Display.main.systemWidth - widthNum * i) + " : " + (int)Math.Round(Display.main.systemHeight - heightNum * i));
         }
 
-        if (Display.main.systemWidth / Display.main.systemHeight > 16f / 9f)
+        if ((float)Display.main.systemWidth / Display.main.systemHeight > 16f / 9f)
         {
             widthNum = Display.main.systemHeight / 9f * 16;
             heightNum = Display.main.systemHeight;
         }
-        else if (Display.main.systemWidth / Display.main.systemHeight <= 16f / 9f)
+        else if ((float)Display.main.systemWidth / Display.main.systemHeight <= 16f / 9f)
         {
             widthNum = Display.main.systemWidth;
             heightNum = Display.main.systemWidth / 16f * 9;
@@ -154,11 +165,6 @@ public class ResolutionManagement : MonoBehaviour
             }
         }*/
 
-        for (int i = 0; i < currentList.Count; i++)
-        {
-            //print($"커런트 리스트 : {currentList[i].x} : {currentList[i].y}");
-        }
-
     }
 
     private void OnEnable()
@@ -171,21 +177,34 @@ public class ResolutionManagement : MonoBehaviour
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
         RedefineDropdown(isFullScreen);
-        for (int i = 0; i < nowList.Count; i++)
-        {
-            if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
-            {
-                //print(nowWidthPixel + " : " + nowList[i].x + " : " + nowHeightPixel + " : " + nowList[i].y);
 
-                //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
-                resolutiondropdown.value = i;
-                //프리뷰 설정
-                ReadyResolution(i);
-                //해상도 설정
-                ApplyResolution();
-                //반복문 종료
-                break;
+        if (lastApplyObject == resolutiondropdown.gameObject)
+        {
+            for (int i = 0; i < nowList.Count; i++)
+            {
+                if (nowWidthPixel == nowList[i].x && nowHeightPixel == nowList[i].y)
+                {
+                    //print(nowWidthPixel + " : " + nowList[i].x + " : " + nowHeightPixel + " : " + nowList[i].y);
+
+                    //드롭다운 아이템 저장된 값으로 드롭다운 아이템 선택
+                    resolutiondropdown.value = i;
+                    //프리뷰 설정
+                    ReadyResolution(i);
+                    //해상도 설정
+                    ApplyResolution();
+                    //반복문 종료
+                    break;
+                }
             }
+        }
+        else if (lastApplyObject == inputField.gameObject)
+        {
+            //그런데 어차피 드롭다운 텍스트는 쓰지 않을 예정임
+            resolutiondropdown.captionText.text = "";
+            //인풋필드에 값 불러오고 인풋필드 해상도 맞춰주면 될듯
+            inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
+            ReadyInputField();
+            ApplyInputField();
         }
 
         // V-Sync 비활성화
@@ -248,10 +267,10 @@ public class ResolutionManagement : MonoBehaviour
 
     private void RedefineDropdown(bool checkFullScreen)
     {
-        float CRITERIA_NUM = 16f / 9f;
+        //CRITERIA_NUM = 16f / 9f;
 
         //16:9보다 가로가 더 긴 모니터의 경우 16:9 해상도만 나옴
-        if (CRITERIA_NUM < Display.main.systemWidth / Display.main.systemHeight || checkFullScreen == false)
+        if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight || checkFullScreen == false)
         {
             resolutiondropdown.ClearOptions();
 
@@ -318,7 +337,7 @@ public class ResolutionManagement : MonoBehaviour
         //16 / 9값과 비교하여 16:9 화면에서 세로길이 혹은 가로길이 중에서
         //어느 길이가 더 긴지 알아내는 판별용 변수
         float checkedValue = width / height;
-        float CRITERIA_NUM = 16f / 9f;
+        //CRITERIA_NUM = 16f / 9f;
 
         Rect rect = new Rect(0, 0, 1, 1);
         float temp1 = 0;
@@ -376,11 +395,11 @@ public class ResolutionManagement : MonoBehaviour
     public void ReadyResolution(int value)
     {
         print("ReadyResolution 실행");
-        float CRITERIA_NUM = 16f / 9f;
+        //CRITERIA_NUM = 16f / 9f;
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
         //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
-        if (isFullScreenReady == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
+        if (isFullScreenReady == true && (CRITERIA_NUM > (float)Display.main.systemWidth / Display.main.systemHeight))
         {
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
@@ -389,6 +408,7 @@ public class ResolutionManagement : MonoBehaviour
             //previewText.fontSize = inside.size.x * previewFontRatio;
             previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}\n{frameRateReady}hz";
             inputField.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
+            lastApplyObject = resolutiondropdown.gameObject;
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
@@ -400,6 +420,7 @@ public class ResolutionManagement : MonoBehaviour
             //previewText.fontSize = inside.size.x * previewFontRatio;
             previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}\n{frameRateReady}hz";
             inputField.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
+            lastApplyObject = resolutiondropdown.gameObject;
         }
     }
 
@@ -407,18 +428,20 @@ public class ResolutionManagement : MonoBehaviour
     private void ApplyResolution()
     {
         int value = resolutiondropdown.value;
-        float CRITERIA_NUM = 16f / 9f;
+        //CRITERIA_NUM = 16f / 9f;
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
         //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
-        if (isFullScreen == true && (CRITERIA_NUM > Display.main.systemWidth / Display.main.systemHeight))
+        if (isFullScreen == true && (CRITERIA_NUM > (float)Display.main.systemWidth / Display.main.systemHeight))
         {
             StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
+            SaveManager.Instance.SaveLastApplyObject(0);
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
         else
         {
             StartCoroutine(ResolutionWindow(hdList[value].x, hdList[value].y));
+            SaveManager.Instance.SaveLastApplyObject(0);
         }
     }
 
@@ -453,6 +476,8 @@ public class ResolutionManagement : MonoBehaviour
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
         resolutiondropdown.value = 0;
         resolutiondropdown.value = nowList.Count - 1;
+
+        lastApplyObject = resolutiondropdown.gameObject;
         //ApplyResolution();
     }
 
@@ -503,42 +528,106 @@ public class ResolutionManagement : MonoBehaviour
         SaveManager.Instance.SaveFrameRate(frameRateReady);
     }
 
-    private bool ReadyInputField()
+    public void ReadyInputField()
     {
         char[] chars = inputField.text.ToCharArray();
         char[] separators = { 'X', ' ' };
+        int widthNum = 0;
+        int heightNum = 0;
 
         for (int i = 0; i < chars.Length; i++)
         {
+            //인풋필드에 공백 혹은 X 있는지 확인
             if (chars[i] ==' ' || chars[i] == 'X')
             {
+                //공백과 X 기준으로 split
                 string[] result = inputField.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-                inputField.text = $"{result[0]} X {result[1]}";
-                return true;
+                //split한 것이 숫자가 맞는지 확인
+                if (int.TryParse(result[0], out widthNum) && int.TryParse(result[1], out heightNum))
+                {
+                    //창모드인지 전체화면인지 확인
+                    if (isFullScreenReady == true)  //전체화면
+                    {
+                        if (Mathf.Approximately(widthNum / (float)heightNum, (float)Display.main.systemWidth / Display.main.systemHeight)) //현재 모니터 비율과 똑같으면 적용
+                        {
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                        else    //현재 모니터와 비율 다르면 모니터 최대해상도 적용
+                        {
+                            widthNum = Display.main.systemWidth;
+                            heightNum = Display.main.systemHeight;
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                    }
+                    else    //창모드
+                    {
+                        if (widthNum > hdList[hdList.Count - 1].x)    //현재 모니터가 허용하는 16:9 최대해상도 넘을시
+                        {
+                            widthNum = (int)hdList[hdList.Count - 1].x;
+                            heightNum = (int)hdList[hdList.Count - 1].y;
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                        else if (Mathf.Approximately(widthNum / (float)heightNum, CRITERIA_NUM)) //현재 모니터 비율과 똑같으면 적용
+                        {
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                        else    //16:9 비율 아닐시 가로값 기준으로 16:9 값 찾음
+                        {
+                            //세로값 다시 구함
+                            heightNum = (int)(widthNum / CRITERIA_NUM);
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                    }
+                    ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+                    ResizePreviewImage(widthNum, heightNum, inside);
+                    previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+                    previewText.text = $"{widthNum} X {heightNum}\n{frameRateReady}hz";
+
+                    lastApplyObject = inputField.gameObject;
+                    return;
+                }
+                else
+                {
+                    inputField.text = "ERROR";
+                    return;
+                }
             }
         }
 
         //입력값에 X 혹은 공백이 들어가 있지 않을 시
-        return false;
+        inputField.text = "ERROR";
+        return;
     }
 
     public void ApplyInputField()
     {
         //허용되지 않는 값 넣을 시 메소드 종료
-        if (ReadyInputField() == false)
+        if (inputField.text == "ERROR")
         {
             return;
         }
 
+        char[] separators = { 'X', ' ' };
+        string[] result = inputField.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
+        StartCoroutine(ResolutionWindow(float.Parse(result[0]), float.Parse(result[1])));
+        SaveManager.Instance.SaveResolution(int.Parse(result[0]), int.Parse(result[1]));
+        SaveManager.Instance.SaveLastApplyObject(1);
     }
 
     //확인버튼 누를 때 자동 실행
     public void PressApply()
     {
         ApplyFullScreenSwitch();
-        //ApplyFullScreenSwitch 다음에 ApplyResolution 실행 할 것
-        ApplyResolution();
+        //ApplyFullScreenSwitch 다음에 ApplyResolution 혹은 ApplyInputField 실행 할 것
+        if (lastApplyObject == resolutiondropdown.gameObject)
+        {
+            ApplyResolution();
+        }
+        else
+        {
+            ApplyInputField();
+        }
         ApplyFrameRate();
     }
 
@@ -555,17 +644,11 @@ public class ResolutionManagement : MonoBehaviour
                 //목표 해상도는 1 : ratio로 표현 가능함
                 ratio1 = 1 / (targetWidth / targetHeight);
                 rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
-                //1000을 1로 보고 있는 상태임 즉 우리 눈에 보이는 실제 가로 세로는 다음과 같음
-                //1 * 1000 : ratio1 * 1000
-                //하지만 rect.size의 x,y 표시는 다음과 같음
-                //1 : ratio1
-                //rect.size = new Vector2(1, ratio1);
             }
             else
             {
                 ratio1 = 1 / (targetHeight / targetWidth);
                 rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
-                //rect.size = new Vector2(ratio1, 1);
             }
         }
         else //rect == inside
@@ -577,25 +660,6 @@ public class ResolutionManagement : MonoBehaviour
             rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
             //바깥테두리는 항상 약간 더 크게 그림
             outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
-
-            //ratio1 = 1 / (targetWidth / targetHeight);
-            //ratio2 = 1 / (targetHeight / targetWidth);
-
-            //inside 공식을 어떻게 할 것인가
-            //inside의 크기는 항상 outside를 기준으로 하며 outside보다 작거나 같아야함
-            //그러므로 inside.size의 x와 y는 outside.size의 x와 y의 값을 넘을 수 없음
-            //여기서 문제가 있음
-            //scale은 항상 1000, 1000 고정으로 유지되어야만 함
-            //이렇게 되면 inside는 항상 1000, 1000의 영향을 받으며, outside를 기준으로 얼마나 작은지 구한다고해도 별의미가 없을 것임
-            //방법 1 : 목표 해상도 가로가 더 길다고 가정시
-            //ratio1 = 1 / (targetWidth / targetHeight); 이 코드를 써주게 되면 1000, 1000에 대한 비율(정확히는 세로)을 얻을 수 있음, 1 : ratio1이 되는거임 현재 outside에서 쓰이고 있음
-            //이제 해야할것은 outside보다 비율을 작게 조정하는 것임, 이제 어떤값을 정해서 1과 ratio1에 적용을 해야하는가?
-            //일단 나눗셈이 사칙연산으로 들어가야 할것 같다.
-            //내 모니터 크기와 목표 해상도 사각형이 정확히 몇배인지 알아낼 방법도 없다
-            //rect.size = new Vector2(ratio1 / (Display.main.systemWidth / targetWidth), ratio2 / (Display.main.systemHeight / targetHeight));
-            //rect.size = new Vector2(1, ratio1);
-            //바깥테두리는 항상 약간 더 크게 그림
-            //outside.size = new Vector2(outside.size.x * 1.05f, outside.size.y * 1.05f);
         }
     }
 
