@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 using static UnityEngine.Rendering.DebugUI;
 
-public class ResolutionManagement : MonoBehaviour
+public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 {
 
     [SerializeField] private Camera cam;
@@ -28,8 +30,50 @@ public class ResolutionManagement : MonoBehaviour
     [SerializeField] private Sprite windowedInside;
     
     #region Properties
-    public RectTransform InSide => inside;
-    public RectTransform OutSide => outside;
+    public Rect InsideRect => inside.rect;
+
+    public Vector2 InsideSize
+    {
+        get => inside.sizeDelta;
+        set
+        {
+            if (inside.sizeDelta != value)
+            {
+                inside.sizeDelta = value;
+                OnInsideSizeChanged?.Invoke(inside);
+            }
+        }
+    }
+    
+    public Vector2 InsideOffsetMin
+    {
+        get => inside.offsetMin;
+        set
+        {
+            if (inside.offsetMin != value)
+            {
+                inside.offsetMin = value;
+                OnInsideOffsetMinChanged?.Invoke(inside);
+            }
+        }
+    }
+    
+    public Vector2 InsideOffsetMax
+    {
+        get => inside.offsetMax;
+        set
+        {
+            if (inside.offsetMax != value)
+            {
+                inside.offsetMax = value;
+                OnInsideOffsetMaxChanged?.Invoke(inside);
+            }
+        }
+    }
+    
+    public Vector2 OutsideSize => outside.sizeDelta;
+    public Vector2 OutsideOffsetMin => outside.offsetMin;
+    public Vector2 OutsideOffsetMax => outside.offsetMax;
     #endregion
 
     bool isFullScreen = true;
@@ -58,6 +102,9 @@ public class ResolutionManagement : MonoBehaviour
 
     [SerializeField] private Text testText;
     [SerializeField] private Text testText2;
+    
+    public UnityEvent<RectTransform> OnInsideSizeChanged;
+    public UnityEvent<RectTransform> OnInsideOffsetMinChanged, OnInsideOffsetMaxChanged;
 
     private void Awake()
     {
@@ -169,6 +216,10 @@ public class ResolutionManagement : MonoBehaviour
 
     private void OnEnable()
     {
+        OnInsideSizeChanged.AddListener(OnSizeChangedHandler);
+        OnInsideOffsetMinChanged.AddListener(OnSizeChangedHandler);
+        OnInsideOffsetMaxChanged.AddListener(OnSizeChangedHandler);
+        
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -216,11 +267,12 @@ public class ResolutionManagement : MonoBehaviour
         frameRateDropdown.value = frameRateReady / 30 - 1;
     }
 
+    /// <summary>
+    /// 11-30 최무령 수정 : 해상도 텍스트 바꾸는 거 UpdateResolutionText로 이동
+    /// </summary>
     private void Update()
     {
         //'모니터'의 현재 해상도를 가져옴
-        //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
-        screenText.text = nowWidthPixel + " " + nowHeightPixel;
         testText2.text = Application.targetFrameRate + "";
         if (nowList == hdList)
         {
@@ -392,6 +444,10 @@ public class ResolutionManagement : MonoBehaviour
 
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
     //해상도 프리뷰만 건드림
+    /// <summary>
+    /// 11-30 최무령 수정 : 해상도 텍스트 바꾸는 거 UpdateResolutionText로 이동
+    /// </summary>
+    /// <param name="value"></param>
     public void ReadyResolution(int value)
     {
         print("ReadyResolution 실행");
@@ -404,9 +460,6 @@ public class ResolutionManagement : MonoBehaviour
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
-            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
-            //previewText.fontSize = inside.size.x * previewFontRatio;
-            previewText.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}\n{frameRateReady}hz";
             inputField.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
             lastApplyObject = resolutiondropdown.gameObject;
         }
@@ -416,9 +469,6 @@ public class ResolutionManagement : MonoBehaviour
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
-            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
-            //previewText.fontSize = inside.size.x * previewFontRatio;
-            previewText.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}\n{frameRateReady}hz";
             inputField.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
             lastApplyObject = resolutiondropdown.gameObject;
         }
@@ -632,6 +682,12 @@ public class ResolutionManagement : MonoBehaviour
     }
 
     //프리뷰 화면 사이즈 조정 메소드
+    /// <summary>
+    /// 11-30 최무령 수정 : inside 부분 수정
+    /// </summary>
+    /// <param name="targetWidth"></param>
+    /// <param name="targetHeight"></param>
+    /// <param name="rect"></param>
     private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
         float ratio1 = 0;
@@ -657,10 +713,75 @@ public class ResolutionManagement : MonoBehaviour
             ratio2 = 1 / (Display.main.systemHeight / targetHeight);
             print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
 
-            rect.sizeDelta = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+            InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+            rect.anchoredPosition = Vector2.zero;
+            
             //바깥테두리는 항상 약간 더 크게 그림
             outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
+    public Vector2[] GetOffsetsByResolution(float width, float height)
+    {
+        float ratio = width / height;
+        Vector2 sizeDelta = new Vector2(previewMaxLength, previewMaxLength / ratio);
+        
+        Vector2 offsetMin = new Vector2(-sizeDelta.x / 2, -sizeDelta.y / 2);
+        Vector2 offsetMax = new Vector2(sizeDelta.x / 2, sizeDelta.y / 2);
+
+        return new Vector2[] { offsetMin, offsetMax };
+    }
+    
+    public Vector2Int GetResolutionBySizeDelta(Vector2 sizeDelta)
+    {
+        int width = Mathf.FloorToInt((float)Display.main.systemWidth / previewMaxLength * sizeDelta.x);
+        int height = Mathf.FloorToInt((float)Display.main.systemWidth / previewMaxLength * sizeDelta.y);
+
+        return new Vector2Int(width, height);
+    }
+    
+    /// <summary>
+    /// Inside 내 마우스 로컬 위치
+    /// </summary>
+    /// <param name="eventData"></param>
+    /// <returns></returns>
+    public Vector2 GetInsideLocalMousePoint(PointerEventData eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(inside, eventData.position, eventData.pressEventCamera, out Vector2 localMousePoint);
+        return localMousePoint;
+    }
+    
+    public Vector2 GetOutsideLocalMousePoint(PointerEventData eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(outside, eventData.position, eventData.pressEventCamera, out Vector2 localMousePoint);
+        return localMousePoint;
+    }
+    
+    /// <summary>
+    /// Rect의 크기가 변경될 때 호출되는 이벤트 핸들러
+    /// </summary>
+    /// <param name="rect"></param>
+    private void OnSizeChangedHandler(RectTransform rect)
+    {
+        Vector2Int resolution = GetResolutionBySizeDelta(rect.sizeDelta);
+        UpdateResolutionText(resolution.x, resolution.y);
+    }
+
+    /// <summary>
+    /// Rect의 크기가 변경되면 해상도 텍스트를 업데이트
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    private void UpdateResolutionText(int width, int height)
+    {
+        previewText.text = $"{width} X {height}\n{frameRateReady}hz";
+        screenText.text = width + " " + height;
     }
 
     private int GCD(int a, int b)

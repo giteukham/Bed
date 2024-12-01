@@ -1,36 +1,49 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 
 public class ZoomIcon : MonoBehaviour, IPointerClickHandler
 {
-    private ICommand zoomInCommand, zoomOutCommand;
-    private ICommand currentCommand;
+    enum ZoomState
+    {
+        ZoomIn,
+        ZoomOut
+    }
     
+    private ResolutionManagement resolutionManagement;
+    
+    private ZoomState zoomState = ZoomState.ZoomIn;
+
+    private Vector2 savedOffsetMin, savedOffsetMax;
+
+    private void OnEnable()
+    {
+        resolutionManagement = ResolutionManagement.Instance;
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
-        currentCommand = currentCommand == zoomInCommand ? zoomOutCommand : zoomInCommand;
-        currentCommand?.Execute();
+        if (zoomState == ZoomState.ZoomIn)
+        {
+            savedOffsetMin = resolutionManagement.InsideOffsetMin;
+            savedOffsetMax = resolutionManagement.InsideOffsetMax;
+            
+            Vector2[] maxOffsets = resolutionManagement.GetOffsetsByResolution(Display.main.systemWidth, Display.main.systemHeight);
+            
+            zoomState = ZoomState.ZoomOut;
+            DoZoom(maxOffsets[0], maxOffsets[1]);
+        }
+        else
+        {
+            zoomState = ZoomState.ZoomIn;
+            DoZoom(savedOffsetMin, savedOffsetMax);
+        }
     }
-}
-
-public interface ICommand
-{
-    void Execute();
-}
-
-public class ZoomInCommand : ICommand
-{
-    public void Execute()
+    
+    private void DoZoom(Vector2 offsetMin, Vector2 offsetMax)
     {
-        
-    }
-}
-
-public class ZoomOutCommand : ICommand
-{
-    public void Execute()
-    {
-        
+        resolutionManagement.InsideOffsetMin = offsetMin;
+        resolutionManagement.InsideOffsetMax = offsetMax;
     }
 }

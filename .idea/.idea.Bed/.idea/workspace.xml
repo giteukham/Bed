@@ -5,15 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1fcfbd98-c863-4ab0-a550-bb8889065656" name="�?�?" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionInsideUI.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionInsideUI.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ZoomIcon.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ZoomIcon.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/projectSettingsUpdater.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Diagonal Resize 1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Diagonal Resize 1.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Diagonal Resize 2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Diagonal Resize 2.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Horizontal Resize.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Horizontal Resize.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Vertical Resize.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Image/Cursor/Vertical Resize.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Cursor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Cursor.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/Resize.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/Resize.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResizeEvent.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResizeEvent.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature Player/Shader/Blink Effect.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Player/Shader/Blink Effect.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionInsideUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionInsideUI.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionManagement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionManagement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ZoomIcon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ZoomIcon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Jin 1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Jin 1.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +37,9 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/51fded79cd284d4d911c5949aff4cb2146ac00/2e/db75a0dd/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/95/15fda9c4/UnityEvent`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/f5/9efd601f/RectTransform.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f80b52f5c0654dbc88e436a2762785997000/6c/ef6702a7/ICanvasRaycastFilter.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.cinemachine@2.10.0/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.cinemachine@2.10.0/Runtime/Behaviours/CinemachineVirtualCamera.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.cinemachine@2.10.0/Runtime/Core/CinemachineVirtualCameraBase.cs" root0="SKIP_HIGHLIGHTING" />
@@ -42,12 +57,14 @@
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.postprocessing@3.4.0/PostProcessing/Runtime/PostProcessProfile.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.postprocessing@3.4.0/PostProcessing/Runtime/PostProcessVolume.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.postprocessing@3.4.0/PostProcessing/Runtime/Utils/PropertySheetFactory.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.textmeshpro@3.0.9/Scripts/Runtime/TMP_InputField.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventInterfaces.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/ExecuteEvents.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/Raycasters/PhysicsRaycaster.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/Graphic.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/GraphicRaycaster.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/Image.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualscripting@1.9.4/Runtime/VisualScripting.Core/Listeners/UnityMessageListener.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualscripting@1.9.4/Runtime/VisualScripting.Flow/Framework/Events/Animation/BoltAnimationEvent.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -66,23 +83,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "Unity ?��?��?��?�� ?���?.Unity ?��?��?��?�� ?���?.executor": "Debug",
-    "Unity 에디터에 연결.Unity 에디터에 연결.executor": "Debug",
-    "XThreadsFramesViewSplitterKey": "0.5007874",
-    "git-widget-placeholder": "feature/resolution-option",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "File.Encoding",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Unity ?��?��?��?�� ?���?.Unity ?��?��?��?�� ?���?.executor&quot;: &quot;Debug&quot;,
+    &quot;Unity 에디터에 연결.Unity 에디터에 연결.executor&quot;: &quot;Debug&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.5007874&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/resolution-option&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Unity 에디터에 연결.Unity 에디터에 연결">
     <configuration name="유닛 테스트(배치 모드)" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\2022.3.33f1\Editor\Unity.exe" />
@@ -132,10 +149,10 @@
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <method v="2" />
     </configuration>
-    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="22840">
+    <configuration name="Unity 에디터에 연결" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="22840" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -192,7 +209,11 @@
       <workItem from="1723961629489" duration="24047000" />
       <workItem from="1724040705413" duration="26312000" />
       <workItem from="1732773636780" duration="15688000" />
-      <workItem from="1732839845035" duration="18030000" />
+      <workItem from="1732839845035" duration="24910000" />
+      <workItem from="1732925725208" duration="13793000" />
+      <workItem from="1732956887792" duration="13274000" />
+      <workItem from="1733018199173" duration="16123000" />
+      <workItem from="1733055034844" duration="8211000" />
     </task>
     <servers />
   </component>
