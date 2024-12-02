@@ -1,6 +1,9 @@
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
 namespace Bed.UI
@@ -16,7 +19,7 @@ namespace Bed.UI
     
     public class Cursor : MonoBehaviour
     {
-        private static Cursor Instance;
+        private static Cursor _instance;
         
         [Header("커서 텍스쳐")]
         public Texture2D diagonalResize1;
@@ -24,11 +27,11 @@ namespace Bed.UI
         public Texture2D horizontalResize;
         public Texture2D verticalResize;
         
-        private CursorType currentCursorType = CursorType.Normal;
+        private CursorType _currentCursorType = CursorType.Normal;
         
         private void Awake()
         {
-            Instance = this;
+            _instance = this;
         }
         
         public static void SetCursor(CursorType cursorType)
@@ -39,16 +42,16 @@ namespace Bed.UI
                     UnityEngine.Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                     break;
                 case CursorType.DiagonalResize1:
-                    UnityEngine.Cursor.SetCursor(Instance.diagonalResize1, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize1, new Vector2(8, 8), CursorMode.Auto);
                     break;
                 case CursorType.DiagonalResize2:
-                    UnityEngine.Cursor.SetCursor(Instance.diagonalResize2, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize2, new Vector2(8, 8), CursorMode.Auto);
                     break;
                 case CursorType.HorizontalResize:
-                    UnityEngine.Cursor.SetCursor(Instance.horizontalResize, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.horizontalResize, new Vector2(8, 8), CursorMode.Auto);
                     break;
                 case CursorType.VerticalResize:
-                    UnityEngine.Cursor.SetCursor(Instance.verticalResize, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.verticalResize, new Vector2(8, 8), CursorMode.Auto);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
