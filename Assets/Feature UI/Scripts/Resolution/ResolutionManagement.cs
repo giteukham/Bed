@@ -281,6 +281,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         frameRateDropdown.value = frameRateReady / 30 - 1;
     }
 
+    private void Start()
+    {
+        //맨처음 시작시 Start에서 실행해야 오류 없음
+        resolutiondropdown.captionText.text = "";
+    }
+
     /// <summary>
     /// 11-30 최무령 수정 : 해상도 텍스트 바꾸는 거 UpdateResolutionText로 이동
     /// </summary>
