@@ -41,8 +41,6 @@ public class Resize : MonoBehaviour
     private ResolutionManagement resolutionManager;
     private Vector2 insideOffsetMin, insideOffsetMax, outsideOffsetMin, outsideOffsetMax;
     
-    private Action<Vector2> cardinalEvent, diagonalEvent;
-    
     private const float edgeDraggableThickness = 300f;
 
     private void Awake()
@@ -114,22 +112,6 @@ public class Resize : MonoBehaviour
     private void OnResizeStart(ResizeType type)
     {
         currentResizeType = type;
-        
-        switch (type)
-        {
-            case ResizeType.Left:
-            case ResizeType.Right:
-            case ResizeType.Up:
-            case ResizeType.Down:
-                DragCardinal(type);
-                break;
-            case ResizeType.LeftUp:
-            case ResizeType.LeftDown:
-            case ResizeType.RightUp:
-            case ResizeType.RightDown:
-                DragDiagonal(type);
-                break;
-        }
     }
     
     private void OnResizeStay(PointerEventData eventData)
@@ -182,8 +164,6 @@ public class Resize : MonoBehaviour
     private void OnResizeEnd()
     {
         Cursor.SetCursor(CursorType.Normal);
-        cardinalEvent = null;
-        diagonalEvent = null;
     }
     
     private void OnPointerEnterEvent(ResizeType type)
@@ -215,52 +195,6 @@ public class Resize : MonoBehaviour
             case ResizeType.LeftDown:
             case ResizeType.RightUp:
                 Cursor.SetCursor(CursorType.DiagonalResize2);
-                break;
-        }
-    }
-    
-    private void DragDiagonal(ResizeType type)
-    {
-        switch (type)
-        {
-            case ResizeType.LeftUp:
-                diagonalEvent += (delta) => resolutionManager.InsideOffsetMin = 
-                    new Vector2(resolutionManager.InsideOffsetMin.x + delta.x, resolutionManager.InsideOffsetMin.y + delta.y);
-                break;
-            case ResizeType.LeftDown:
-                diagonalEvent += (delta) => resolutionManager.InsideOffsetMin = 
-                    new Vector2(resolutionManager.InsideOffsetMin.x + delta.x, resolutionManager.InsideOffsetMin.y - delta.y);
-                break;
-            case ResizeType.RightUp:
-                diagonalEvent += (delta) => resolutionManager.InsideOffsetMax = 
-                    new Vector2(resolutionManager.InsideOffsetMax.x + delta.x, resolutionManager.InsideOffsetMax.y + delta.y);
-                break;
-            case ResizeType.RightDown:
-                diagonalEvent += (delta) => resolutionManager.InsideOffsetMax = 
-                    new Vector2(resolutionManager.InsideOffsetMax.x + delta.x, resolutionManager.InsideOffsetMax.y - delta.y);
-                break;
-        }
-    }
-    
-    private void DragCardinal(ResizeType type)
-    {
-        switch (type)
-        {
-            case ResizeType.Left:
-                cardinalEvent += (delta) => resolutionManager.InsideOffsetMin = 
-                    new Vector2(resolutionManager.InsideOffsetMin.x + delta.x, resolutionManager.InsideOffsetMin.y);
-                break;
-            case ResizeType.Right:
-                cardinalEvent += (delta) => resolutionManager.InsideOffsetMax = 
-                    new Vector2(resolutionManager.InsideOffsetMax.x + delta.x, resolutionManager.InsideOffsetMax.y);
-                break;
-            case ResizeType.Up:
-                cardinalEvent += (delta) => resolutionManager.InsideOffsetMax = 
-                    new Vector2(resolutionManager.InsideOffsetMax.x, resolutionManager.InsideOffsetMax.y + delta.y);
-                break;
-            case ResizeType.Down:
-                cardinalEvent += (delta) => resolutionManager.InsideOffsetMin = 
-                    new Vector2(resolutionManager.InsideOffsetMin.x, resolutionManager.InsideOffsetMin.y + delta.y);
                 break;
         }
     }

@@ -30,8 +30,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     [SerializeField] private Sprite windowedInside;
     
     #region Properties
-    public Rect InsideRect => inside.rect;
-
+    public Vector2 InsideAnchoredPosition
+    {
+        get => inside.anchoredPosition;
+        set => inside.anchoredPosition = value;
+    }
+    
     public Vector2 InsideSize
     {
         get => inside.sizeDelta;
@@ -71,6 +75,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
     }
     
+    public Vector2 OutsideAnchoredPosition => outside.anchoredPosition;
     public Vector2 OutsideSize => outside.sizeDelta;
     public Vector2 OutsideOffsetMin => outside.offsetMin;
     public Vector2 OutsideOffsetMax => outside.offsetMax;
