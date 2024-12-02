@@ -74,7 +74,7 @@ public class SaveManager : MonoSingleton<SaveManager>
         {
             testText2.text = Application.targetFrameRate + "";
             //screenText.text = Screen.width + " " + Screen.height;
-            screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
+            //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
         }
 
     }

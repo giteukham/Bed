@@ -166,7 +166,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         for (int i = 9; i >= 0; i--)
         {
             currentList.Add(new Vector2((int)Math.Round(Display.main.systemWidth - widthNum * i), (int)Math.Round(Display.main.systemHeight - heightNum * i)));
-            print("currentList : " + (int)Math.Round(Display.main.systemWidth - widthNum * i) + " : " + (int)Math.Round(Display.main.systemHeight - heightNum * i));
+            //print("currentList : " + (int)Math.Round(Display.main.systemWidth - widthNum * i) + " : " + (int)Math.Round(Display.main.systemHeight - heightNum * i));
         }
 
         if ((float)Display.main.systemWidth / Display.main.systemHeight > 16f / 9f)
@@ -186,7 +186,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         for (int i = 9; i >= 0; i--)
         {
             hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
-            print("hdList : " + (int)Math.Round(widthNum - num1 * i) + " : " + (int)Math.Round(heightNum - num2 * i));
+            //print("hdList : " + (int)Math.Round(widthNum - num1 * i) + " : " + (int)Math.Round(heightNum - num2 * i));
         }
 
         //Screen.resolutions은 사람들이 자주 쓰는 해상도를 모아놓은 것임(현재 내 모니터와 관계 없음)
@@ -251,12 +251,21 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         else if (lastApplyObject == inputField.gameObject)
         {
             //그런데 어차피 드롭다운 텍스트는 쓰지 않을 예정임
+            //그러니 조건 상관없이 inputField.text에 항상 해상도값 텍스트 표시해야함
+            //맨처음 대비 이거 해줘야함
+            print(resolutiondropdown.captionText.text);
             resolutiondropdown.captionText.text = "";
-            //인풋필드에 값 불러오고 인풋필드 해상도 맞춰주면 될듯
+            print(resolutiondropdown.captionText.text);
+            //인풋필드에 저장된 값 불러오고 인풋필드 해상도 맞춰주면 될듯(순서 지켜야함)
             inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
             ReadyInputField();
             ApplyInputField();
         }
+
+        //조건 상관없이 항상 드롭다운 텍스트 비워둠
+        //resolutiondropdown.captionText.text = "";
+        //조건 상관없이 항상 inputField에 해상도 표시
+        //inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
 
         // V-Sync 비활성화
         //QualitySettings.vSyncCount = 0;
@@ -451,6 +460,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public void ReadyResolution(int value)
     {
         print("ReadyResolution 실행");
+        resolutiondropdown.captionText.text = "";
         //CRITERIA_NUM = 16f / 9f;
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
@@ -523,9 +533,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         //isFullScreenReady = !isFullScreenReady;
         RedefineDropdown(isFullScreenReady);
 
-        //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
+        //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용(제일 큰해상도로 변경)
         resolutiondropdown.value = 0;
         resolutiondropdown.value = nowList.Count - 1;
+
+        //드롭다운 표시값 비우기
+        resolutiondropdown.captionText.text = "";
 
         lastApplyObject = resolutiondropdown.gameObject;
         //ApplyResolution();
@@ -580,6 +593,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     public void ReadyInputField()
     {
+        //이거하면 오류남
+        //inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
         char[] chars = inputField.text.ToCharArray();
         char[] separators = { 'X', ' ' };
         int widthNum = 0;
@@ -587,11 +602,19 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         for (int i = 0; i < chars.Length; i++)
         {
-            //인풋필드에 공백 혹은 X 있는지 확인
-            if (chars[i] ==' ' || chars[i] == 'X')
+            //인풋필드에 공백 혹은 X, x 있는지 확인
+            if (chars[i] ==' ' || chars[i] == 'X' || chars[i] == 'x')
             {
                 //공백과 X 기준으로 split
                 string[] result = inputField.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+                //만약 "1920 " 혹은 "1920X"로 적어서 result에 들어가는 숫자가 하나밖에 없을때 대비
+                if (result.Length < 2)
+                {
+                    inputField.text = "ERROR";
+                    return;
+                }
+
                 //split한 것이 숫자가 맞는지 확인
                 if (int.TryParse(result[0], out widthNum) && int.TryParse(result[1], out heightNum))
                 {
@@ -602,7 +625,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         {
                             inputField.text = $"{widthNum} X {heightNum}";
                         }
-                        else    //현재 모니터와 비율 다르면 모니터 최대해상도 적용
+                        else    //현재 모니터와 비율 다르면 모니터 최대해상도 적용(16:9보다 가로가 긴경우는 hdList가 적용되기 때문에) 그냥 최대해상도로 통일함
                         {
                             widthNum = Display.main.systemWidth;
                             heightNum = Display.main.systemHeight;
@@ -619,12 +642,16 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         }
                         else if (Mathf.Approximately(widthNum / (float)heightNum, CRITERIA_NUM)) //현재 모니터 비율과 똑같으면 적용
                         {
+                            print($"비율같음 : {widthNum} X {heightNum}");
                             inputField.text = $"{widthNum} X {heightNum}";
                         }
                         else    //16:9 비율 아닐시 가로값 기준으로 16:9 값 찾음
                         {
                             //세로값 다시 구함
-                            heightNum = (int)(widthNum / CRITERIA_NUM);
+                            print($"세로값1 : {widthNum / CRITERIA_NUM}");
+                            //heightNum = (int)(widthNum / CRITERIA_NUM);
+                            heightNum = Mathf.CeilToInt(widthNum / CRITERIA_NUM);
+                            print($"세로값2 : {heightNum}");
                             inputField.text = $"{widthNum} X {heightNum}";
                         }
                     }
@@ -781,6 +808,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     private void UpdateResolutionText(int width, int height)
     {
         previewText.text = $"{width} X {height}\n{frameRateReady}hz";
+        previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+
         screenText.text = width + " " + height;
     }
 
