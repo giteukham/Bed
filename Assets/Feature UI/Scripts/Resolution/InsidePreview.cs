@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using Bed.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 using Cursor = Bed.UI.Cursor;
 
 public enum ResizeType
@@ -27,30 +25,48 @@ public class ResizeBounds
     public GameObject leftUp, leftDown, rightUp, rightDown;
 }
 
-public class Resize : MonoBehaviour
+public class InsidePreview : MonoBehaviour, IDragHandler
 {
+    private ResolutionManagement resolutionManager;
+    
     [Header("드래그 가능한 영역")]
     [SerializeField] private ResizeBounds resizeBounds;
     
-    [Header("마우스 커서")]
-    
+    [Header("기타 설정")]
+    [SerializeField] private Material previewMaskMaterial;
     
     private Dictionary<ResizeType, ResizeEvent> resizeEvents = new Dictionary<ResizeType, ResizeEvent>();
     private ResizeType currentResizeType;
     
-    private ResolutionManagement resolutionManager;
     private Vector2 insideOffsetMin, insideOffsetMax, outsideOffsetMin, outsideOffsetMax;
     
-    private const float edgeDraggableThickness = 300f;
-
-    private void Awake()
-    {
-        AddAllResizeEvent();
-    }
-
+    private const float edgeDraggableThickness = 200f;
+    
     private void OnEnable()
     {
         resolutionManager = ResolutionManagement.Instance;
+    }
+    
+    public void OnDrag(PointerEventData eventData)
+    {
+        Vector2 delta = eventData.delta;
+        Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
+        Vector2 insideSize = resolutionManager.InsideSize;
+        Vector2 outsideSize = resolutionManager.OutsideSize;
+        
+        float distanceX = (outsideSize.x - insideSize.x) * 0.5f;
+        float distanceY = (outsideSize.y - insideSize.y) * 0.5f;
+        
+        insideAnchoredPosition = new Vector2(
+            Mathf.Clamp(insideAnchoredPosition.x + delta.x, -distanceX, distanceX),
+            Mathf.Clamp(insideAnchoredPosition.y + delta.y, -distanceY, distanceY));
+        
+        resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
+    }
+    
+    private void Awake()
+    {
+        AddAllResizeEvent();
     }
 
     private void AddAllResizeEvent()
@@ -156,6 +172,10 @@ public class Resize : MonoBehaviour
                 insideOffsetMax.y = Mathf.Clamp(insideOffsetMax.y + delta.y, insideOffsetMin.y + edgeDraggableThickness, outsideOffsetMax.y);
                 break;
         }
+        
+        previewMaskMaterial.SetVector("_insideOffsetMin", insideOffsetMin);
+        previewMaskMaterial.SetVector("_insideOffsetMax", insideOffsetMax);
+        previewMaskMaterial.SetVector("_insideSize", resolutionManager.InsideSize);
         
         resolutionManager.InsideOffsetMin = insideOffsetMin;
         resolutionManager.InsideOffsetMax = insideOffsetMax;
