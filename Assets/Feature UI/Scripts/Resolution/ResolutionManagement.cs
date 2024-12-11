@@ -632,14 +632,25 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                     //창모드인지 전체화면인지 확인
                     if (isFullScreenReady == true)  //전체화면
                     {
-                        if (Mathf.Approximately(widthNum / (float)heightNum, (float)Display.main.systemWidth / Display.main.systemHeight)) //현재 모니터 비율과 똑같으면 적용
-                        {
-                            inputField.text = $"{widthNum} X {heightNum}";
-                        }
-                        else    //현재 모니터와 비율 다르면 모니터 최대해상도 적용(16:9보다 가로가 긴경우는 hdList가 적용되기 때문에) 그냥 최대해상도로 통일함
+                        if (widthNum > Display.main.systemWidth)    //현재 모니터가 허용하는 최대해상도 넘을시
                         {
                             widthNum = Display.main.systemWidth;
                             heightNum = Display.main.systemHeight;
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                        else if (Mathf.Approximately(widthNum / (float)heightNum, (float)Display.main.systemWidth / Display.main.systemHeight)) //현재 모니터 비율과 똑같으면 적용
+                        {
+                            inputField.text = $"{widthNum} X {heightNum}";
+                        }
+                        else    //현재 모니터와 비율 다르면 비율 다시 구해서 적용
+                        {
+                            /*widthNum = Display.main.systemWidth;
+                            heightNum = Display.main.systemHeight;
+                            inputField.text = $"{widthNum} X {heightNum}";*/
+
+                            //세로값 다시 구함
+                            //heightNum = Mathf.CeilToInt(widthNum / ((float)Display.main.systemWidth / Display.main.systemHeight));
+                            heightNum = (int)Mathf.Round(widthNum / ((float)Display.main.systemWidth / Display.main.systemHeight)); //반올림 방식으로 변경
                             inputField.text = $"{widthNum} X {heightNum}";
                         }
                     }
@@ -660,8 +671,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         {
                             //세로값 다시 구함
                             print($"세로값1 : {widthNum / CRITERIA_NUM}");
-                            //heightNum = (int)(widthNum / CRITERIA_NUM);
-                            heightNum = Mathf.CeilToInt(widthNum / CRITERIA_NUM);
+                            //heightNum = Mathf.CeilToInt(widthNum / CRITERIA_NUM);
+                            heightNum = (int)Mathf.Round(widthNum / CRITERIA_NUM);  //반올림 방식으로 변경
                             print($"세로값2 : {heightNum}");
                             inputField.text = $"{widthNum} X {heightNum}";
                         }
