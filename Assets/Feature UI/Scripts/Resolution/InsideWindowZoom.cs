@@ -1,15 +1,16 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-
-public class ZoomIcon : MonoBehaviour, IPointerClickHandler
+public enum ZoomState
 {
-    enum ZoomState
-    {
-        ZoomIn,
-        ZoomOut
-    }
+    ZoomIn,
+    ZoomOut
+}
+
+public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
+{
     
     private ResolutionManagement resolutionManagement;
     
@@ -21,24 +22,31 @@ public class ZoomIcon : MonoBehaviour, IPointerClickHandler
     {
         resolutionManagement = ResolutionManagement.Instance;
     }
+    
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (zoomState == ZoomState.ZoomIn)
         {
+            SetZoomState(ZoomState.ZoomOut);
+            
             savedOffsetMin = resolutionManagement.InsideOffsetMin;
             savedOffsetMax = resolutionManagement.InsideOffsetMax;
             
             Vector2[] maxOffsets = resolutionManagement.GetOffsetsByResolution(Display.main.systemWidth, Display.main.systemHeight);
             
-            zoomState = ZoomState.ZoomOut;
             DoZoom(maxOffsets[0], maxOffsets[1]);
         }
-        else
+        else if (zoomState == ZoomState.ZoomOut)
         {
-            zoomState = ZoomState.ZoomIn;
+            SetZoomState(ZoomState.ZoomIn);
             DoZoom(savedOffsetMin, savedOffsetMax);
         }
+    }
+    
+    public void SetZoomState(ZoomState state)
+    {
+        zoomState = state;
     }
     
     private void DoZoom(Vector2 offsetMin, Vector2 offsetMax)

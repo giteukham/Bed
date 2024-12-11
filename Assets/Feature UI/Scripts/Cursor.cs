@@ -42,16 +42,16 @@ namespace Bed.UI
                     UnityEngine.Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                     break;
                 case CursorType.DiagonalResize1:
-                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize1, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize1, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 case CursorType.DiagonalResize2:
-                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize2, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize2, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 case CursorType.HorizontalResize:
-                    UnityEngine.Cursor.SetCursor(_instance.horizontalResize, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.horizontalResize, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 case CursorType.VerticalResize:
-                    UnityEngine.Cursor.SetCursor(_instance.verticalResize, new Vector2(8, 8), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(_instance.verticalResize, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

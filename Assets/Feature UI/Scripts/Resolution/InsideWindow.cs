@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Bed.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 using Cursor = Bed.UI.Cursor;
 
 public enum ResizeType
@@ -25,7 +27,7 @@ public class ResizeBounds
     public GameObject leftUp, leftDown, rightUp, rightDown;
 }
 
-public class InsidePreview : MonoBehaviour, IDragHandler
+public class InsideWindow : MonoBehaviour, IDragHandler
 {
     private ResolutionManagement resolutionManager;
     
@@ -34,6 +36,7 @@ public class InsidePreview : MonoBehaviour, IDragHandler
     
     [Header("기타 설정")]
     [SerializeField] private Material previewMaskMaterial;
+    [SerializeField] private InsideWindowZoom insideWindowZoom;
     
     private Dictionary<ResizeType, ResizeEvent> resizeEvents = new Dictionary<ResizeType, ResizeEvent>();
     private ResizeType currentResizeType;
@@ -128,21 +131,20 @@ public class InsidePreview : MonoBehaviour, IDragHandler
     private void OnResizeStart(ResizeType type)
     {
         currentResizeType = type;
+        insideWindowZoom.SetZoomState(ZoomState.ZoomIn);
     }
     
     private void OnResizeStay(PointerEventData eventData)
     {
+        ChangeCursor(currentResizeType);
         insideOffsetMax = resolutionManager.InsideOffsetMax;
         insideOffsetMin = resolutionManager.InsideOffsetMin;
         outsideOffsetMax = resolutionManager.OutsideOffsetMax;
         outsideOffsetMin = resolutionManager.OutsideOffsetMin;
         
         Vector2 delta = eventData.delta;
-        ChangeCursor(currentResizeType);
-        
         switch (currentResizeType)
         {
-
             case ResizeType.Left:
                 insideOffsetMin.x = Mathf.Clamp(insideOffsetMin.x + delta.x, outsideOffsetMin.x, insideOffsetMax.x - edgeDraggableThickness);
                 break;
