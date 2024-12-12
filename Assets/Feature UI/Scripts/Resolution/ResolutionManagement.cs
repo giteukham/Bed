@@ -18,7 +18,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     [SerializeField] private TMP_Text previewText;
     [SerializeField] private Image fullScreenSwitch;
     [SerializeField] private Image insideImage;
-    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TMP_InputField inputFieldWidth;
+    [SerializeField] private TMP_InputField inputFieldHeight;
     [SerializeField] private TMP_Dropdown resolutiondropdown;
     [SerializeField] private TMP_Dropdown frameRateDropdown;
     [SerializeField] private RectTransform outside;
@@ -133,7 +134,10 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 lastApplyObject = resolutiondropdown.gameObject;
                 break;
             case 1:
-                lastApplyObject = inputField.gameObject;
+                lastApplyObject = inputFieldWidth.gameObject;
+                break;
+            case 2:
+                lastApplyObject = inputFieldHeight.gameObject;
                 break;
         }
 
@@ -234,6 +238,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         //드롭다운 아이템 현재 리스트로 교체
         RedefineDropdown(isFullScreen);
 
+        //저장을 드롭다운 이용해서 했을 때
         if (lastApplyObject == resolutiondropdown.gameObject)
         {
             for (int i = 0; i < nowList.Count; i++)
@@ -253,24 +258,35 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 }
             }
         }
-        else if (lastApplyObject == inputField.gameObject)
+        //저장을 인풋 필드로 했을때
+        else if (lastApplyObject == inputFieldWidth.gameObject || lastApplyObject == inputFieldHeight.gameObject)
         {
             //그런데 어차피 드롭다운 텍스트는 쓰지 않을 예정임
-            //그러니 조건 상관없이 inputField.text에 항상 해상도값 텍스트 표시해야함
+            //그러니 조건 상관없이 inputFieldWidth.text에 항상 해상도값 텍스트 표시해야함
             //맨처음 대비 이거 해줘야함
             print(resolutiondropdown.captionText.text);
             resolutiondropdown.captionText.text = "";
             print(resolutiondropdown.captionText.text);
             //인풋필드에 저장된 값 불러오고 인풋필드 해상도 맞춰주면 될듯(순서 지켜야함)
-            inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
-            ReadyInputField();
+            //inputFieldWidth.text = $"{nowWidthPixel} X {nowHeightPixel}";
+            inputFieldWidth.text = $"{nowWidthPixel}";
+            inputFieldHeight.text = $"{nowHeightPixel}";
+            //OldReadyInputField();
+            if (lastApplyObject == inputFieldWidth.gameObject)
+            {
+                NewReadyInputField(0);
+            }
+            else
+            {
+                NewReadyInputField(1);
+            }
             ApplyInputField();
         }
 
         //조건 상관없이 항상 드롭다운 텍스트 비워둠
         //resolutiondropdown.captionText.text = "";
         //조건 상관없이 항상 inputField에 해상도 표시
-        //inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
+        //inputFieldWidth.text = $"{nowWidthPixel} X {nowHeightPixel}";
 
         // V-Sync 비활성화
         //QualitySettings.vSyncCount = 0;
@@ -481,7 +497,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
-            inputField.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
+            //inputFieldWidth.text = $"{(int)currentList[value].x} X {(int)currentList[value].y}";
+            inputFieldWidth.text = $"{(int)currentList[value].x}";
+            inputFieldHeight.text = $"{(int)currentList[value].y}";
             lastApplyObject = resolutiondropdown.gameObject;
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
@@ -490,7 +508,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
-            inputField.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
+            //inputFieldWidth.text = $"{(int)hdList[value].x} X {(int)hdList[value].y}";
+            inputFieldWidth.text = $"{(int)hdList[value].x}";
+            inputFieldHeight.text = $"{(int)hdList[value].y}";
             lastApplyObject = resolutiondropdown.gameObject;
         }
     }
@@ -602,11 +622,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         SaveManager.Instance.SaveFrameRate(frameRateReady);
     }
 
-    public void ReadyInputField()
+    //지금 안씀
+    public void OldReadyInputField()
     {
         //이거하면 오류남
-        //inputField.text = $"{nowWidthPixel} X {nowHeightPixel}";
-        char[] chars = inputField.text.ToCharArray();
+        //inputFieldWidth.text = $"{nowWidthPixel} X {nowHeightPixel}";
+        char[] chars = inputFieldWidth.text.ToCharArray();
         char[] separators = { 'X', ' ' };
         int widthNum = 0;
         int heightNum = 0;
@@ -617,12 +638,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             if (chars[i] ==' ' || chars[i] == 'X' || chars[i] == 'x')
             {
                 //공백과 X 기준으로 split
-                string[] result = inputField.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                string[] result = inputFieldWidth.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
                 //만약 "1920 " 혹은 "1920X"로 적어서 result에 들어가는 숫자가 하나밖에 없을때 대비
                 if (result.Length < 2)
                 {
-                    inputField.text = "ERROR";
+                    inputFieldWidth.text = "ERROR";
                     return;
                 }
 
@@ -636,22 +657,22 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         {
                             widthNum = Display.main.systemWidth;
                             heightNum = Display.main.systemHeight;
-                            inputField.text = $"{widthNum} X {heightNum}";
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";
                         }
                         else if (Mathf.Approximately(widthNum / (float)heightNum, (float)Display.main.systemWidth / Display.main.systemHeight)) //현재 모니터 비율과 똑같으면 적용
                         {
-                            inputField.text = $"{widthNum} X {heightNum}";
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";
                         }
                         else    //현재 모니터와 비율 다르면 비율 다시 구해서 적용
                         {
                             /*widthNum = Display.main.systemWidth;
                             heightNum = Display.main.systemHeight;
-                            inputField.text = $"{widthNum} X {heightNum}";*/
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";*/
 
                             //세로값 다시 구함
                             //heightNum = Mathf.CeilToInt(widthNum / ((float)Display.main.systemWidth / Display.main.systemHeight));
                             heightNum = (int)Mathf.Round(widthNum / ((float)Display.main.systemWidth / Display.main.systemHeight)); //반올림 방식으로 변경
-                            inputField.text = $"{widthNum} X {heightNum}";
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";
                         }
                     }
                     else    //창모드
@@ -660,12 +681,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         {
                             widthNum = (int)hdList[hdList.Count - 1].x;
                             heightNum = (int)hdList[hdList.Count - 1].y;
-                            inputField.text = $"{widthNum} X {heightNum}";
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";
                         }
                         else if (Mathf.Approximately(widthNum / (float)heightNum, CRITERIA_NUM)) //현재 모니터 비율과 똑같으면 적용
                         {
                             print($"비율같음 : {widthNum} X {heightNum}");
-                            inputField.text = $"{widthNum} X {heightNum}";
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";
                         }
                         else    //16:9 비율 아닐시 가로값 기준으로 16:9 값 찾음
                         {
@@ -674,7 +695,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                             //heightNum = Mathf.CeilToInt(widthNum / CRITERIA_NUM);
                             heightNum = (int)Mathf.Round(widthNum / CRITERIA_NUM);  //반올림 방식으로 변경
                             print($"세로값2 : {heightNum}");
-                            inputField.text = $"{widthNum} X {heightNum}";
+                            inputFieldWidth.text = $"{widthNum} X {heightNum}";
                         }
                     }
                     ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
@@ -682,36 +703,149 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                     previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
                     previewText.text = $"{widthNum} X {heightNum}\n{frameRateReady}hz";
 
-                    lastApplyObject = inputField.gameObject;
+                    lastApplyObject = inputFieldWidth.gameObject;
                     return;
                 }
                 else
                 {
-                    inputField.text = "ERROR";
+                    inputFieldWidth.text = "ERROR";
                     return;
                 }
             }
         }
 
         //입력값에 X 혹은 공백이 들어가 있지 않을 시
-        inputField.text = "ERROR";
+        inputFieldWidth.text = "ERROR";
         return;
+    }
+
+    //매개변수 0은 inputFieldWidth, 1은 inputFieldHeight
+    public void NewReadyInputField(int num)
+    {
+        //string에 now변수 써서 텍스트 집어넣고 숫자인지 판단
+        //숫자가 맞다면 now변수에 반대되는 텍스트에 값을 집어넣음
+        //이후 적용
+
+        string result = "";
+        int widthNum = 0;
+        int heightNum = 0;
+
+        if (num == 0)   //inputFieldWidth 입력시
+        {
+            lastApplyObject = inputFieldWidth.gameObject;
+            result = inputFieldWidth.text;
+
+            if (int.TryParse(result, out widthNum))  //입력값이 숫자인지 확인
+            {
+                //적은값 최대값 넘으면 최대값으로 적용
+                if (isFullScreenReady == true && widthNum > Display.main.systemWidth)
+                {
+                    inputFieldWidth.text = $"{Display.main.systemWidth}";
+                    widthNum = Display.main.systemWidth;
+                }
+                else if(isFullScreenReady == false && widthNum > 1920)
+                {
+                    inputFieldWidth.text = $"{1920}";
+                    widthNum = 1920;
+                }
+
+                if (isFullScreenReady == true) //전체화면일시
+                {
+                    //세로값 재정의
+                    heightNum = (int)Mathf.Round(widthNum / ((float)Display.main.systemWidth / Display.main.systemHeight));
+                    inputFieldHeight.text = $"{heightNum}";
+                }
+                else //창모드일시
+                {
+                    //세로값 재정의
+                    heightNum = (int)Mathf.Round(widthNum / CRITERIA_NUM);
+                    inputFieldHeight.text = $"{heightNum}";
+                }
+            }
+            else //숫자 아닐시 에러
+            {
+                inputFieldWidth.text = "ERROR";
+                inputFieldHeight.text = "ERROR";
+                return;
+            }
+        }
+        else if (num == 1)  //inputFieldHeight 입력시
+        {
+            lastApplyObject = inputFieldHeight.gameObject;
+            result = inputFieldHeight.text;
+
+            if (int.TryParse(result, out heightNum))
+            {
+
+                //적은값 최대값 넘으면 최대값으로 적용
+                if (isFullScreenReady == true && heightNum > Display.main.systemHeight)
+                {
+                    inputFieldHeight.text = $"{Display.main.systemHeight}";
+                    heightNum = Display.main.systemHeight;
+                }
+                else if (isFullScreenReady == false && heightNum > 1080)
+                {
+                    inputFieldHeight.text = $"{1080}";
+                    heightNum = 1080;
+                }
+
+                if (isFullScreenReady == true) //전체화면일시
+                {
+                    //가로값 재정의
+                    //heightNum = (int)Mathf.Round(widthNum / ((float)Display.main.systemWidth / Display.main.systemHeight));
+                    widthNum = (int)Mathf.Round(heightNum * ((float)Display.main.systemWidth / Display.main.systemHeight));
+                    inputFieldWidth.text = $"{widthNum}";
+                }
+                else //창모드일시
+                {
+                    //가로값 재정의
+                    //heightNum = (int)Mathf.Round(widthNum / CRITERIA_NUM);
+                    widthNum = (int)Mathf.Round(heightNum * CRITERIA_NUM);
+                    inputFieldWidth.text = $"{widthNum}";
+                }
+            }
+            else    //숫자 아닐시 에러(숫자가 너무 길어도 에러남)
+            {
+                inputFieldWidth.text = "ERROR";
+                inputFieldHeight.text = "ERROR";
+                return;
+            }
+        }
+
+        ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+        ResizePreviewImage(widthNum, heightNum, inside);
+        previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+        previewText.text = $"{widthNum} X {heightNum}\n{frameRateReady}hz";
+
+        //이거 어떻게 할지 생각하기
+        //lastApplyObject = inputFieldWidth.gameObject;
     }
 
     public void ApplyInputField()
     {
         //허용되지 않는 값 넣을 시 메소드 종료
-        if (inputField.text == "ERROR")
+        if (inputFieldWidth.text == "ERROR" || inputFieldHeight.text == "ERROR")
         {
             return;
         }
 
-        char[] separators = { 'X', ' ' };
-        string[] result = inputField.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        /*char[] separators = { 'X', ' ' };
+        string[] result = inputFieldWidth.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
         StartCoroutine(ResolutionWindow(float.Parse(result[0]), float.Parse(result[1])));
         SaveManager.Instance.SaveResolution(int.Parse(result[0]), int.Parse(result[1]));
-        SaveManager.Instance.SaveLastApplyObject(1);
+        SaveManager.Instance.SaveLastApplyObject(1);*/
+
+        StartCoroutine(ResolutionWindow(float.Parse(inputFieldWidth.text), float.Parse(inputFieldHeight.text)));
+        SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
+        if (lastApplyObject == inputFieldWidth)
+        {
+            SaveManager.Instance.SaveLastApplyObject(1);
+        }
+        else if (lastApplyObject == inputFieldHeight)
+        {
+            SaveManager.Instance.SaveLastApplyObject(2);
+        }
     }
 
     //확인버튼 누를 때 자동 실행
@@ -719,10 +853,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     {
         ApplyFullScreenSwitch();
         //ApplyFullScreenSwitch 다음에 ApplyResolution 혹은 ApplyInputField 실행 할 것
+        //드롭다운 값 적용
         if (lastApplyObject == resolutiondropdown.gameObject)
         {
             ApplyResolution();
         }
+        //인풋필드 값 적용
         else
         {
             ApplyInputField();

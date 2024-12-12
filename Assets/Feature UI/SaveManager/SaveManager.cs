@@ -184,7 +184,8 @@ public class SaveManager : MonoSingleton<SaveManager>
     public void SaveLastApplyObject(int value)
     {
         //0 : 드롭다운
-        //1 : 인풋필드
+        //1 : 인풋필드Width
+        //2 : 인풋필드Height
         PlayerPrefs.SetInt("SaveLastApplyObject", value);
     }
 
