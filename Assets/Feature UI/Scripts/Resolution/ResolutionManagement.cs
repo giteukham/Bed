@@ -12,7 +12,6 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 {
-
     [SerializeField] private Camera cam;
     [SerializeField] private Text screenText;
     [SerializeField] private TMP_Text previewText;
@@ -30,57 +29,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     [SerializeField] private Sprite fullscreenInside;
     [SerializeField] private Sprite windowedInside;
     
-    #region Properties
-    public Vector2 InsideAnchoredPosition
-    {
-        get => inside.anchoredPosition;
-        set => inside.anchoredPosition = value;
-    }
-    
-    public Vector2 InsideSize
-    {
-        get => inside.sizeDelta;
-        set
-        {
-            if (inside.sizeDelta != value)
-            {
-                inside.sizeDelta = value;
-                OnInsideSizeChanged?.Invoke(inside);
-            }
-        }
-    }
-    
-    public Vector2 InsideOffsetMin
-    {
-        get => inside.offsetMin;
-        set
-        {
-            if (inside.offsetMin != value)
-            {
-                inside.offsetMin = value;
-                OnInsideOffsetMinChanged?.Invoke(inside);
-            }
-        }
-    }
-    
-    public Vector2 InsideOffsetMax
-    {
-        get => inside.offsetMax;
-        set
-        {
-            if (inside.offsetMax != value)
-            {
-                inside.offsetMax = value;
-                OnInsideOffsetMaxChanged?.Invoke(inside);
-            }
-        }
-    }
-    
-    public Vector2 OutsideAnchoredPosition => outside.anchoredPosition;
-    public Vector2 OutsideSize => outside.sizeDelta;
-    public Vector2 OutsideOffsetMin => outside.offsetMin;
-    public Vector2 OutsideOffsetMax => outside.offsetMax;
-    #endregion
+    [SerializeField] private InsideWindow insideWindow;
 
     bool isFullScreen = true;
     bool isFullScreenReady = true;
@@ -109,14 +58,57 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     [SerializeField] private Text testText;
     [SerializeField] private Text testText2;
     
-    public UnityEvent<RectTransform> OnInsideSizeChanged;
-    public UnityEvent<RectTransform> OnInsideOffsetMinChanged, OnInsideOffsetMaxChanged;
+    public UnityEvent<bool> OnFullScreenSwitched;
+    
+    #region Properties
+    public Vector2 InsideAnchoredPosition
+    {
+        get => inside.anchoredPosition;
+        set => inside.anchoredPosition = value;
+    }
+
+    public Vector2 InsideSize
+    {
+        get => inside.sizeDelta;
+        set => inside.sizeDelta = value;
+    }
+
+    public Vector2 InsideOffsetMin
+    {
+        get => inside.offsetMin;
+        set => inside.offsetMin = value;
+    }
+
+    public Vector2 InsideOffsetMax
+    {
+        get => inside.offsetMax;
+        set => inside.offsetMax = value;
+    }
+    
+    public Vector2 OutsideAnchoredPosition => outside.anchoredPosition;
+    public Vector2 OutsideSize => outside.sizeDelta;
+    public Vector2 OutsideOffsetMin => outside.offsetMin;
+    public Vector2 OutsideOffsetMax => outside.offsetMax;
+    
+    public bool IsFullScreen
+    {
+        get => isFullScreen;
+        set
+        {
+            if (isFullScreen != value)
+            {
+                isFullScreen = value;
+                OnFullScreenSwitched?.Invoke(isFullScreen);
+            }
+        }
+    }
+    #endregion
 
     private void Awake()
     {
         previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
         //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
-        isFullScreen = SaveManager.Instance.LoadIsFullScreen();
+        IsFullScreen = SaveManager.Instance.LoadIsFullScreen();
         /*isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;*/
@@ -225,9 +217,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void OnEnable()
     {
-        OnInsideSizeChanged.AddListener(OnSizeChangedHandler);
-        OnInsideOffsetMinChanged.AddListener(OnSizeChangedHandler);
-        OnInsideOffsetMaxChanged.AddListener(OnSizeChangedHandler);
+        insideWindow.OnRectTransformReSize.AddListener(OnSizeChangedHandler);
         
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
@@ -298,6 +288,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         frameRateReady = SaveManager.Instance.LoadFrameRate();
         //프레임 드롭다운 아이템 저장된 값으로 변경
         frameRateDropdown.value = frameRateReady / 30 - 1;
+    }
+    
+    private void OnDisable()
+    {
+        insideWindow.OnRectTransformReSize.RemoveListener(OnSizeChangedHandler);
     }
 
     private void Start()
@@ -582,7 +577,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     private void ApplyFullScreenSwitch()
     {
         //isFullScreen = !isFullScreen;
-        isFullScreen = isFullScreenReady;
+        IsFullScreen = isFullScreenReady;
         SaveManager.Instance.SaveIsFullScreen(isFullScreen);
         //fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -885,43 +880,51 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     }
 
     //프리뷰 화면 사이즈 조정 메소드
-    /// <summary>
-    /// 11-30 최무령 수정 : inside 부분 수정
-    /// </summary>
-    /// <param name="targetWidth"></param>
-    /// <param name="targetHeight"></param>
-    /// <param name="rect"></param>
     private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
-        float ratio1 = 0;
-        float ratio2 = 0;
+        float ratio = targetWidth / targetHeight;
+        int edge = 50;
         //2560 1080에서 1920 1080 해상도 변환 기준
-        if (rect == outside)
-        {
-            if (targetWidth >= targetHeight)
-            {
-                //목표 해상도는 1 : ratio로 표현 가능함
-                ratio1 = 1 / (targetWidth / targetHeight);
-                rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
-            }
-            else
-            {
-                ratio1 = 1 / (targetHeight / targetWidth);
-                rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
-            }
-        }
-        else //rect == inside
-        {
-            ratio1 = 1 / (Display.main.systemWidth / targetWidth);
-            ratio2 = 1 / (Display.main.systemHeight / targetHeight);
-            print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
 
-            InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
-            rect.anchoredPosition = Vector2.zero;
-            
-            //바깥테두리는 항상 약간 더 크게 그림
-            outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
+        if (targetWidth >= targetHeight)
+        {
+            outside.sizeDelta = new Vector2(previewMaxLength + edge, previewMaxLength / ratio + edge);
         }
+        else
+        {
+            outside.sizeDelta = new Vector2(previewMaxLength * ratio + edge, previewMaxLength + edge);
+        }
+        
+        inside.SetLeft(edge * 0.5f);
+        inside.SetBottom(edge * 0.5f);
+        inside.SetRight(edge * 0.5f);
+        inside.SetTop(edge * 0.5f);
+        // if (rect == outside)
+        // {
+        //     if (targetWidth >= targetHeight)
+        //     {
+        //         //목표 해상도는 1 : ratio로 표현 가능함
+        //         ratio1 = 1 / (targetWidth / targetHeight);
+        //         rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
+        //     }
+        //     else
+        //     {
+        //         ratio1 = 1 / (targetHeight / targetWidth);
+        //         rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
+        //     }
+        // }
+        // else //rect == inside
+        // {
+        //     ratio1 = 1 / (Display.main.systemWidth / targetWidth);
+        //     ratio2 = 1 / (Display.main.systemHeight / targetHeight);
+        //     print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
+        //
+        //     InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+        //     rect.anchoredPosition = Vector2.zero;
+        //     
+        //     //바깥테두리는 항상 약간 더 크게 그림
+        //     outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
+        // }
     }
 
     /// <summary>
@@ -941,39 +944,21 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         return new Vector2[] { offsetMin, offsetMax };
     }
     
-    public Vector2Int GetResolutionBySizeDelta(Vector2 sizeDelta)
-    {
-        int width = Mathf.FloorToInt((float)Display.main.systemWidth / previewMaxLength * sizeDelta.x);
-        int height = Mathf.FloorToInt((float)Display.main.systemWidth / previewMaxLength * sizeDelta.y);
-
-        return new Vector2Int(width, height);
-    }
-    
-    /// <summary>
-    /// Inside 내 마우스 로컬 위치
-    /// </summary>
-    /// <param name="eventData"></param>
-    /// <returns></returns>
-    public Vector2 GetInsideLocalMousePoint(PointerEventData eventData)
-    {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(inside, eventData.position, eventData.pressEventCamera, out Vector2 localMousePoint);
-        return localMousePoint;
-    }
-    
-    public Vector2 GetOutsideLocalMousePoint(PointerEventData eventData)
-    {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(outside, eventData.position, eventData.pressEventCamera, out Vector2 localMousePoint);
-        return localMousePoint;
-    }
-    
     /// <summary>
     /// Rect의 크기가 변경될 때 호출되는 이벤트 핸들러
     /// </summary>
     /// <param name="rect"></param>
     private void OnSizeChangedHandler(RectTransform rect)
     {
-        Vector2Int resolution = GetResolutionBySizeDelta(rect.sizeDelta);
+        Vector2Int resolution = GetResolutionBySizeDelta(rect);
         UpdateResolutionText(resolution.x, resolution.y);
+    }
+    
+    public Vector2Int GetResolutionBySizeDelta(RectTransform rect)
+    {
+        int width = Mathf.RoundToInt((float) Display.main.systemWidth / previewMaxLength * rect.rect.width);
+        int height = Mathf.RoundToInt((float) Display.main.systemWidth / previewMaxLength * rect.rect.height);
+        return new Vector2Int(width, height);
     }
 
     /// <summary>

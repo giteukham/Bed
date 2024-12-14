@@ -11,19 +11,16 @@ public enum ZoomState
 
 public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
 {
-    
     private ResolutionManagement resolutionManagement;
+    private Vector2 savedOffsetMin, savedOffsetMax;
     
     private ZoomState zoomState = ZoomState.ZoomIn;
-
-    private Vector2 savedOffsetMin, savedOffsetMax;
 
     private void OnEnable()
     {
         resolutionManagement = ResolutionManagement.Instance;
     }
     
-
     public void OnPointerClick(PointerEventData eventData)
     {
         if (zoomState == ZoomState.ZoomIn)

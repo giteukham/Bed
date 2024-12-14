@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1fcfbd98-c863-4ab0-a550-bb8889065656" name="�?�?" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/RectTransformExtension.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/RectTransformExtension.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Cursor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Cursor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsidePreview.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsidePreview.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindow.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ZoomIcon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindowZoom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ZoomIcon.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindowZoom.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Player/Shader/Blink Effect.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Player/Shader/Blink Effect.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindowZoom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/InsideWindowZoom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionManagement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Resolution/ResolutionManagement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Jin.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Jin.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +26,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/51fded79cd284d4d911c5949aff4cb2146ac00/2e/db75a0dd/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/04/95c30155/Bounds.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/1f/ebc74514/Mathf.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/90/7fab10c2/Transform.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/95/15fda9c4/UnityEvent`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/f5/9efd601f/RectTransform.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ef32fee76b3a4b0ba4f563365766428c178200/aa/5088ae98/IMGUIContainer.cs" root0="FORCE_HIGHLIGHTING" />
@@ -53,9 +56,11 @@
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/ExecuteEvents.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/Raycasters/PhysicsRaycaster.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/UIBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/Graphic.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/GraphicRaycaster.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/Image.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@1.0.0/Runtime/UI/Core/Layout/AspectRatioFitter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualscripting@1.9.4/Runtime/VisualScripting.Core/Listeners/UnityMessageListener.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualscripting@1.9.4/Runtime/VisualScripting.Flow/Framework/Events/Animation/BoltAnimationEvent.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -207,6 +212,11 @@
       <workItem from="1733055034844" duration="11544000" />
       <workItem from="1733104689535" duration="5489000" />
       <workItem from="1733290670217" duration="10399000" />
+      <workItem from="1733965765393" duration="11505000" />
+      <workItem from="1734013452323" duration="6508000" />
+      <workItem from="1734057903054" duration="21847000" />
+      <workItem from="1734104738785" duration="1535000" />
+      <workItem from="1734140440818" duration="13753000" />
     </task>
     <servers />
   </component>
