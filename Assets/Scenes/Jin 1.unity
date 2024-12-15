@@ -3144,10 +3144,10 @@ RectTransform:
   - {fileID: 1186609948}
   m_Father: {fileID: 290264432}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -50, y: -50}
+  m_SizeDelta: {x: 1000, y: 562.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &267411471
 CanvasRenderer:
@@ -3208,6 +3208,7 @@ MonoBehaviour:
   navigationBar: {fileID: 761647185}
   previewMaskMaterial: {fileID: 2100000, guid: bce99f86145911343b8f4cca38fd27e2, type: 2}
   insideWindowZoom: {fileID: 1469654878}
+  outside: {fileID: 290264432}
   OnRectTransformReSize:
     m_PersistentCalls:
       m_Calls: []

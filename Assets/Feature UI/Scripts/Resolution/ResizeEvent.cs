@@ -13,7 +13,7 @@ public class ResizeEvent : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         set => resizeType = value;
     }
     
-    public Action<ResizeType> OnResizeStart;
+    public Action<ResizeType, PointerEventData> OnResizeStart;
     public Action OnResizeEnd;
     public Action<PointerEventData> OnResizeStay;
     public Action<ResizeType> OnPointerEnterEvent;
@@ -21,7 +21,7 @@ public class ResizeEvent : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        OnResizeStart?.Invoke(resizeType);
+        OnResizeStart?.Invoke(resizeType, eventData);
     }
 
     public void OnDrag(PointerEventData eventData)

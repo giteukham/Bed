@@ -61,6 +61,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public UnityEvent<bool> OnFullScreenSwitched;
     
     #region Properties
+    public RectTransform InsideRectTransform => inside;
     public Vector2 InsideAnchoredPosition
     {
         get => inside.anchoredPosition;
@@ -85,6 +86,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         set => inside.offsetMax = value;
     }
     
+    public RectTransform OutsideRectTransform => outside;
     public Vector2 OutsideAnchoredPosition => outside.anchoredPosition;
     public Vector2 OutsideSize => outside.sizeDelta;
     public Vector2 OutsideOffsetMin => outside.offsetMin;
@@ -102,6 +104,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             }
         }
     }
+    
     #endregion
 
     private void Awake()
@@ -212,7 +215,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 ListValueDuplicateCheck(currentList, item);
             }
         }*/
-
     }
 
     private void OnEnable()
@@ -882,49 +884,35 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     //프리뷰 화면 사이즈 조정 메소드
     private void ResizePreviewImage(float targetWidth, float targetHeight, RectTransform rect)
     {
-        float ratio = targetWidth / targetHeight;
-        int edge = 50;
-        //2560 1080에서 1920 1080 해상도 변환 기준
-
-        if (targetWidth >= targetHeight)
-        {
-            outside.sizeDelta = new Vector2(previewMaxLength + edge, previewMaxLength / ratio + edge);
-        }
-        else
-        {
-            outside.sizeDelta = new Vector2(previewMaxLength * ratio + edge, previewMaxLength + edge);
-        }
+        float ratio1 = 0;
+        float ratio2 = 0;
         
-        inside.SetLeft(edge * 0.5f);
-        inside.SetBottom(edge * 0.5f);
-        inside.SetRight(edge * 0.5f);
-        inside.SetTop(edge * 0.5f);
-        // if (rect == outside)
-        // {
-        //     if (targetWidth >= targetHeight)
-        //     {
-        //         //목표 해상도는 1 : ratio로 표현 가능함
-        //         ratio1 = 1 / (targetWidth / targetHeight);
-        //         rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
-        //     }
-        //     else
-        //     {
-        //         ratio1 = 1 / (targetHeight / targetWidth);
-        //         rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
-        //     }
-        // }
-        // else //rect == inside
-        // {
-        //     ratio1 = 1 / (Display.main.systemWidth / targetWidth);
-        //     ratio2 = 1 / (Display.main.systemHeight / targetHeight);
-        //     print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
-        //
-        //     InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
-        //     rect.anchoredPosition = Vector2.zero;
-        //     
-        //     //바깥테두리는 항상 약간 더 크게 그림
-        //     outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
-        // }
+        if (rect == outside)
+        {
+            if (targetWidth >= targetHeight)
+            {
+                //목표 해상도는 1 : ratio로 표현 가능함
+                ratio1 = 1 / (targetWidth / targetHeight);
+                rect.sizeDelta = new Vector2(previewMaxLength, previewMaxLength * ratio1);
+            }
+            else
+            {
+                ratio1 = 1 / (targetHeight / targetWidth);
+                rect.sizeDelta = new Vector2(previewMaxLength * ratio1, previewMaxLength);
+            }
+        }
+        else //rect == inside
+        {
+            ratio1 = 1 / (Display.main.systemWidth / targetWidth);
+            ratio2 = 1 / (Display.main.systemHeight / targetHeight);
+            print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
+        
+            InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
+            rect.anchoredPosition = Vector2.zero;
+            
+            //바깥테두리는 항상 약간 더 크게 그림
+            outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
+        }
     }
 
     /// <summary>
@@ -933,32 +921,24 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
-    public Vector2[] GetOffsetsByResolution(float width, float height)
+    public Vector2[] ConvertResolutionToOffsets(float width, float height)
     {
         float ratio = width / height;
         Vector2 sizeDelta = new Vector2(previewMaxLength, previewMaxLength / ratio);
-        
+
         Vector2 offsetMin = new Vector2(-sizeDelta.x / 2, -sizeDelta.y / 2);
         Vector2 offsetMax = new Vector2(sizeDelta.x / 2, sizeDelta.y / 2);
-
-        return new Vector2[] { offsetMin, offsetMax };
+        return new[] { offsetMin, offsetMax };
     }
-    
+
     /// <summary>
     /// Rect의 크기가 변경될 때 호출되는 이벤트 핸들러
     /// </summary>
     /// <param name="rect"></param>
     private void OnSizeChangedHandler(RectTransform rect)
     {
-        Vector2Int resolution = GetResolutionBySizeDelta(rect);
+        Vector2Int resolution = ConvertSizeToResolution(rect.sizeDelta);
         UpdateResolutionText(resolution.x, resolution.y);
-    }
-    
-    public Vector2Int GetResolutionBySizeDelta(RectTransform rect)
-    {
-        int width = Mathf.RoundToInt((float) Display.main.systemWidth / previewMaxLength * rect.rect.width);
-        int height = Mathf.RoundToInt((float) Display.main.systemWidth / previewMaxLength * rect.rect.height);
-        return new Vector2Int(width, height);
     }
 
     /// <summary>
@@ -973,6 +953,23 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         screenText.text = width + " " + height;
     }
+    
+    public Vector2Int ConvertSizeToResolution(Vector2 sizeDelta)
+    {
+        int width = Mathf.RoundToInt((float) Display.main.systemWidth / previewMaxLength * sizeDelta.x);
+        int height = Mathf.RoundToInt((float) Display.main.systemWidth / previewMaxLength * sizeDelta.y);
+        return new Vector2Int(width, height);
+    }
+    
+    public Vector2 ConvertResolutionToSize(Vector2Int resolution)
+    {
+        float width = (float) resolution.x / Display.main.systemWidth * previewMaxLength;
+        float height = (float) resolution.y / Display.main.systemWidth * previewMaxLength;
+        return new Vector2(width, height);
+    }
+    
+    public Vector2Int GetLowestResolution() => new (Display.main.systemWidth / 4, Display.main.systemHeight / 4);
+
 
     private int GCD(int a, int b)
     {

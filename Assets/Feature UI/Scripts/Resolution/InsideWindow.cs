@@ -33,11 +33,14 @@ public class ResizeBounds
 /// <summary>
 /// TODO:
 /// 위에 바 더블클릭하면 최대화
+/// Apply 누르면 적용
+/// 마우스 포인터 이미 적용되어 있으면 다른 거로 안 바뀌게
 /// </summary>
 public class InsideWindow : MonoBehaviour, IDragHandler
 {
     private ResolutionManagement resolutionManager;
-    private RectTransform insideRectTransform;
+    private RectTransform insideRect;
+    private RectTransform outsideRect;
     
     [Header("Inside 내부 UI")]
     
@@ -57,18 +60,23 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     private ResizeType currentResizeType;
     
     private Vector2 insideOffsetMin, insideOffsetMax, outsideOffsetMin, outsideOffsetMax;
-    private Vector2 insideSize, outsideSize;
+    private Vector2 prevOffsetMin, prevOffsetMax;
 
-    private readonly float minSize = 300f;
+    private Vector2 insideLowestSize;
+
     private readonly float aspectRatio = 1.777778f;
 
     public UnityEvent<RectTransform> OnRectTransformReSize;
-    
+
     private void OnEnable()
     {
-        insideRectTransform = GetComponent<RectTransform>();
         resolutionManager = ResolutionManagement.Instance;
         resolutionManager.OnFullScreenSwitched.AddListener(FullScreenSwitchHandler);
+        insideRect = resolutionManager.InsideRectTransform;
+        outsideRect = resolutionManager.OutsideRectTransform;
+        
+        Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
+        insideLowestSize = resolutionManager.ConvertResolutionToSize(insideLowestResolution);
         
         FullScreenSwitchHandler(resolutionManager.IsFullScreen);
     }
@@ -80,28 +88,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler
 
     private void OnRectTransformDimensionsChange()
     {
-        OnRectTransformReSize?.Invoke(insideRectTransform);
-    }
-
-    private void Update()
-    {
-        //ConfineInsideInOutside();
-    }
-    
-    private void ConfineInsideInOutside()
-    {
-        insideOffsetMax = resolutionManager.InsideOffsetMax;
-        insideOffsetMin = resolutionManager.InsideOffsetMin;
-        outsideOffsetMax = resolutionManager.OutsideOffsetMax;
-        outsideOffsetMin = resolutionManager.OutsideOffsetMin;
-        
-        insideOffsetMax.x = Mathf.Clamp(insideOffsetMax.x, insideOffsetMin.x, outsideOffsetMax.x);
-        insideOffsetMax.y = Mathf.Clamp(insideOffsetMax.y, insideOffsetMin.y, outsideOffsetMax.y);
-        insideOffsetMin.x = Mathf.Clamp(insideOffsetMin.x, outsideOffsetMin.x, insideOffsetMax.x);
-        insideOffsetMin.y = Mathf.Clamp(insideOffsetMin.y, outsideOffsetMin.y, insideOffsetMax.y);
-        
-        resolutionManager.InsideOffsetMax = insideOffsetMax;
-        resolutionManager.InsideOffsetMin = insideOffsetMin;
+        OnRectTransformReSize?.Invoke(insideRect);
     }
 
     private void Awake()
@@ -188,101 +175,124 @@ public class InsideWindow : MonoBehaviour, IDragHandler
             }
         }
     }
-
-    private void OnResizeStart(ResizeType type)
+    
+    private void OnResizeStart(ResizeType type, PointerEventData eventData)
     {
         currentResizeType = type;
         insideWindowZoom.SetZoomState(ZoomState.ZoomIn);
+        prevOffsetMin = resolutionManager.InsideOffsetMin;
+        prevOffsetMax = resolutionManager.InsideOffsetMax;
     }
     
     private void OnResizeStay(PointerEventData eventData)
     {
         ChangeCursor(currentResizeType);
-        insideSize = resolutionManager.InsideSize;
         insideOffsetMin = resolutionManager.InsideOffsetMin;
         insideOffsetMax = resolutionManager.InsideOffsetMax;
         outsideOffsetMax = resolutionManager.OutsideOffsetMax;
         outsideOffsetMin = resolutionManager.OutsideOffsetMin;
         
-        Vector2 delta = eventData.delta;
+        Vector2 localPoint = outsideRect.InverseTransformPoint(eventData.position);
         
         switch (currentResizeType)
         {
             case ResizeType.Left:
-                // left에다가 delta.x를 더해줌에 따라 left가 줄어들면서 오른쪽으로 이동
-                // bottom은 delta.x에다가 1.777778을 곱해줌으로써 aspect ratio를 유지
-                float newLeft = Mathf.Clamp(insideRectTransform.GetLeft() + (delta.x * 0.5f), 0, 900);
-                float newBottom = Mathf.Clamp(insideRectTransform.GetBottom() + (delta.x / aspectRatio * 0.5f), 0, 900);
-                insideRectTransform.SetLeft(newLeft);
-                insideRectTransform.SetBottom(newBottom);
-                Debug.Log($"{insideRectTransform.sizeDelta}");
-                // insideOffsetMin.x = Mathf.Clamp(insideOffsetMin.x + delta.x, outsideOffsetMin.x, insideOffsetMax.x);
-                //
-                // insideSize.x = insideOffsetMax.x - insideOffsetMin.x;
-                // insideSize.y = insideSize.x / aspectRatio;
-                //
-                // insideOffsetMin.y = Mathf.Clamp(insideOffsetMax.y - insideSize.y, outsideOffsetMin.y, outsideOffsetMax.y);
+            case ResizeType.LeftUp:
+                float leftOffsetMinX = Mathf.Clamp(localPoint.x, outsideOffsetMin.x, insideOffsetMax.x - insideLowestSize.x);
+                float leftOffsetMaxY = Mathf.Clamp(
+                    prevOffsetMax.y - (leftOffsetMinX - prevOffsetMin.x) / aspectRatio,
+                    outsideOffsetMin.y,
+                    outsideOffsetMax.y
+                );
+                
+                // Y축이 최대값을 넘어가면 X축 늘어나는 거 방지
+                if (leftOffsetMaxY >= outsideOffsetMax.y)
+                {
+                    leftOffsetMaxY = outsideOffsetMax.y;
+                    leftOffsetMinX = prevOffsetMin.x + (prevOffsetMax.y - leftOffsetMaxY) * aspectRatio;
+                }
+                
+                insideOffsetMin.x = leftOffsetMinX;
+                insideOffsetMax.y = leftOffsetMaxY;
                 break;
-
+            
             case ResizeType.Right:
-                insideOffsetMax.x = Mathf.Clamp(insideOffsetMax.x + delta.x, insideOffsetMin.x, outsideOffsetMax.x);
+            case ResizeType.RightUp:
+                float rightOffsetMaxX = Mathf.Clamp(localPoint.x, insideOffsetMin.x + insideLowestSize.x, outsideOffsetMax.x);
+                float rightOffsetMaxY = Mathf.Clamp(
+                    prevOffsetMax.y + (rightOffsetMaxX - prevOffsetMax.x) / aspectRatio,
+                    outsideOffsetMin.y,
+                    outsideOffsetMax.y
+                );
                 
-                insideSize.x = insideOffsetMax.x - insideOffsetMin.x;
-                insideSize.y = insideSize.x / aspectRatio;
+                if (rightOffsetMaxY >= outsideOffsetMax.y)
+                {
+                    rightOffsetMaxY = outsideOffsetMax.y;
+                    rightOffsetMaxX = prevOffsetMax.x + (rightOffsetMaxY - prevOffsetMax.y) * aspectRatio;
+                }
                 
-                insideOffsetMax.y = insideOffsetMin.y + insideSize.y;
+                insideOffsetMax.x = rightOffsetMaxX;
+                insideOffsetMax.y = rightOffsetMaxY;
                 break;
             
             case ResizeType.Up:
-                insideOffsetMax.y = Mathf.Clamp(insideOffsetMax.y + delta.y, insideOffsetMin.y, outsideOffsetMax.y);
+                float upOffsetMaxY = Mathf.Clamp(localPoint.y, insideOffsetMin.y + insideLowestSize.y, outsideOffsetMax.y);
+                float upOffsetMaxX = Mathf.Clamp(
+                    prevOffsetMax.x + (upOffsetMaxY - prevOffsetMax.y) * aspectRatio,
+                    insideOffsetMin.x + insideLowestSize.x,
+                    outsideOffsetMax.x
+                );
                 
-                insideSize.y = insideOffsetMax.y - insideOffsetMin.y;
-                insideSize.x = insideSize.y * aspectRatio;
+                if (upOffsetMaxX >= outsideOffsetMax.x)
+                {
+                    upOffsetMaxX = outsideOffsetMax.x;
+                    upOffsetMaxY = prevOffsetMax.y + (upOffsetMaxX - prevOffsetMax.x) / aspectRatio;
+                }
                 
-                insideOffsetMax.x = insideOffsetMin.x + insideSize.x;
+                insideOffsetMax.y = upOffsetMaxY;
+                insideOffsetMax.x = upOffsetMaxX;
                 break;
             
             case ResizeType.Down:
-                insideOffsetMin.y = Mathf.Clamp(insideOffsetMin.y + delta.y, outsideOffsetMin.y, insideOffsetMax.y);
-                
-                insideSize.y = insideOffsetMax.y - insideOffsetMin.y;
-                insideSize.x = insideSize.y * aspectRatio;
-                
-                insideOffsetMin.x = insideOffsetMax.x - insideSize.x;
-                break;
-            
-            case ResizeType.LeftUp:
-                insideSize.x = Mathf.Clamp(insideSize.x - delta.x, minSize, outsideOffsetMax.x - outsideOffsetMin.x);
-                insideSize.y = insideSize.x / aspectRatio;
-                
-                insideOffsetMin.x = insideOffsetMax.x - insideSize.x;
-                insideOffsetMax.y = insideOffsetMin.y + insideSize.y;
-                break;
-            
             case ResizeType.LeftDown:
-                insideSize.x = Mathf.Clamp(insideSize.x - delta.x, minSize, outsideOffsetMax.x - outsideOffsetMin.x);
-                insideSize.y = insideSize.x / aspectRatio;
+                float downOffsetMinY = Mathf.Clamp(localPoint.y, outsideOffsetMin.y, insideOffsetMax.y - insideLowestSize.y);
+                float downOffsetMinX = Mathf.Clamp(
+                    prevOffsetMin.x + (downOffsetMinY - prevOffsetMin.y) * aspectRatio,
+                    outsideOffsetMin.x,
+                    insideOffsetMax.x - insideLowestSize.x
+                );
                 
-                insideOffsetMin.x = insideOffsetMax.x - insideSize.x;
-                insideOffsetMin.y = insideOffsetMax.y - insideSize.y;
-                break;
-            
-            case ResizeType.RightUp:
-                insideSize.x = Mathf.Clamp(insideSize.x + delta.x, minSize, outsideOffsetMax.x - outsideOffsetMin.x);
-                insideSize.y = insideSize.x / aspectRatio;
+                if (downOffsetMinX <= outsideOffsetMin.x)
+                {
+                    downOffsetMinX = outsideOffsetMin.x;
+                    downOffsetMinY = prevOffsetMin.y + (downOffsetMinX - prevOffsetMin.x) / aspectRatio;
+                }
                 
-                insideOffsetMax.x = insideOffsetMin.x + insideSize.x;
-                insideOffsetMax.y = insideOffsetMin.y + insideSize.y;
+                insideOffsetMin.y = downOffsetMinY;
+                insideOffsetMin.x = downOffsetMinX;
                 break;
             
             case ResizeType.RightDown:
-                insideSize.x = Mathf.Clamp(insideSize.x + delta.x, minSize, outsideOffsetMax.x - outsideOffsetMin.x);
-                insideSize.y = insideSize.x / aspectRatio;
+                float rightDownOffsetMinY = Mathf.Clamp(localPoint.y, outsideOffsetMin.y, insideOffsetMax.y - insideLowestSize.y);
+                float rightDownOffsetMaxX = Mathf.Clamp(
+                    prevOffsetMax.x - (rightDownOffsetMinY - prevOffsetMin.y) * aspectRatio,
+                    insideOffsetMin.x + insideLowestSize.x,
+                    outsideOffsetMax.x
+                );
                 
-                insideOffsetMax.x = insideOffsetMin.x + insideSize.x;
-                insideOffsetMax.y = insideOffsetMin.y + insideSize.y;
+                if (rightDownOffsetMaxX >= outsideOffsetMax.x)
+                {
+                    rightDownOffsetMaxX = outsideOffsetMax.x;
+                    rightDownOffsetMinY = prevOffsetMin.y + (prevOffsetMax.x - rightDownOffsetMaxX) / aspectRatio;
+                }
+
+                insideOffsetMin.y = rightDownOffsetMinY;
+                insideOffsetMax.x = rightDownOffsetMaxX;
                 break;
         }
+
+        resolutionManager.InsideOffsetMin = insideOffsetMin;
+        resolutionManager.InsideOffsetMax = insideOffsetMax;
     }
     
     private void OnResizeEnd()
@@ -306,13 +316,18 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     /// <param name="eventData"></param>
     public void OnDrag(PointerEventData eventData)
     {
-        if (resolutionManager.IsFullScreen) return;
-
         Vector2 delta = eventData.delta;
         Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
+        Vector2 insideSize = resolutionManager.InsideSize;
+        Vector2 outsideSize = resolutionManager.OutsideSize;
         
-        insideAnchoredPosition.x = Mathf.Clamp(insideAnchoredPosition.x + delta.x, -(insideRectTransform.GetRight() * 0.5f), insideRectTransform.GetLeft() * 0.5f);
-        insideAnchoredPosition.y = Mathf.Clamp(insideAnchoredPosition.y + delta.y, -(insideRectTransform.GetTop() * 0.5f), insideRectTransform.GetBottom() * 0.5f);
+        float distanceX = (outsideSize.x - insideSize.x) * 0.5f;
+        float distanceY = (outsideSize.y - insideSize.y) * 0.5f;
+        
+        insideAnchoredPosition = new Vector2(
+            Mathf.Clamp(insideAnchoredPosition.x + delta.x, -distanceX, distanceX),
+            Mathf.Clamp(insideAnchoredPosition.y + delta.y, -distanceY, distanceY));
+        
         resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
     }
     

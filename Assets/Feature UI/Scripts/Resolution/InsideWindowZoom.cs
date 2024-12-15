@@ -30,9 +30,8 @@ public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
             savedOffsetMin = resolutionManagement.InsideOffsetMin;
             savedOffsetMax = resolutionManagement.InsideOffsetMax;
             
-            Vector2[] maxOffsets = resolutionManagement.GetOffsetsByResolution(Display.main.systemWidth, Display.main.systemHeight);
-            
-            DoZoom(maxOffsets[0], maxOffsets[1]);
+            Vector2[] zoomOutOffsets = resolutionManagement.ConvertResolutionToOffsets(Display.main.systemWidth, Display.main.systemHeight);            
+            DoZoom(zoomOutOffsets[0], zoomOutOffsets[1]);
         }
         else if (zoomState == ZoomState.ZoomOut)
         {
