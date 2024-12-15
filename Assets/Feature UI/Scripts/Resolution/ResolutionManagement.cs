@@ -134,6 +134,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             case 2:
                 lastApplyObject = inputFieldHeight.gameObject;
                 break;
+            case 3:
+                lastApplyObject = insideWindow.gameObject;
+                break;
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -276,6 +279,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 NewReadyInputField(1);
             }
             ApplyInputField();
+        }
+        else if (lastApplyObject == insideWindow.gameObject)
+        {
+            inputFieldWidth.text = $"{nowWidthPixel}";
+            inputFieldHeight.text = $"{nowHeightPixel}";
+            ApplyInsideWindow();
         }
 
         //조건 상관없이 항상 드롭다운 텍스트 비워둠
@@ -479,11 +488,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     }
 
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
-    //해상도 프리뷰만 건드림
-    /// <summary>
-    /// 11-30 최무령 수정 : 해상도 텍스트 바꾸는 거 UpdateResolutionText로 이동
-    /// </summary>
-    /// <param name="value"></param>
     public void ReadyResolution(int value)
     {
         print("ReadyResolution 실행");
@@ -860,6 +864,15 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
     }
 
+    private void ApplyInsideWindow()
+    {
+        StartCoroutine(ResolutionWindow(float.Parse(inputFieldWidth.text), float.Parse(inputFieldHeight.text)));
+        ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+        ResizePreviewImage(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text), inside);
+        SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
+        SaveManager.Instance.SaveLastApplyObject(3);
+    }
+
     //확인버튼 누를 때 자동 실행
     public void PressApply()
     {
@@ -872,10 +885,15 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             ApplyResolution();
         }
         //인풋필드 값 적용
-        else
+        else if (lastApplyObject == inputFieldWidth.gameObject || lastApplyObject == inputFieldHeight.gameObject)
         {
             print("인풋필드 적용");
             ApplyInputField();
+        }
+        else if (lastApplyObject == insideWindow.gameObject)
+        {
+            print("인사이드윈도우 적용");
+            ApplyInsideWindow();
         }
         ApplyFrameRate();
         print($"마지막 오브젝트 {lastApplyObject.name} 저장완료");
@@ -939,6 +957,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     {
         Vector2Int resolution = ConvertSizeToResolution(rect.sizeDelta);
         UpdateResolutionText(resolution.x, resolution.y);
+        lastApplyObject = insideWindow.gameObject;
     }
 
     /// <summary>
@@ -951,6 +970,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         previewText.text = $"{width} X {height}\n{frameRateReady}hz";
         previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
 
+        inputFieldWidth.text = $"{width}";
+        inputFieldHeight.text = $"{height}";
+        
         screenText.text = width + " " + height;
     }
     

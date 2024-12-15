@@ -186,6 +186,7 @@ public class SaveManager : MonoSingleton<SaveManager>
         //0 : 드롭다운
         //1 : 인풋필드Width
         //2 : 인풋필드Height
+        //3 : 마우스 드래그
         PlayerPrefs.SetInt("SaveLastApplyObject", value);
     }
 

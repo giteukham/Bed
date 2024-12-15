@@ -34,6 +34,6 @@ public class InsideNavigationBar : MonoBehaviour, IPointerClickHandler
 
     public void SetNavigationBarActive(bool active)
     {
-        navigationBar.SetActive(active);
+        navigationBar?.SetActive(active);
     }
 }

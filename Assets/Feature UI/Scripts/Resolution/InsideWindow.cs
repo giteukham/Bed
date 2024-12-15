@@ -38,7 +38,6 @@ public class ResizeBounds
 
 /// <summary>
 /// TODO:
-/// Apply 누르면 적용
 /// 마우스 포인터 이미 적용되어 있으면 다른 거로 안 바뀌게
 /// </summary>
 public class InsideWindow : MonoBehaviour, IDragHandler
@@ -60,13 +59,14 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     
     private Dictionary<ResizeType, ResizeEvent> resizeEvents = new Dictionary<ResizeType, ResizeEvent>();
     private ResizeType currentResizeType;
+    private bool isResizing;
     
     private static ZoomState zoomState = ZoomState.Minimize;
     private static Vector2 savedOffsetMin, savedOffsetMax;
     
     private Vector2 insideOffsetMin, insideOffsetMax, outsideOffsetMin, outsideOffsetMax;
     private Vector2 prevOffsetMin, prevOffsetMax;
-
+    
     private Vector2 insideLowestSize;
 
     private readonly float aspectRatio = 1.777778f;
@@ -166,11 +166,11 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         {
             if (resizeEvents.TryGetValue(type, out var resizeEvent))
             {
-                resizeEvent.OnResizeStart += OnResizeStart;
-                resizeEvent.OnResizeEnd += OnResizeEnd;
-                resizeEvent.OnResizeStay += OnResizeStay;
-                resizeEvent.OnPointerEnterEvent += OnPointerEnterEvent;
-                resizeEvent.OnPointerExitEvent += OnPointerExitEvent;
+                resizeEvent.OnResizeStart = OnResizeStart;
+                resizeEvent.OnResizeEnd = OnResizeEnd;
+                resizeEvent.OnResizeStay = OnResizeStay;
+                resizeEvent.OnPointerEnterEvent = OnPointerEnterEvent;
+                resizeEvent.OnPointerExitEvent = OnPointerExitEvent;
             }
         }
     }
@@ -181,11 +181,11 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         {
             if (resizeEvents.TryGetValue(type, out var resizeEvent))
             {
-                resizeEvent.OnResizeStart -= OnResizeStart;
-                resizeEvent.OnResizeEnd -= OnResizeEnd;
-                resizeEvent.OnResizeStay -= OnResizeStay;
-                resizeEvent.OnPointerEnterEvent -= OnPointerEnterEvent;
-                resizeEvent.OnPointerExitEvent -= OnPointerExitEvent;
+                resizeEvent.OnResizeStart = null;
+                resizeEvent.OnResizeEnd = null;
+                resizeEvent.OnResizeStay = null;
+                resizeEvent.OnPointerEnterEvent = null;
+                resizeEvent.OnPointerExitEvent = null;
             }
         }
     }
@@ -196,11 +196,12 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         prevOffsetMin = resolutionManager.InsideOffsetMin;
         prevOffsetMax = resolutionManager.InsideOffsetMax;
         ZoomState = ZoomState.Minimize;
+        isResizing = true;
     }
     
     private void OnResizeStay(PointerEventData eventData)
     {
-        ChangeCursor(currentResizeType);
+        ChangeCursorByType(currentResizeType);
         insideOffsetMin = resolutionManager.InsideOffsetMin;
         insideOffsetMax = resolutionManager.InsideOffsetMax;
         outsideOffsetMax = resolutionManager.OutsideOffsetMax;
@@ -312,15 +313,18 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     private void OnResizeEnd()
     {
         Cursor.SetCursor(CursorType.Normal);
+        isResizing = false;
     }
     
     private void OnPointerEnterEvent(ResizeType type)
     {
-        ChangeCursor(type);
+        if (isResizing) return;
+        ChangeCursorByType(type);
     }
     
     private void OnPointerExitEvent()
     {
+        if (isResizing) return;
         Cursor.SetCursor(CursorType.Normal);
     }
     
@@ -330,7 +334,9 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     /// <param name="eventData"></param>
     public void OnDrag(PointerEventData eventData)
     {
-        Vector2 delta = eventData.delta;
+        if (resolutionManager.IsFullScreen) return;
+        
+        Vector2 localPoint = outsideRect.InverseTransformPoint(eventData.position);
         Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
         Vector2 insideSize = resolutionManager.InsideSize;
         Vector2 outsideSize = resolutionManager.OutsideSize;
@@ -339,14 +345,14 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         float distanceY = (outsideSize.y - insideSize.y) * 0.5f;
         
         insideAnchoredPosition = new Vector2(
-            Mathf.Clamp(insideAnchoredPosition.x + delta.x, -distanceX, distanceX),
-            Mathf.Clamp(insideAnchoredPosition.y + delta.y, -distanceY, distanceY));
+            Mathf.Clamp(localPoint.x, -distanceX, distanceX),
+            Mathf.Clamp(localPoint.y, -distanceY, distanceY));
         
         resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
     }
     
     
-    private void ChangeCursor(ResizeType type)
+    private void ChangeCursorByType(ResizeType type)
     {
         switch (type)
         {
