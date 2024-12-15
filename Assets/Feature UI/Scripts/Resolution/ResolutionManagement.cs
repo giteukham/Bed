@@ -968,6 +968,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         return new Vector2(width, height);
     }
     
+    public void ResizeByOffsets(Vector2 offsetMin, Vector2 offsetMax)
+    {
+        InsideOffsetMin = offsetMin;
+        InsideOffsetMax = offsetMax;
+    }
+    
     public Vector2Int GetLowestResolution() => new (Display.main.systemWidth / 4, Display.main.systemHeight / 4);
 
 

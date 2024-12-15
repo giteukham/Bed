@@ -23,6 +23,12 @@ public enum ResizeType
     RightDown
 }
 
+public enum ZoomState
+{
+    Minimize,
+    Maximize
+}
+
 [Serializable]
 public class ResizeBounds
 {
@@ -32,7 +38,6 @@ public class ResizeBounds
 
 /// <summary>
 /// TODO:
-/// 위에 바 더블클릭하면 최대화
 /// Apply 누르면 적용
 /// 마우스 포인터 이미 적용되어 있으면 다른 거로 안 바뀌게
 /// </summary>
@@ -48,16 +53,16 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     [Tooltip("드래그 가능한 영역")]
     private ResizeBounds resizeBounds;
     
-    [SerializeField]
-    [Tooltip("상단 바")]
-    private GameObject navigationBar;
-    
     [Header("기타 설정")]
     [SerializeField] private Material previewMaskMaterial;
+    [SerializeField] private InsideNavigationBar insideNavigationBar;
     [SerializeField] private InsideWindowZoom insideWindowZoom;
     
     private Dictionary<ResizeType, ResizeEvent> resizeEvents = new Dictionary<ResizeType, ResizeEvent>();
     private ResizeType currentResizeType;
+    
+    private static ZoomState zoomState = ZoomState.Minimize;
+    private static Vector2 savedOffsetMin, savedOffsetMax;
     
     private Vector2 insideOffsetMin, insideOffsetMax, outsideOffsetMin, outsideOffsetMax;
     private Vector2 prevOffsetMin, prevOffsetMax;
@@ -67,6 +72,15 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     private readonly float aspectRatio = 1.777778f;
 
     public UnityEvent<RectTransform> OnRectTransformReSize;
+
+    public static ZoomState ZoomState
+    {
+        get => zoomState;
+        set => zoomState = value;
+    }
+    
+    public static Vector2 SavedOffsetMin => savedOffsetMin;
+    public static Vector2 SavedOffsetMax => savedOffsetMax;
 
     private void OnEnable()
     {
@@ -179,9 +193,9 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     private void OnResizeStart(ResizeType type, PointerEventData eventData)
     {
         currentResizeType = type;
-        insideWindowZoom.SetZoomState(ZoomState.ZoomIn);
         prevOffsetMin = resolutionManager.InsideOffsetMin;
         prevOffsetMax = resolutionManager.InsideOffsetMax;
+        ZoomState = ZoomState.Minimize;
     }
     
     private void OnResizeStay(PointerEventData eventData)
@@ -354,7 +368,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler
                 break;
         }
     }
-
+    
     private void FullScreenSwitchHandler(bool isFullScreen)
     {
         if (isFullScreen == false)
@@ -365,6 +379,12 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         {
             UnsubscribeAllResizeEvent();
         }
-        navigationBar.SetActive(!isFullScreen);
+        insideNavigationBar.SetNavigationBarActive(!isFullScreen);
+    }
+    
+    public static void SaveOffset()
+    {
+        savedOffsetMin = ResolutionManagement.Instance.InsideOffsetMin;
+        savedOffsetMax = ResolutionManagement.Instance.InsideOffsetMax;
     }
 }
