@@ -11,19 +11,19 @@ public class DropdownItemClick : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private ResolutionManagement resolutionManagement;
 
-    private int dropdownValue = 0;
+    public static int dropdownValue = 0;
 
     private void Start()
     {
         //resolutionDropdown = GetComponent<TMP_Dropdown>();
         dropdownValue = resolutionDropdown.value;
-        print($"드롭다운 밸류 : {dropdownValue}");
+        //print($"드롭다운 밸류 : {dropdownValue}");
     }
 
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Dropdown clicked!");
+        Debug.Log($"드롭다운 클릭! : {resolutionDropdown.value} : {dropdownValue}");
 
         if (dropdownValue == resolutionDropdown.value)
         {

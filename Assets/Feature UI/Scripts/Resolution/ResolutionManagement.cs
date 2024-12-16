@@ -492,6 +492,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
     public void ReadyResolution(int value)
     {
+        DropdownItemClick.dropdownValue = resolutiondropdown.value;
+
         print("ReadyResolution 실행");
         resolutiondropdown.captionText.text = "";
         //CRITERIA_NUM = 16f / 9f;

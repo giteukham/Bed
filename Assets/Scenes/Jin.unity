@@ -3494,7 +3494,7 @@ MonoBehaviour:
     rightUp: {fileID: 127216967}
     rightDown: {fileID: 1186609947}
   previewMaskMaterial: {fileID: 2100000, guid: bce99f86145911343b8f4cca38fd27e2, type: 2}
-  insideNavigationBar: {fileID: 0}
+  insideNavigationBar: {fileID: 761647189}
   insideWindowZoom: {fileID: 1469654878}
   OnRectTransformReSize:
     m_PersistentCalls:
@@ -6024,6 +6024,7 @@ GameObject:
   - component: {fileID: 761647186}
   - component: {fileID: 761647188}
   - component: {fileID: 761647187}
+  - component: {fileID: 761647189}
   m_Layer: 5
   m_Name: Navigation Bar
   m_TagString: Untagged
@@ -6089,6 +6090,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 761647185}
   m_CullTransparentMesh: 1
+--- !u!114 &761647189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761647185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa655ea3dc444cb97caee1af0beecea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &778939715
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14974,6 +14987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1749662661302507102}
   - component: {fileID: 322418625472098291}
+  - component: {fileID: 1749662661302507103}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -15907,6 +15921,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -61.203125}
   m_SizeDelta: {x: 0, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1749662661302507103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97878713657309105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a42d7a015886c4fae4302677e35631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolutionDropdown: {fileID: 7088351469477123627}
+  resolutionManagement: {fileID: 21218640112946570}
 --- !u!222 &1784700111913852952
 CanvasRenderer:
   m_ObjectHideFlags: 0
