@@ -41,11 +41,10 @@ public class ResizeBounds
 /// TODO:
 /// 마우스 포인터 이미 적용되어 있으면 다른 거로 안 바뀌게
 /// </summary>
-public class InsideWindow : MonoBehaviour, IDragHandler
+public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
 {
     private ResolutionManagement resolutionManager;
     private RectTransform insideRect;
-    private RectTransform outsideRect;
     
     [Header("Inside 내부 UI")]
     
@@ -78,20 +77,19 @@ public class InsideWindow : MonoBehaviour, IDragHandler
 
     public UnityEvent<RectTransform> OnRectTransformReSize;
 
-    public static ZoomState ZoomState
+    public ZoomState ZoomState
     {
         get => zoomState;
         set => zoomState = value;
     }
     
-    public static Vector2 SavedOffsetMin => savedOffsetMin;
-    public static Vector2 SavedOffsetMax => savedOffsetMax;
+    public Vector2 SavedOffsetMin => savedOffsetMin;
+    public Vector2 SavedOffsetMax => savedOffsetMax;
     
     private void Awake()
     {
         resolutionManager = ResolutionManagement.Instance;
         insideRect = resolutionManager.InsideRectTransform;
-        outsideRect = resolutionManager.OutsideRectTransform;
         
         Vector2[] offsets = resolutionManager.ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
         insideBoundary.offsetMin = offsets[0];
@@ -106,8 +104,6 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         
         Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
         insideLowestSize = resolutionManager.ConvertResolutionToSize(insideLowestResolution);
-        
-        FullScreenSwitchHandler(resolutionManager.IsFullScreenReady);
     }
 
     private void OnDisable()
@@ -337,6 +333,11 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         Cursor.SetCursor(CursorType.Normal);
     }
     
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        resolutionManager.DoZoom(eventData);
+    }
+    
     /// <summary>
     /// Preview 창을 드래그할 때 창을 움직일 수 있게 하는 함수
     /// </summary>
@@ -384,6 +385,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     
     private void FullScreenSwitchHandler(bool isFullScreenReady)
     {
+        insideNavigationBar.SetNavigationBarActive(!isFullScreenReady);
         if (isFullScreenReady == false)
         {
             //resolutionManager.ResizeByOffsets(savedOffsetMin, savedOffsetMax);
@@ -394,10 +396,9 @@ public class InsideWindow : MonoBehaviour, IDragHandler
             //SaveOffsets(resolutionManager.InsideOffsetMin, resolutionManager.InsideOffsetMax);
             UnsubscribeAllResizeEvent();
         }
-        insideNavigationBar.SetNavigationBarActive(!isFullScreenReady);
     }
     
-    public static void SaveOffsets(Vector2 offsetMin, Vector2 offsetMax)
+    public void SaveOffsets(Vector2 offsetMin, Vector2 offsetMax)
     {
         savedOffsetMin = offsetMin;
         savedOffsetMax = offsetMax;

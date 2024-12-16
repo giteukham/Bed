@@ -60,6 +60,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     
     public UnityEvent<bool> OnFullScreenSwitched;
     
+    private Vector2[] maxResolutionToOffsets = new Vector2[2];
+    
     #region Properties
     public RectTransform InsideRectTransform => inside;
     public Vector2 InsideAnchoredPosition
@@ -129,7 +131,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
         Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel));
-        InsideWindow.SaveOffsets(offsets[0], offsets[1]);
+        insideWindow.SaveOffsets(offsets[0], offsets[1]);
         //불러온 변수값들을 이용해 이전에 쓰던 해상도 설정 반영
         //Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
 
@@ -230,6 +232,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 ListValueDuplicateCheck(currentList, item);
             }
         }*/
+        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
     }
 
     private void OnEnable()
@@ -950,23 +953,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             outside.sizeDelta = new Vector2(outside.rect.width + 50, outside.rect.height + 50);
         }
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
-    public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution)
+    
+    public void ResizePreviewByOffsets(Vector2 offsetMin, Vector2 offsetMax)
     {
-        Vector2 size = ConvertResolutionToSize(resolution);
-        
-        Vector2 offsetMin = new Vector2(-size.x / 2, -size.y / 2);
-        Vector2 offsetMax = new Vector2(size.x / 2, size.y / 2);
-        
-        return new[] { offsetMin, offsetMax };
+        InsideOffsetMin = offsetMin;
+        InsideOffsetMax = offsetMax;
     }
-
+    
     /// <summary>
     /// Rect의 크기가 변경될 때 호출되는 이벤트 핸들러
     /// </summary>
@@ -1008,11 +1001,57 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         return new Vector2(width, height);
     }
     
-    public void ResizeByOffsets(Vector2 offsetMin, Vector2 offsetMax)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
+    public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution)
     {
-        InsideOffsetMin = offsetMin;
-        InsideOffsetMax = offsetMax;
+        Vector2 size = ConvertResolutionToSize(resolution);
+        
+        Vector2 offsetMin = new Vector2(-size.x / 2, -size.y / 2);
+        Vector2 offsetMax = new Vector2(size.x / 2, size.y / 2);
+        
+        return new[] { offsetMin, offsetMax };
     }
+
+    public void DoZoom()
+    {
+        if (insideWindow.ZoomState == ZoomState.Minimize)
+        {
+            insideWindow.ZoomState = ZoomState.Maximize;
+            insideWindow.SaveOffsets(InsideOffsetMin, InsideOffsetMax);
+            ResizePreviewByOffsets(maxResolutionToOffsets[0], maxResolutionToOffsets[1]);
+        }
+        else if (insideWindow.ZoomState == ZoomState.Maximize)
+        {
+            insideWindow.ZoomState = ZoomState.Minimize;
+            ResizePreviewByOffsets(insideWindow.SavedOffsetMin, insideWindow.SavedOffsetMax);
+        }
+    }
+    
+    /// <summary>
+    /// 더블 클릭에 의한 줌인/줌아웃
+    /// </summary>
+    /// <param name="eventData"></param>
+    public void DoZoom(PointerEventData eventData)
+    {
+        if (eventData.clickCount == 2 && insideWindow.ZoomState == ZoomState.Minimize)
+        {
+            insideWindow.ZoomState = ZoomState.Maximize;
+            insideWindow.SaveOffsets(InsideOffsetMin, InsideOffsetMax);
+            ResizePreviewByOffsets(maxResolutionToOffsets[0], maxResolutionToOffsets[1]);
+        }
+        else if (eventData.clickCount == 2 && insideWindow.ZoomState == ZoomState.Maximize)
+        {
+            insideWindow.ZoomState = ZoomState.Minimize;
+            ResizePreviewByOffsets(insideWindow.SavedOffsetMin, insideWindow.SavedOffsetMax);
+        }
+    }
+    
+    
     
     public Vector2Int GetLowestResolution() => new (Display.main.systemWidth / 4, Display.main.systemHeight / 4);
 
