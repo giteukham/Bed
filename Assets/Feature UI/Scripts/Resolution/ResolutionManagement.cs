@@ -104,7 +104,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             }
         }
     }
-    
+
     #endregion
 
     private void Awake()
@@ -306,10 +306,25 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         insideWindow.OnRectTransformReSize.RemoveListener(OnSizeChangedHandler);
     }
 
+    private UnityEngine.UI.Button dropdownButton;
+
     private void Start()
     {
         //맨처음 시작시 Start에서 실행해야 오류 없음
         resolutiondropdown.captionText.text = "";
+
+        // TMP_Dropdown 내부의 버튼 찾기
+        dropdownButton = resolutiondropdown.GetComponentInChildren<UnityEngine.UI.Button>();
+        if (dropdownButton != null)
+        {
+            dropdownButton.onClick.AddListener(OnDropdownClicked);
+        }
+    }
+
+    private void OnDropdownClicked()
+    {
+        // 항상 실행됨
+        Debug.Log("Dropdown clicked!");
     }
 
     /// <summary>

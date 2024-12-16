@@ -3494,7 +3494,11 @@ MonoBehaviour:
     rightUp: {fileID: 127216967}
     rightDown: {fileID: 1186609947}
   previewMaskMaterial: {fileID: 2100000, guid: bce99f86145911343b8f4cca38fd27e2, type: 2}
+  insideNavigationBar: {fileID: 0}
   insideWindowZoom: {fileID: 1469654878}
+  OnRectTransformReSize:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &274567437
 GameObject:
   m_ObjectHideFlags: 0
@@ -14916,15 +14920,10 @@ MonoBehaviour:
   nonCheckImage: {fileID: 21300000, guid: fbb12ca2c5a7da741a626fa53ab1d8fd, type: 3}
   fullscreenInside: {fileID: 21300000, guid: f0507d7efa4076f44a29ffefdf87c0fd, type: 3}
   windowedInside: {fileID: 21300000, guid: 9bab0f317c064394289edf5e85012cd4, type: 3}
+  insideWindow: {fileID: 267411473}
   testText: {fileID: 582996589014687129}
   testText2: {fileID: 158730126}
-  OnInsideSizeChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  OnInsideOffsetMinChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  OnInsideOffsetMaxChanged:
+  OnFullScreenSwitched:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &45286045467202842
