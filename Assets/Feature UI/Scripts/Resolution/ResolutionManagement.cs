@@ -222,8 +222,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void OnEnable()
     {
-        insideWindow.OnRectTransformReSize.AddListener(OnSizeChangedHandler);
-        
         isFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -299,6 +297,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         frameRateReady = SaveManager.Instance.LoadFrameRate();
         //프레임 드롭다운 아이템 저장된 값으로 변경
         frameRateDropdown.value = frameRateReady / 30 - 1;
+        
+        insideWindow.OnRectTransformReSize.AddListener(OnSizeChangedHandler);
     }
     
     private void OnDisable()
@@ -873,6 +873,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         StartCoroutine(ResolutionWindow(float.Parse(inputFieldWidth.text), float.Parse(inputFieldHeight.text)));
         ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
         ResizePreviewImage(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text), inside);
+        UpdateResolutionText(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
+        
         SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
         SaveManager.Instance.SaveLastApplyObject(3);
     }

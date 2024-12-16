@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Bed.UI;
+using Cysharp.Threading.Tasks.Triggers;
 using JetBrains.Annotations;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -52,6 +53,10 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     [Tooltip("드래그 가능한 영역")]
     private ResizeBounds resizeBounds;
     
+    [SerializeField]
+    [Tooltip("Inside 창 경계")]
+    private RectTransform insideBoundary;
+    
     [Header("기타 설정")]
     [SerializeField] private Material previewMaskMaterial;
     [SerializeField] private InsideNavigationBar insideNavigationBar;
@@ -64,7 +69,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     private static ZoomState zoomState = ZoomState.Minimize;
     private static Vector2 savedOffsetMin, savedOffsetMax;
     
-    private Vector2 insideOffsetMin, insideOffsetMax, outsideOffsetMin, outsideOffsetMax;
+    private Vector2 insideOffsetMin, insideOffsetMax;
     private Vector2 prevOffsetMin, prevOffsetMax;
     
     private Vector2 insideLowestSize;
@@ -81,13 +86,23 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     
     public static Vector2 SavedOffsetMin => savedOffsetMin;
     public static Vector2 SavedOffsetMax => savedOffsetMax;
+    
+    private void Awake()
+    {
+        resolutionManager = ResolutionManagement.Instance;
+        insideRect = resolutionManager.InsideRectTransform;
+        outsideRect = resolutionManager.OutsideRectTransform;
+        
+        Vector2[] offsets = resolutionManager.ConvertResolutionToOffsets(Display.main.systemWidth, Display.main.systemHeight);
+        insideBoundary.offsetMin = offsets[0];
+        insideBoundary.offsetMax = offsets[1];
+        
+        AddAllResizeEvent();
+    }
 
     private void OnEnable()
     {
-        resolutionManager = ResolutionManagement.Instance;
         resolutionManager.OnFullScreenSwitched.AddListener(FullScreenSwitchHandler);
-        insideRect = resolutionManager.InsideRectTransform;
-        outsideRect = resolutionManager.OutsideRectTransform;
         
         Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
         insideLowestSize = resolutionManager.ConvertResolutionToSize(insideLowestResolution);
@@ -102,12 +117,8 @@ public class InsideWindow : MonoBehaviour, IDragHandler
 
     private void OnRectTransformDimensionsChange()
     {
+        if (insideRect == null) return;
         OnRectTransformReSize?.Invoke(insideRect);
-    }
-
-    private void Awake()
-    {
-        AddAllResizeEvent();
     }
 
     private void AddAllResizeEvent()
@@ -204,26 +215,24 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         ChangeCursorByType(currentResizeType);
         insideOffsetMin = resolutionManager.InsideOffsetMin;
         insideOffsetMax = resolutionManager.InsideOffsetMax;
-        outsideOffsetMax = resolutionManager.OutsideOffsetMax;
-        outsideOffsetMin = resolutionManager.OutsideOffsetMin;
         
-        Vector2 localPoint = outsideRect.InverseTransformPoint(eventData.position);
+        Vector2 localPoint = insideBoundary.InverseTransformPoint(eventData.position);
         
         switch (currentResizeType)
         {
             case ResizeType.Left:
             case ResizeType.LeftUp:
-                float leftOffsetMinX = Mathf.Clamp(localPoint.x, outsideOffsetMin.x, insideOffsetMax.x - insideLowestSize.x);
+                float leftOffsetMinX = Mathf.Clamp(localPoint.x, insideBoundary.offsetMin.x, insideOffsetMax.x - insideLowestSize.x);
                 float leftOffsetMaxY = Mathf.Clamp(
                     prevOffsetMax.y - (leftOffsetMinX - prevOffsetMin.x) / aspectRatio,
-                    outsideOffsetMin.y,
-                    outsideOffsetMax.y
+                    insideBoundary.offsetMin.y,
+                    insideBoundary.offsetMax.y
                 );
                 
                 // Y축이 최대값을 넘어가면 X축 늘어나는 거 방지
-                if (leftOffsetMaxY >= outsideOffsetMax.y)
+                if (leftOffsetMaxY >= insideBoundary.offsetMax.y)
                 {
-                    leftOffsetMaxY = outsideOffsetMax.y;
+                    leftOffsetMaxY = insideBoundary.offsetMax.y;
                     leftOffsetMinX = prevOffsetMin.x + (prevOffsetMax.y - leftOffsetMaxY) * aspectRatio;
                 }
                 
@@ -233,16 +242,16 @@ public class InsideWindow : MonoBehaviour, IDragHandler
             
             case ResizeType.Right:
             case ResizeType.RightUp:
-                float rightOffsetMaxX = Mathf.Clamp(localPoint.x, insideOffsetMin.x + insideLowestSize.x, outsideOffsetMax.x);
+                float rightOffsetMaxX = Mathf.Clamp(localPoint.x, insideOffsetMin.x + insideLowestSize.x, insideBoundary.offsetMax.x);
                 float rightOffsetMaxY = Mathf.Clamp(
                     prevOffsetMax.y + (rightOffsetMaxX - prevOffsetMax.x) / aspectRatio,
-                    outsideOffsetMin.y,
-                    outsideOffsetMax.y
+                    insideBoundary.offsetMin.y,
+                    insideBoundary.offsetMax.y
                 );
                 
-                if (rightOffsetMaxY >= outsideOffsetMax.y)
+                if (rightOffsetMaxY >= insideBoundary.offsetMax.y)
                 {
-                    rightOffsetMaxY = outsideOffsetMax.y;
+                    rightOffsetMaxY = insideBoundary.offsetMax.y;
                     rightOffsetMaxX = prevOffsetMax.x + (rightOffsetMaxY - prevOffsetMax.y) * aspectRatio;
                 }
                 
@@ -251,16 +260,16 @@ public class InsideWindow : MonoBehaviour, IDragHandler
                 break;
             
             case ResizeType.Up:
-                float upOffsetMaxY = Mathf.Clamp(localPoint.y, insideOffsetMin.y + insideLowestSize.y, outsideOffsetMax.y);
+                float upOffsetMaxY = Mathf.Clamp(localPoint.y, insideOffsetMin.y + insideLowestSize.y, insideBoundary.offsetMax.y);
                 float upOffsetMaxX = Mathf.Clamp(
                     prevOffsetMax.x + (upOffsetMaxY - prevOffsetMax.y) * aspectRatio,
                     insideOffsetMin.x + insideLowestSize.x,
-                    outsideOffsetMax.x
+                    insideBoundary.offsetMax.x
                 );
                 
-                if (upOffsetMaxX >= outsideOffsetMax.x)
+                if (upOffsetMaxX >= insideBoundary.offsetMax.x)
                 {
-                    upOffsetMaxX = outsideOffsetMax.x;
+                    upOffsetMaxX = insideBoundary.offsetMax.x;
                     upOffsetMaxY = prevOffsetMax.y + (upOffsetMaxX - prevOffsetMax.x) / aspectRatio;
                 }
                 
@@ -270,16 +279,16 @@ public class InsideWindow : MonoBehaviour, IDragHandler
             
             case ResizeType.Down:
             case ResizeType.LeftDown:
-                float downOffsetMinY = Mathf.Clamp(localPoint.y, outsideOffsetMin.y, insideOffsetMax.y - insideLowestSize.y);
+                float downOffsetMinY = Mathf.Clamp(localPoint.y, insideBoundary.offsetMin.y, insideOffsetMax.y - insideLowestSize.y);
                 float downOffsetMinX = Mathf.Clamp(
                     prevOffsetMin.x + (downOffsetMinY - prevOffsetMin.y) * aspectRatio,
-                    outsideOffsetMin.x,
+                    insideBoundary.offsetMin.x,
                     insideOffsetMax.x - insideLowestSize.x
                 );
                 
-                if (downOffsetMinX <= outsideOffsetMin.x)
+                if (downOffsetMinX <= insideBoundary.offsetMin.x)
                 {
-                    downOffsetMinX = outsideOffsetMin.x;
+                    downOffsetMinX = insideBoundary.offsetMin.x;
                     downOffsetMinY = prevOffsetMin.y + (downOffsetMinX - prevOffsetMin.x) / aspectRatio;
                 }
                 
@@ -288,16 +297,16 @@ public class InsideWindow : MonoBehaviour, IDragHandler
                 break;
             
             case ResizeType.RightDown:
-                float rightDownOffsetMinY = Mathf.Clamp(localPoint.y, outsideOffsetMin.y, insideOffsetMax.y - insideLowestSize.y);
+                float rightDownOffsetMinY = Mathf.Clamp(localPoint.y, insideBoundary.offsetMin.y, insideOffsetMax.y - insideLowestSize.y);
                 float rightDownOffsetMaxX = Mathf.Clamp(
                     prevOffsetMax.x - (rightDownOffsetMinY - prevOffsetMin.y) * aspectRatio,
                     insideOffsetMin.x + insideLowestSize.x,
-                    outsideOffsetMax.x
+                    insideBoundary.offsetMax.x
                 );
                 
-                if (rightDownOffsetMaxX >= outsideOffsetMax.x)
+                if (rightDownOffsetMaxX >= insideBoundary.offsetMax.x)
                 {
-                    rightDownOffsetMaxX = outsideOffsetMax.x;
+                    rightDownOffsetMaxX = insideBoundary.offsetMax.x;
                     rightDownOffsetMinY = prevOffsetMin.y + (prevOffsetMax.x - rightDownOffsetMaxX) / aspectRatio;
                 }
 
@@ -336,17 +345,15 @@ public class InsideWindow : MonoBehaviour, IDragHandler
     {
         if (resolutionManager.IsFullScreen) return;
         
-        Vector2 localPoint = outsideRect.InverseTransformPoint(eventData.position);
         Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
         Vector2 insideSize = resolutionManager.InsideSize;
-        Vector2 outsideSize = resolutionManager.OutsideSize;
         
-        float distanceX = (outsideSize.x - insideSize.x) * 0.5f;
-        float distanceY = (outsideSize.y - insideSize.y) * 0.5f;
+        float distanceX = (insideBoundary.sizeDelta.x - insideSize.x) * 0.5f;
+        float distanceY = (insideBoundary.sizeDelta.y - insideSize.y) * 0.5f;
         
         insideAnchoredPosition = new Vector2(
-            Mathf.Clamp(localPoint.x, -distanceX, distanceX),
-            Mathf.Clamp(localPoint.y, -distanceY, distanceY));
+            Mathf.Clamp(insideAnchoredPosition.x + eventData.delta.x, -distanceX, distanceX),
+            Mathf.Clamp(insideAnchoredPosition.y + eventData.delta.y, -distanceY, distanceY));
         
         resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
     }
