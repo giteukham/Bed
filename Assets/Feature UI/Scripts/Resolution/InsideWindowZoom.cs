@@ -9,10 +9,10 @@ public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
     
     private Vector2[] maxOffsets;
 
-    private void OnEnable()
+    private void Awake()
     {
         resolutionManagement = ResolutionManagement.Instance;
-        maxOffsets = resolutionManagement.ConvertResolutionToOffsets(Display.main.systemWidth, Display.main.systemHeight);
+        maxOffsets = resolutionManagement.ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
     }
     
     public void OnPointerClick(PointerEventData eventData)
@@ -20,7 +20,7 @@ public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
         if (InsideWindow.ZoomState == ZoomState.Minimize)
         {
             InsideWindow.ZoomState = ZoomState.Maximize;
-            InsideWindow.SaveOffset();
+            InsideWindow.SaveOffsets(resolutionManagement.InsideOffsetMin, resolutionManagement.InsideOffsetMax);
             resolutionManagement.ResizeByOffsets(maxOffsets[0], maxOffsets[1]);
         }
         else if (InsideWindow.ZoomState == ZoomState.Maximize)

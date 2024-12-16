@@ -87,20 +87,30 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     }
     
     public RectTransform OutsideRectTransform => outside;
-    public Vector2 OutsideAnchoredPosition => outside.anchoredPosition;
-    public Vector2 OutsideSize => outside.sizeDelta;
-    public Vector2 OutsideOffsetMin => outside.offsetMin;
-    public Vector2 OutsideOffsetMax => outside.offsetMax;
     
+    // IsFullScreen, IsFullScreenReady에서 get은 상관 없는데 set할 때 반드시 이 Property를 통해서 값을 변경해야 함
     public bool IsFullScreen
     {
         get => isFullScreen;
-        set
+        private set
         {
             if (isFullScreen != value)
             {
                 isFullScreen = value;
                 OnFullScreenSwitched?.Invoke(isFullScreen);
+            }
+        }
+    }
+    
+    public bool IsFullScreenReady
+    {
+        get => isFullScreenReady;
+        private set
+        {
+            if (isFullScreenReady != value)
+            {
+                isFullScreenReady = value;
+                OnFullScreenSwitched?.Invoke(isFullScreenReady);
             }
         }
     }
@@ -118,6 +128,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
+        Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel));
+        InsideWindow.SaveOffsets(offsets[0], offsets[1]);
         //불러온 변수값들을 이용해 이전에 쓰던 해상도 설정 반영
         //Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
 
@@ -222,7 +234,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void OnEnable()
     {
-        isFullScreenReady = isFullScreen;
+        IsFullScreenReady = isFullScreen;
         fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
         //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -298,12 +310,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         //프레임 드롭다운 아이템 저장된 값으로 변경
         frameRateDropdown.value = frameRateReady / 30 - 1;
         
-        insideWindow.OnRectTransformReSize.AddListener(OnSizeChangedHandler);
+        insideWindow.OnRectTransformReSize.AddListener(RectSizeChangedHandler);
     }
     
     private void OnDisable()
     {
-        insideWindow.OnRectTransformReSize.RemoveListener(OnSizeChangedHandler);
+        insideWindow.OnRectTransformReSize.RemoveListener(RectSizeChangedHandler);
     }
 
     private UnityEngine.UI.Button dropdownButton;
@@ -552,7 +564,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         //fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
 
-        isFullScreenReady = !isFullScreenReady;
+        IsFullScreenReady = !isFullScreenReady;
         fullScreenSwitch.sprite = isFullScreenReady ? checkImage : nonCheckImage;
         //insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
         //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
@@ -945,13 +957,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
-    public Vector2[] ConvertResolutionToOffsets(float width, float height)
+    public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution)
     {
-        float ratio = width / height;
-        Vector2 sizeDelta = new Vector2(previewMaxLength, previewMaxLength / ratio);
-
-        Vector2 offsetMin = new Vector2(-sizeDelta.x / 2, -sizeDelta.y / 2);
-        Vector2 offsetMax = new Vector2(sizeDelta.x / 2, sizeDelta.y / 2);
+        Vector2 size = ConvertResolutionToSize(resolution);
+        
+        Vector2 offsetMin = new Vector2(-size.x / 2, -size.y / 2);
+        Vector2 offsetMax = new Vector2(size.x / 2, size.y / 2);
+        
         return new[] { offsetMin, offsetMax };
     }
 
@@ -959,7 +971,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// Rect의 크기가 변경될 때 호출되는 이벤트 핸들러
     /// </summary>
     /// <param name="rect"></param>
-    private void OnSizeChangedHandler(RectTransform rect)
+    private void RectSizeChangedHandler(RectTransform rect)
     {
         Vector2Int resolution = ConvertSizeToResolution(rect.sizeDelta);
         UpdateResolutionText(resolution.x, resolution.y);

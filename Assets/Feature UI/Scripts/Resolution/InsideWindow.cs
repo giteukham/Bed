@@ -93,7 +93,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         insideRect = resolutionManager.InsideRectTransform;
         outsideRect = resolutionManager.OutsideRectTransform;
         
-        Vector2[] offsets = resolutionManager.ConvertResolutionToOffsets(Display.main.systemWidth, Display.main.systemHeight);
+        Vector2[] offsets = resolutionManager.ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
         insideBoundary.offsetMin = offsets[0];
         insideBoundary.offsetMax = offsets[1];
         
@@ -107,7 +107,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
         insideLowestSize = resolutionManager.ConvertResolutionToSize(insideLowestResolution);
         
-        FullScreenSwitchHandler(resolutionManager.IsFullScreen);
+        FullScreenSwitchHandler(resolutionManager.IsFullScreenReady);
     }
 
     private void OnDisable()
@@ -382,22 +382,24 @@ public class InsideWindow : MonoBehaviour, IDragHandler
         }
     }
     
-    private void FullScreenSwitchHandler(bool isFullScreen)
+    private void FullScreenSwitchHandler(bool isFullScreenReady)
     {
-        if (isFullScreen == false)
+        if (isFullScreenReady == false)
         {
+            //resolutionManager.ResizeByOffsets(savedOffsetMin, savedOffsetMax);
             SubscribeAllResizeEvent();
         }
         else
         {
+            //SaveOffsets(resolutionManager.InsideOffsetMin, resolutionManager.InsideOffsetMax);
             UnsubscribeAllResizeEvent();
         }
-        insideNavigationBar.SetNavigationBarActive(!isFullScreen);
+        insideNavigationBar.SetNavigationBarActive(!isFullScreenReady);
     }
     
-    public static void SaveOffset()
+    public static void SaveOffsets(Vector2 offsetMin, Vector2 offsetMax)
     {
-        savedOffsetMin = ResolutionManagement.Instance.InsideOffsetMin;
-        savedOffsetMax = ResolutionManagement.Instance.InsideOffsetMax;
+        savedOffsetMin = offsetMin;
+        savedOffsetMax = offsetMax;
     }
 }
