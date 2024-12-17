@@ -158,6 +158,18 @@ public class SaveManager : MonoSingleton<SaveManager>
         return rect;
     }
 
+    //BlinkEffect StartPoint 관련
+    public void SaveStartPoint(float value)
+    {
+         PlayerPrefs.SetFloat("BlinkEffectStartPoint", value);
+         PlayerPrefs.Save();
+    }
+
+    public float LoadStartPoint()
+    {
+        return PlayerPrefs.GetFloat("BlinkEffectStartPoint", BlinkEffect.BLINK_START_POINT_INIT);
+    }
+
     //프레임 레이트 관련
     public void SaveFrameRate(int value)
     {

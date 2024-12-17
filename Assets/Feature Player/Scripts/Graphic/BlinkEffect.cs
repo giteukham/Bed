@@ -11,6 +11,7 @@ public class BlinkEffect : MonoBehaviour
     private static Material blinkMaterial;
     private Shader shader;
     private CommandBuffer commandBuffer;
+    public static float BLINK_START_POINT_INIT = 0.81f;
     
     public static float Blink 
     {
@@ -22,6 +23,18 @@ public class BlinkEffect : MonoBehaviour
         {
             blinkMaterial.SetFloat("_Blink", value);
         } 
+    }
+
+    public static float StartPoint
+    {
+        get
+        {
+            return blinkMaterial.GetFloat("_StartBlink");
+        }
+        set
+        {
+            blinkMaterial.SetFloat("_StartBlink", value);
+        }
     }
     
     /// <summary>
