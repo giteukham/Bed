@@ -20,11 +20,6 @@ public class SaveManager : MonoSingleton<SaveManager>
     /// </summary>
     [SerializeField] private Camera cam;
 
-    //아래는 디버그용 변수들
-    [SerializeField] private Text screenText;
-    [SerializeField] private Text testText2;
-    [SerializeField] private GameObject resolutionManagement;
-
     //게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
     private void Awake()
     {
@@ -68,13 +63,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         {
             print("j 누름");
             GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
-        }
-
-        if (resolutionManagement.activeSelf == false)
-        {
-            testText2.text = Application.targetFrameRate + "";
-            //screenText.text = Screen.width + " " + Screen.height;
-            //screenText.text = Display.main.systemWidth + " " + Display.main.systemHeight;
         }
 
     }
