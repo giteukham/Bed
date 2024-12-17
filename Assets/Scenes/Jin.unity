@@ -11749,7 +11749,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 5
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!222 &1679213902
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12574,9 +12574,7 @@ MonoBehaviour:
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
-  m_AfterStackBundles:
-  - assemblyQualifiedName: Bed.PostProcessing.CustomVignette, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+  m_AfterStackBundles: []
 --- !u!114 &1732393640
 MonoBehaviour:
   m_ObjectHideFlags: 0
