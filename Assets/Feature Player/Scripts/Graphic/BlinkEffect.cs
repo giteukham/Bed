@@ -39,12 +39,12 @@ public class BlinkEffect : MonoBehaviour
         commandBuffer.Blit(temp, BuiltinRenderTextureType.CameraTarget, blinkMat);
         commandBuffer.ReleaseTemporaryRT(temp);
         
-        camera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, commandBuffer);
+        camera.AddCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
     }
 
     private void OnApplicationQuit()
     {
-        camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, commandBuffer);
-        blinkMaterial.SetFloat("_Blink", 0.3f);
+        camera.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
+        blinkMaterial.SetFloat("_Blink", 0.001f);
     }
 }

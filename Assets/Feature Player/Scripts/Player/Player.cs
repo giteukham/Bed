@@ -1,4 +1,3 @@
-using Bed.PostProcessing;
 using Cinemachine;
 using Cinemachine.PostFX;
 using System;
