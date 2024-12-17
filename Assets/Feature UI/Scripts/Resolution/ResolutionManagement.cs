@@ -116,6 +116,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             }
         }
     }
+    
+    public int PreviewMaxLength => previewMaxLength;
 
     #endregion
 
@@ -1019,6 +1021,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     public void DoZoom()
     {
+        if (!isWindowedScreenReady) return;
+        
         if (insideWindow.ZoomState == ZoomState.Minimize)
         {
             insideWindow.ZoomState = ZoomState.Maximize;
@@ -1038,6 +1042,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <param name="eventData"></param>
     public void DoZoom(PointerEventData eventData)
     {
+        if (!isWindowedScreenReady) return;
+        
         if (eventData.clickCount == 2 && insideWindow.ZoomState == ZoomState.Minimize)
         {
             insideWindow.ZoomState = ZoomState.Maximize;
@@ -1051,7 +1057,15 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
     }
     
+    public void SubscribeToInsideSizeChangedEvent(UnityAction<RectTransform> action)
+    {
+        insideWindow.OnRectTransformReSize.AddListener(action);
+    }
     
+    public void UnsubscribeFromInsideSizeChangedEvent(UnityAction<RectTransform> action)
+    {
+        insideWindow.OnRectTransformReSize.RemoveListener(action);
+    }
     
     public Vector2Int GetLowestResolution() => new (Display.main.systemWidth / 4, Display.main.systemHeight / 4);
 

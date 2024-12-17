@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
+public class InsideWindowZoomButton : MonoBehaviour, IPointerClickHandler
 {
     private ResolutionManagement resolutionManagement;
     
@@ -11,7 +11,7 @@ public class InsideWindowZoom : MonoBehaviour, IPointerClickHandler
     {
         resolutionManagement = ResolutionManagement.Instance;
     }
-    
+
     public void OnPointerClick(PointerEventData eventData)
     {
         resolutionManagement.DoZoom();

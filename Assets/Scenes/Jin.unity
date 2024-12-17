@@ -11923,7 +11923,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.2
+  m_PixelsPerUnitMultiplier: 5
 --- !u!222 &1679213902
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12934,6 +12934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f4cc8961bcf487ea7d47f22e7e9b6ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  previewPanel: {fileID: 1131414440}
   resizeBounds:
     left: {fileID: 675482464}
     right: {fileID: 111792890}
@@ -12946,7 +12947,7 @@ MonoBehaviour:
   insideBoundary: {fileID: 1647812603}
   previewMaskMaterial: {fileID: 2100000, guid: bce99f86145911343b8f4cca38fd27e2, type: 2}
   insideNavigationBar: {fileID: 1679213903}
-  insideWindowZoom: {fileID: 1497613312}
+  insideWindowZoomButton: {fileID: 1497613312}
   OnRectTransformReSize:
     m_PersistentCalls:
       m_Calls: []
@@ -16453,7 +16454,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &2716735306402296775
 CanvasRenderer:
   m_ObjectHideFlags: 0

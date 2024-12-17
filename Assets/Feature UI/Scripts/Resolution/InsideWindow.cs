@@ -45,8 +45,11 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
 {
     private ResolutionManagement resolutionManager;
     private RectTransform insideRect;
-    
+
     [Header("Inside 내부 UI")]
+    
+    [SerializeField]
+    private Transform previewPanel;
     
     [SerializeField]
     [Tooltip("드래그 가능한 영역")]
@@ -59,7 +62,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
     [Header("기타 설정")]
     [SerializeField] private Material previewMaskMaterial;
     [SerializeField] private InsideNavigationBar insideNavigationBar;
-    [SerializeField] private InsideWindowZoom insideWindowZoom;
+    [FormerlySerializedAs("insideWindowZoom")] [SerializeField] private InsideWindowZoomButton insideWindowZoomButton;
     
     private Dictionary<ResizeType, ResizeEvent> resizeEvents = new Dictionary<ResizeType, ResizeEvent>();
     private ResizeType currentResizeType;
@@ -72,6 +75,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
     private Vector2 prevOffsetMin, prevOffsetMax;
     
     private Vector2 insideLowestSize;
+    private float previewPanelScale;
 
     private readonly float aspectRatio = 1.777778f;
 
@@ -95,11 +99,13 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
         insideBoundary.offsetMin = offsets[0];
         insideBoundary.offsetMax = offsets[1];
         
+        previewPanelScale = previewPanel.transform.localScale.x;
         AddAllResizeEvent();
     }
 
     private void OnEnable()
     {
+        ToggleResizeEvent(resolutionManager.IsWindowedScreenReady);
         resolutionManager.OnFullScreenSwitched.AddListener(FullScreenSwitchHandler);
         
         Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
@@ -344,18 +350,18 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
     /// <param name="eventData"></param>
     public void OnDrag(PointerEventData eventData)
     {
-        if (resolutionManager.IsWindowedScreen) return;
+        if (!resolutionManager.IsWindowedScreenReady) return;
         
         Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
         Vector2 insideSize = resolutionManager.InsideSize;
         
         float distanceX = (insideBoundary.sizeDelta.x - insideSize.x) * 0.5f;
         float distanceY = (insideBoundary.sizeDelta.y - insideSize.y) * 0.5f;
-        
+
         insideAnchoredPosition = new Vector2(
-            Mathf.Clamp(insideAnchoredPosition.x + eventData.delta.x, -distanceX, distanceX),
-            Mathf.Clamp(insideAnchoredPosition.y + eventData.delta.y, -distanceY, distanceY));
-        
+            Mathf.Clamp(insideAnchoredPosition.x + (eventData.delta.x / previewPanelScale), -distanceX, distanceX),
+            Mathf.Clamp(insideAnchoredPosition.y + (eventData.delta.y / previewPanelScale), -distanceY, distanceY));
+
         resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
     }
     
@@ -383,17 +389,20 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
         }
     }
     
-    private void FullScreenSwitchHandler(bool isFullScreenReady)
+    private void FullScreenSwitchHandler(bool isWindowChecked)
     {
-        insideNavigationBar.SetNavigationBarActive(!isFullScreenReady);
-        if (isFullScreenReady == false)
+        insideNavigationBar.SetNavigationBarActive(isWindowChecked);
+        ToggleResizeEvent(isWindowChecked);
+    }
+    
+    private void ToggleResizeEvent(bool isWindowChecked)
+    {
+        if (isWindowChecked == true)
         {
-            //resolutionManager.ResizeByOffsets(savedOffsetMin, savedOffsetMax);
             SubscribeAllResizeEvent();
         }
         else
         {
-            //SaveOffsets(resolutionManager.InsideOffsetMin, resolutionManager.InsideOffsetMax);
             UnsubscribeAllResizeEvent();
         }
     }
