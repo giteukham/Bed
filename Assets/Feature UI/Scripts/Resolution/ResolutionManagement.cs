@@ -105,7 +105,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     }
     
     public int PreviewMaxLength => previewMaxLength;
-
     #endregion
 
     private void Awake()
@@ -228,6 +227,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         frameRateDropdown.value = frameRateReady / 30 - 1;
         
         insideWindow.OnRectTransformReSize.AddListener(RectSizeChangedHandler);
+
+        BlinkEffect.StartPoint = SaveManager.Instance.LoadStartPoint();
     }
     
     private void OnDisable()
@@ -320,6 +321,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         if (checkedValue == CRITERIA_NUM)
         {
             cam.rect = rect;
+            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
             return;
         }
         //목표 비율의 '가로 비율'이 16 : 9보다 클때
@@ -337,6 +339,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
             //1 - rect.width를 한 뒤 2를 나눈 값을 rect.x에 대입(밀린 화면 중앙으로 이동)
             rect.x = (1 - rect.width) / 2;
+            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
         }
         //목표 비율의 '세로 비율'이 16 : 9보다 클때
         else if (checkedValue < CRITERIA_NUM)
@@ -353,12 +356,16 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
             //1 - rect.height를 한 뒤 2를 나눈 값을 rect.y에 대입(밀린 화면 중앙으로 이동)
             rect.y = (1 - rect.height) / 2;
+
+            float startPointConversionValue = Mathf.Lerp(BlinkEffect.BLINK_START_POINT_INIT + 0.13f, BlinkEffect.BLINK_START_POINT_INIT, (checkedValue - 1f) / (1.77f - 1f));
+            BlinkEffect.StartPoint = startPointConversionValue;
         }
 
         //카메라에 최종적용
         cam.rect = rect;
         //camRect 저장
         SaveManager.Instance.SaveCamRect(rect.x, rect.y, rect.width, rect.height);
+        SaveManager.Instance.SaveStartPoint(BlinkEffect.StartPoint);
     }
 
     //해상도 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
