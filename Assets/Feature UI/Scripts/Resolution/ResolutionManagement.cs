@@ -134,6 +134,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 break;
         }
 
+        //저장된 프레임 레이트 적용
+        frameRateReady = SaveManager.Instance.LoadFrameRate();
+        //프레임 드롭다운 아이템 저장된 값으로 변경
+        frameRateDropdown.value = frameRateReady / 30 - 1;
+
+        BlinkEffect.StartPoint = SaveManager.Instance.LoadStartPoint();
+
         hdList.Clear();
         currentList.Clear();
 
@@ -221,14 +228,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             inputFieldHeight.text = $"{nowHeightPixel}";
             ApplyInsideWindow();
         }
-        //저장된 프레임 레이트 적용
-        frameRateReady = SaveManager.Instance.LoadFrameRate();
-        //프레임 드롭다운 아이템 저장된 값으로 변경
-        frameRateDropdown.value = frameRateReady / 30 - 1;
         
         insideWindow.OnRectTransformReSize.AddListener(RectSizeChangedHandler);
-
-        BlinkEffect.StartPoint = SaveManager.Instance.LoadStartPoint();
     }
     
     private void OnDisable()
