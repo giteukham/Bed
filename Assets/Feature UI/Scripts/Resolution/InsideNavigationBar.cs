@@ -16,7 +16,7 @@ public class InsideNavigationBar : MonoBehaviour, IPointerClickHandler
 
     private void OnEnable()
     {
-        SetNavigationBarActive(!resolutionManagement.IsFullScreenReady);
+        SetNavigationBarActive(!resolutionManagement.IsWindowedScreenReady);
     }
 
     public void OnPointerClick(PointerEventData eventData)

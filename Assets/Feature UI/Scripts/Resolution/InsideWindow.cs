@@ -344,7 +344,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
     /// <param name="eventData"></param>
     public void OnDrag(PointerEventData eventData)
     {
-        if (resolutionManager.IsFullScreen) return;
+        if (resolutionManager.IsWindowedScreen) return;
         
         Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
         Vector2 insideSize = resolutionManager.InsideSize;

@@ -140,14 +140,14 @@ public class SaveManager : MonoSingleton<SaveManager>
     }
 
     //화면 풀스크린 여부 관련
-    public void SaveIsFullScreen(bool value)
+    public void SaveIsWindowedScreen(bool value)
     {
-        PlayerPrefs.SetInt("IsFullScreen", Convert.ToInt32(value));
+        PlayerPrefs.SetInt("IsWindowedScreen", Convert.ToInt32(value));
         PlayerPrefs.Save();
     }
-    public bool LoadIsFullScreen()
+    public bool LoadIsWindowedScreen()
     {
-        return Convert.ToBoolean(PlayerPrefs.GetInt("IsFullScreen", 1));
+        return Convert.ToBoolean(PlayerPrefs.GetInt("IsWindowedScreen", 1));
     }
 
     //camRect 관련

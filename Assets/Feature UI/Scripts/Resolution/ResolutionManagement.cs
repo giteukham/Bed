@@ -31,8 +31,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     
     [SerializeField] private InsideWindow insideWindow;
 
-    bool isFullScreen = true;
-    bool isFullScreenReady = true;
+    bool isWindowedScreen = true;
+    bool isWindowedScreenReady = true;
     int frameRateReady = 60;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
@@ -90,29 +90,29 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     
     public RectTransform OutsideRectTransform => outside;
     
-    // IsFullScreen, IsFullScreenReady에서 get은 상관 없는데 set할 때 반드시 이 Property를 통해서 값을 변경해야 함
-    public bool IsFullScreen
+    // IsWindowedScreen, IsFullScreenReady에서 get은 상관 없는데 set할 때 반드시 이 Property를 통해서 값을 변경해야 함
+    public bool IsWindowedScreen
     {
-        get => isFullScreen;
+        get => isWindowedScreen;
         private set
         {
-            if (isFullScreen != value)
+            if (isWindowedScreen != value)
             {
-                isFullScreen = value;
-                OnFullScreenSwitched?.Invoke(isFullScreen);
+                isWindowedScreen = value;
+                OnFullScreenSwitched?.Invoke(isWindowedScreen);
             }
         }
     }
     
-    public bool IsFullScreenReady
+    public bool IsWindowedScreenReady
     {
-        get => isFullScreenReady;
+        get => isWindowedScreenReady;
         private set
         {
-            if (isFullScreenReady != value)
+            if (isWindowedScreenReady != value)
             {
-                isFullScreenReady = value;
-                OnFullScreenSwitched?.Invoke(isFullScreenReady);
+                isWindowedScreenReady = value;
+                OnFullScreenSwitched?.Invoke(isWindowedScreenReady);
             }
         }
     }
@@ -122,18 +122,18 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     private void Awake()
     {
         previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
-        //저장된 풀스크린 여부 불러와서 isFullScreen 변수에 적용
-        IsFullScreen = SaveManager.Instance.LoadIsFullScreen();
-        /*isFullScreenReady = isFullScreen;
-        fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
-        insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;*/
+        //저장된 풀스크린 여부 불러와서 isWindowedScreen 변수에 적용
+        IsWindowedScreen = SaveManager.Instance.LoadIsWindowedScreen();
+        /*isWindowedScreenReady = isWindowedScreen;
+        fullScreenSwitch.sprite = isWindowedScreen ? checkImage : nonCheckImage;
+        insideImage.sprite = isWindowedScreen ? fullscreenInside : windowedInside;*/
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
         Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel));
         insideWindow.SaveOffsets(offsets[0], offsets[1]);
         //불러온 변수값들을 이용해 이전에 쓰던 해상도 설정 반영
-        //Screen.SetResolution(nowWidthPixel, nowHeightPixel, isFullScreen);
+        //Screen.SetResolution(nowWidthPixel, nowHeightPixel, isWindowedScreen);
 
         //print(Display.main.systemWidth + " : " + Display.main.systemHeight);
 
@@ -237,14 +237,14 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void OnEnable()
     {
-        IsFullScreenReady = isFullScreen;
-        fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
-        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
-        //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        IsWindowedScreenReady = isWindowedScreen;
+        fullScreenSwitch.sprite = isWindowedScreen ? checkImage : nonCheckImage;
+        //insideImage.sprite = isWindowedScreen ? fullscreenInside : windowedInside;
+        //inside.sprite = isWindowedScreen ? fullscreenInside : windowedInside;
 
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
-        RedefineDropdown(isFullScreen);
+        RedefineDropdown(isWindowedScreen);
 
         print($"마지막 오브젝트 : {lastApplyObject.name}");
 
@@ -379,12 +379,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         //list.Insert(temp, new Vector2(item.width, item.height));
     }
 
-    private void RedefineDropdown(bool checkFullScreen)
+    private void RedefineDropdown(bool checkWindowedScreen)
     {
         //CRITERIA_NUM = 16f / 9f;
 
         //16:9보다 가로가 더 긴 모니터의 경우 16:9 해상도만 나옴
-        if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight || checkFullScreen == false)
+        if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight || checkWindowedScreen == true)
         {
             resolutiondropdown.ClearOptions();
 
@@ -399,7 +399,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
             nowList = hdList;
         }
-        else if (checkFullScreen == true)
+        else if (checkWindowedScreen == false)
         {
             //드롭다운 아이템 모두 제거
             resolutiondropdown.ClearOptions();
@@ -425,7 +425,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     //해상도 설정 메소드
     private IEnumerator ResolutionWindow(float width, float height)
     {
-        Screen.SetResolution((int)width, (int)height, isFullScreen);
+        Screen.SetResolution((int)width, (int)height, !isWindowedScreen);
 
         //SetResolution하고 바로 RescaleWindow 실행하면 적용 제대로 안되는 버그 있어서 1프레임 쉬었다 시작
         yield return null;
@@ -515,7 +515,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
         //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
-        if (isFullScreenReady == true && (CRITERIA_NUM > (float)Display.main.systemWidth / Display.main.systemHeight))
+        if (isWindowedScreenReady == false && (CRITERIA_NUM > (float)Display.main.systemWidth / Display.main.systemHeight))
         {
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
@@ -546,7 +546,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         //리스트값으로 매개변수 받아서 넣어주면 될듯
         //'전체화면'이면서 기준값 1.77 '미만'일때 - currentResolutions
-        if (isFullScreen == true && (CRITERIA_NUM > (float)Display.main.systemWidth / Display.main.systemHeight))
+        if (isWindowedScreen == false && (CRITERIA_NUM > (float)Display.main.systemWidth / Display.main.systemHeight))
         {
             StartCoroutine(ResolutionWindow(currentList[value].x, currentList[value].y));
             SaveManager.Instance.SaveLastApplyObject(0);
@@ -562,15 +562,15 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     //해상도 프리뷰, 체크버튼 모양만 건드림(체크 버튼 누를때 자동호출)
     public void ReadyFullScreenSwitch()
     {
-        //isFullScreen = !isFullScreen;
-        //SaveManager.Instance.SaveIsFullScreen(isFullScreen);
-        //fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
-        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        //isWindowedScreen = !isWindowedScreen;
+        //SaveManager.Instance.SaveIsWindowedScreen(isWindowedScreen);
+        //fullScreenSwitch.sprite = isWindowedScreen ? checkImage : nonCheckImage;
+        //insideImage.sprite = isWindowedScreen ? fullscreenInside : windowedInside;
 
-        IsFullScreenReady = !isFullScreenReady;
-        fullScreenSwitch.sprite = isFullScreenReady ? checkImage : nonCheckImage;
-        //insideImage.sprite = isFullScreenReady ? fullscreenInside : windowedInside;
-        //inside.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        IsWindowedScreenReady = !isWindowedScreenReady;
+        fullScreenSwitch.sprite = isWindowedScreenReady ? checkImage : nonCheckImage;
+        //insideImage.sprite = isWindowedScreenReady ? fullscreenInside : windowedInside;
+        //inside.sprite = isWindowedScreen ? fullscreenInside : windowedInside;
 
         /*if (fullScreenSwitch.sprite == checkImage)
         {
@@ -584,8 +584,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }*/
 
         //해상도 메뉴 목록 재정의
-        //isFullScreenReady = !isFullScreenReady;
-        RedefineDropdown(isFullScreenReady);
+        //isWindowedScreenReady = !isWindowedScreenReady;
+        RedefineDropdown(isWindowedScreenReady);
 
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용(제일 큰해상도로 변경)
         resolutiondropdown.value = 0;
@@ -601,14 +601,14 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     //확인버튼 누를시 풀스크린 여부 적용
     private void ApplyFullScreenSwitch()
     {
-        //isFullScreen = !isFullScreen;
-        IsFullScreen = isFullScreenReady;
-        SaveManager.Instance.SaveIsFullScreen(isFullScreen);
-        //fullScreenSwitch.sprite = isFullScreen ? checkImage : nonCheckImage;
-        //insideImage.sprite = isFullScreen ? fullscreenInside : windowedInside;
+        //isWindowedScreen = !isWindowedScreen;
+        IsWindowedScreen = isWindowedScreenReady;
+        SaveManager.Instance.SaveIsWindowedScreen(isWindowedScreen);
+        //fullScreenSwitch.sprite = isWindowedScreen ? checkImage : nonCheckImage;
+        //insideImage.sprite = isWindowedScreen ? fullscreenInside : windowedInside;
 
         //해상도 메뉴 목록 재정의
-        //RedefineDropdown(!isFullScreen);
+        //RedefineDropdown(!isWindowedScreen);
 
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용
         //resolutiondropdown.value = nowList.Count - 1;
@@ -682,7 +682,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 if (int.TryParse(result[0], out widthNum) && int.TryParse(result[1], out heightNum))
                 {
                     //창모드인지 전체화면인지 확인
-                    if (isFullScreenReady == true)  //전체화면
+                    if (isWindowedScreenReady == false)  //전체화면
                     {
                         if (widthNum > Display.main.systemWidth)    //현재 모니터가 허용하는 최대해상도 넘을시
                         {
@@ -772,13 +772,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             if (int.TryParse(result, out widthNum))  //입력값이 숫자인지 확인
             {
                 //전체화면 여부에 따라서 최대값 숫자 정함
-                if (isFullScreenReady == true)
+                if (isWindowedScreenReady == false)
                 {
                     maxNum = Display.main.systemWidth;
                     minNum = Display.main.systemWidth / 5;
                     ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
                 }
-                else if (isFullScreenReady == false)
+                else if (isWindowedScreenReady == true)
                 {
                     maxNum = 1920;
                     minNum = 1920 / 5;
@@ -810,13 +810,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             {
 
                 //전체화면 여부에 따라서 최대값 숫자 정함
-                if (isFullScreenReady == true)
+                if (isWindowedScreenReady == false)
                 {
                     maxNum = Display.main.systemHeight;
                     minNum = Display.main.systemHeight / 5;
                     ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
                 }
-                else if (isFullScreenReady == false)
+                else if (isWindowedScreenReady == true)
                 {
                     maxNum = 1080;
                     minNum = 1080 / 5;
