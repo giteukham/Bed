@@ -777,13 +777,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 if (isWindowedScreenReady == false)
                 {
                     maxNum = Display.main.systemWidth;
-                    minNum = Display.main.systemWidth / 5;
+                    minNum = Display.main.systemWidth / 4;
                     ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
                 }
                 else if (isWindowedScreenReady == true)
                 {
                     maxNum = 1920;
-                    minNum = 1920 / 5;
+                    minNum = 1920 / 4;
                     ratio = CRITERIA_NUM;
                 }
 
@@ -815,13 +815,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 if (isWindowedScreenReady == false)
                 {
                     maxNum = Display.main.systemHeight;
-                    minNum = Display.main.systemHeight / 5;
+                    minNum = Display.main.systemHeight / 4;
                     ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
                 }
                 else if (isWindowedScreenReady == true)
                 {
                     maxNum = 1080;
-                    minNum = 1080 / 5;
+                    minNum = 1080 / 4;
                     ratio = CRITERIA_NUM;
                 }
 
