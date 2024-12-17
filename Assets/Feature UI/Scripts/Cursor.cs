@@ -19,7 +19,7 @@ namespace Bed.UI
     
     public class Cursor : MonoBehaviour
     {
-        private static Cursor _instance;
+        private static Cursor instance;
         
         [Header("커서 텍스쳐")]
         public Texture2D diagonalResize1;
@@ -31,7 +31,7 @@ namespace Bed.UI
         
         private void Awake()
         {
-            _instance = this;
+            instance = this;
         }
         
         public static void SetCursor(CursorType cursorType)
@@ -42,16 +42,16 @@ namespace Bed.UI
                     UnityEngine.Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                     break;
                 case CursorType.DiagonalResize1:
-                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize1, new Vector2(12, 12), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(instance.diagonalResize1, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 case CursorType.DiagonalResize2:
-                    UnityEngine.Cursor.SetCursor(_instance.diagonalResize2, new Vector2(12, 12), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(instance.diagonalResize2, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 case CursorType.HorizontalResize:
-                    UnityEngine.Cursor.SetCursor(_instance.horizontalResize, new Vector2(12, 12), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(instance.horizontalResize, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 case CursorType.VerticalResize:
-                    UnityEngine.Cursor.SetCursor(_instance.verticalResize, new Vector2(12, 12), CursorMode.Auto);
+                    UnityEngine.Cursor.SetCursor(instance.verticalResize, new Vector2(12, 12), CursorMode.Auto);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

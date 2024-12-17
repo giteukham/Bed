@@ -114,6 +114,8 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
 
     private void OnDisable()
     {
+        isResizing = false;
+        Cursor.SetCursor(CursorType.Normal);
         resolutionManager.OnFullScreenSwitched.RemoveListener(FullScreenSwitchHandler);
     }
 
