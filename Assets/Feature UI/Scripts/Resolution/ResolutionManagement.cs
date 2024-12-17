@@ -208,11 +208,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
             if (lastApplyObject == inputFieldWidth.gameObject)
             {
-                NewReadyInputField(0);
+                ReadyInputField(0);
             }
             else
             {
-                NewReadyInputField(1);
+                ReadyInputField(1);
             }
             ApplyInputField();
         }
@@ -466,7 +466,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     }
 
     //매개변수 0은 inputFieldWidth, 1은 inputFieldHeight
-    public void NewReadyInputField(int num)
+    public void ReadyInputField(int num)
     {
         string result = "";
         int widthNum = 0;
@@ -490,8 +490,10 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 }
                 else if (isWindowedScreenReady == true)
                 {
-                    maxNum = 1920;
-                    minNum = 1920 / 4;
+                    //maxNum = 1920;
+                    //minNum = 1920 / 4;
+                    maxNum = (int)hdList[hdList.Count - 1].x;
+                    minNum = (int)hdList[hdList.Count - 1].x / 4;
                     ratio = CRITERIA_NUM;
                 }
 
@@ -527,8 +529,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 }
                 else if (isWindowedScreenReady == true)
                 {
-                    maxNum = 1080;
-                    minNum = 1080 / 4;
+                    //maxNum = 1080;
+                    //minNum = 1080 / 4;
+                    maxNum = (int)hdList[hdList.Count - 1].y;
+                    minNum = (int)hdList[hdList.Count - 1].y / 4;
+
                     ratio = CRITERIA_NUM;
                 }
 
