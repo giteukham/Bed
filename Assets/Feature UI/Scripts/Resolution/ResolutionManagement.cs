@@ -577,6 +577,10 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void ApplyInsideWindow()
     {
+        if (inputFieldWidth.text == "ERROR" || inputFieldHeight.text == "ERROR")
+        {
+            return;
+        }
         StartCoroutine(ResolutionWindow(float.Parse(inputFieldWidth.text), float.Parse(inputFieldHeight.text)));
         ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
         ResizePreviewImage(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text), inside);
