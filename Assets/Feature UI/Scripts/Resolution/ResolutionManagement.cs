@@ -44,7 +44,13 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     List<Vector2> currentList = new List<Vector2>();
 
     List<Vector2> nowList = new List<Vector2>();
-    
+
+    List<string> frameList = new List<string>
+    {
+            "30",
+            "60"
+    };
+
     public UnityEvent<bool> OnFullScreenSwitched;
     
     private Vector2[] maxResolutionToOffsets = new Vector2[2];
@@ -136,8 +142,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         //저장된 프레임 레이트 적용
         frameRateReady = SaveManager.Instance.LoadFrameRate();
-        //프레임 드롭다운 아이템 저장된 값으로 변경
-        frameRateDropdown.value = frameRateReady / 30 - 1;
 
         BlinkEffect.StartPoint = SaveManager.Instance.LoadStartPoint();
 
@@ -228,7 +232,10 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             inputFieldHeight.text = $"{nowHeightPixel}";
             ApplyInsideWindow();
         }
-        
+
+        //프레임 드롭다운 아이템 저장된 값으로 변경
+        frameRateDropdown.value = frameRateReady / 30 - 1;
+
         insideWindow.OnRectTransformReSize.AddListener(RectSizeChangedHandler);
     }
     
