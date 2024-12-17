@@ -35,7 +35,7 @@ public class InsideNavigationBar : MonoBehaviour, IPointerClickHandler
     private void OnInsideSizeChanged(RectTransform insideRect)
     {
         float normalizedWidth = Mathf.InverseLerp(insideMaxWidth, 0f, insideRect.rect.width);
-        ResizePixelPerUnit(normalizedWidth);
+        //ResizePixelPerUnit(normalizedWidth);
     }
 
     private void ResizePixelPerUnit(float normalizedWidth)
