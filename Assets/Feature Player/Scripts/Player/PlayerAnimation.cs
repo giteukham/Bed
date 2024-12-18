@@ -18,6 +18,9 @@ public class PlayerAnimation : MonoBehaviour
         TryGetComponent(out playerAnimator);
         blanketAnimator = blanket.GetComponent<Animator>();
         blanketPosition = blanket.transform.position;
+
+        playerAnimator.keepAnimatorStateOnDisable = true;
+        blanketAnimator.keepAnimatorStateOnDisable = true;
     }
     
     public static void PlayAnimation(string triggerName)

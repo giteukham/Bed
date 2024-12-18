@@ -99,16 +99,6 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt("MouseHorizontalReverse", 0));
     }
-    public void SaveXBodyReverse(int value)
-    {
-        InputSystem.xBodyReverse = value;
-        PlayerPrefs.SetInt("XBodyReverse", value);
-        PlayerPrefs.Save();
-    }
-    public int LoadXBodyReverse()
-    {
-        return PlayerPrefs.GetInt("XBodyReverse", 1);
-    }
 
     //화면 해상도 관련
     public void SaveResolution(int value1, int value2)
@@ -193,5 +183,16 @@ public class SaveManager : MonoSingleton<SaveManager>
     public int LoadLastApplyObject()
     {
         return PlayerPrefs.GetInt("SaveLastApplyObject", 0);
+    }
+    
+    public void SaveDeadZoneValue(float value)
+    {
+        PlayerPrefs.SetFloat("DeadZoneValue", value);
+        PlayerPrefs.Save();
+    }
+    
+    public float LoadDeadZoneValue()
+    {
+        return PlayerPrefs.GetFloat("DeadZoneValue", 0.1f);
     }
 }

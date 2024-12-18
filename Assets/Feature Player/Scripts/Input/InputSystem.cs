@@ -1,48 +1,20 @@
 using System;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputSystem : MonoSingleton<InputSystem>
-{
-    private static float mouseDeltaX;
-    private static float mouseDeltaY;
-    public static float MouseDeltaX
-    {
-        get { return mouseDeltaX; }
-        private set { mouseDeltaX = value; }
-    }
 
-    public static float MouseDeltaY
-    {
-        get { return mouseDeltaY; }
-        private set { mouseDeltaY = value; }
-    }
-    public static int xBodyReverse;
+/// <summary>
+/// 수정 날짜 : 2024-11-18 최무령
+/// </summary>
+public class InputSystem : MonoBehaviour
+{
 
     #region Mouse Events
     public static event Action OnMouseWheelClickEvent; 
     public static event Action<int> OnMouseScrollEvent;
     public event Action OnMouseClickEvent;   
     #endregion
-
-    private void OnMouseDelta(InputValue value)
-    {
-        if (PlayerConstant.isPlayerStop) 
-        {
-            MouseDeltaX = 0;
-            MouseDeltaY = 0;
-        }
-        if ( PlayerConstant.isParalysis ) 
-        {
-            MouseDeltaX = value.Get<Vector2>().x * 0.02f;
-            MouseDeltaY = value.Get<Vector2>().y * 0.02f;
-        }
-        else
-        {
-            MouseDeltaX = value.Get<Vector2>().x;
-            MouseDeltaY = value.Get<Vector2>().y;
-        }
-    }
 
     private void OnMouseScroll(InputValue value)
     {

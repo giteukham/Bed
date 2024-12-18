@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +20,35 @@ public class UIManager : MonoSingleton<UIManager>
         ActivateUICanvas();
 
         if (Input.GetMouseButton(1)) ShowMenuScreen();
+    }
+
+    private void Awake()
+    {
+        DeActivateActivatedScreen();
+    }
+
+    /// <summary>
+    /// 처음 시작할 때 메뉴 안에 있는 화면을 비활성화 시키는 함수
+    /// 11-22 최무령
+    /// </summary>
+    private void DeActivateActivatedScreen()
+    {
+        if (menuScreen.activeSelf)
+        {
+            menuScreen.SetActive(false);
+        }
+        if (soundSettingsScreen.activeSelf)
+        {
+            soundSettingsScreen.SetActive(false);
+        }
+        if (resolutionSettingsScreen.activeSelf)
+        {
+            resolutionSettingsScreen.SetActive(false);
+        }
+        if (mouseSettingsScreen.activeSelf)
+        {
+            Debug.LogError("마우스 설정 스크린은 게임 시작 전에 비활성화 되어야 합니다.");
+        }
     }
 
     private void OnEnable()
@@ -57,6 +87,9 @@ public class UIManager : MonoSingleton<UIManager>
         ShowScreen(mouseSettingsScreen);
     }
 
+    /// <summary>
+    /// 수정 날짜 : 2024-11-14 최무령
+    /// </summary>
     void ActivateUICanvas()
     {
         if (PlayerConstant.isPlayerStop == true)
@@ -68,7 +101,7 @@ public class UIManager : MonoSingleton<UIManager>
                 Cursor.lockState = CursorLockMode.None;
             }
         }
-        if (PlayerConstant.isPlayerStop == false)
+        if (PlayerConstant.isPlayerStop == false && mouseSettingsScreen.activeSelf == false)
         {
             uiCanvas.SetActive(false);
             Cursor.visible = false;
