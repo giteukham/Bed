@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     { 
-        if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1))) 
+        if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape)) 
         {
             if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
             else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
