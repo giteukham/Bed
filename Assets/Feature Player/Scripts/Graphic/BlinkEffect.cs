@@ -11,6 +11,7 @@ public class BlinkEffect : MonoBehaviour
     private static Material blinkMaterial;
     private Shader shader;
     private CommandBuffer commandBuffer;
+    public static float BLINK_START_POINT_INIT = 0.81f;
     
     public static float Blink 
     {
@@ -23,6 +24,18 @@ public class BlinkEffect : MonoBehaviour
             blinkMaterial.SetFloat("_Blink", value);
         } 
     }
+
+    public static float StartPoint
+    {
+        get
+        {
+            return blinkMaterial.GetFloat("_StartBlink");
+        }
+        set
+        {
+            blinkMaterial.SetFloat("_StartBlink", value);
+        }
+    }
     
     /// <summary>
     /// 임시 버퍼를 만들어서 현재 화면을 복사한 뒤 블링크 효과를 적용
@@ -30,14 +43,13 @@ public class BlinkEffect : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        camera = gameObject.GetComponent<Camera>();
         blinkMaterial = blinkMat;
         
         int temp = Shader.PropertyToID("_CameraOpaqueTexture");
         commandBuffer = new CommandBuffer();
-        commandBuffer.GetTemporaryRT(temp, -1, -1, 0, FilterMode.Bilinear);
-        commandBuffer.Blit(BuiltinRenderTextureType.CurrentActive, temp);
-        commandBuffer.Blit(temp, BuiltinRenderTextureType.CurrentActive, blinkMat);
+        commandBuffer.GetTemporaryRT(temp, Screen.width, Screen.height, 0, FilterMode.Bilinear);
+        commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, temp);
+        commandBuffer.Blit(temp, BuiltinRenderTextureType.CameraTarget, blinkMat);
         commandBuffer.ReleaseTemporaryRT(temp);
         
         camera.AddCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
@@ -45,7 +57,7 @@ public class BlinkEffect : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (commandBuffer != null) camera?.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
-        blinkMaterial?.SetFloat("_Blink", 0.3f);
+        camera.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
+        blinkMaterial.SetFloat("_Blink", 0.001f);
     }
 }
