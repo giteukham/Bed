@@ -11,25 +11,10 @@ using static UnityEngine.Rendering.DebugUI;
 /// </summary>
 public class SaveManager : MonoSingleton<SaveManager>
 {
-    /// <summary>
-    /// 플레이어의 버츄얼 카메라에 접근
-    /// </summary>
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
-    /// <summary>
-    /// 메인카메라에 접근
-    /// </summary>
-    [SerializeField] private Camera cam;
 
     //게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
     private void Awake()
     {
-        //마우스 관련 변수
-        MouseManagement.mouseSensitivity = LoadMouseSensitivity();
-        MouseManagement.mouseSpeed = MouseManagement.mouseSensitivity * 500f;
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = LoadMouseVerticalReverse();
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = LoadMouseHorizontalReverse();
-        InputSystem.xBodyReverse = LoadXBodyReverse();
-
         //프레임 관련 변수
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = LoadFrameRate();
@@ -37,19 +22,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         //해상도와 프레임은 자동으로 적용됨
         //하지만 카메라의 viewport Rect는 적용되지 않으므로 수동으로 불러옴
         //cam.rect = LoadCamRect();
-    }
-
-    private void Start()
-    {
-        //print($"{LoadCamRect().x} : {LoadCamRect().y} : {LoadCamRect().width} : {LoadCamRect().height}");
-        cam.rect = LoadCamRect();
-        //StartCoroutine(testCamRectLoad());
-    }
-
-    private IEnumerator testCamRectLoad()
-    {
-        yield return null;
-        cam.rect = LoadCamRect();
     }
 
     private void Update()
