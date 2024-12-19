@@ -63,7 +63,6 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         {
             ActivePlayerObject(false);
             previewPlayer?.EnablePlayerObject(true);
-            AudioManager.Instance.StopSound(AudioManager.Instance.headMove, STOP_MODE.IMMEDIATE);
 
             mainPlayerPos = previewPlayerPos.position;
             previewPlayerPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
@@ -71,11 +70,12 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         };
         MouseWindowUI.OnScreenDeactive += () =>
         {
-            if (player != null) ActivePlayerObject(true);
-            if (previewPlayer != null) previewPlayer?.EnablePlayerObject(false);
-            if (AudioManager.Instance != null) AudioManager.Instance?.PlaySound(AudioManager.Instance.headMove, player.transform.position);
+            if (Application.isPlaying == false) return;
             
-            if (previewPlayerPos != null) previewPlayerPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
+            ActivePlayerObject(true);
+            previewPlayer?.EnablePlayerObject(false);
+            
+            previewPlayerPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
         };
     }
     

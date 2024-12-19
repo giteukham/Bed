@@ -300,11 +300,14 @@ public class Player : PlayerBase
         // 위치 조정
 
         // --------머리 움직임 소리
-        if (deltaHorizontalMouseMovement > 0f || deltaVerticalMouseMovement > 0f || PlayerConstant.isMovingState)  
+        if ((deltaHorizontalMouseMovement > 0f 
+            || deltaVerticalMouseMovement > 0f 
+            || PlayerConstant.isMovingState)
+            && PlayerConstant.isPlayerStop == false)  
         {
             if (PlayerConstant.isRightState || PlayerConstant.isLeftState) AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 1.6f);
             else AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 4.5f);
-
+        
             if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f) 
             {
                 if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
@@ -319,11 +322,11 @@ public class Player : PlayerBase
                 headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
             }
         }
-
+        
         IEnumerator headMoveSFXSet(bool _Up)
         {
             float volume = AudioManager.Instance.GetVolume(AudioManager.Instance.headMove);
-
+        
             if(_Up)
             {
                 AudioManager.Instance.ResumeSound(AudioManager.Instance.headMove);
