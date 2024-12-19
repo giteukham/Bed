@@ -3,12 +3,15 @@ using System.Globalization;
 using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MouseSettings : MonoSingleton<MouseSettings>
 {
     [Header("Preview Settings")] 
     [SerializeField] private Transform globalPlayersPos, meshesPos;                         // 플레이어의 부모 오브젝트 Global Position, 건물 Mesh의 위치                             
     private Vector3 mainPlayerPos;
+    
+    [FormerlySerializedAs("playerObjects")] [SerializeField] private GameObject[] playerDeActiveObjects;                                    // 꺼버릴 player의 오브젝트들
     
     [SerializeField] private Player player;
     [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
@@ -52,20 +55,38 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         
         MouseWindowUI.OnScreenActive += () =>
         {
-            player?.EnablePlayerObject(false);
+            ActivePlayerObject(false);
             previewPlayer?.EnablePlayerObject(true);
-            
+
             mainPlayerPos = globalPlayersPos.position;
             globalPlayersPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
             InitCameraSettings(previewPlayer);
         };
         MouseWindowUI.OnScreenDeactive += () =>
         {
-            if (player != null) player?.EnablePlayerObject(true);
+            if (player != null) ActivePlayerObject(true);
             if (previewPlayer != null) previewPlayer?.EnablePlayerObject(false);
             
             if (globalPlayersPos != null) globalPlayersPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
         };
+    }
+    
+    private void ActivePlayerObject(bool isActivate)
+    {
+        foreach (GameObject playerObject in playerDeActiveObjects)
+        {
+            playerObject.SetActive(isActivate);
+        }
+    }
+    
+    private bool CheckPlayerObjectActive()
+    {
+        bool isActive = false;
+        foreach (GameObject playerObject in playerDeActiveObjects)
+        {
+            isActive = playerObject.activeSelf;
+        }
+        return isActive;
     }
 
     private void Start()
@@ -81,9 +102,9 @@ public class MouseSettings : MonoSingleton<MouseSettings>
             mouseVerticalSpeed = 0;
         }
         
-        if (player.isActiveAndEnabled)
-            CalculateMouseSpeed(player);
-        else if (previewPlayer.isActiveAndEnabled)
+        if (CheckPlayerObjectActive() == true)
+            CalculateMouseSpeed(player); 
+        else if (CheckPlayerObjectActive() == false && previewPlayer.isActiveAndEnabled)
             CalculateMouseSpeed(previewPlayer);
     }
 

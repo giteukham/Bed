@@ -103,7 +103,7 @@ public class UIManager : MonoSingleton<UIManager>
         }
         else Cursor.visible = false;
         
-        if (PlayerConstant.isPlayerStop == false && mouseSettingsScreen.activeSelf == false)
+        if (PlayerConstant.isPlayerStop == false)
         {
             uiCanvas.SetActive(false);
             Cursor.visible = false;
