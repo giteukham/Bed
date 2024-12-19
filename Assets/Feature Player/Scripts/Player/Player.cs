@@ -300,10 +300,9 @@ public class Player : PlayerBase
         // 위치 조정
 
         // --------머리 움직임 소리
-        if ((deltaHorizontalMouseMovement > 0f 
-            || deltaVerticalMouseMovement > 0f 
-            || PlayerConstant.isMovingState)
-            && PlayerConstant.isPlayerStop == false)  
+        if ((deltaHorizontalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
+            || (deltaVerticalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
+            || PlayerConstant.isMovingState)  
         {
             if (PlayerConstant.isRightState || PlayerConstant.isLeftState) AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 1.6f);
             else AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 4.5f);
@@ -352,24 +351,7 @@ public class Player : PlayerBase
                 headMoveSFXCoroutine = null;
             }
         }   
-        // --------머리 움직임 소리
         
-        // --------------------숨소리
-        // breathTime += Time.deltaTime * (cameraNoise.m_FrequencyGain * 0.25f);
-        // if (breathTime >= 0.5f && exhaleCheck == false) 
-        // { 
-        //     breathTime = 0.0f; 
-        //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.inhale, transform.position);
-        //     exhaleCheck = true;
-        // }
-        // if (breathTime >= 0.5f && exhaleCheck == true)
-        // {
-        //     breathTime = 0.0f;
-        //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
-        //     exhaleCheck = false;
-        // }
-        // --------------------숨소리
-
         // -------------------------------------게이지 효과음
         float targetFearSFXVolume, targetStressSFXVolume;
 

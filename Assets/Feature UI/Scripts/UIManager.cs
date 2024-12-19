@@ -106,6 +106,7 @@ public class UIManager : MonoSingleton<UIManager>
         if (PlayerConstant.isPlayerStop == false)
         {
             uiCanvas.SetActive(false);
+            ShowMenuScreen();
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
