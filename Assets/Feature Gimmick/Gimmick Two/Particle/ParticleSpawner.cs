@@ -27,7 +27,8 @@ namespace Bed.Gimmick
                 z = particleSpawnPoint.z + (k * particleRadius * 2f);
                 particleList.Add(new Particle()
                 {
-                    position = new Vector3(x, y, z)
+                    position = new Vector3(x, y, z),
+                    color = Color.white
                 });
                 index++;
             }

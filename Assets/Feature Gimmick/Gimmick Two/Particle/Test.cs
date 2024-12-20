@@ -78,63 +78,6 @@ public class OptimalSpatialHashing : MonoBehaviour {
         
         InitializeParticles();
         CreateQuerySphereVisual();
-        
-        if (!particlesNative.IsCreated) return;
-        
-        UpdateQuerySphereVisual();
-
-        var updateJob = new UpdateParticlesJob {
-            particles = particlesNative,
-            boundsMin = particleBounds.min,
-            boundsMax = particleBounds.max,
-            deltaTime = Time.deltaTime
-        };
-        
-        JobHandle updateJobHandle = updateJob.Schedule(particlesNative.Length, 64);
-        
-        var hashJob = new HashParticlesJob {
-            particles = particlesNative,
-            cellSize = cellSize,
-            hashAndIndices = hashAndIndices
-        };
-        
-        JobHandle hashJobHandle = hashJob.Schedule(particlesNative.Length, 64, updateJobHandle);
-        
-        var sortJob = new SortHashCodesJob {
-            hashAndIndices = hashAndIndices
-        };
-        
-        JobHandle sortJobHandle = sortJob.Schedule(hashJobHandle);
-        
-        var queryJob = new QueryJob {
-            particles = particlesNative,
-            hashAndIndices = hashAndIndices,
-            queryPosition = querySphere.position,
-            queryRadius = queryRadius,
-            cellSize = cellSize,
-            resultIndices = new NativeList<int>(Allocator.TempJob)
-        };
-        
-        JobHandle queryJobHandle = queryJob.Schedule(sortJobHandle);
-        
-        queryJobHandle.Complete();
-        
-        if (resultIndices.IsCreated) resultIndices.Dispose();
-        resultIndices = queryJob.resultIndices;
-
-        foreach (var pr in particleRenderers) {
-            pr.material.color = Color.white;
-        }
-
-        foreach (var index in resultIndices) {
-            particleRenderers[index].material.color = Color.red;
-        }
-
-        for (int i = 0; i < particlesNative.Length; i++) {
-            particleInstances[i].transform.position = particlesNative[i].Position;
-        }
-        
-        resultsText.text = $"Particles within query radius: {resultIndices.Length}";
     }
 
     void CreateQuerySphereVisual() {
@@ -224,7 +167,62 @@ public class OptimalSpatialHashing : MonoBehaviour {
     }
 
     void Update() {
+        if (!particlesNative.IsCreated) return;
         
+        UpdateQuerySphereVisual();
+
+        var updateJob = new UpdateParticlesJob {
+            particles = particlesNative,
+            boundsMin = particleBounds.min,
+            boundsMax = particleBounds.max,
+            deltaTime = Time.deltaTime
+        };
+        
+        JobHandle updateJobHandle = updateJob.Schedule(particlesNative.Length, 64);
+        
+        var hashJob = new HashParticlesJob {
+            particles = particlesNative,
+            cellSize = cellSize,
+            hashAndIndices = hashAndIndices
+        };
+        
+        JobHandle hashJobHandle = hashJob.Schedule(particlesNative.Length, 64, updateJobHandle);
+        
+        var sortJob = new SortHashCodesJob {
+            hashAndIndices = hashAndIndices
+        };
+        
+        JobHandle sortJobHandle = sortJob.Schedule(hashJobHandle);
+        
+        var queryJob = new QueryJob {
+            particles = particlesNative,
+            hashAndIndices = hashAndIndices,
+            queryPosition = querySphere.position,
+            queryRadius = queryRadius,
+            cellSize = cellSize,
+            resultIndices = new NativeList<int>(Allocator.TempJob)
+        };
+        
+        JobHandle queryJobHandle = queryJob.Schedule(sortJobHandle);
+        
+        queryJobHandle.Complete();
+        
+        if (resultIndices.IsCreated) resultIndices.Dispose();
+        resultIndices = queryJob.resultIndices;
+
+        foreach (var pr in particleRenderers) {
+            pr.material.color = Color.white;
+        }
+
+        foreach (var index in resultIndices) {
+            particleRenderers[index].material.color = Color.red;
+        }
+
+        for (int i = 0; i < particlesNative.Length; i++) {
+            particleInstances[i].transform.position = particlesNative[i].Position;
+        }
+        
+        resultsText.text = $"Particles within query radius: {resultIndices.Length}";
     }
 
     void OnDestroy() {
@@ -274,7 +272,7 @@ public class OptimalSpatialHashing : MonoBehaviour {
         public void Execute(int index) {
             Particle particle = particles[index];
             int hash = Hash(GridPosition(particle.Position, cellSize));
-            Debug.Log($"GridPosition : {GridPosition(particle.Position, cellSize)} position : {particle.Position} hash : {hash}");
+            
             hashAndIndices[index] = new HashAndIndex { Hash = hash, Index = index };
         }
     }
@@ -296,14 +294,12 @@ public class OptimalSpatialHashing : MonoBehaviour {
         public float queryRadius;
         public float cellSize;
         public NativeList<int> resultIndices;
-        public int prevHash;
 
         public void Execute() {
             float radiusSquared = queryRadius * queryRadius;
             int3 minGridPos = GridPosition(queryPosition - queryRadius, cellSize);
             int3 maxGridPos = GridPosition(queryPosition + queryRadius, cellSize);
-            
-            Debug.Log($"minGridPos: {queryPosition - queryRadius}, maxGridPos: {queryPosition + queryRadius}");
+
             for (int x = minGridPos.x; x <= maxGridPos.x; x++) {
                 for (int y = minGridPos.y; y <= maxGridPos.y; y++) {
                     for (int z = minGridPos.z; z <= maxGridPos.z; z++) {

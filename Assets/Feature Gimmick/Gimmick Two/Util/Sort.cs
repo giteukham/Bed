@@ -45,7 +45,7 @@ namespace Bed.Gimmick
                 true);
         }
 
-        public void ExecutePairsSort(in Vector2Int[] pairs)
+        public void ExecutePairsSort<K, V>(ref K[] keys, ref V[] values)
         {
             sorter = new OneSweep(
                 oneSweep,
@@ -55,16 +55,7 @@ namespace Bed.Gimmick
                 ref globalHistBuffer,
                 ref passHistBuffer,
                 ref indexBuffer);
-
-            int[] keys = new int[numElements];
-            int[] values = new int[numElements];
             
-            for (int i = 0; i < numElements; i++)
-            {
-                keys[i] = (int) pairs[i].x;
-                values[i] = (int) pairs[i].y;
-            }
-
             sortKeysBuffer.SetData(keys);
             sortValuesBuffer.SetData(values);
 
@@ -72,10 +63,12 @@ namespace Bed.Gimmick
                 numElements,
                 sortKeysBuffer, sortValuesBuffer, 
                 keyBuffer, valueBuffer, globalHistBuffer, passHistBuffer, indexBuffer,
-                keys[0].GetType(),
-                values[0].GetType(),
+                typeof(K),
+                typeof(V),
                 true);
-
+            
+            sortKeysBuffer.GetData(keys);
+            sortValuesBuffer.GetData(values);
         }
 
         public T[] GetSortedKeys<T>()
@@ -83,24 +76,6 @@ namespace Bed.Gimmick
             T[] keys = new T[sortKeysBuffer.count];
             sortKeysBuffer.GetData(keys);
             return keys;
-        }
-
-        public Vector2Int[] GetSortedPairs()
-        {
-            int[] keys = new int[sortKeysBuffer.count];
-            int[] values = new int[sortValuesBuffer.count];
-
-            sortKeysBuffer.GetData(keys);
-            sortValuesBuffer.GetData(values);
-
-            Vector2Int[] pairs = new Vector2Int[sortKeysBuffer.count];
-            
-            for (int i = 0; i < sortKeysBuffer.count; i++)
-            {
-                pairs[i] = new Vector2Int(keys[i], values[i]);
-            }
-
-            return pairs;
         }
         
         public void Dispose()

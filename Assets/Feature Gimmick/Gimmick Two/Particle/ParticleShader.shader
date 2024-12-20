@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // Upgrade NOTE: replaced 'glstate_matrix_projection' with 'UNITY_MATRIX_P'
 
 Shader "Custom/ParticleShader"
@@ -47,23 +49,51 @@ Shader "Custom/ParticleShader"
             #if defined(UNITY_INSTANCING_ENABLED)
                 float3 data = _particles[id].position;
             #endif
-                
-                float3 worldPosition = data.xyz + v.vertex.xyz * _particleRadius;
+
+                float3 localPosition = v.vertex.xyz * (_particleRadius * 2);
+                float3 worldPosition = data.xyz + localPosition;
                 
                 v2f o;
-                o.vertex = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0));
+                o.vertex = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
                 o.id  = id;
-                
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                fixed4 col = fixed4(1.0, 1.0, 1.0, 1.0);
+                fixed4 col = _particles[i.id].color;
 
-                if (i.id == 1)
+                if (_particles[i.id].color.x == 1 && _particles[i.id].color.y == 0 && _particles[i.id].color.z == 0)
                 {
-                    col = fixed4(1.0, 0.0, 0.0, 1.0);
+                    col = float4(1, 0, 0, 1);
+                }
+                else if (_particles[i.id].color.x == 0 && _particles[i.id].color.y == 1 && _particles[i.id].color.z == 0)
+                {
+                    col = float4(0, 1, 0, 1);
+                }
+                else if (_particles[i.id].color.x == 0 && _particles[i.id].color.y == 0 && _particles[i.id].color.z == 1)
+                {
+                    col = float4(0, 0, 1, 1);
+                }
+                else if (_particles[i.id].color.x == 1 && _particles[i.id].color.y == 1 && _particles[i.id].color.z == 0)
+                {
+                    col = float4(1, 1, 0, 1);
+                }
+                else if (_particles[i.id].color.x == 1 && _particles[i.id].color.y == 0 && _particles[i.id].color.z == 1)
+                {
+                    col = float4(1, 0, 1, 1);
+                }
+                else if (_particles[i.id].color.x == 0 && _particles[i.id].color.y == 1 && _particles[i.id].color.z == 1)
+                {
+                    col = float4(0, 1, 1, 1);
+                }
+                else if (_particles[i.id].color.x == 1 && _particles[i.id].color.y == 1 && _particles[i.id].color.z == 1)
+                {
+                    col = float4(1, 1, 1, 1);
+                }
+                else if (_particles[i.id].color.x == 0 && _particles[i.id].color.y == 0 && _particles[i.id].color.z == 0)
+                {
+                    col = float4(0, 0, 0, 1);
                 }
                 
                 return col;

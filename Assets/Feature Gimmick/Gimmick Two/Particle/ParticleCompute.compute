@@ -3,18 +3,18 @@
 //////////////////////////////////////
 
 #pragma kernel InsertParticlesInCell
-#pragma kernel InsertCellStartByCellId
+#pragma kernel UpdateCellStartEnds
 #pragma kernel NeighborSearch
 #pragma kernel CalculateDensityAndPressures
 #pragma kernel CalculateForces
 #pragma kernel Integrate
 
 #define THREAD_SIZE 256
-#define TABLE_SIZE 200000
 
 #define GRAVITY 9.81
-#define NEIGHBOR_COUNT 8
+#define NEIGHBOR_COUNT 27
 #define DELTA_TIME 0.016f
+#define NUMERIC_LIMIT 0xFFFFFFFF
 
 #include "SpatialHash.hlsl"
 #include "ParticleUtils.hlsl"
@@ -25,24 +25,30 @@ struct Particle
 	float4 color;
 };
 
+struct CellInfo
+{
+	int particleIndex;
+	int hash;
+};
+
 RWStructuredBuffer<Particle> _particles;
-RWStructuredBuffer<float3> _viscosities;
 RWStructuredBuffer<float3> _velocities;
 RWStructuredBuffer<float> _densities;
 RWStructuredBuffer<float> _pressures;
 RWStructuredBuffer<float3> _forces;
 
-RWStructuredBuffer<uint2> _cellLists;					// x is the cell index, y is the particle index
-RWStructuredBuffer<uint> _cellStartIndices;
+RWStructuredBuffer<CellInfo> _cellIndices;
+RWStructuredBuffer<uint> _cellStarts, _cellEnds;
 RWStructuredBuffer<uint> _neighbors;
 
 RWStructuredBuffer<float3> _test;
 
 float3 _boundingBox;
+float3 _boundMin, _boundMax;
 float _particleRadius;
 float _cellSize;
-uint _cellNumbers;
 float _damping;
+float _smoothingLength;
 
 float _mass;
 float _restDensity;
@@ -50,6 +56,7 @@ float _viscosity;
 float _gasConstant;
 
 uint _particleCount;
+uint _totalCellNumbers;
 
 groupshared Particle _groupParticles[THREAD_SIZE];
 
@@ -60,72 +67,86 @@ void InsertParticlesInCell(uint3 tid : SV_DispatchThreadID)
 	
 	if (threadId < _particleCount)
 	{
-		Particle particle = _particles[threadId];
-		int3 gridPos = CalculateGridPosition(particle.position, _cellSize);
-		uint hash = HashFunction(gridPos);
+		int3 gridPos = CalculateGridPosition( _particles[threadId].position, _cellSize);
+		uint hash = HashFunction(gridPos, _totalCellNumbers);
 
-		_test[threadId] = hash;
+		_cellIndices[threadId].particleIndex = threadId;
+		_cellIndices[threadId].hash = hash;
 	}
 }
 
+// Reference : https://medium.com/@ahmed.fathy.elbossily/sph-and-hashing-c28e70ff7615
 [numthreads(THREAD_SIZE, 1, 1)]
-void InsertCellStartByCellId(uint3 tid : SV_DispatchThreadID)
+void UpdateCellStartEnds(uint3 tid : SV_DispatchThreadID)
 {
 	uint threadId = tid.x;
-	uint cellId = _cellLists[threadId].x;
-	
-	_cellStartIndices[threadId] = 0xFFFFFFFF;
-	GroupMemoryBarrierWithGroupSync();
-	
-	InterlockedMin(_cellStartIndices[cellId], threadId);
+
+	uint currentHash = _cellIndices[threadId].hash;
+	uint previousHash = threadId > 0 ? _cellIndices[threadId - 1].hash : NUMERIC_LIMIT;
+
+	if (threadId == 0 || currentHash != previousHash)
+	{
+		_cellStarts[currentHash] = threadId;
+	}
+
+	if (threadId == _particleCount - 1 || currentHash != _cellIndices[threadId + 1].hash)
+	{
+		_cellEnds[currentHash] = threadId;
+	}
+
+	_test[threadId] = float3(_cellIndices[threadId].particleIndex, _cellIndices[threadId].hash, _cellStarts[_cellIndices[threadId].hash]);
+	//
+	//
+	// if (threadId > 0 && threadId < _particleCount)
+	// {
+	// 	// uint hash = _cellIndices[threadId].hash;
+	// 	//
+	// 	// if (hash != _cellIndices[threadId + 1].hash)
+	// 	// {
+	// 	// 	_cellEnds[hash] = threadId;
+	// 	// 	_cellStarts[_cellIndices[threadId + 1].hash] = threadId + 1;
+	// 	// }
+	// }
+	//
+	// _cellEnds[firstHash] = _particleCount - 1;
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void NeighborSearch(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
 	uint threadId = tid.x;
-	Particle particle = _particles[threadId];
-	int3 cellDimIndex = CalculateGridPosition(particle.position, _particleRadius);
-	uint cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);
+	float3 originPos = _particles[threadId].position;
+	int3 gridPos = CalculateGridPosition(originPos, _cellSize);
+	uint hash = HashFunction(gridPos, _totalCellNumbers);
 
-	int neighborCount = 0;
+	uint neighborCount = 0;
 	uint test = 0;
 	for (int i = -1; i <= 1; ++i)
 	for (int j = -1; j <= 1; ++j)
 	for (int k = -1; k <= 1; ++k)
 	{
-		int3 neighborCellDimIndex = cellDimIndex + int3(i, j, k);
-		uint neighborCellIndex = HashFunction(neighborCellDimIndex, TABLE_SIZE);
+		int3 neighborGridPos = gridPos + int3(i, j, k);
+		uint neighborHash = HashFunction(neighborGridPos, _totalCellNumbers);
+
+		if (threadId < _particleCount && hash != neighborHash)
+		{
+			uint start = _cellStarts[neighborHash];
+			uint end = _cellEnds[neighborHash];
+			
+			for (uint idx = start; idx <= end; idx++)
+			{
+				float3 neighborPos = _particles[_cellIndices[idx].particleIndex].position;
+				float dist = length(neighborPos - originPos);
+				if (dist < _cellSize * 2)
+				{
+					_neighbors[threadId * NEIGHBOR_COUNT + neighborCount] = _cellIndices[idx].particleIndex;
+					neighborCount++;
+					
+				}
+			}
+		}
 		test++;
 
-		uint start = _cellStartIndices[neighborCellIndex];
-		GroupMemoryBarrierWithGroupSync();
-		
-		if (start == 0xFFFFFFFF)
-		{
-			continue;
-		}
-
-		while (start < _particleCount)
-		{
-			if (cellIndex == threadId)
-			{
-				cellIndex++;
-				continue;
-			}
-			uint neighborParticleId = _cellLists[start].y;
-			if (_cellLists[neighborParticleId].x != neighborCellIndex)
-			{
-				break;
-			}
-			float dist = length(particle.position - _particles[neighborParticleId].position);
-			if (dot(dist, dist) < pow(_particleRadius, 2))
-			{
-				_neighbors[cellIndex * NEIGHBOR_COUNT + neighborCount] = neighborParticleId;
-				neighborCount++;
-			}
-			start++;
-		}
 		GroupMemoryBarrierWithGroupSync();
 	}
 }
@@ -133,128 +154,139 @@ void NeighborSearch(uint3 tid : SV_DispatchThreadID, uint3 gtid : SV_GroupThread
 [numthreads(THREAD_SIZE, 1, 1)]
 void CalculateDensityAndPressures(uint3 tid : SV_DispatchThreadID, uint gidx : SV_GroupIndex)
 {
+	if (tid.x >= _particleCount) return;
+	
 	uint threadId = tid.x;
 	Particle particle = _particles[threadId];
 	uint numTiles = 1 + _particleCount / THREAD_SIZE;
 	
-	int3 cellDimIndex = CalculateGridPosition(particle.position, _particleRadius);
-	uint cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);
+	int3 gridPos = CalculateGridPosition(particle.position, _cellSize);
+	uint hash = HashFunction(gridPos, _totalCellNumbers);
 
-	for (int tile = 0; tile < numTiles; ++tile)
-	{
-		uint offset = tile * THREAD_SIZE;
-		_groupParticles[gidx] = _particles[offset + gidx];
-		GroupMemoryBarrierWithGroupSync();
-		
+	float rho = 0.0;
+	
+	// for (int tile = 0; tile < numTiles; ++tile)
+	// {
+	// 	uint offset = tile * THREAD_SIZE;
+	// 	_groupParticles[gidx] = _particles[offset + gidx];
+	// 	GroupMemoryBarrierWithGroupSync();
 		for (int i = 0; i < NEIGHBOR_COUNT; i++)
 		{
-			uint neighborId = _neighbors[cellIndex * NEIGHBOR_COUNT + i];
-			Particle neighbor = _groupParticles[neighborId];
-			GroupMemoryBarrierWithGroupSync();
+			uint neighborId = _neighbors[threadId * NEIGHBOR_COUNT + i];
+			Particle neighbor = _particles[neighborId];
+
+			if (neighborId == NUMERIC_LIMIT || neighborId == threadId) continue;
+
+			float3 diff = particle.position - neighbor.position;
+			float r2 = dot(diff, diff);
+			float r = sqrt(r2);
+			float h = _smoothingLength;
 			
-			const float3 diff = particle.position - neighbor.position;
-			const float r2 = dot(diff, diff);
-			const float h2 = _particleRadius * _particleRadius;
-	
-			if (r2 < h2)
+			if (r < h)
 			{
-				const float rho = _mass * CalculatePoly6Kernel(r2, h2);
-				_densities[threadId] += rho;
+				float poly6 = Poly6Kernel(h, r);
+				rho += poly6;
 			}
 		}
-	}
-
-	_densities[threadId] = max(_restDensity, _densities[threadId]);
+	//}
+	_densities[threadId] = rho * _mass + 0.001f;
+	_densities[threadId] = max(_densities[threadId], _restDensity);
 	_pressures[threadId] = _gasConstant * (_densities[threadId] - _restDensity);
+
+
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void CalculateForces(uint3 tid : SV_DispatchThreadID, uint gidx : SV_GroupIndex)
 {
+	if (tid.x >= _particleCount) return;
+	
 	uint threadId = tid.x;
 	Particle particle = _particles[threadId];
 	uint numTiles = 1 + _particleCount / THREAD_SIZE;
 	
-	int3 cellDimIndex = CalculateGridPosition(particle.position, _particleRadius);
-	uint cellIndex = HashFunction(cellDimIndex, TABLE_SIZE);
-
-	_forces[threadId] = float3(0, 0, 0);
-	GroupMemoryBarrierWithGroupSync();
-
-	
-	for (int tile = 0; tile < numTiles; ++tile)
-	{
-		uint offset = tile * THREAD_SIZE;
-		_groupParticles[gidx] = _particles[offset + gidx];
-		GroupMemoryBarrierWithGroupSync();
-
-		for (int i = 0; i < NEIGHBOR_COUNT; i++)
-		{
-			uint neighborId = _neighbors[cellIndex * NEIGHBOR_COUNT + i];
-			
-			Particle neighbor = _groupParticles[neighborId];
-			const float3 diff = length(particle.position - neighbor.position);
-			const float r2 = dot(diff, diff);
-			const float r = sqrt(r2);
+	int3 gridPos = CalculateGridPosition(particle.position, _cellSize);
+	uint hash = HashFunction(gridPos, _totalCellNumbers);
 		
-			if (r > 0.0 && r < _particleRadius)
-			{
-				const float3 dir = diff / r;
-				const float sp = CalculateSpikyKernel(r, _particleRadius);
-				const float la = CalculateLaplacianKernel(r, _particleRadius);
+	_forces[threadId] = float3(0, 0, 0);
+	// for (int tile = 0; tile < numTiles; ++tile)
+	// {
+	// 	uint offset = tile * THREAD_SIZE;
+	// 	_groupParticles[gidx] = _particles[offset + gidx];
+	// 	GroupMemoryBarrierWithGroupSync();
 
-				_forces[threadId] -= _mass * ((_pressures[threadId] + _pressures[neighborId]) / (2 * _densities[threadId] + _densities[neighborId])) * sp * dir;
-				_forces[threadId] += _viscosity * (_mass * (1.0f / _densities[neighborId]) * (_velocities[neighborId] - _velocities[threadId]) * la * dir);
+		for (int i = 0; i < NEIGHBOR_COUNT - 1; i++)
+		{
+			uint neighborId = _neighbors[threadId * NEIGHBOR_COUNT + i];
+			Particle neighbor = _particles[neighborId];
+
+			if (neighborId == NUMERIC_LIMIT || neighborId == threadId) continue;
+			
+			float3 diff = particle.position - neighbor.position;
+			float r2 = dot(diff, diff);
+			float r = sqrt(r2);
+			float h = _smoothingLength;
+		
+			if (r > 0.0 && r < h)
+			{
+				float spiky = DerivativeSpikyKernel(h, r);
+				float vis = ViscosityKernel(h, r);
+				float3 dir = diff / r;
+				_forces[threadId] -= _mass * (_pressures[threadId] + _pressures[neighborId]) / (2 * _densities[neighborId]) * spiky * dir;
+				_forces[threadId] += _mass * (_velocities[neighborId] - _velocities[threadId]) / _densities[neighborId] * vis * dir;
+
 			}
-			GroupMemoryBarrierWithGroupSync();
 		}
-	}
+	//}
+	_forces[threadId] *= _viscosity;
 }
 
 [numthreads(THREAD_SIZE, 1, 1)]
 void Integrate (uint3 tid : SV_DispatchThreadID)
 {
 	uint threadId = tid.x;
-	float deltaTime = DELTA_TIME;
-	float3 g = float3(0, -GRAVITY, 0);
+	const float deltaTime = DELTA_TIME;
+	const float3 gravity = float3(0, -GRAVITY, 0);
 	
-	_velocities[threadId] += deltaTime * (_forces[threadId] / _densities[threadId] + g);
+	_velocities[threadId] += deltaTime * (_forces[threadId] / _densities[threadId] + gravity);
 	_particles[threadId].position += deltaTime * _velocities[threadId];
-	GroupMemoryBarrierWithGroupSync();
+
+	Particle particle = _particles[threadId];
+	float3 vel = _velocities[threadId];
 	
-	_forces[threadId] = float3(0, 0, 0);
-	GroupMemoryBarrierWithGroupSync();
-	
-	if (_particles[threadId].position.x < -(_boundingBox.x * 0.5) + _particleRadius)
+	if (particle.position.x < _boundMin.x + _particleRadius)
 	{
-		_velocities[threadId].x *= _damping;
-		_particles[threadId].position.x = -(_boundingBox.x * 0.5) + _particleRadius;
+		vel.x *= _damping;
+		particle.position.x = _boundMin.x + _particleRadius;
 	}
-	else if (_particles[threadId].position.x > (_boundingBox.x * 0.5) + _boundingBox.x)
+	else if (particle.position.x > _boundMax.x - _particleRadius)
 	{
-		_velocities[threadId].x *= _damping;
-		_particles[threadId].position.x = (_boundingBox.x * 0.5) + _boundingBox.x;
-	}
-	
-	if (_particles[threadId].position.y < -(_boundingBox.y * 0.5) + _particleRadius)
-	{
-		_velocities[threadId].y *= _damping;
-		_particles[threadId].position.y = -(_boundingBox.y * 0.5) + _particleRadius;
-	}
-	else if (_particles[threadId].position.y > (_boundingBox.y * 0.5) + _boundingBox.y)
-	{
-		_velocities[threadId].y *= _damping;
-		_particles[threadId].position.y = (_boundingBox.y * 0.5) + _boundingBox.y;
+		vel.x *= _damping;
+		particle.position.x = _boundMax.x - _particleRadius;
 	}
 	
-	if (_particles[threadId].position.z < -(_boundingBox.z * 0.5) + _particleRadius)
+	if (particle.position.y < _boundMin.y + _particleRadius)
 	{
-		_velocities[threadId].z *= _damping;
-		_particles[threadId].position.z = -(_boundingBox.z * 0.5) + _particleRadius;
+		vel.y *= _damping;
+		particle.position.y = _boundMin.y + _particleRadius;
 	}
-	else if (_particles[threadId].position.z > (_boundingBox.z * 0.5) + _boundingBox.z)
+	else if (particle.position.y > _boundMax.y - _particleRadius)
 	{
-		_velocities[threadId].z *= _damping;
-		_particles[threadId].position.z = (_boundingBox.z * 0.5) + _boundingBox.z;
+		vel.y *= _damping;
+		particle.position.y = _boundMax.y - _particleRadius;
 	}
+
+	if (particle.position.z < _boundMin.z + _particleRadius)
+	{
+		vel.z *= _damping;
+		particle.position.z = _boundMin.z + _particleRadius;
+	}
+	else if (particle.position.z > _boundMax.z - _particleRadius)
+	{
+		vel.z *= _damping;
+		particle.position.z = _boundMax.z - _particleRadius;
+	}
+
+	_particles[threadId] = particle;
+	_velocities[threadId] = vel;
 }
