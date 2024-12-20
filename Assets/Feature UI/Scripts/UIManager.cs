@@ -101,9 +101,12 @@ public class UIManager : MonoSingleton<UIManager>
                 Cursor.lockState = CursorLockMode.None;
             }
         }
-        if (PlayerConstant.isPlayerStop == false && mouseSettingsScreen.activeSelf == false)
+        else Cursor.visible = false;
+        
+        if (PlayerConstant.isPlayerStop == false)
         {
             uiCanvas.SetActive(false);
+            ShowMenuScreen();
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
