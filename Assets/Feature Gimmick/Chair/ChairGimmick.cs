@@ -7,7 +7,12 @@ public class ChairGimmick : Gimmick
 {
     #region Override Variables
     [field: SerializeField] public override GimmickType type { get; protected set; }
-    [field: SerializeField] public override float probability { get; set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
     [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
     #endregion
 

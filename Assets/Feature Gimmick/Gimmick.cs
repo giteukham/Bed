@@ -36,6 +36,7 @@ namespace AbstractGimmick
             gameObject.SetActive(true);
             timeLimit = 0;
             isDetected = false;
+            PlayerConstant.ResetLATStats();
         }
 
         /// <summary>
