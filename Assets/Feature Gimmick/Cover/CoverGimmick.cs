@@ -26,6 +26,11 @@ public class CoverGimcik : Gimmick
         gameObject.SetActive(false);
     }
 
+    private void Update()
+    {
+        
+    }
+
     public override void Activate()
     {
         base.Activate();
@@ -40,6 +45,7 @@ public class CoverGimcik : Gimmick
 
     public override void UpdateProbability()
     {
+        probability = ((PlayerConstant.EyeBlinkLAT * 8) + (PlayerConstant.EyeBlinkCAT * 2)) * (PlayerConstant.isEyeOpen ? 1 : 0);
     }
 
     private IEnumerator MainCode()
@@ -49,6 +55,9 @@ public class CoverGimcik : Gimmick
         animator.Play("CoverEye");
 
         yield return new WaitForSeconds(0.16f);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +10);
+
         AudioManager.Instance.PlaySound(AudioManager.Instance.roughBreath, this.transform.position);
 
         yield return new WaitForSeconds(2.68f);

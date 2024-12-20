@@ -1,5 +1,7 @@
 
 using System;
+using AbstractGimmick;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,13 +21,27 @@ namespace Bed.Collider
         
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
-        {
-
+        {  
+            if (other.gameObject.CompareTag("Gimmick"))
+            {
+                Debug.Log("Enter");
+                if (other.gameObject.TryGetComponent(out Gimmick gimmick))
+                {
+                    gimmick.isDetected = true;
+                }
+            } 
         }
         
         private void OnTriggerExit(UnityEngine.Collider other)
         {
-
+            if (other.gameObject.CompareTag("Gimmick"))
+            {
+                Debug.Log("Exit");
+                if (other.gameObject.TryGetComponent(out Gimmick gimmick))
+                {
+                    gimmick.isDetected = false;
+                }
+            }
         }
         
         private void Awake()

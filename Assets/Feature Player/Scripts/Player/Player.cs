@@ -104,7 +104,8 @@ public class Player : PlayerBase
         //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
-        AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
+        // fearHal 임시로 뺌뺌
+        //AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.headMove, transform.position);
 
@@ -294,7 +295,7 @@ public class Player : PlayerBase
         playerPillowSoundPosition.eulerAngles = new Vector3(playerPillowSoundInitRotation.x, playerPillowSoundInitRotation.y, playerPillowSoundInitRotation.z);
         
         // 위치 조정
-        AudioManager.Instance.SetPosition(AudioManager.Instance.fearHal, transform.position);
+        //AudioManager.Instance.SetPosition(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.stressHal, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.headMove, playerPillowSoundPosition.position);
         // 위치 조정
@@ -385,7 +386,7 @@ public class Player : PlayerBase
             currentStressSFXVolume = Mathf.Min(currentStressSFXVolume, targetStressSFXVolume);
         }
 
-        AudioManager.Instance.VolumeControl(AudioManager.Instance.fearHal, currentFearSFXVolume);
+        //AudioManager.Instance.VolumeControl(AudioManager.Instance.fearHal, currentFearSFXVolume);
         AudioManager.Instance.VolumeControl(AudioManager.Instance.stressHal, currentStressSFXVolume);
         // -------------------------------------게이지 효과음
     }

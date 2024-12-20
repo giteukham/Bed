@@ -29,7 +29,7 @@ public class ClapGimcik : Gimmick
 
     private void Update()
     {
-        timeLimit += Time.deltaTime;
+        
     }
 
     private void ClapSoundPlay()
@@ -38,8 +38,8 @@ public class ClapGimcik : Gimmick
         AudioManager.Instance.PlaySound(AudioManager.Instance.handClap, this.transform.position);
 
         // 테스트로 방 불도 켜지고 꺼지게
-        if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
-        else BedRoomLightSwitch.SwitchAction(true);
+        // if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
+        // else BedRoomLightSwitch.SwitchAction(true);
     }
 
     public override void Activate()
@@ -56,7 +56,8 @@ public class ClapGimcik : Gimmick
 
     public override void UpdateProbability()
     {
-        probability = 100;
+        probability = ((PlayerConstant.LeftLookLAT * 2) + (PlayerConstant.LeftLookCAT / 4) + PlayerConstant.LeftFrontLookLAT + (PlayerConstant.LeftFrontLookCAT / 8) + PlayerConstant.LeftStateLAT + (PlayerConstant.LeftStateCAT / 10)) 
+                    * (PlayerConstant.isEyeOpen ? 1 : 0);
     }
 
     public override void Initialize(){}
@@ -64,10 +65,13 @@ public class ClapGimcik : Gimmick
     private IEnumerator MainCode()
     {
         Door.Set(45, 0.7f); // 방문 열기
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +5);
         yield return new WaitForSeconds(1.3f);
         LivingRoomLightSwitch.SwitchAction(true);   // 복도 불 켜기
 
         yield return new WaitForSeconds(0.4f);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +5);
         animator.Play("Clapping");
 
         yield return new WaitForSeconds(1.5f);
