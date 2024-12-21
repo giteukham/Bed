@@ -1,9 +1,9 @@
-using Bed;
 using Cinemachine;
 using UnityEngine;
 
 public class PlayerDirectionStates
 {
+    private static MouseSettings mouseSettings = MouseSettings.Instance;
     public class LeftDirectionState : IState
     {
         public void Enter()
@@ -19,8 +19,8 @@ public class PlayerDirectionStates
             PlayerConstant.LeftStateCAT += Time.deltaTime;
             PlayerConstant.LeftStateLAT += Time.deltaTime;
 
-            if ( PlayerConstant.isParalysis ) return;
-            if (InputSystem.Instance.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
+            if (mouseSettings.MouseHorizontalSpeed >= mouseSettings.TurnRightSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle From Left");
             }
@@ -48,12 +48,12 @@ public class PlayerDirectionStates
             PlayerConstant.MiddleStateCAT += Time.deltaTime;
             PlayerConstant.MiddleStateLAT += Time.deltaTime;
 
-            if ( PlayerConstant.isParalysis ) return;
-            if (InputSystem.Instance.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
+            if (mouseSettings.MouseHorizontalSpeed <= mouseSettings.TurnLeftSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle To Left");
             }
-            else if (InputSystem.Instance.MouseDeltaX >= PlayerDirectionControl.TURN_RIGHT_DELTA_POWER)
+            else if (mouseSettings.MouseHorizontalSpeed >= mouseSettings.TurnRightSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle To Right");
             }
@@ -80,8 +80,8 @@ public class PlayerDirectionStates
             PlayerConstant.RightStateCAT += Time.deltaTime;
             PlayerConstant.RightStateLAT += Time.deltaTime;
 
-            if ( PlayerConstant.isParalysis ) return;
-            if (InputSystem.Instance.MouseDeltaX <= PlayerDirectionControl.TURN_LEFT_DELTA_POWER)
+            if ( PlayerConstant.isParalysis || PlayerConstant.isPlayerStop ) return;
+            if (mouseSettings.MouseHorizontalSpeed <= mouseSettings.TurnLeftSpeed)
             {
                 PlayerAnimation.PlayAnimation("Middle From Right");
             }

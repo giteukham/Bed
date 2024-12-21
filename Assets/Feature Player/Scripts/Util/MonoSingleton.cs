@@ -35,12 +35,12 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    private void OnApplicationQuit()
+    protected virtual void OnApplicationQuit()
     {
         isDestoryed = true;
     }
     
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         isDestoryed = true;
     }

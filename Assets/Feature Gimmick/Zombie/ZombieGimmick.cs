@@ -5,15 +5,25 @@ using UnityEngine;
 
 public class ZombieGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     private Animator animator;
     private Rigidbody rig;
     private Vector3 startPoint;
     private Vector3 startRotation;
     private bool isRun = false;
     private float beforeSpeed = 0;
+    #endregion
 
     private void Awake()
     {
@@ -47,7 +57,7 @@ public class ZombieGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     public override void Initialize()

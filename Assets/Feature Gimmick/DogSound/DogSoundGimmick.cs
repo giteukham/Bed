@@ -5,8 +5,20 @@ using UnityEngine;
 
 public class DogSoundGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
+
+    #region Variables
+    // 기믹 개인 변수
+    #endregion
 
     private void Awake()
     {
@@ -32,18 +44,18 @@ public class DogSoundGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
         //개 짖다가
-        AudioManager.instance.PlaySound(AudioManager.instance.dogBark, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.dogBark, transform.position);
 
         yield return new WaitForSeconds(21);
 
         //소리 끝나면 바로 개 비명 지름(맞는 소리 넣으면 뭔가 이상할듯)
-        AudioManager.instance.PlaySound(AudioManager.instance.dogWhine, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.dogWhine, transform.position);
 
         yield return new WaitForSeconds(10);
         //스트레스 데미지 주고 끝냄

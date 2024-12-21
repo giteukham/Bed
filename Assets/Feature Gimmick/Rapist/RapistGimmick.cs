@@ -5,15 +5,22 @@ using AbstractGimmick;
 
 public class RapistGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     public GameObject hand, houseLight;
-
-    [SerializeField]
-    private bool zeroPahse, onePhase, twoPhase, threePhase, fourPhase = false;
-
+    [SerializeField] private bool zeroPahse, onePhase, twoPhase, threePhase, fourPhase = false;
     private Animator animator;
+    #endregion
 
     private void Awake()
     {
@@ -66,7 +73,7 @@ public class RapistGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
@@ -87,15 +94,15 @@ public class RapistGimmick : Gimmick
             twoPhase = true;
         if (houseLight.activeSelf == true)
             houseLight.SetActive(false);
-        AudioManager.instance.PlaySound(AudioManager.instance.hornyBreath, this.transform.position);
-        AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.hornyBreath, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.pantRustle, this.transform.position);
 
         //3페이즈
         yield return new WaitForSeconds(3f);
         twoPhase = false;
         if (threePhase == false)
             threePhase = true;
-        AudioManager.instance.PlaySound(AudioManager.instance.windowOpenClose, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.windowOpenClose, this.transform.position);
 
 
         // 4페이즈 / 이땐 정면 고정
@@ -104,7 +111,7 @@ public class RapistGimmick : Gimmick
         if (fourPhase == false)
             fourPhase = true;
         hand.SetActive(true);
-        AudioManager.instance.PlaySound(AudioManager.instance.rapist4Phase, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.rapist4Phase, this.transform.position);
         
         yield return new WaitForSeconds(3f);
         hand.SetActive(false);
@@ -115,7 +122,7 @@ public class RapistGimmick : Gimmick
 
     private void RustleSoundPlay()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.pantRustle, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.pantRustle, this.transform.position);
     }
 
     public override void Initialize(){}

@@ -5,16 +5,25 @@ using AbstractGimmick;
 
 public class ScareCrowGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     private float rotationX = 0;
     private bool isMinus = false;
-
     private Rigidbody rig;
     private BoxCollider boxColl;
     private Vector3 startPosition;
     private int soundNum = 0;
+    #endregion
 
     private void Awake()
     {
@@ -43,7 +52,7 @@ public class ScareCrowGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
@@ -88,7 +97,7 @@ public class ScareCrowGimmick : Gimmick
         yield return new WaitForSeconds(3);
 
         //까마귀 소리 내고 끝냄
-        AudioManager.instance.PlaySound(AudioManager.instance.crows, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.crows, transform.position);
         yield return new WaitForSeconds(9);
 
         //공포 데미지 상승
@@ -134,11 +143,11 @@ public class ScareCrowGimmick : Gimmick
             soundNum++;
             if (soundNum == 1)
             {
-                AudioManager.instance.PlaySound(AudioManager.instance.woodDrop1, transform.position);
+                AudioManager.Instance.PlaySound(AudioManager.Instance.woodDrop1, transform.position);
             }
             else
             {
-                AudioManager.instance.PlaySound(AudioManager.instance.woodDrop2, transform.position);
+                AudioManager.Instance.PlaySound(AudioManager.Instance.woodDrop2, transform.position);
             }
         }
     }

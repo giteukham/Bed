@@ -6,10 +6,20 @@ using AbstractGimmick;
 
 public class CoverGimcik : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     public Animator animator;
+    #endregion
 
     private void Awake()
     {
@@ -18,7 +28,7 @@ public class CoverGimcik : Gimmick
 
     private void Update()
     {
-        timeLimit += Time.deltaTime;
+        
     }
 
     public override void Activate()
@@ -35,19 +45,23 @@ public class CoverGimcik : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = ((PlayerConstant.EyeBlinkLAT * 8) + (PlayerConstant.EyeBlinkCAT * 2)) * (PlayerConstant.isEyeOpen ? 1 : 0);
     }
+
     private IEnumerator MainCode()
     {
-        yield return new WaitForSeconds(4);
-        AudioManager.instance.PlaySound(AudioManager.instance.handCover, this.transform.position);
+        yield return new WaitForSeconds(1);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.handCover, this.transform.position);
         animator.Play("CoverEye");
 
         yield return new WaitForSeconds(0.16f);
-        AudioManager.instance.PlaySound(AudioManager.instance.roughBreath, this.transform.position);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +10);
+
+        AudioManager.Instance.PlaySound(AudioManager.Instance.roughBreath, this.transform.position);
 
         yield return new WaitForSeconds(2.68f);
-        AudioManager.instance.PlaySound(AudioManager.instance.handCoverOff, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.handCoverOff, this.transform.position);
 
         yield return new WaitForSeconds(0.3f);
         animator.Play("CoverOffEye");

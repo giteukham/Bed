@@ -5,15 +5,23 @@ using UnityEngine;
 
 public class EyeGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-
-    [SerializeField]
-    private GameObject pupil; // 동공
+    #region Variables
+    [SerializeField] private GameObject pupil; // 동공
     Quaternion targetQuaternion; // 시선 회전 목표 각도
     float durationTime = 4f;    // 동공 커지는데 걸리는 시간
     float elapsedTime = 0f;     // 동공 커지는 경과 시간
+    #endregion
 
     private void Awake()
     {
@@ -40,12 +48,12 @@ public class EyeGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.eyeStart, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.eyeStart, transform.position);
 
         Vector3 initialScale = pupil.transform.localScale; // 동공 초기 크기
         Vector3 targetScale = new Vector3(1.1f, 1.1f, pupil.transform.localScale.z); // 동공 목표 크기
@@ -71,7 +79,7 @@ public class EyeGimmick : Gimmick
                 if (elapsedTime >= durationTime)
                 {
                     pupil.transform.localScale = targetScale;
-                    AudioManager.instance.PlaySound(AudioManager.instance.eyeEnd, transform.position);
+                    AudioManager.Instance.PlaySound(AudioManager.Instance.eyeEnd, transform.position);
                     yield return new WaitForSeconds(1f);
                     Deactivate();
                     yield break;

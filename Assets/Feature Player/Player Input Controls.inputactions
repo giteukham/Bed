@@ -2,7 +2,7 @@
     "name": "Player Input Controls",
     "maps": [
         {
-            "name": "Mouse",
+            "name": "Player Input",
             "id": "c43bd2cd-c6cb-41a0-adbe-23baaab65cb4",
             "actions": [
                 {
@@ -35,7 +35,7 @@
                 {
                     "name": "MouseClick",
                     "type": "Button",
-                    "id": "6e9c5d08-6a4a-48d9-b43b-cb009020a126",
+                    "id": "40f75fda-9581-4c61-b572-c7449cb3bdc5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -78,40 +78,12 @@
                 },
                 {
                     "name": "",
-                    "id": "fa2d64a7-3aba-4e64-8b42-5e6d2aa067d2",
+                    "id": "1b9d8d2f-666a-4890-aac2-14e2e4875a37",
                     "path": "<Mouse>/press",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "MouseClick",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Keyboard",
-            "id": "63ee175f-65d8-48f5-894b-98af657b4609",
-            "actions": [
-                {
-                    "name": "Esc",
-                    "type": "Button",
-                    "id": "437d605f-4f04-4ed8-aed2-251f60b94dd1",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "a48c92a9-60ee-43d1-991c-054f6ebecae1",
-                    "path": "<keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Esc",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -5,12 +5,21 @@ using UnityEngine;
 
 public class MosquitoGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     private Vector3 startPosition;
-    [SerializeField]
-    private Transform playerPosition;
+    [SerializeField] private Transform playerPosition;
+    #endregion
 
     private int randomNum = 0;
     private float[] randomValue = new float[3];
@@ -42,13 +51,13 @@ public class MosquitoGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
         //소리재생
-        AudioManager.instance.PlaySound(AudioManager.instance.mosquito, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.mosquito, transform.position);
 
         yield return new WaitForSeconds(1);
 

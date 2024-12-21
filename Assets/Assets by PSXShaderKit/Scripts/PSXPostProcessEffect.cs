@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace PSXShaderKit
 {
+    [ExecuteAlways]
     public class PSXPostProcessEffect : MonoBehaviour
     {
         private enum ColorEmulationMode

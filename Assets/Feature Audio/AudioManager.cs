@@ -5,10 +5,8 @@ using FMODUnity;
 using Unity.VisualScripting;
 using FMOD.Studio;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : MonoSingleton<AudioManager>
 {
-    public static AudioManager instance { get; private set;}
-
     #region Other FMOD Events
     [field: Header("Cat SFX")]
     [field: SerializeField] public EventReference catMeow {get; private set;}
@@ -122,12 +120,6 @@ public class AudioManager : MonoBehaviour
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
     private Dictionary<EventReference, EventInstance> eventInstances = new(); 
 
-    private void Awake() 
-    {
-        if (instance != null) Debug.LogError("Audio Manager already exists");
-        instance = this;
-    }
-    
     /// <summary>
     /// 소리 꺼지기 전까지 실행
     /// </summary>

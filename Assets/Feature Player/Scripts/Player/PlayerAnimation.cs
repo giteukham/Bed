@@ -18,13 +18,16 @@ public class PlayerAnimation : MonoBehaviour
         TryGetComponent(out playerAnimator);
         blanketAnimator = blanket.GetComponent<Animator>();
         blanketPosition = blanket.transform.position;
+
+        playerAnimator.keepAnimatorStateOnDisable = true;
+        blanketAnimator.keepAnimatorStateOnDisable = true;
     }
     
     public static void PlayAnimation(string triggerName)
     {
         playerAnimator.SetTrigger(triggerName);
         blanketAnimator.SetTrigger(triggerName);
-        AudioManager.instance.PlayOneShot(AudioManager.instance.blanketMoving, blanketPosition);
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.blanketMoving, blanketPosition);
         PlayerConstant.BodyMovementCAT++;
         PlayerConstant.BodyMovementLAT++;
     }

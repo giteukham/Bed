@@ -5,9 +5,20 @@ using UnityEngine;
 
 public class CatFightGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
+    // 기믹 개인 변수
+    #endregion
     private void Awake()
     {
         gameObject.SetActive(false);
@@ -32,12 +43,12 @@ public class CatFightGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.catFight, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.catFight, transform.position);
         yield return new WaitForSeconds(30);
         //스트레스 데미지
         Deactivate();

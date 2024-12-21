@@ -5,9 +5,20 @@ using UnityEngine;
 
 public class ChairGimmick : Gimmick
 {
-    [field: SerializeField] public override GimmickType Type { get; protected set; }
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
+    // 기믹 개인 변수
+    #endregion
     private void Awake()
     {
         //의자기믹은 처음부터 사라지지 않고 계속 있는걸로
@@ -33,13 +44,13 @@ public class ChairGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
         //의자바퀴소리
-        AudioManager.instance.PlaySound(AudioManager.instance.chair1, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.chair1, transform.position);
         //약간 좌측으로 이동
         timeLimit = 0;
         while (timeLimit <= 1.3f)
@@ -51,7 +62,7 @@ public class ChairGimmick : Gimmick
         yield return new WaitForSeconds(1.1f);
 
         //의자바퀴소리
-        AudioManager.instance.PlaySound(AudioManager.instance.chair2, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.chair2, transform.position);
         //약간 좌측으로 이동
         timeLimit = 0;
         while (timeLimit <= 3f)
@@ -63,7 +74,7 @@ public class ChairGimmick : Gimmick
         yield return new WaitForSeconds(4);
 
         //의자바퀴소리
-        AudioManager.instance.PlaySound(AudioManager.instance.chair1, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.chair1, transform.position);
         //의자 돌아감
         timeLimit = 0;
         while (timeLimit <= 5)
@@ -73,7 +84,7 @@ public class ChairGimmick : Gimmick
         }
 
         //의자 기믹은 단 한번만 나오게 함
-        Probability = 0;
+        probability = 0;
 
         Deactivate();
     }
