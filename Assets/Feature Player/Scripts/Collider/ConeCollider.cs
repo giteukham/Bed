@@ -4,6 +4,7 @@ using AbstractGimmick;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 namespace Bed.Collider
 {
@@ -18,6 +19,8 @@ namespace Bed.Collider
         private float debugImageVerticalValue;
         private float coliderVerticalValue;
         private MeshCollider coneCollider;
+        
+        public UnityEvent OnEnableEvent, OnDisableEvent;
         
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
@@ -43,16 +46,28 @@ namespace Bed.Collider
                 }
             }
         }
+
+        private void OnEnable()
+        {
+            SetColider(BlinkEffect.Blink);
+            OnEnableEvent.Invoke();
+        }
         
+        private void OnDisable()
+        {
+            OnDisableEvent.Invoke();
+        }
+
         private void Awake()
         {
+            Mesh mesh = CreateConeMesh();
+            mesh.name = "ConeMesh";
             coneCollider = this.gameObject.AddComponent<MeshCollider>();
-            coneCollider.sharedMesh = CreateConeMesh();
+            coneCollider.sharedMesh = mesh;
             coneCollider.sharedMesh.RecalculateNormals();
             coneCollider.sharedMesh.RecalculateBounds();
             coneCollider.convex = true;
             coneCollider.isTrigger = true;
-            coneCollider.hideFlags = HideFlags.HideInInspector;
 
             debugImageVertical = vertical * 210;
 
@@ -73,12 +88,12 @@ namespace Bed.Collider
 
         private Vector3[] GetEpllipseCoordinate()
         {
-            Vector3[] epllipsePoints = new Vector3[epllipseSegments + 1];
+            Vector3[] epllipsePoints = new Vector3[epllipseSegments + 2];
             Vector3 epllipsePoint = new Vector3(0f, 0f, distance);
             distance = distance < 1.0f ? 1.0f : distance;
             
-            epllipsePoints[0] = Vector3.zero;
-            for (int i = 1; i < epllipseSegments; i++)
+            epllipsePoints[0] = epllipsePoint;
+            for (int i = 1; i <= epllipseSegments + 1; i++)
             {
                 float angle = ((float)i / (float)epllipseSegments) * 360 * Mathf.Deg2Rad;
                 float x = Mathf.Sin(angle) * horizontal;
@@ -98,20 +113,22 @@ namespace Bed.Collider
             Mesh mesh = new Mesh();
             mesh.Clear();
             
-            Vector3[] vertices = new Vector3[epllipseSegments + 1];
-            for (int i = 0; i < epllipseSegments; i++)
+            Vector3[] vertices = new Vector3[epllipseSegments + 2];
+            
+            for (int i = 1; i < epllipseSegments + 2; i++)
             {
                 vertices[i] = epllipsePoints[i];
             }
             
-            int[] triangles = new int[epllipseSegments * 3];
-            for (int i = 0; i < epllipseSegments; i++)
+            int[] triangles = new int[epllipseSegments * 3 + 3];
+            
+            for (int i = 1; i < epllipseSegments + 1; i++)
             {
                 triangles[i * 3] = 0;
                 triangles[i * 3 + 1] = i + 1;
                 triangles[i * 3 + 2] = (i + 1) % epllipseSegments + 1;
             }
-
+            
             mesh.vertices = vertices;
             mesh.triangles = triangles;
 
@@ -140,7 +157,6 @@ namespace Bed.Collider
                 debugImage.GetComponent<RectTransform>().sizeDelta =    // 디버그 이미지 사이즈 조절
                         new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVerticalValue * (1 - value));    
             }
-            OnValidate();
         }
     }
     

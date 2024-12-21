@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Bed;
 using UnityEngine;
 using UnityEngine.AI;
 using Bed.Collider;
@@ -43,8 +42,8 @@ public class PlayerEyeControl : IPlayerControl
     
     public void SubscribeToEvents()
     {
-        InputSystem.Instance.OnMouseScrollEvent += OnEyelidMove;
-        InputSystem.Instance.OnMouseWheelClickEvent += OnBlink;
+        InputSystem.OnMouseScrollEvent += OnEyelidMove;
+        InputSystem.OnMouseWheelClickEvent += OnBlink;
     }
     
     private void OnBlink()
@@ -130,6 +129,6 @@ public class PlayerEyeControl : IPlayerControl
     
     public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);
     
-    public void UnsubscribeToEvents() => InputSystem.Instance.OnMouseScrollEvent -= OnEyelidMove;
+    public void UnsubscribeToEvents() => InputSystem.OnMouseScrollEvent -= OnEyelidMove;
     
 }
