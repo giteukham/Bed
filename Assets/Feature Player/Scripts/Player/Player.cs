@@ -128,7 +128,7 @@ public class Player : PlayerBase
         UpdatePostProcessing();
         UpdateSFX();
         StopPlayer();
-        coneCollider.SetColider(BlinkEffect.Blink);
+        coneCollider.SetColider();
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)

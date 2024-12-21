@@ -8098,7 +8098,7 @@ GameObject:
   - component: {fileID: 801348872}
   m_Layer: 0
   m_Name: Cone Collider
-  m_TagString: Untagged
+  m_TagString: SightRange
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20905,7 +20905,7 @@ GameObject:
   - component: {fileID: 2077405956}
   - component: {fileID: 2077405959}
   m_Layer: 0
-  m_Name: Gimmick Collision Test Object
+  m_Name: Gimmick Test Object
   m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20998,33 +20998,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2077405954}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &2077405959
-Rigidbody:
+--- !u!114 &2077405959
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2077405954}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb77055769c9a544aa0e09b430934775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDetected: 0
+  <type>k__BackingField: 0
+  _probability: 0
+  <ExclusionGimmickList>k__BackingField: []
 --- !u!33 &2086509238
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -26758,7 +26747,6 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 2077405955}
   - {fileID: 1219860291}
   - {fileID: 1123347002}
   - {fileID: 1613421455}
@@ -26773,3 +26761,4 @@ SceneRoots:
   - {fileID: 1519144858}
   - {fileID: 1732393635}
   - {fileID: 1282133977}
+  - {fileID: 2077405955}
