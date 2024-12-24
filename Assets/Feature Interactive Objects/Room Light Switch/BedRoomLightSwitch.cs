@@ -10,7 +10,7 @@ public class BedRoomLightSwitch : MonoBehaviour
     [SerializeField] private GameObject offSwitch;
     [SerializeField] private GameObject onSwitch;
     private Material cellingLampMaterial;
-    static public bool isOn = false;
+    static public bool isOn = true;
     static private GameObject bedRoomlightSwitch;
 
     void Awake() 
@@ -21,7 +21,7 @@ public class BedRoomLightSwitch : MonoBehaviour
 
     void Start()
     {
-        isOn = false;
+        isOn = true;
     }
 
     void Update()
@@ -47,6 +47,12 @@ public class BedRoomLightSwitch : MonoBehaviour
     {
         if (isOn == _isOn) return;
         isOn = _isOn;
-        AudioManager.Instance.PlaySound(AudioManager.Instance.switchOn, bedRoomlightSwitch.transform.position);
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.switchOn, bedRoomlightSwitch.transform.position);
+    }
+
+    static public void SwitchActionNoSound(bool _isOn)
+    {
+        if (isOn == _isOn) return;
+        isOn = _isOn;
     }
 }

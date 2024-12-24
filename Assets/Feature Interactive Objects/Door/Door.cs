@@ -46,5 +46,35 @@ public class Door : MonoBehaviour
 
         door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, targetAngle, door.transform.eulerAngles.z);
         isRotating = false;
-    } 
+    }
+
+    /// <summary>
+    /// 문 각도 조절
+    /// </summary>
+    /// <param name="angle">각도</param>
+    /// <param name="time">시간</param>
+    public static async void SetNoSound(float angle, float time)
+    {
+        if(isRotating) return;
+
+        if(angle > 105) angle = 105;
+        if(angle < 0) angle = 0;
+        isRotating = true;
+
+        // 270 170
+        float elapsedTime = 0f;
+        float targetAngle = 270f - angle;
+        float pastAngle = door.transform.eulerAngles.y;
+
+        while (elapsedTime < time)
+        {
+            float currentAngle = Mathf.SmoothStep(pastAngle, targetAngle, elapsedTime / time);
+            door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, currentAngle, door.transform.eulerAngles.z);
+            elapsedTime += Time.deltaTime;
+            await UniTask.Yield();
+        }
+
+        door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, targetAngle, door.transform.eulerAngles.z);
+        isRotating = false;
+    }
 }

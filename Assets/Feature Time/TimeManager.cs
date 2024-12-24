@@ -20,6 +20,7 @@ public class TimeManager : MonoBehaviour
     [Header("AlarmClock Related Variables")]
     [SerializeField]private TextMeshPro timeText; 
     [SerializeField]private Renderer clockRenderer; 
+    [SerializeField]private Texture blankTexture;
     [SerializeField]private Texture amTexture;
     [SerializeField]private Texture pmTexture;
     private int hours; 
@@ -176,5 +177,22 @@ public class TimeManager : MonoBehaviour
     {
         if(playTimeToMin < _time) playTimeToMin = 0;
         else playTimeToMin -= _time;
+    }
+
+    public void InitSettings()
+    {
+        timeText.text = "";
+        skyboxMaterial = RenderSettings.skybox;
+        skyboxMaterial.SetFloat("_Exposure", 0.9f);
+        RenderSettings.ambientSkyColor = startSkyColor;
+        RenderSettings.ambientEquatorColor = startEquatorColor;
+        moonLight = moonLightObject.GetComponent<Light>();
+        realTimeCounter = 0;
+        gimmickPickTimeCounter = 0;
+        cycleInterval = timeInterval * 3;
+
+        playTimeToMin = 0;
+        UpdateLighting();
+        clockRenderer.material.SetTexture("_EmissionMap", blankTexture);
     }
 }

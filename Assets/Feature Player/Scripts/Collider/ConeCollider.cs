@@ -127,30 +127,44 @@ namespace Bed.Collider
         public void SetColider()
         {
             if(!gameObject.activeSelf) gameObject.SetActive(true);
-            if(!debugImage.GetComponent<Image>().IsActive()) debugImage.GetComponent<Image>().enabled = true;
+            
 
             if(BlinkEffect.Blink == 0f) 
             {
                 vertical = coliderVerticalValue;
-                 debugImage.GetComponent<RectTransform>().sizeDelta = 
-                        new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVertical); 
             }
             else if(BlinkEffect.Blink == 1)
             {
                 gameObject.SetActive(false);
-                 debugImage.GetComponent<Image>().enabled = false;
             }
             else if(BlinkEffect.Blink != 0 && BlinkEffect.Blink != 1)
             {
                 vertical = coliderVerticalValue * (1 - BlinkEffect.Blink);
-                
-                debugImage.GetComponent<RectTransform>().sizeDelta =    // 디버그 이미지 사이즈 조절
-                        new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVerticalValue * (1 - BlinkEffect.Blink));    
             }
                 
             currentScale.y = 1 - BlinkEffect.Blink;
             coneCollider.transform.localScale = currentScale;
         }
+
+        #if UNITY_EDITOR
+        public void SetDebugImage()
+        {
+            if(!debugImage.GetComponent<Image>().IsActive()) debugImage.GetComponent<Image>().enabled = true;
+
+            if(BlinkEffect.Blink == 0f) 
+            {
+                 debugImage.GetComponent<RectTransform>().sizeDelta = new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVertical); 
+            }
+            else if(BlinkEffect.Blink == 1)
+            {
+                 debugImage.GetComponent<Image>().enabled = false;
+            }
+            else if(BlinkEffect.Blink != 0 && BlinkEffect.Blink != 1)
+            {
+                debugImage.GetComponent<RectTransform>().sizeDelta = new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVerticalValue * (1 - BlinkEffect.Blink));    
+            }
+        }
+        #endif
     }
     
 #if UNITY_EDITOR

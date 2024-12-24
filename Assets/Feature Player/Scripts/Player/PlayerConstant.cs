@@ -11,7 +11,7 @@ public static class PlayerConstant
     public static int stressGaugeMin = 0, fearGaugeMin = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
-    public static bool isFainting, isParalysis = false;
+    public static bool isFainting, isParalysis, isShock = false;
     public static bool isPlayerStop = false;
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)

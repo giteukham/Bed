@@ -55,7 +55,7 @@ public class PlayerEyeControl : IPlayerControl
 
     private async void OnEyelidMove(int mouseScrollValue)
     {
-        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isShock) return;
 
         if (currentValue == null) currentValue = BlinkEffect.Blink;
 

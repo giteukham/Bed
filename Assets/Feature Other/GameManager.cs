@@ -3,7 +3,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public enum GameState
+{
+    Preparation,
+    GamePlay,
+    GameOver
+}
+
+public class GameManager : MonoSingleton<GameManager>
 {
     #region Debug Variables
     [Header("Debug Variables")]
@@ -17,24 +24,110 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     #endregion
 
+    #region Reference Components
+    [SerializeField] private Player player;
+    [SerializeField] private GameObject timeManagerObject;
+    private TimeManager timeManager;
+    #endregion
+
+    private static GameState currentState;
+
     void Awake()
     {
         //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
+        timeManager = timeManagerObject.GetComponent<TimeManager>();
     }
 
     void Start()
     {
-        if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
-        if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
-        if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
+        SetState(GameState.Preparation);
+
+        #if UNITY_EDITOR
+            if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
+            if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
+            if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
+        #endif
     }
 
-    void Update()
+    public GameState GetState()
+    {   
+        return currentState;
+    }
+
+    public void SetState(GameState state)
+    {
+        currentState = state;
+        UpdateState();
+    }
+
+    private void UpdateState()
+    {
+        switch (currentState)
+        {
+            case GameState.Preparation:
+                Prepartion();
+                break;
+            case GameState.GamePlay:
+                GamePlay();
+                break;
+            case GameState.GameOver:
+                GameOver();
+                break;
+        }
+    }
+
+    private void Prepartion()
+    {
+        Debug.Log("Prepartion !!");
+        GameInit();
+    }
+
+    private void GamePlay()
+    {
+        Debug.Log("GamePlay !!");
+        BedRoomLightSwitch.SwitchAction(false);
+        timeManagerObject.SetActive(true);
+        Door.SetNoSound(50, 0.5f);
+    }
+
+    private void GameOver()
+    {
+        player.EyeControl(PlayerEyeStateTypes.Close);
+        PlayerConstant.isShock = true;
+        Debug.Log("GameOver !!");
+    }
+
+    private void GameInit()
+    {
+        BedRoomLightSwitch.SwitchActionNoSound(true);
+        player.EyeControl(PlayerEyeStateTypes.Close);
+        player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
+        timeManagerObject.SetActive(false);
+        timeManager.InitSettings();
+        Door.SetNoSound(0, 0);
+        PlayerConstant.isShock = false;
+    }
+
+    private void Update()
     { 
         if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape)) 
         {
             if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
             else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
+        }
+        #if UNITY_EDITOR
+            DebugFunctions();
+        #endif
+    }
+
+    private void DebugFunctions()
+    {
+        #if UNITY_EDITOR   
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            if (GetState() == GameState.Preparation) SetState(GameState.GamePlay);
+            else if (GetState() == GameState.GamePlay) SetState(GameState.GameOver);
+            else if (GetState() == GameState.GameOver) SetState(GameState.Preparation);
         }
 
         if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
@@ -103,5 +196,7 @@ public class GameManager : MonoBehaviour
                 $"UpLookLAT: <color=yellow>{PlayerConstant.UpLookLAT}</color>\n" +
                 $"DownLookCAT: <color=yellow>{PlayerConstant.DownLookCAT}</color>\n" +
                 $"DownLookLAT: <color=yellow>{PlayerConstant.DownLookLAT}</color>\n";
+
+        #endif
     }
 }

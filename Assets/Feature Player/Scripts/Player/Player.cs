@@ -129,6 +129,10 @@ public class Player : PlayerBase
         UpdateSFX();
         StopPlayer();
         coneCollider.SetColider();
+        
+        #if UNITY_EDITOR
+            coneCollider.SetDebugImage();
+        #endif
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -425,6 +429,21 @@ public class Player : PlayerBase
     public void EnablePlayerObject(bool isActivate)
     {
         gameObject?.SetActive(isActivate);
+    }
+
+    public void EyeControl(PlayerEyeStateTypes types)
+    {
+        playerEyeControl.ChangeEyeState(types);
+    }
+
+    public void DirectionControl(PlayerDirectionStateTypes types)
+    {
+        playerDirectionControl.ChangeDirectionState(types);
+    }
+
+    public void DirectionControlNoSound(PlayerDirectionStateTypes types)
+    {
+        playerDirectionControl.ChangeDirectionStateNoSound(types);
     }
 }
 
