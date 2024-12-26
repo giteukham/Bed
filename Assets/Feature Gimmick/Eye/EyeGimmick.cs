@@ -5,18 +5,23 @@ using UnityEngine;
 
 public class EyeGimmick : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
-    public override float Probability { get; set; } = 100;
-
-
-    [SerializeField]
-    private GameObject pupil; // 동공
+    #region Variables
+    [SerializeField] private GameObject pupil; // 동공
     Quaternion targetQuaternion; // 시선 회전 목표 각도
     float durationTime = 4f;    // 동공 커지는데 걸리는 시간
     float elapsedTime = 0f;     // 동공 커지는 경과 시간
+    #endregion
 
     private void Awake()
     {
@@ -30,30 +35,25 @@ public class EyeGimmick : Gimmick
 
     public override void Activate()
     {
-        // 경과 시간 초기화
-        elapsedTime = 0f;
-
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
         StartCoroutine(MoveEye());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
-        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.eyeStart, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.eyeStart, transform.position);
 
         Vector3 initialScale = pupil.transform.localScale; // 동공 초기 크기
         Vector3 targetScale = new Vector3(1.1f, 1.1f, pupil.transform.localScale.z); // 동공 목표 크기
@@ -79,7 +79,7 @@ public class EyeGimmick : Gimmick
                 if (elapsedTime >= durationTime)
                 {
                     pupil.transform.localScale = targetScale;
-                    AudioManager.instance.PlaySound(AudioManager.instance.eyeEnd, transform.position);
+                    AudioManager.Instance.PlaySound(AudioManager.Instance.eyeEnd, transform.position);
                     yield return new WaitForSeconds(1f);
                     Deactivate();
                     yield break;
@@ -116,5 +116,11 @@ public class EyeGimmick : Gimmick
             float delay = Random.Range(0.3f, 0.9f);
             yield return new WaitForSeconds(delay);
         }
+    }
+
+    public override void Initialize()
+    {
+        elapsedTime = 0f;
+        pupil.transform.localScale = new Vector3(0.58f, 0.58f, pupil.transform.localScale.z);
     }
 }

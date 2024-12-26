@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace PSXShaderKit
 {
+    [ExecuteAlways]
     public class PSXPostProcessEffect : MonoBehaviour
     {
         private enum ColorEmulationMode
@@ -24,7 +25,7 @@ namespace PSXShaderKit
         [SerializeField]
         [Range(0.0f, 1.0f)]
         [Tooltip("Fakes a low-resolution look by changing how pixel values are sampled. Match with DitheringScale if using Fullscreen_Customizable color emulation.")]
-        private float _PixelationFactor = 1;
+        public float _PixelationFactor = 1;
 
         [Header("Color")]
         [SerializeField]

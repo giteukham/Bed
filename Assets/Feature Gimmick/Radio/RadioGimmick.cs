@@ -5,12 +5,20 @@ using UnityEngine;
 
 public class RadioGimmick : Gimmick
 {
-    //기믹 매니저 참조할 변수
-    [SerializeField]
-    private GimmickManager gimmickManager;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
-    public override float Probability { get; set; } = 100;
+    #region Variables
+    // 기믹 개인 변수
+    #endregion  
 
     private void Awake()
     {
@@ -25,34 +33,32 @@ public class RadioGimmick : Gimmick
 
     public override void Activate()
     {
-        print("라디오기믹 실행");
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
         //Probability에 대한 계산식
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.radio, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.radio, transform.position);
         while (timeLimit < 10)
         {
             yield return null;
             //기믹 파훼 성공시
             if (false)
             {
-                Deactivate();
+                //Deactivate();
             }
         }
 
@@ -64,4 +70,6 @@ public class RadioGimmick : Gimmick
         Deactivate();
 
     }
+
+    public override void Initialize(){}
 }

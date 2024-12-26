@@ -6,16 +6,21 @@ using AbstractGimmick;
 
 public class ClapGimcik : Gimmick
 {
-    [SerializeField]
-    private GimmickManager gimmickManager;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
-
-    public override float Probability { get; set; } = 100;
-
+    #region Variables
     public Light houseLight;
-
     public Animator animator;
+    #endregion
 
     private void Awake()
     {
@@ -24,56 +29,63 @@ public class ClapGimcik : Gimmick
 
     private void Update()
     {
-        timeLimit += Time.deltaTime;
+        
     }
 
     private void ClapSoundPlay()
     {
-        // ¹Ú¼ö ¼Ò¸®´Â ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®·Î ½ÇÇà
-        AudioManager.instance.PlaySound(AudioManager.instance.handClap, this.transform.position);
+        // ë°•ìˆ˜ ì†Œë¦¬ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ë¡œ ì‹¤í–‰
+        AudioManager.Instance.PlaySound(AudioManager.Instance.handClap, this.transform.position);
 
-        // Å×½ºÆ®·Î ¹æ ºÒµµ ÄÑÁö°í ²¨Áö°Ô
-        if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
-        else BedRoomLightSwitch.SwitchAction(true);
+        // í…ŒìŠ¤íŠ¸ë¡œ ë°© ë¶ˆë„ ì¼œì§€ê³  êº¼ì§€ê²Œ
+        // if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
+        // else BedRoomLightSwitch.SwitchAction(true);
     }
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = ((PlayerConstant.LeftLookLAT * 2) + (PlayerConstant.LeftLookCAT / 4) + PlayerConstant.LeftFrontLookLAT + (PlayerConstant.LeftFrontLookCAT / 8) + PlayerConstant.LeftStateLAT + (PlayerConstant.LeftStateCAT / 10)) 
+                    * (PlayerConstant.isEyeOpen ? 1 : 0);
     }
+
+    public override void Initialize(){}
 
     private IEnumerator MainCode()
     {
-        Door.Set(45, 0.7f); // ¹æ¹® ¿­±â
+        Door.Set(45, 0.7f); // ë°©ë¬¸ ì—´ê¸°
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +5);
         yield return new WaitForSeconds(1.3f);
-        LivingRoomLightSwitch.SwitchAction(true);   // º¹µµ ºÒ ÄÑ±â
+        LivingRoomLightSwitch.SwitchAction(true);   // ë³µë„ ë¶ˆ ì¼œê¸°
 
         yield return new WaitForSeconds(0.4f);
+        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +5);
         animator.Play("Clapping");
 
         yield return new WaitForSeconds(1.5f);
         animator.Play("ClapOff");
 
         yield return new WaitForSeconds(0.4f);
-        LivingRoomLightSwitch.SwitchAction(false);  // º¹µµ ºÒ ²ô±â
+        LivingRoomLightSwitch.SwitchAction(false);  // ë³µë„ ë¶ˆ ë„ê¸°
 
         yield return new WaitForSeconds(0.2f);
-        Door.Set(0, 0.2f); // ¹æ¹® ´İ±â
+        Door.Set(0, 0.2f); // ë°©ë¬¸ ë‹«ê¸°
 
         yield return new WaitForSeconds(0.4f);
         Deactivate();
     }
+
+
 }

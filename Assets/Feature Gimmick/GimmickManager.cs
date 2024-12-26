@@ -4,35 +4,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class GimmickManager : MonoBehaviour
+public class GimmickManager : MonoSingleton<GimmickManager>
 {
-    [SerializeField]
-    private List<Gimmick> allGimicks;
-
-    public Gimmick unrealGimmick;
-    public Gimmick humanGimmick;
-    public Gimmick objectGimmick;
-
-    private int randomNum1 = 0;
-    private int randomNum2 = 0;
-
-    private Gimmick temp;
+    [SerializeField] private List<Gimmick> AllGimicks;
+    [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
 
     private void Awake()
     {
-        StartCoroutine(RandomGimmick());
+        foreach (Gimmick gimmick in AllGimicks) 
+            if(gimmick.gameObject.activeSelf == false) 
+            {
+                gimmick.gameObject.SetActive(true);
+                gimmick.gameObject.SetActive(false);
+            }
     }
 
-    private void Update()
+    // 타입 중복 검사
+    private bool CheckDuplication(Gimmick gimmick)
     {
-        if (unrealGimmick == null && humanGimmick == null && objectGimmick == null) TimeManager.GimmickRunningCheck(false);
-        else TimeManager.GimmickRunningCheck(true);
-    }
-
-    //현재 실행 시킬 기믹과 같은 타입의 기믹이 실행되고 있는지 확인
-    private bool CanActivateGimmick(Gimmick gimmick)
-    {
-        switch (gimmick.Type)
+        switch (gimmick.type)
         {
             case GimmickType.Unreal:
                 return unrealGimmick == null;
@@ -45,97 +35,81 @@ public class GimmickManager : MonoBehaviour
         }
     }
 
-    //기믹 분류 후 타입에 맞는 변수에 넣음
-    private void ActivateGimmick(Gimmick gimmick)
+    // TimeManager에서 호출
+    public void PickGimmick()
     {
-        switch (gimmick.Type)
-        {
-            case GimmickType.Unreal:
-                unrealGimmick = gimmick;
-                break;
-            case GimmickType.Human:
-                humanGimmick = gimmick;
-                break;
-            case GimmickType.Object:
-                objectGimmick = gimmick;
-                break;
-        }
-        //기믹 실행
-        gimmick.Activate();
-    }
-
-    private IEnumerator RandomGimmick()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(3);
-            RedefineProbability();
-            ChoiceGimmick();
-        }
-    }
-
-    private void ChoiceGimmick()
-    {
-
-        if (unrealGimmick == null || humanGimmick == null || objectGimmick == null)
-        {
-            //기믹 3종류 중에 한종류라도 실행 안되는거 있으면 그냥 코드 계속 실행
-        }
-        else
-        {
-            //종류 3개 다 실행되고 있는 상태면 메소드 탈출
-            return;
-        }
-
-        //1~10번 정도 리스트 무작위 섞기
-        randomNum1 = Random.Range(1, 10);
-        for (int i = 0; i < randomNum1; i++)
-        {
-            ShakeList();
-        }
+        if (unrealGimmick != null && humanGimmick != null && objectGimmick != null) return;
 
         //무작위 확률값 구하기
-        randomNum1 = Random.Range(1, 101);
+        int randomInt = Random.Range(30, 101);
 
-        //문제점 : allGimicks 앞쪽에 위치한 기믹일 수록 등장확률이 더 높음
-        foreach (Gimmick item in allGimicks)
+        foreach (Gimmick gimmick in AllGimicks)
         {
-            if (item.Probability >= randomNum1 && CanActivateGimmick(item) == true)
+            //만약 확률이 무작위 확률값 보다 높으면서 같은 타입의 기믹이 실행되고 있지 않다면 뽑힌 기믹 실행
+            if (gimmick.probability >= randomInt && CheckDuplication(gimmick) == true)
             {
-                //기믹 실행
-                ActivateGimmick(item);
+                switch (gimmick.type)
+                {
+                    case GimmickType.Unreal:
+                        unrealGimmick = gimmick;
+                        break;
+                    case GimmickType.Human:
+                        humanGimmick = gimmick;
+                        break;
+                    case GimmickType.Object:
+                        objectGimmick = gimmick;
+                        break;
+                }
+
+                if(gimmick.ExclusionGimmickList != null) 
+                    foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
+                        AllGimicks.Remove(exclusionGimmick);
+
+                gimmick.Activate();
                 break;
             }
         }
-
     }
 
-    //기믹별 등장확률 재정의
-    private void RedefineProbability()
+    // TimeManager에서 호출
+    // 기믹별 등장확률 재정의(UpdateProbability는 각 기믹 스크립트마다 다름)
+    public void RedefineProbability()
     {
-        foreach (Gimmick item in allGimicks)
+        foreach (Gimmick gimmick in AllGimicks)
         {
-            item.UpdateProbability();
+            gimmick.UpdateProbability();
         }
     }
 
-    //리스트 섞는 메소드
-    private void ShakeList()
+    public void ResetDeactivateGimmick(Gimmick gimmick)
     {
-        randomNum1 = Random.Range(0, allGimicks.Count);
-        temp = allGimicks[randomNum1];
+        if(gimmick.ExclusionGimmickList != null) 
+            foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
+                AllGimicks.Add(exclusionGimmick);
+        AllGimicks.Remove(gimmick);
+        
+        for ( int i = AllGimicks.Count - 1; i > 0; i--) // 리스트 섞기 Fisher-Yates Shuffle
+        {
+            int randomInt = Random.Range(0, i + 1);
+            Gimmick temp = AllGimicks[i];
+            AllGimicks[i] = AllGimicks[randomInt];
+            AllGimicks[randomInt] = temp;
+        }
 
-        randomNum2 = Random.Range(0, allGimicks.Count);
-        allGimicks[randomNum1] = allGimicks[randomNum2];
-
-        allGimicks[randomNum2] = temp;
-    }
-
-    //등장확률 낮추는 메소드
-    public void LowerProbability(Gimmick gimmick)
-    {
-        allGimicks.Remove(gimmick);
-        allGimicks.Add(gimmick);
-        gimmick.Probability = 0;
+        AllGimicks.Add(gimmick); // 위치, 확률 초기화
+        gimmick.probability = 0;
+        
+        switch (gimmick.type)      // 타입변수에서 제거
+        {
+            case GimmickType.Unreal:
+                unrealGimmick = null;
+                break;
+            case GimmickType.Human:
+                humanGimmick = null;
+                break;
+            case GimmickType.Object:
+                objectGimmick = null;
+                break;
+        } 
     }
 }

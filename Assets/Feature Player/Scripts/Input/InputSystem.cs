@@ -1,44 +1,41 @@
 using System;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// TODO: 성혁이꺼랑 합쳐야 함.
 
+/// <summary>
+/// 수정 날짜 : 2024-11-18 최무령
+/// </summary>
 public class InputSystem : MonoBehaviour
 {
-    private static float mouseDeltaX;
-    private static float mouseDeltaY;
-    public static float MouseDeltaX
-    {
-        get { return mouseDeltaX; }
-        private set { mouseDeltaX = value; }
-    }
 
-    public static float MouseDeltaY
-    {
-        get { return mouseDeltaY; }
-        private set { mouseDeltaY = value; }
-    }
-
+    #region Mouse Events
     public static event Action OnMouseWheelClickEvent; 
-    public static event Action<int> OnMouseScrollEvent; // 마우스 휠. 위로는 120, 아래로는 -120
-
-    private void OnMouseDelta(InputValue value)
-    {
-        MouseDeltaX = value.Get<Vector2>().x;
-        MouseDeltaY = value.Get<Vector2>().y;
-    }
+    public static event Action<int> OnMouseScrollEvent;
+    public event Action OnMouseClickEvent;   
+    #endregion
 
     private void OnMouseScroll(InputValue value)
     {
+        if (PlayerConstant.isPlayerStop) return;
         OnMouseScrollEvent?.Invoke(Convert.ToInt32(value.Get<Vector2>().y));
     }
     
     private void OnMouseWheelClick(InputValue value)
     {
+        if (PlayerConstant.isPlayerStop) return;
         if (value.isPressed)
         {
             OnMouseWheelClickEvent?.Invoke();
+        }
+    }
+
+    private void OnMouseClick(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            OnMouseClickEvent?.Invoke();
         }
     }
 }
