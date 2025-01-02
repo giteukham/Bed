@@ -1,0 +1,52 @@
+#pragma kernel ResetHashTable
+
+#define BLINK 0xFFFFFFFF
+#define THREADS 128
+
+struct Particle
+{
+    float3 Position;
+    float4 Color;
+};
+
+RWStructuredBuffer<Particle> Particles;
+
+uint particleCount;
+uint cellCount;
+
+groupshared uint SharedHashTable[THREADS];
+
+int3 CellIndex(float3 position, float cellSize)
+{
+    return int3(position / cellSize);
+}
+
+uint Hash(int3 position)
+{
+    return (position.x * 73856093) ^ (position.y * 19349663) ^ (position.z * 83492791);
+}
+
+uint HashKey(uint hash, uint size)
+{
+    return hash % size;
+}
+
+[numthreads(THREADS, 1, 1)]
+void ResetHashTable(uint3 id : SV_DispatchThreadID)
+{
+    SharedHashTable[id.x] = 0;
+    GroupMemoryBarrierWithGroupSync();
+}
+
+[numthreads(THREADS, 1, 1)]
+void CreateHashTable(uint3 id : SV_DispatchThreadID, uint3 gtid : SV_GroupThreadID, uint gid : SV_GroupID)
+{
+    uint index = gid * THREADS + gtid.x;
+
+    int3 cellIndex = CellIndex(Particles[index].Position, particleCount);
+    uint hash = Hash(cellIndex);
+    uint key = HashKey(hash, cellCount);
+
+    SharedHashTable[gtid.x] = key;
+
+}

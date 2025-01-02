@@ -94,6 +94,9 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     [field: Header("Chair2 SFX")]
     [field: SerializeField] public EventReference chair2 { get; private set; }
+    
+    [field: Header("Siren SFX")]
+    [field: SerializeField] public EventReference siren { get; private set; }
 
     #endregion
 
