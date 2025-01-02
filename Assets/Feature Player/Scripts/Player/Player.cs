@@ -84,7 +84,7 @@ public class Player : PlayerBase
 
     private void Awake()
     {
-        POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
     }
 
     private void Start()
@@ -393,18 +393,10 @@ public class Player : PlayerBase
     
     private void StopPlayer()
     {
-        if (PlayerConstant.isPlayerStop == true)
+        StopPlayer(PlayerConstant.isPlayerStop);
+        if (PlayerConstant.isPlayerStop && PlayerConstant.isEyeOpen)
         {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
-            if (PlayerConstant.isEyeOpen) playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
-        }
-        if (PlayerConstant.isPlayerStop == false)
-        {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
+            playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
         }
     }
     

@@ -17,9 +17,9 @@ public class MouseSettings : MonoSingleton<MouseSettings>
 
     private Vector3 mainPlayerPos;
     
-    [FormerlySerializedAs("playerObjects")] [SerializeField] private GameObject[] playerDeActiveObjects;                                    // 꺼버릴 player의 오브젝트들
+    [SerializeField] private GameObject[] playerDeActiveObjects;                                    // 꺼버릴 player의 오브젝트들
     
-    [SerializeField] private Player player;
+    [FormerlySerializedAs("player")] [SerializeField] private Player mainPlayer;
     [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
     
     [Tooltip("기본 값은 오른쪽 방향으로 3, 왼쪽 방향으로 -3")]
@@ -59,23 +59,33 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     {
         InitMouseSetting();
         
-        MouseWindowUI.OnScreenActive += () =>
+        MouseScreen.OnScreenActivate += () =>
         {
-            ActivePlayerObject(false);
-            previewPlayer?.EnablePlayerObject(true);
+            if (mainPlayer != null)
+            {
+                mainPlayer.SetActivatePlayer(false);
+                mainPlayerPos = previewPlayerPos.position;
+            }
 
-            mainPlayerPos = previewPlayerPos.position;
-            previewPlayerPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
-            InitCameraSettings(previewPlayer);
+            if (previewPlayer != null)
+            {
+                previewPlayer.SetActivatePlayer(true);
+                previewPlayerPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
+                InitCameraSettings(previewPlayer);
+            }
         };
-        MouseWindowUI.OnScreenDeactive += () =>
+        MouseScreen.OnScreenDeactivate += () =>
         {
-            if (Application.isPlaying == false) return;
+            if (mainPlayer != null)
+            {
+                mainPlayer.SetActivatePlayer(true);
+            }
             
-            ActivePlayerObject(true);
-            previewPlayer?.EnablePlayerObject(false);
-            
-            previewPlayerPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
+            if (previewPlayer != null)
+            {
+                previewPlayer.SetActivatePlayer(false);
+                previewPlayerPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
+            }
         };
     }
     
@@ -83,6 +93,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     {
         foreach (GameObject playerObject in playerDeActiveObjects)
         {
+            if (playerObject == null) continue;
             playerObject.SetActive(isActivate);
         }
     }
@@ -99,21 +110,19 @@ public class MouseSettings : MonoSingleton<MouseSettings>
 
     private void Start()
     {
-        InitCameraSettings(player);
+        InitCameraSettings(mainPlayer);
     }
     
     private void Update()
     {
-        if (PlayerConstant.isPlayerStop)
+        if (mainPlayer.isActiveAndEnabled == true)
         {
-            mouseHorizontalSpeed = 0;
-            mouseVerticalSpeed = 0;
+            CalculateMouseSpeed(mainPlayer); 
         }
-        
-        if (CheckPlayerObjectActive() == true)
-            CalculateMouseSpeed(player); 
-        else if (CheckPlayerObjectActive() == false && previewPlayer.isActiveAndEnabled)
+        else if (mainPlayer.isActiveAndEnabled == false && previewPlayer.isActiveAndEnabled)
+        {
             CalculateMouseSpeed(previewPlayer);
+        }
     }
 
     private void CalculateMouseSpeed(PlayerBase player)
@@ -123,13 +132,13 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         
         if ( PlayerConstant.isParalysis )
         {
-            mouseHorizontalSpeed = player.POVCamera.m_HorizontalAxis.m_InputAxisValue * 0.02f * horizontalReverseConstant;
-            mouseVerticalSpeed = player.POVCamera.m_VerticalAxis.m_InputAxisValue * 0.02f * verticalReverseConstant;
+            mouseHorizontalSpeed = player.povCamera.m_HorizontalAxis.m_InputAxisValue * 0.02f * horizontalReverseConstant;
+            mouseVerticalSpeed = player.povCamera.m_VerticalAxis.m_InputAxisValue * 0.02f * verticalReverseConstant;
         }
         else
         {
-            mouseHorizontalSpeed = player.POVCamera.m_HorizontalAxis.m_InputAxisValue * horizontalReverseConstant;
-            mouseVerticalSpeed = player.POVCamera.m_VerticalAxis.m_InputAxisValue * verticalReverseConstant;
+            mouseHorizontalSpeed = player.povCamera.m_HorizontalAxis.m_InputAxisValue * horizontalReverseConstant;
+            mouseVerticalSpeed = player.povCamera.m_VerticalAxis.m_InputAxisValue * verticalReverseConstant;
         }
     }
     
@@ -145,12 +154,12 @@ public class MouseSettings : MonoSingleton<MouseSettings>
 
     private void InitCameraSettings(PlayerBase player)
     {
-        player.POVCamera.m_VerticalAxis.Value = 0f;
-        player.POVCamera.m_HorizontalAxis.Value = 0f;
-        player.POVCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
-        player.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
-        player.POVCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
-        player.POVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        player.povCamera.m_VerticalAxis.Value = 0f;
+        player.povCamera.m_HorizontalAxis.Value = 0f;
+        player.povCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
+        player.povCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
+        player.povCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
+        player.povCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
     }
     
     /// <summary>
@@ -159,8 +168,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     public void MouseVerticalReverse()
     {
         ToggleVerticalReverse();
-        player.POVCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
-        previewPlayer.POVCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
+        mainPlayer.povCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
+        previewPlayer.povCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
         OnVerticalReverse?.Invoke(isVerticalReverse);
     }
     private void ToggleVerticalReverse()
@@ -175,8 +184,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     public void MouseHorizontalReverse()
     {
         ToggleHorizontalReverse();
-        player.POVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
-        previewPlayer.POVCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        mainPlayer.povCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        previewPlayer.povCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         OnHorizontalReverse?.Invoke(isHorizontalReverse);
     }
 
@@ -194,10 +203,10 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         mouseSensitivity = value;
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;
         
-        player.POVCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
-        player.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
-        previewPlayer.POVCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
-        previewPlayer.POVCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
+        mainPlayer.povCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
+        mainPlayer.povCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
+        previewPlayer.povCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
+        previewPlayer.povCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
         
         SaveManager.Instance.SaveMouseSensitivity(mouseSensitivity);
     }
@@ -214,5 +223,11 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     {
         deadZoneSliderValue = value;
         SaveManager.Instance.SaveDeadZoneValue(deadZoneSliderValue);
+    }
+
+    public void ResetMouseSpeed()
+    {
+        mouseHorizontalSpeed = 0;
+        mouseVerticalSpeed = 0;
     }
 }
