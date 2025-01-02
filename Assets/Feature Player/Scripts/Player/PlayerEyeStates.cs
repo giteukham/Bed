@@ -57,6 +57,7 @@ public class PlayerEyeStates
     
     public class CloseEyeState : IState     // ?��?�� ?��?��?�� 감�?? ?��?��
     {
+        float closeTime = 0;
         public async void Enter()
         {
             float elapsedTime = 0f;
@@ -80,6 +81,7 @@ public class PlayerEyeStates
 
         public void Execute()
         {
+            closeTime += Time.deltaTime;
             if (PlayerConstant.isEyeOpen == false) 
             {
                 PlayerConstant.EyeClosedCAT += Time.deltaTime;
@@ -89,7 +91,12 @@ public class PlayerEyeStates
 
         public void Exit()
         {
-            
+            if (closeTime <= 0.4f) 
+            {
+                PlayerConstant.EyeBlinkCAT++;
+                PlayerConstant.EyeBlinkLAT++;
+            }
+            closeTime = 0;
             PlayerConstant.isEyeOpen = true;
         }
     }
