@@ -669,9 +669,22 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
         else //rect == inside
         {
-            ratio1 = 1 / (Display.main.systemWidth / targetWidth);
-            ratio2 = 1 / (Display.main.systemHeight / targetHeight);
-            print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
+            if (isWindowedScreenReady == false) //전체화면일때 크기 고정
+            {
+                ratio1 = 1;
+                ratio2 = 1;
+                //rect 변화 없기 때문에 텍스트 내용, 크기 변경 직접 실행
+                previewText.text = $"{inputFieldWidth.text} X {inputFieldHeight.text}\n{frameRateReady}hz";
+                previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+
+                inputFieldWidth.text = $"{inputFieldWidth.text}";
+                inputFieldHeight.text = $"{inputFieldHeight.text}";
+            }
+            else
+            {
+                ratio1 = 1 / (Display.main.systemWidth / targetWidth);
+                ratio2 = 1 / (Display.main.systemHeight / targetHeight);
+            }
         
             InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
             rect.anchoredPosition = Vector2.zero;
