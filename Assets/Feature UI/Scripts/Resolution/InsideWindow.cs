@@ -106,6 +106,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
     private void OnEnable()
     {
         ToggleResizeEvent(resolutionManager.IsWindowedScreenReady);
+        insideNavigationBar.SetNavigationBarActive(resolutionManager.IsWindowedScreenReady);
         resolutionManager.OnFullScreenSwitched.AddListener(FullScreenSwitchHandler);
         
         Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
