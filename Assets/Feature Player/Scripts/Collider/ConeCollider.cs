@@ -20,12 +20,15 @@ namespace Bed.Collider
         private MeshCollider coneCollider;
         
         private Vector3 currentScale; // 콜라이더 스케일일
+        
+        private Action<UnityEngine.Collider> _onEnter, _onExit;
 
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
         {  
             if (other.gameObject.CompareTag("Gimmick"))
             {
+                _onEnter?.Invoke(other);
                 Debug.Log("Enter");
                 if (other.gameObject.TryGetComponent(out Gimmick gimmick))
                 {
@@ -39,6 +42,7 @@ namespace Bed.Collider
         {
             if (other.gameObject.CompareTag("Gimmick"))
             {
+                _onExit?.Invoke(other);
                 Debug.Log("Exit");
                 if (other.gameObject.TryGetComponent(out Gimmick gimmick))
                 {
@@ -151,6 +155,13 @@ namespace Bed.Collider
             currentScale.y = 1 - BlinkEffect.Blink;
             coneCollider.transform.localScale = currentScale;
         }
+        
+        public void AddEnterListener(Action<UnityEngine.Collider> action) => _onEnter += action;
+        public void AddExitListener(Action<UnityEngine.Collider> action) => _onExit += action;
+        public void RemoveEnterListener(Action<UnityEngine.Collider> action) => _onEnter -= action;
+        public void RemoveExitListener(Action<UnityEngine.Collider> action) => _onExit -= action;
+        public void ResetEnterListener() => _onEnter = null;
+        public void ResetExitListener() => _onExit = null;
     }
     
 #if UNITY_EDITOR

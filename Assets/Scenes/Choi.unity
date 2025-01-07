@@ -2286,7 +2286,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &120895764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4557,6 +4557,7 @@ GameObject:
   - component: {fileID: 337857036}
   - component: {fileID: 337857035}
   - component: {fileID: 337857034}
+  - component: {fileID: 337857038}
   m_Layer: 0
   m_Name: Screen
   m_TagString: Untagged
@@ -4651,6 +4652,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!95 &337857038
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337857033}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &364969699
 GameObject:
   m_ObjectHideFlags: 0
@@ -7302,7 +7324,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 669272066}
-  - component: {fileID: 669272065}
+  - component: {fileID: 669272067}
+  - component: {fileID: 669272068}
   m_Layer: 0
   m_Name: Siren
   m_TagString: Untagged
@@ -7310,27 +7333,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &669272065
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 669272064}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7a5289903d89dff4ead0fab3b54065f6, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &669272066
 Transform:
   m_ObjectHideFlags: 0
@@ -7346,6 +7348,64 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &669272067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669272064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4b8667ace906f0408a73842cc72e1a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDetected: 0
+  phone: {fileID: 1005915029}
+  monitor: {fileID: 0}
+--- !u!114 &669272068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669272064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81069bb3f0a94084953f523a0dc8a95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animList:
+  - name: 
+    gameObject: {fileID: 1005915029}
+    nextComponentInGameObject: {fileID: 0}
+    eventBeforeConversion:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 669272067}
+          m_TargetAssemblyTypeName: SirenGimmick, Assembly-CSharp
+          m_MethodName: OnPhoneAnimation
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    swapType: 1
+    duration: 0
+    isTriggered: 0
+  - name: 
+    gameObject: {fileID: 1948091457}
+    nextComponentInGameObject: {fileID: 2100000, guid: ee8893c9b1e99b44698169165f9b8caa, type: 2}
+    eventBeforeConversion:
+      m_PersistentCalls:
+        m_Calls: []
+    swapType: 1
+    duration: 0
+    isTriggered: 0
 --- !u!1 &670431567
 GameObject:
   m_ObjectHideFlags: 0
@@ -22625,7 +22685,7 @@ Animator:
   m_GameObject: {fileID: 1453599781109459590}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f863c38909f34424aaedf9d4b324465f, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7a5289903d89dff4ead0fab3b54065f6, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
