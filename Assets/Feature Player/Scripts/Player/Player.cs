@@ -48,6 +48,7 @@ public class Player : PlayerBase
     private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
     private CinemachineBasicMultiChannelPerlin cameraNoise;
+    public float pixelationFactor = 0.25f;
     #endregion
 
     #region Player Stats Updtae Variables
@@ -111,6 +112,8 @@ public class Player : PlayerBase
 
         playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
+
+        pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
 
     void Update() 
@@ -268,7 +271,7 @@ public class Player : PlayerBase
     {
         StartCoroutine(ChromaticAberrationEffect());
         grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
-        psxPostProcessEffect._PixelationFactor = 0.25f + (-PlayerConstant.fearGauge * 0.0015f);
+        psxPostProcessEffect._PixelationFactor = pixelationFactor + (-PlayerConstant.fearGauge * 0.0015f);
         colorGrading.saturation.value = -PlayerConstant.fearGauge;
 
         depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;

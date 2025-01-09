@@ -30,13 +30,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         {
             PlayerPrefs.DeleteAll();
         }
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            print("j 누름");
-            GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
-        }
-
     }
 
     //마우스 감도 관련
@@ -167,5 +160,15 @@ public class SaveManager : MonoSingleton<SaveManager>
     public float LoadDeadZoneValue()
     {
         return PlayerPrefs.GetFloat("DeadZoneValue", 0.1f);
+    }
+
+    public void SavePixelationFactor(float value)
+    {
+        PlayerPrefs.SetFloat("PixelationFactor", value);
+    }
+
+    public float LoadPixelationFactor()
+    {
+        return PlayerPrefs.GetFloat("PixelationFactor", 0.25f * (Display.main.systemWidth / 1920f));
     }
 }
