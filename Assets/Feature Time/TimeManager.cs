@@ -43,7 +43,7 @@ public class TimeManager : MonoBehaviour
     private Color currentSkyColor, currentEquatorColor;
     #endregion
     
-    private void Start()
+    private void OnEnable()
     {
         timeText.text = $"{hours:00}:{minutes:00}";
         moonLight = moonLightObject.GetComponent<Light>();
@@ -51,6 +51,7 @@ public class TimeManager : MonoBehaviour
         skyboxMaterial.SetFloat("_Exposure", 0.9f);
         RenderSettings.ambientSkyColor = startSkyColor;
         RenderSettings.ambientEquatorColor = startEquatorColor;
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.clockBeep, timeText.gameObject.transform.position);
 
         realTimeCounter = 0;
         gimmickPickTimeCounter = 0;
@@ -61,6 +62,24 @@ public class TimeManager : MonoBehaviour
         UpdateTime();
         UpdateClock(); 
         UpdateLighting();
+    }
+
+    // 초기화
+    private void OnDisable()
+    {
+        timeText.text = "";
+        skyboxMaterial = RenderSettings.skybox;
+        skyboxMaterial.SetFloat("_Exposure", 0.9f);
+        RenderSettings.ambientSkyColor = startSkyColor;
+        RenderSettings.ambientEquatorColor = startEquatorColor;
+        moonLight = moonLightObject.GetComponent<Light>();
+        realTimeCounter = 0;
+        gimmickPickTimeCounter = 0;
+        cycleInterval = timeInterval * 3;
+
+        playTimeToMin = 0;
+        UpdateLighting();
+        clockRenderer.material.SetTexture("_EmissionMap", blankTexture);
     }
 
     private void UpdateTime() // 시간 갱신, 시간 관련 기능들

@@ -95,6 +95,26 @@ public class AudioManager : MonoSingleton<AudioManager>
     [field: Header("Chair2 SFX")]
     [field: SerializeField] public EventReference chair2 { get; private set; }
 
+    [field: Header("Door Knock SFX")]
+    [field: SerializeField] public EventReference doorKnock { get; private set; }
+
+    [field: Header("Clock Beep SFX")]
+    [field: SerializeField] public EventReference clockBeep {get; private set;}
+
+    [field: Header("Door Open SFX")]
+    [field: SerializeField] public EventReference doorOpen {get; private set;}
+
+    [field: Header("Door Close SFX")]
+    [field: SerializeField] public EventReference doorClose {get; private set;}
+
+    [field: Header("Door Slow Open SFX")]
+    [field: SerializeField] public EventReference doorSlowOpen {get; private set;}
+
+    [field: Header("Door Slow Close SFX")]
+    [field: SerializeField] public EventReference doorSlowClose {get; private set;}
+
+    [field: Header("Door Creak SFX")]
+    [field: SerializeField] public EventReference doorCreak {get; private set;}
     #endregion
 
     #region Player FMOD Events

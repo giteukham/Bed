@@ -13,31 +13,31 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     [SerializeField] private Transform previewPlayerPos;                                           
 
     [Header("Preview Settings")] 
-    [SerializeField] private Transform meshesPos;                         // ÇÃ·¹ÀÌ¾îÀÇ ºÎ¸ğ ¿ÀºêÁ§Æ® Global Position, °Ç¹° MeshÀÇ À§Ä¡                             
+    [SerializeField] private Transform meshesPos;                         // í”Œë ˆì´ì–´ì˜ ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸ Global Position, ê±´ë¬¼ Meshì˜ ìœ„ì¹˜                             
 
     private Vector3 mainPlayerPos;
     
-    [FormerlySerializedAs("playerObjects")] [SerializeField] private GameObject[] playerDeActiveObjects;                                    // ²¨¹ö¸± playerÀÇ ¿ÀºêÁ§Æ®µé
+    [FormerlySerializedAs("playerObjects")] [SerializeField] private GameObject[] playerDeActiveObjects;                                    // êº¼ë²„ë¦´ playerì˜ ì˜¤ë¸Œì íŠ¸ë“¤
     
     [SerializeField] private Player player;
     [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
     
-    [Tooltip("±âº» °ªÀº ¿À¸¥ÂÊ ¹æÇâÀ¸·Î 3, ¿ŞÂÊ ¹æÇâÀ¸·Î -3")]
+    [Tooltip("ê¸°ë³¸ ê°’ì€ ì˜¤ë¥¸ìª½ ë°©í–¥ìœ¼ë¡œ 3, ì™¼ìª½ ë°©í–¥ìœ¼ë¡œ -3")]
     [SerializeField] private float turnRightSpeed, turnLeftSpeed;
 
-    [Tooltip("¸¶¿ì½º ¼Óµµ ÃÖ´ë°ª. ±âº» °ªÀº max = 10f")]
-    [SerializeField] private float mouseAxisLimit;                                          // ¸¶¿ì½º ¼Óµµ ÃÖ´ë°ª. CinemachineÀÇ Axis value¸¦ °¡Á®¿À´Âµ¥
-                                                                                            // axis °ªÀº ÃÖ´ë Á¦ÇÑÀÌ ¾ø¾î¼­ °­Á¦·Î Á¦ÇÑÀ» µÒ
+    [Tooltip("ë§ˆìš°ìŠ¤ ì†ë„ ìµœëŒ€ê°’. ê¸°ë³¸ ê°’ì€ max = 10f")]
+    [SerializeField] private float mouseAxisLimit;                                          // ë§ˆìš°ìŠ¤ ì†ë„ ìµœëŒ€ê°’. Cinemachineì˜ Axis valueë¥¼ ê°€ì ¸ì˜¤ëŠ”ë°
+                                                                                            // axis ê°’ì€ ìµœëŒ€ ì œí•œì´ ì—†ì–´ì„œ ê°•ì œë¡œ ì œí•œì„ ë‘ 
     
-    [Tooltip("Deadzone ¿µ¿ªÀÇ ÃÖ´ñ°ª"), Range(0f, 1f)]
-    [SerializeField] private float deadZoneLimit;                                           // Deadzone ¿µ¿ªÀÇ ÃÖ´ñ°ª. Áï, 0ÀÌ¸é DeadzoneÀ» ³¡±îÁö ´Ã¸± ¼ö ÀÖ´Âµ¥ 1ÀÌ¸é DeadzoneÀÌ ¾øÀ½
+    [Tooltip("Deadzone ì˜ì—­ì˜ ìµœëŒ“ê°’"), Range(0f, 1f)]
+    [SerializeField] private float deadZoneLimit;                                           // Deadzone ì˜ì—­ì˜ ìµœëŒ“ê°’. ì¦‰, 0ì´ë©´ Deadzoneì„ ëê¹Œì§€ ëŠ˜ë¦´ ìˆ˜ ìˆëŠ”ë° 1ì´ë©´ Deadzoneì´ ì—†ìŒ
     
-    private const float mouseSpeedMultiplier = 500f;                                        // ¸¶¿ì½º °¨µµ »ó¼ö
+    private const float mouseSpeedMultiplier = 500f;                                        // ë§ˆìš°ìŠ¤ ê°ë„ ìƒìˆ˜
     private float mouseSensitivity = 1f;
-    private float mouseMaxSpeed;                                                            // ¸¶¿ì½º ÃÖ´ë ¼Óµµ
+    private float mouseMaxSpeed;                                                            // ë§ˆìš°ìŠ¤ ìµœëŒ€ ì†ë„
     private float mouseHorizontalSpeed, mouseVerticalSpeed;                                     
-    private bool isVerticalReverse, isHorizontalReverse;                                    // false´Â Á¤»ó, true´Â ¹İÀü
-    private float deadZoneSliderValue;                                                      // ÇöÀç Deadzone ¿µ¿ªÀÇ °ª
+    private bool isVerticalReverse, isHorizontalReverse;                                    // falseëŠ” ì •ìƒ, trueëŠ” ë°˜ì „
+    private float deadZoneSliderValue;                                                      // í˜„ì¬ Deadzone ì˜ì—­ì˜ ê°’
     
     #region Properties
     public float MouseSensitivity => mouseSensitivity;
@@ -65,7 +65,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
             previewPlayer?.EnablePlayerObject(true);
 
             mainPlayerPos = previewPlayerPos.position;
-            previewPlayerPos.position = meshesPos.position;                 // ÇÃ·¹ÀÌ¾îÀÇ ºÎ¸ğ ¿ÀºêÁ§Æ® Global PositionÀ» °Ç¹° MeshÀÇ À§Ä¡·Î ÀÌµ¿
+            previewPlayerPos.position = meshesPos.position;                 // í”Œë ˆì´ì–´ì˜ ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸ Global Positionì„ ê±´ë¬¼ Meshì˜ ìœ„ì¹˜ë¡œ ì´ë™
             InitCameraSettings(previewPlayer);
         };
         MouseWindowUI.OnScreenDeactive += () =>
@@ -75,7 +75,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
             ActivePlayerObject(true);
             previewPlayer?.EnablePlayerObject(false);
             
-            previewPlayerPos.position = mainPlayerPos;                      // ÇÃ·¹ÀÌ¾îÀÇ ºÎ¸ğ ¿ÀºêÁ§Æ® Global PositionÀ» ¿ø·¡ ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡·Î ÀÌµ¿
+            previewPlayerPos.position = mainPlayerPos;                      // í”Œë ˆì´ì–´ì˜ ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸ Global Positionì„ ì›ë˜ í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜ë¡œ ì´ë™
         };
     }
     
@@ -154,7 +154,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     }
     
     /// <summary>
-    /// ¸¶¿ì½º »óÇÏ¹İÀü
+    /// ë§ˆìš°ìŠ¤ ìƒí•˜ë°˜ì „
     /// </summary>
     public void MouseVerticalReverse()
     {
@@ -170,7 +170,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     }
 
     /// <summary>
-    /// ¸¶¿ì½º ÁÂ¿ì ¹İÀü
+    /// ë§ˆìš°ìŠ¤ ì¢Œìš° ë°˜ì „
     /// </summary>
     public void MouseHorizontalReverse()
     {
@@ -187,7 +187,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     }
     
     /// <summary>
-    /// ½½¶óÀÌ´õ Á¶Àı¹Ù »ç¿ë½Ã ÀÚµ¿ È£Ãâ
+    /// ìŠ¬ë¼ì´ë” ì¡°ì ˆë°” ì‚¬ìš©ì‹œ ìë™ í˜¸ì¶œ
     /// </summary>
     public void ChangeSensitivity(float value)
     {

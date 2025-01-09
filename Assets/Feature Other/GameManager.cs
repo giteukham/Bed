@@ -30,7 +30,23 @@ public class GameManager : MonoSingleton<GameManager>
     private TimeManager timeManager;
     #endregion
 
+    #region Objects related Components
+    [SerializeField] private GameObject mother;
+    private Animator motherAnimator;
+    #endregion
+
+    private Coroutine doorKnockCoroutine;
     private static GameState currentState;
+
+    IEnumerator DoorKnock()
+    {
+        while(true)
+        {
+            float randomNum = Random.Range(2f, 4f);
+            yield return new WaitForSeconds(randomNum);
+            AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorKnock, Door.GetPosition());
+        }
+    }
 
     void Awake()
     {
@@ -41,6 +57,7 @@ public class GameManager : MonoSingleton<GameManager>
     void Start()
     {
         SetState(GameState.Preparation);
+        motherAnimator = mother.GetComponent<Animator>();
 
         #if UNITY_EDITOR
             if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
@@ -79,33 +96,59 @@ public class GameManager : MonoSingleton<GameManager>
     private void Prepartion()
     {
         Debug.Log("Prepartion !!");
-        GameInit();
+        BedRoomLightSwitch.SwitchActionNoSound(true);
+        LivingRoomLightSwitch.SwitchAction(true);
+        player.EyeControl(PlayerEyeStateTypes.Close);
+        timeManagerObject.SetActive(false);
+        Door.SetNoSound(0, 0);
+        PlayerConstant.isShock = false;
+        if (doorKnockCoroutine == null) doorKnockCoroutine = StartCoroutine(DoorKnock());
     }
 
     private void GamePlay()
     {
         Debug.Log("GamePlay !!");
+        StopCoroutine(doorKnockCoroutine);
+        StartCoroutine(GamePlayCoroutine());
+        // Door.SetNoSound(50, 0.5f);
+        // BedRoomLightSwitch.SwitchAction(false);
+        // timeManagerObject.SetActive(true);
+    }
+
+    IEnumerator GamePlayCoroutine()
+    {
+        doorKnockCoroutine = null;
+        yield return new WaitForSeconds(1.5f);
+        Door.Set(30, 0.15f);
+        yield return new WaitForSeconds(0.2f);
+        mother.SetActive(true);
+
+        float randomNum = Random.Range(3f, 6f);
+        yield return new WaitForSeconds(randomNum);
+
         BedRoomLightSwitch.SwitchAction(false);
+        yield return new WaitForSeconds(0.25f);
+        motherAnimator.SetTrigger("Leave");
+        yield return new WaitForSeconds(0.1f);
+        Door.Set(0, 0.4f);
+        yield return new WaitForSeconds(0.25f);
+        mother.SetActive(false);
+        LivingRoomLightSwitch.SwitchAction(false);
+        yield return new WaitForSeconds(1f);
         timeManagerObject.SetActive(true);
-        Door.SetNoSound(50, 0.5f);
     }
 
     private void GameOver()
     {
+        Debug.Log("GameOver !!");
         player.EyeControl(PlayerEyeStateTypes.Close);
         PlayerConstant.isShock = true;
-        Debug.Log("GameOver !!");
+        Invoke(nameof(DelayTurnToMiddle), 0.1f);
     }
 
-    private void GameInit()
+    private void DelayTurnToMiddle()
     {
-        BedRoomLightSwitch.SwitchActionNoSound(true);
-        player.EyeControl(PlayerEyeStateTypes.Close);
         player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
-        timeManagerObject.SetActive(false);
-        timeManager.InitSettings();
-        Door.SetNoSound(0, 0);
-        PlayerConstant.isShock = false;
     }
 
     private void Update()
@@ -115,6 +158,7 @@ public class GameManager : MonoSingleton<GameManager>
             if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
             else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
         }
+
         #if UNITY_EDITOR
             DebugFunctions();
         #endif

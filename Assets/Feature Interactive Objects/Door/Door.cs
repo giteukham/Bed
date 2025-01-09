@@ -23,6 +23,8 @@ public class Door : MonoBehaviour
     /// </summary>
     /// <param name="angle">각도</param>
     /// <param name="time">시간</param>
+    
+    // 소리 추가
     public static async void Set(float angle, float time)
     {
         if(isRotating) return;
@@ -34,14 +36,27 @@ public class Door : MonoBehaviour
         // 270 170
         float elapsedTime = 0f;
         float targetAngle = 270f - angle;
-        float pastAngle = door.transform.eulerAngles.y;
+        float prevAngle = door.transform.eulerAngles.y;
+        
+        Debug.Log(prevAngle);
+
+        if(angle > 0) if ( prevAngle - 270f == 0f ) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorOpen, GetPosition());
+
+        if ( time < 1.7f) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorCreak, GetPosition());
+        else AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorSlowOpen, GetPosition());
 
         while (elapsedTime < time)
         {
-            float currentAngle = Mathf.SmoothStep(pastAngle, targetAngle, elapsedTime / time);
+            float currentAngle = Mathf.SmoothStep(prevAngle, targetAngle, elapsedTime / time);
             door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, currentAngle, door.transform.eulerAngles.z);
             elapsedTime += Time.deltaTime;
             await UniTask.Yield();
+        }
+
+        if (angle == 0 )
+        {
+            if (targetAngle - prevAngle <= 20 && 2f < time) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorSlowClose, GetPosition());
+            else AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorClose, GetPosition());
         }
 
         door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, targetAngle, door.transform.eulerAngles.z);
@@ -76,5 +91,10 @@ public class Door : MonoBehaviour
 
         door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, targetAngle, door.transform.eulerAngles.z);
         isRotating = false;
+    }
+
+    public static Vector3 GetPosition()
+    {
+        return door.transform.position;
     }
 }
