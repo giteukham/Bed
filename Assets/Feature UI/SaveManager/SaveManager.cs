@@ -30,13 +30,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         {
             PlayerPrefs.DeleteAll();
         }
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            print("j 누름");
-            GL.Clear(true, true, Color.black);  // 화면을 검은색으로 지움
-        }
-
     }
 
     //마우스 감도 관련
@@ -58,7 +51,7 @@ public class SaveManager : MonoSingleton<SaveManager>
     }
     public bool LoadMouseVerticalReverse()
     {
-        return Convert.ToBoolean(PlayerPrefs.GetInt("MouseVerticalReverse", 1));
+        return Convert.ToBoolean(PlayerPrefs.GetInt("MouseVerticalReverse", 0));
     }
 
     //마우스 좌우반전 관련
@@ -84,9 +77,10 @@ public class SaveManager : MonoSingleton<SaveManager>
     }
     public void LoadResolution(out int value1, out int value2)
     {
-        value1 = PlayerPrefs.GetInt("ResolutionWidth", 1920);
-        value2 = PlayerPrefs.GetInt("ResolutionHeight", 1080);
-        //return PlayerPrefs.GetString("Resolution", "1920 1080");
+        //value1 = PlayerPrefs.GetInt("ResolutionWidth", 1920);
+        //value2 = PlayerPrefs.GetInt("ResolutionHeight", 1080);
+        value1 = PlayerPrefs.GetInt("ResolutionWidth", Display.main.systemWidth);
+        value2 = PlayerPrefs.GetInt("ResolutionHeight", Display.main.systemHeight);
     }
 
     //화면 풀스크린 여부 관련
@@ -97,7 +91,7 @@ public class SaveManager : MonoSingleton<SaveManager>
     }
     public bool LoadIsWindowedScreen()
     {
-        return Convert.ToBoolean(PlayerPrefs.GetInt("IsWindowedScreen", 1));
+        return Convert.ToBoolean(PlayerPrefs.GetInt("IsWindowedScreen", 0));
     }
 
     //camRect 관련
@@ -166,5 +160,15 @@ public class SaveManager : MonoSingleton<SaveManager>
     public float LoadDeadZoneValue()
     {
         return PlayerPrefs.GetFloat("DeadZoneValue", 0.1f);
+    }
+
+    public void SavePixelationFactor(float value)
+    {
+        PlayerPrefs.SetFloat("PixelationFactor", value);
+    }
+
+    public float LoadPixelationFactor()
+    {
+        return PlayerPrefs.GetFloat("PixelationFactor", 0.25f * (Display.main.systemWidth / 1920f));
     }
 }

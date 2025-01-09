@@ -27,14 +27,26 @@ public class GameManager : MonoBehaviour
         if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
         if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
         if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
+        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     { 
         if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape)) 
         {
-            if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
-            else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
+            if (PlayerConstant.isPlayerStop == true)
+            {
+                PlayerConstant.isPlayerStop = false;
+                UIManager.Instance.ActivateUICanvas(false);
+            }
+            else if (PlayerConstant.isPlayerStop == false)
+            {
+                PlayerConstant.isPlayerStop = true;
+                UIManager.Instance.ActivateUICanvas(true);
+            }
+            
         }
 
         if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();

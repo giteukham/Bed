@@ -17,9 +17,10 @@ public class UIManager : MonoSingleton<UIManager>
 
     private void Update() 
     {
-        ActivateUICanvas();
-
-        if (Input.GetMouseButton(1)) ShowMenuScreen();
+        if (isMenuScreenActive == true)
+        {
+            if (Input.GetMouseButton(1)) ShowMenuScreen();
+        }
     }
 
     private void Awake()
@@ -49,11 +50,6 @@ public class UIManager : MonoSingleton<UIManager>
         {
             Debug.LogError("마우스 설정 스크린은 게임 시작 전에 비활성화 되어야 합니다.");
         }
-    }
-
-    private void OnEnable()
-    {
-        ShowMenuScreen();
     }
 
     private void ShowScreen(GameObject _screen)
@@ -90,25 +86,41 @@ public class UIManager : MonoSingleton<UIManager>
     /// <summary>
     /// 수정 날짜 : 2024-11-14 최무령
     /// </summary>
-    void ActivateUICanvas()
+    public void ActivateUICanvas(bool isActivate)
     {
-        if (PlayerConstant.isPlayerStop == true)
+        if (isActivate)
         {
-            if (PlayerConstant.isEyeOpen == false) 
-            {
-                uiCanvas.SetActive(true);
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-        }
-        else Cursor.visible = false;
-        
-        if (PlayerConstant.isPlayerStop == false)
-        {
-            uiCanvas.SetActive(false);
+            isMenuScreenActive = true;
+            uiCanvas.SetActive(true);
             ShowMenuScreen();
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            isMenuScreenActive = false;
+            uiCanvas.SetActive(false);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+        
+        // if (PlayerConstant.isPlayerStop == true)
+        // {
+        //     if (PlayerConstant.isEyeOpen == false) 
+        //     {
+        //         uiCanvas.SetActive(true);
+        //         Cursor.visible = true;
+        //         Cursor.lockState = CursorLockMode.None;
+        //     }
+        // }
+        // else Cursor.visible = false;
+        //
+        // if (PlayerConstant.isPlayerStop == false)
+        // {
+        //     uiCanvas.SetActive(false);
+        //     ShowMenuScreen();
+        //     Cursor.visible = false;
+        //     Cursor.lockState = CursorLockMode.Locked;
+        // }
     }
 }

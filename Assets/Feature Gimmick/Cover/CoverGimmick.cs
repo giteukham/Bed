@@ -23,7 +23,6 @@ public class CoverGimcik : Gimmick
 
     private void Awake()
     {
-        gameObject.SetActive(false);
     }
 
     private void Update()

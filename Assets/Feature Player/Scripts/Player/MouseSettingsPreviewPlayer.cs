@@ -21,11 +21,11 @@ public class MouseSettingsPreviewPlayer : PlayerBase
         { PlayerDirectionStateTypes.Right, new PreviewPlayerDirectionStates.RightDirectionState() },
         { PlayerDirectionStateTypes.Switching, new PreviewPlayerDirectionStates.SwitchingState() }
     };
-
+    
     private void OnEnable()
     {
         TryGetComponent(out playerAnimator);
-        POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
         previewPlayerDirectionStates = new PreviewPlayerDirectionStates(playerAnimator);
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine, directionStates);
     }
@@ -34,11 +34,6 @@ public class MouseSettingsPreviewPlayer : PlayerBase
     {
         playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
         playerAnimator.SetTrigger("To Middle");
-    }
-    
-    public void EnablePlayerObject(bool isActivate)
-    {
-        gameObject?.SetActive(isActivate);
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)

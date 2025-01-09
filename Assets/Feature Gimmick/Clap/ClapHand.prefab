@@ -145,7 +145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &635898326280193075
 Transform:
   m_ObjectHideFlags: 0
@@ -197,7 +197,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDetected: 0
-  gimmickManager: {fileID: 0}
+  <type>k__BackingField: 0
+  _probability: 0
+  <ExclusionGimmickList>k__BackingField: []
   houseLight: {fileID: 0}
   animator: {fileID: 8244469848418232924}
 --- !u!1 &737651646130163831

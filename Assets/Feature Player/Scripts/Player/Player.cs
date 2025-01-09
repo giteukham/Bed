@@ -48,6 +48,7 @@ public class Player : PlayerBase
     private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
     private CinemachineBasicMultiChannelPerlin cameraNoise;
+    public float pixelationFactor = 0.25f;
     #endregion
 
     #region Player Stats Updtae Variables
@@ -84,7 +85,7 @@ public class Player : PlayerBase
 
     private void Awake()
     {
-        POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
     }
 
     private void Start()
@@ -111,6 +112,8 @@ public class Player : PlayerBase
 
         playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
         playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
+
+        pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
 
     void Update() 
@@ -268,7 +271,8 @@ public class Player : PlayerBase
     {
         StartCoroutine(ChromaticAberrationEffect());
         grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
-        psxPostProcessEffect._PixelationFactor = 0.25f + (-PlayerConstant.fearGauge * 0.0015f);
+
+        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(pixelationFactor, pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
         colorGrading.saturation.value = -PlayerConstant.fearGauge;
 
         depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
@@ -393,18 +397,10 @@ public class Player : PlayerBase
     
     private void StopPlayer()
     {
-        if (PlayerConstant.isPlayerStop == true)
+        StopPlayer(PlayerConstant.isPlayerStop);
+        if (PlayerConstant.isPlayerStop && PlayerConstant.isEyeOpen)
         {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "";
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "";
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
-            if (PlayerConstant.isEyeOpen) playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
-        }
-        if (PlayerConstant.isPlayerStop == false)
-        {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisName = "Mouse Y";
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisName = "Mouse X";
+            playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
         }
     }
     

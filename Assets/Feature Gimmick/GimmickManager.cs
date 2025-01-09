@@ -11,12 +11,10 @@ public class GimmickManager : MonoSingleton<GimmickManager>
 
     private void Awake()
     {
-        foreach (Gimmick gimmick in AllGimicks) 
-            if(gimmick.gameObject.activeSelf == false) 
-            {
-                gimmick.gameObject.SetActive(true);
-                gimmick.gameObject.SetActive(false);
-            }
+        Gimmick[] foundGimmicks = Resources.FindObjectsOfTypeAll<Gimmick>();
+
+        foreach (Gimmick gimmick in foundGimmicks)
+            if (gimmick.gameObject.scene.IsValid() && gimmick.gameObject.CompareTag("Gimmick")) AllGimicks.Add(gimmick);
     }
 
     // 타입 중복 검사

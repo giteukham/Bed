@@ -1,3 +1,4 @@
+using PSXShaderKit;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,8 +29,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     
     [SerializeField] private InsideWindow insideWindow;
 
-    bool isWindowedScreen = true;
-    bool isWindowedScreenReady = true;
+    [SerializeField] private Player player;
+
+    bool isWindowedScreen = false;
+    bool isWindowedScreenReady = false;
+    int frameRate = 60;
     int frameRateReady = 60;
     int nowWidthPixel = 0;
     int nowHeightPixel = 0;
@@ -181,6 +185,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void OnEnable()
     {
+        //창모드 관련 초기화
         IsWindowedScreenReady = isWindowedScreen;
         fullScreenSwitch.sprite = isWindowedScreen ? checkImage : nonCheckImage;
 
@@ -233,8 +238,20 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             ApplyInsideWindow();
         }
 
-        //프레임 드롭다운 아이템 저장된 값으로 변경
-        frameRateDropdown.value = frameRateReady / 30 - 1;
+        //인풋필드 텍스트 관련 초기화
+        //inputFieldWidth.text = $"{nowWidthPixel}";
+        //inputFieldHeight.text = $"{nowHeightPixel}";
+
+        //프레임 드롭다운, 프리뷰 프레임 텍스트 관련 초기화
+        frameRateDropdown.value = frameRate / 30 - 1;
+
+        //해상도 관련 텍스트 초기화(인풋필드, 프리뷰 해상도 텍스트)
+        UpdateResolutionText(nowWidthPixel, nowHeightPixel);
+
+        //프리뷰 outside, inside 크기 초기화
+        ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
+        //ResizePreviewImage(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text), inside);
+        ResizePreviewImage(nowWidthPixel, nowHeightPixel, inside);
 
         insideWindow.OnRectTransformReSize.AddListener(RectSizeChangedHandler);
     }
@@ -302,6 +319,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         SaveManager.Instance.SaveResolution((int)width, (int)height);
         nowWidthPixel = (int)width;
         nowHeightPixel = (int)height;
+        //세이브 적용도 해줘야함
+        //cam.GetComponent<PSXPostProcessEffect>()._PixelationFactor = 0.25f * (nowWidthPixel / 1920f);
+        player.pixelationFactor = 0.25f / (nowWidthPixel / 1920f);
+        SaveManager.Instance.SavePixelationFactor(player.pixelationFactor);
+        print($"0.25f * ({nowWidthPixel} / 1920) = {0.25f * (nowWidthPixel / 1920f)}");
         yield break;
     }
 
@@ -475,9 +497,10 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     //확인버튼 누를시 프레임 적용
     private void ApplyFrameRate()
     {
+        frameRate = frameRateReady;
         QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = frameRateReady;
-        SaveManager.Instance.SaveFrameRate(frameRateReady);
+        Application.targetFrameRate = frameRate;
+        SaveManager.Instance.SaveFrameRate(frameRate);
     }
 
     //매개변수 0은 inputFieldWidth, 1은 inputFieldHeight
@@ -654,9 +677,22 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
         else //rect == inside
         {
-            ratio1 = 1 / (Display.main.systemWidth / targetWidth);
-            ratio2 = 1 / (Display.main.systemHeight / targetHeight);
-            print($"1 / {Display.main.systemWidth} / {targetWidth} = {1 / (Display.main.systemWidth / targetWidth)}");
+            if (isWindowedScreenReady == false) //전체화면일때 크기 고정
+            {
+                ratio1 = 1;
+                ratio2 = 1;
+                //rect 변화 없기 때문에 텍스트 내용, 크기 변경 직접 실행
+                previewText.text = $"{inputFieldWidth.text} X {inputFieldHeight.text}\n{frameRateReady}hz";
+                previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+
+                inputFieldWidth.text = $"{inputFieldWidth.text}";
+                inputFieldHeight.text = $"{inputFieldHeight.text}";
+            }
+            else
+            {
+                ratio1 = 1 / (Display.main.systemWidth / targetWidth);
+                ratio2 = 1 / (Display.main.systemHeight / targetHeight);
+            }
         
             InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
             rect.anchoredPosition = Vector2.zero;

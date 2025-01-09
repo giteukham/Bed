@@ -24,7 +24,7 @@ public class ClapGimcik : Gimmick
 
     private void Awake()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     private void Update()
@@ -45,6 +45,7 @@ public class ClapGimcik : Gimmick
     public override void Activate()
     {
         base.Activate();
+        //gameObject.SetActive(true);
         StartCoroutine(MainCode());
     }
 
