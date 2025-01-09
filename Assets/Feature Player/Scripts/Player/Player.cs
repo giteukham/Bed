@@ -271,7 +271,8 @@ public class Player : PlayerBase
     {
         StartCoroutine(ChromaticAberrationEffect());
         grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
-        psxPostProcessEffect._PixelationFactor = pixelationFactor + (-PlayerConstant.fearGauge * 0.0015f);
+
+        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(pixelationFactor, pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
         colorGrading.saturation.value = -PlayerConstant.fearGauge;
 
         depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
