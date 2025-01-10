@@ -21,7 +21,7 @@ namespace Bed.Collider
         
         private Vector3 currentScale; // 콜라이더 스케일일
         
-        private Action<UnityEngine.Collider> _onEnter, _onExit;
+        private Action<UnityEngine.Collider> _onEnter, _onStay, _onExit;
 
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
@@ -36,6 +36,19 @@ namespace Bed.Collider
                     gimmick.isDetected = true;
                 }
             } 
+        }
+        
+        private void OnTriggerStay(UnityEngine.Collider other)
+        {
+            if (other.gameObject.CompareTag("Gimmick"))
+            {
+                _onStay?.Invoke(other);
+                if (other.gameObject.TryGetComponent(out Gimmick gimmick))
+                {
+                    Debug.Log("isDetected = true");
+                    gimmick.isDetected = true;
+                }
+            }
         }
         
         private void OnTriggerExit(UnityEngine.Collider other)
@@ -157,10 +170,13 @@ namespace Bed.Collider
         }
         
         public void AddEnterListener(Action<UnityEngine.Collider> action) => _onEnter += action;
+        public void AddStayListener(Action<UnityEngine.Collider> action) => _onStay += action;
         public void AddExitListener(Action<UnityEngine.Collider> action) => _onExit += action;
         public void RemoveEnterListener(Action<UnityEngine.Collider> action) => _onEnter -= action;
+        public void RemoveStayListener(Action<UnityEngine.Collider> action) => _onStay -= action;
         public void RemoveExitListener(Action<UnityEngine.Collider> action) => _onExit -= action;
         public void ResetEnterListener() => _onEnter = null;
+        public void ResetStayListener() => _onStay = null;
         public void ResetExitListener() => _onExit = null;
     }
     

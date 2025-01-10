@@ -5674,12 +5674,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8128b9bda875443795d4d58dc53c1ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  POVCamera: {fileID: 0}
+  povCamera: {fileID: 0}
   playerDirectionStateMachine: {fileID: 1660730629}
   playerEyeStateMachine: {fileID: 1921701273}
   playerCamera: {fileID: 1732393634}
   playerVirtualCamera: {fileID: 2142733324}
   coneCollider: {fileID: 801348871}
+  pixelationFactor: 0.25
   playerPillowSoundPosition: {fileID: 1251284695}
   headAnimator: {fileID: 917754566}
 --- !u!1 &448146784
@@ -7361,6 +7362,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDetected: 0
+  <type>k__BackingField: 0
+  _probability: 0
+  <ExclusionGimmickList>k__BackingField: []
   phone: {fileID: 1005915029}
   monitor: {fileID: 0}
 --- !u!114 &669272068
@@ -7375,16 +7379,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81069bb3f0a94084953f523a0dc8a95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animList:
-  - name: 
+  sequenceList:
+  - name: Phone Off
     gameObject: {fileID: 1005915029}
-    nextComponentInGameObject: {fileID: 0}
-    eventBeforeConversion:
+    nextComponent: {fileID: 0}
+    swapType: 1
+    duration: 0
+    triggerEvent:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 669272067}
           m_TargetAssemblyTypeName: SirenGimmick, Assembly-CSharp
-          m_MethodName: OnPhoneAnimation
+          m_MethodName: OnPhoneTriggerEvent
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7394,18 +7400,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    swapType: 1
-    duration: 0
     isTriggered: 0
+    isCompleted: 0
   - name: 
     gameObject: {fileID: 1948091457}
-    nextComponentInGameObject: {fileID: 2100000, guid: ee8893c9b1e99b44698169165f9b8caa, type: 2}
-    eventBeforeConversion:
-      m_PersistentCalls:
-        m_Calls: []
+    nextComponent: {fileID: 0}
     swapType: 1
     duration: 0
+    triggerEvent:
+      m_PersistentCalls:
+        m_Calls: []
     isTriggered: 0
+    isCompleted: 0
 --- !u!1 &670431567
 GameObject:
   m_ObjectHideFlags: 0
@@ -8949,7 +8955,7 @@ MonoBehaviour:
   meshesPos: {fileID: 1300217553}
   playerDeActiveObjects:
   - {fileID: 2142733323}
-  player: {fileID: 427841148}
+  mainPlayer: {fileID: 427841148}
   previewPlayer: {fileID: 1647553765}
   turnRightSpeed: 3
   turnLeftSpeed: -3
@@ -10017,6 +10023,7 @@ MonoBehaviour:
   fullscreenInside: {fileID: 21300000, guid: f0507d7efa4076f44a29ffefdf87c0fd, type: 3}
   windowedInside: {fileID: 21300000, guid: 9bab0f317c064394289edf5e85012cd4, type: 3}
   insideWindow: {fileID: 545875812}
+  player: {fileID: 0}
   OnFullScreenSwitched:
     m_PersistentCalls:
       m_Calls: []
@@ -10630,6 +10637,7 @@ GameObject:
   - component: {fileID: 1005915030}
   - component: {fileID: 1005915032}
   - component: {fileID: 1005915031}
+  - component: {fileID: 1005915033}
   m_Layer: 0
   m_Name: SM_Phone
   m_TagString: Untagged
@@ -10703,6 +10711,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1005915033
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005915029}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8117332471842824926, guid: a0d6af13735057c42a7716e760814c46, type: 3}
 --- !u!1 &1010110860
 GameObject:
   m_ObjectHideFlags: 0
@@ -16655,7 +16685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e4f5ddb7eb97c4bb8b0c3653103777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  POVCamera: {fileID: 0}
+  povCamera: {fileID: 0}
   playerDirectionStateMachine: {fileID: 250903042}
   playerVirtualCamera: {fileID: 1206075531}
 --- !u!95 &1647553767
@@ -25869,6 +25899,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc3e631cd8d4b34bd3b68ddb57d81c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transparentPanel: {fileID: 0}
+  previewPlayer: {fileID: 0}
 --- !u!114 &7780412035481078642
 MonoBehaviour:
   m_ObjectHideFlags: 0

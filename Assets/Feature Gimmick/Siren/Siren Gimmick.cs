@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using AbstractGimmick;
+using Bed.Collider;
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
 using Cysharp.Threading.Tasks.Triggers;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SirenGimmick : Gimmick
 {
@@ -19,34 +24,24 @@ public class SirenGimmick : Gimmick
     [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
     #endregion
     
-    [SerializeField, Space] 
-    private Player player;
-    
     [Header("Siren Objects")]
     [SerializeField] private GameObject phone;
     [SerializeField] private GameObject monitor;
     
-    private CustomAnimator _customAnimator;
+    private GimmickSequence gimmickSequence;
     
-    private bool _isPhoneActive = true;
+    private CancellationTokenSource gimmickCts = new();
+    private CancellationTokenSource triggerCts = new();
     
     private void Awake()
     {
-        _customAnimator = GetComponent<CustomAnimator>();
+        gimmickSequence = GetComponent<GimmickSequence>();
     }
 
     private void OnEnable()
     {
-        player?.SubscribeConeEnter((col) =>
-        {
-            if (col.gameObject == phone)
-            {
-                _isPhoneActive = false;
-            }
-        });
-        
         ChangeSirenObjectsTag("Gimmick");
-        _customAnimator.StartAnimation();
+        gimmickSequence.StartGimmick();
     }
 
     private void OnDisable()
@@ -54,10 +49,35 @@ public class SirenGimmick : Gimmick
         ChangeSirenObjectsTag("Untagged");
     }
 
-    public async void OnPhoneAnimation()
+    public void OnPhoneTriggerEvent()
     {
-        await UniTask.WaitUntil(() => _isPhoneActive == false);
-        _customAnimator.SetTrigger("Phone Off");
+        phone.GetAsyncTriggerEnterTrigger()
+            .Subscribe(DetectPhone)
+            .AddTo(triggerCts.Token);
+        
+        phone.GetAsyncTriggerExitTrigger()
+            .Subscribe(coll => ResetToken(ref gimmickCts))
+            .AddTo(triggerCts.Token);
+    }
+
+    private async UniTaskVoid DetectPhone(Collider col)
+    {
+        if (!col.gameObject.CompareTag("SightRange")) return;
+
+        var isCanceled = await UniTask.Delay(TimeSpan.FromSeconds(3), cancellationToken: gimmickCts.Token)
+            .SuppressCancellationThrow();
+        
+        if (!isCanceled)
+        {
+            gimmickSequence.SetTrigger("Phone Off");
+            ResetToken(ref triggerCts);
+        }
+    }
+
+    private void ResetToken(ref CancellationTokenSource token)
+    {
+        token.Cancel();
+        token = new CancellationTokenSource();
     }
 
     public override void UpdateProbability()
@@ -66,7 +86,7 @@ public class SirenGimmick : Gimmick
     }
 
     public override void Initialize() { }
-    
+
     public override void Activate()
     {
         base.Activate();
@@ -76,5 +96,10 @@ public class SirenGimmick : Gimmick
     private void ChangeSirenObjectsTag(string tagName)
     {
         if (phone != null) phone.tag = tagName;
+    }
+
+    private void OnDestroy()
+    {
+        gimmickCts?.Dispose();
     }
 }

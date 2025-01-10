@@ -418,8 +418,9 @@ public class Player : PlayerBase
         }
     }
     
-    public void SubscribeConeEnter(Action<Collider> action) => coneCollider.AddEnterListener(action);
-    public void SubscribeConeExit(Action<Collider> action) => coneCollider.AddExitListener(action);
+    public void AddConeEnterListener(Action<Collider> action) => coneCollider.AddEnterListener(action);
+    public void AddConeStayListener(Action<Collider> action) => coneCollider.AddStayListener(action);
+    public void AddConeExitListener(Action<Collider> action) => coneCollider.AddExitListener(action);
     public void ResetConeEnterListener() => coneCollider.ResetEnterListener();
     public void ResetConeExitListener() => coneCollider.ResetExitListener();
 }
