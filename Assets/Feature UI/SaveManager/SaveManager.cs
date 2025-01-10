@@ -169,6 +169,6 @@ public class SaveManager : MonoSingleton<SaveManager>
 
     public float LoadPixelationFactor()
     {
-        return PlayerPrefs.GetFloat("PixelationFactor", 0.25f * (Display.main.systemWidth / 1920f));
+        return PlayerPrefs.GetFloat("PixelationFactor", 0.25f / (Display.main.systemWidth / 1920f));
     }
 }
