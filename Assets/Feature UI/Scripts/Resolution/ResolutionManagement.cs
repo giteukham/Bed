@@ -319,11 +319,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         SaveManager.Instance.SaveResolution((int)width, (int)height);
         nowWidthPixel = (int)width;
         nowHeightPixel = (int)height;
-        //세이브 적용도 해줘야함
-        //cam.GetComponent<PSXPostProcessEffect>()._PixelationFactor = 0.25f * (nowWidthPixel / 1920f);
-        player.pixelationFactor = 0.25f * (nowWidthPixel / 1920f);
+        player.pixelationFactor = 0.25f / (nowWidthPixel / 1920f);
         SaveManager.Instance.SavePixelationFactor(player.pixelationFactor);
-        print($"0.25f * ({nowWidthPixel} / 1920) = {0.25f * (nowWidthPixel / 1920f)}");
         yield break;
     }
 
