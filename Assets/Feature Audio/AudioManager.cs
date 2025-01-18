@@ -1,9 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using FMOD;
 using UnityEngine;
 using FMODUnity;
 using Unity.VisualScripting;
 using FMOD.Studio;
+using FMODUnityResonance;
+using Debug = UnityEngine.Debug;
 
 public class AudioManager : MonoSingleton<AudioManager>
 {
@@ -97,6 +102,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     
     [field: Header("Siren SFX")]
     [field: SerializeField] public EventReference siren { get; private set; }
+    
+    [field: Header("Phone Vibrate SFX")]
+    [field: SerializeField] public EventReference phoneVibrate { get; private set; }
 
     #endregion
 
@@ -121,7 +129,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
-    private Dictionary<EventReference, EventInstance> eventInstances = new(); 
+    private Dictionary<EventReference, EventInstance> eventInstances = new();
 
     /// <summary>
     /// 소리 꺼지기 전까지 실행
