@@ -37,16 +37,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private Coroutine doorKnockCoroutine;
     private static GameState currentState;
-
-    IEnumerator DoorKnock()
-    {
-        while(true)
-        {
-            float randomNum = Random.Range(2f, 4f);
-            yield return new WaitForSeconds(randomNum);
-            AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorKnock, Door.GetPosition());
-        }
-    }
+    private bool isNotMove = true;
 
     void Awake()
     {
@@ -95,14 +86,79 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void Prepartion()
     {
-        Debug.Log("Prepartion !!");
         BedRoomLightSwitch.SwitchActionNoSound(true);
         LivingRoomLightSwitch.SwitchAction(true);
         player.EyeControl(PlayerEyeStateTypes.Close);
         timeManagerObject.SetActive(false);
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
-        if (doorKnockCoroutine == null) doorKnockCoroutine = StartCoroutine(DoorKnock());
+        StartCoroutine(EyeOpenTutorialCoroutine());
+        StartCoroutine(ReadyCheckCoroutine());
+    }
+    private IEnumerator ReadyCheckCoroutine()
+    {
+        float checkTime = 0f;
+
+        while (true)
+        {
+            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
+            {
+                checkTime += Time.deltaTime;
+                if (checkTime >= 3f)
+                {
+                    SetState(GameState.GamePlay);
+                    yield break;
+                }
+            }
+            else
+                checkTime = 0f;
+
+            yield return null;
+        }
+    }
+
+    IEnumerator EyeOpenTutorialCoroutine()
+    {
+        yield return new WaitForSeconds(0.25f);
+        while(isNotMove)
+        {
+            if (Time.time >= 6f && PlayerConstant.isEyeOpen == false && isNotMove == true) UIManager.Instance.EyeOpenManual(true);
+            if (BlinkEffect.Blink <= 0.93f) 
+            {
+                isNotMove = false;
+                UIManager.Instance.EyeOpenManual(false);
+                if (doorKnockCoroutine == null) doorKnockCoroutine = StartCoroutine(DoorKnock());
+                StartCoroutine(LeftMoveTutorialCoroutine());
+                yield break;
+            }
+            yield return null;
+        }
+    }
+
+    IEnumerator LeftMoveTutorialCoroutine()
+    {
+        float startTime = Time.time;
+        while(true)
+        {
+            Debug.Log("asdf");
+            if (Time.time - startTime >= 6f && PlayerConstant.isLeftState == false) UIManager.Instance.LeftMoveManual(true);
+            if (PlayerConstant.isLeftState == true) 
+            {
+                UIManager.Instance.LeftMoveManual(false);
+                yield break;
+            }
+            yield return null;
+        }
+    }
+
+    IEnumerator DoorKnock()
+    {
+        while(true)
+        {
+            float randomNum = Random.Range(2.5f, 5f);
+            yield return new WaitForSeconds(randomNum);
+            AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorKnock, Door.GetPosition());
+        }
     }
 
     private void GamePlay()
@@ -133,7 +189,7 @@ public class GameManager : MonoSingleton<GameManager>
         Door.Set(0, 0.4f);
         yield return new WaitForSeconds(0.25f);
         mother.SetActive(false);
-        LivingRoomLightSwitch.SwitchAction(false);
+        //LivingRoomLightSwitch.SwitchAction(false);
         yield return new WaitForSeconds(1f);
         timeManagerObject.SetActive(true);
     }
@@ -174,9 +230,9 @@ public class GameManager : MonoSingleton<GameManager>
             else if (GetState() == GameState.GameOver) SetState(GameState.Preparation);
         }
 
-        if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
+        if (Input.GetKeyDown(KeyCode.R)) UIManager.Instance.EyeOpenManual(false);
 
-        if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();
+        if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.EyeOpenManual(true);
         
         if (Input.GetKeyDown(KeyCode.B)) 
         {

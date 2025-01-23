@@ -3,6 +3,7 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class UIManager : MonoSingleton<UIManager>
 {
@@ -13,6 +14,13 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] private GameObject soundSettingsScreen;
     [SerializeField] private GameObject resolutionSettingsScreen;
     [SerializeField] private GameObject mouseSettingsScreen;
+    #endregion
+
+    #region Manuals
+    [SerializeField] private GameObject eyeOpenManual;
+    [SerializeField] private GameObject leftMoveManaul;
+    [SerializeField] private GameObject openOptionManual;
+    [SerializeField] private GameObject blinkManaual;
     #endregion
 
     private void Update() 
@@ -110,5 +118,54 @@ public class UIManager : MonoSingleton<UIManager>
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+    }
+
+    private void ShowManual(GameObject manual, bool isActive)
+    {
+        if (manual.activeSelf == isActive) return;
+
+        manual.SetActive(isActive);
+        DOTweenAnimation[] dOTweenAnimations = manual.GetComponentsInChildren<DOTweenAnimation>();
+        foreach (var child in dOTweenAnimations) child.DORestart();
+    }
+
+    public void EyeOpenManual(bool isActive)
+    {
+        ShowManual(eyeOpenManual, isActive);
+    }
+
+    public bool GetEyeOpenManaul()
+    {
+        return eyeOpenManual.activeSelf;
+    }
+
+    public void LeftMoveManual(bool isActive)
+    {
+        ShowManual(leftMoveManaul, isActive);
+    }
+
+    public bool GetLeftMoveManual()
+    {
+        return leftMoveManaul.activeSelf;
+    }
+
+    public void OpenOptionManual(bool isActive)
+    {
+        ShowManual(openOptionManual, isActive);
+    }
+
+    public bool GetOpenOptionManual()
+    {
+        return openOptionManual.activeSelf;
+    }
+
+    public void BlinkManual(bool isActive)
+    {
+        ShowManual(blinkManaual, isActive);
+    }
+
+    public bool GetBlinkManual()
+    {
+        return blinkManaual.activeSelf;
     }
 }

@@ -3986,6 +3986,7 @@ MonoBehaviour:
   timeInterval: 3
   timeText: {fileID: 1990451067}
   clockRenderer: {fileID: 7909545157062771440}
+  blankTexture: {fileID: 0}
   amTexture: {fileID: 2800000, guid: 122a1514a9eb91a45baf348bdc18e87b, type: 3}
   pmTexture: {fileID: 2800000, guid: 4648f1c6592189142a327f3ce0ec4a7a, type: 3}
   moonLightObject: {fileID: 230726874}
@@ -14239,6 +14240,9 @@ MonoBehaviour:
   debugTimeText: {fileID: 1003692744}
   debugColiderImage: {fileID: 1385739452}
   mainCamera: {fileID: 1732393634}
+  player: {fileID: 0}
+  timeManagerObject: {fileID: 0}
+  mother: {fileID: 0}
 --- !u!1 &1396281236
 GameObject:
   m_ObjectHideFlags: 0
@@ -21609,6 +21613,55 @@ MonoBehaviour:
       Data4: 0
     Path: 
   <chair2>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <doorKnock>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <clockBeep>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <doorOpen>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <doorClose>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <doorSlowOpen>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <doorSlowClose>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <doorCreak>k__BackingField:
     Guid:
       Data1: 0
       Data2: 0
