@@ -25,14 +25,21 @@ public class GameManager : MonoSingleton<GameManager>
     #endregion
 
     #region Reference Components
+    [Header("Reference Components")]
     [SerializeField] private Player player;
     [SerializeField] private GameObject timeManagerObject;
     private TimeManager timeManager;
     #endregion
 
     #region Objects related Components
+    [Header("Objects related Components")]
     [SerializeField] private GameObject mother;
     private Animator motherAnimator;
+    #endregion
+
+    #region Quit Settings
+    [Header("Quit Settings")]
+    [SerializeField] private bool isBlinkInit;
     #endregion
 
     private Coroutine doorKnockCoroutine;
@@ -55,6 +62,11 @@ public class GameManager : MonoSingleton<GameManager>
             if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
             if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
         #endif
+    }
+
+    protected override void OnApplicationQuit()
+    {
+        if ( isBlinkInit ) BlinkEffect.Blink = 1f;
     }
 
     public GameState GetState()
@@ -95,6 +107,25 @@ public class GameManager : MonoSingleton<GameManager>
         StartCoroutine(EyeOpenTutorialCoroutine());
         StartCoroutine(ReadyCheckCoroutine());
     }
+
+    private IEnumerator EyeOpenTutorialCoroutine()
+    {
+        yield return new WaitForSeconds(0.25f);
+        while(isNotMove)
+        {
+            if (Time.time >= 8f && PlayerConstant.isEyeOpen == false && isNotMove == true) UIManager.Instance.EyeOpenTutorial(true);
+            if (BlinkEffect.Blink <= 0.93f) 
+            {
+                isNotMove = false;
+                UIManager.Instance.EyeOpenTutorial(false);
+                if (doorKnockCoroutine == null) doorKnockCoroutine = StartCoroutine(DoorKnock());
+                StartCoroutine(LeftMoveTutorialCoroutine());
+                yield break;
+            }
+            yield return null;
+        }
+    }
+
     private IEnumerator ReadyCheckCoroutine()
     {
         float checkTime = 0f;
@@ -104,7 +135,7 @@ public class GameManager : MonoSingleton<GameManager>
             if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
             {
                 checkTime += Time.deltaTime;
-                if (checkTime >= 3f)
+                if (checkTime >= 2f)
                 {
                     SetState(GameState.GamePlay);
                     yield break;
@@ -117,41 +148,23 @@ public class GameManager : MonoSingleton<GameManager>
         }
     }
 
-    IEnumerator EyeOpenTutorialCoroutine()
-    {
-        yield return new WaitForSeconds(0.25f);
-        while(isNotMove)
-        {
-            if (Time.time >= 6f && PlayerConstant.isEyeOpen == false && isNotMove == true) UIManager.Instance.EyeOpenManual(true);
-            if (BlinkEffect.Blink <= 0.93f) 
-            {
-                isNotMove = false;
-                UIManager.Instance.EyeOpenManual(false);
-                if (doorKnockCoroutine == null) doorKnockCoroutine = StartCoroutine(DoorKnock());
-                StartCoroutine(LeftMoveTutorialCoroutine());
-                yield break;
-            }
-            yield return null;
-        }
-    }
 
-    IEnumerator LeftMoveTutorialCoroutine()
+    private IEnumerator LeftMoveTutorialCoroutine()
     {
         float startTime = Time.time;
         while(true)
         {
-            Debug.Log("asdf");
-            if (Time.time - startTime >= 6f && PlayerConstant.isLeftState == false) UIManager.Instance.LeftMoveManual(true);
+            if (Time.time - startTime >= 10f && PlayerConstant.isLeftState == false) UIManager.Instance.LeftMoveTutorial(true);
             if (PlayerConstant.isLeftState == true) 
             {
-                UIManager.Instance.LeftMoveManual(false);
+                UIManager.Instance.LeftMoveTutorial(false);
                 yield break;
             }
             yield return null;
         }
     }
 
-    IEnumerator DoorKnock()
+    private IEnumerator DoorKnock()
     {
         while(true)
         {
@@ -229,10 +242,6 @@ public class GameManager : MonoSingleton<GameManager>
             else if (GetState() == GameState.GamePlay) SetState(GameState.GameOver);
             else if (GetState() == GameState.GameOver) SetState(GameState.Preparation);
         }
-
-        if (Input.GetKeyDown(KeyCode.R)) UIManager.Instance.EyeOpenManual(false);
-
-        if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.EyeOpenManual(true);
         
         if (Input.GetKeyDown(KeyCode.B)) 
         {

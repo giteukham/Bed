@@ -10,17 +10,19 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] GameObject uiCanvas;   
     public bool isMenuScreenActive = false;
     #region Menu
+    [Header("Menu")]
     [SerializeField] private GameObject menuScreen;
     [SerializeField] private GameObject soundSettingsScreen;
     [SerializeField] private GameObject resolutionSettingsScreen;
     [SerializeField] private GameObject mouseSettingsScreen;
     #endregion
 
-    #region Manuals
-    [SerializeField] private GameObject eyeOpenManual;
-    [SerializeField] private GameObject leftMoveManaul;
-    [SerializeField] private GameObject openOptionManual;
-    [SerializeField] private GameObject blinkManaual;
+    #region Tutorials
+    [Header("Tutorials")]
+    [SerializeField] private GameObject eyeOpenTutorial;
+    [SerializeField] private GameObject leftMoveTutorial;
+    [SerializeField] private GameObject openOptionTutorial;
+    [SerializeField] private GameObject blinkTutorial;
     #endregion
 
     private void Update() 
@@ -120,52 +122,52 @@ public class UIManager : MonoSingleton<UIManager>
         }
     }
 
-    private void ShowManual(GameObject manual, bool isActive)
+    private void ShowTutorial(GameObject Tutorial, bool isActive)
     {
-        if (manual.activeSelf == isActive) return;
+        if (Tutorial.activeSelf == isActive) return;
 
-        manual.SetActive(isActive);
-        DOTweenAnimation[] dOTweenAnimations = manual.GetComponentsInChildren<DOTweenAnimation>();
+        Tutorial.SetActive(isActive);
+        DOTweenAnimation[] dOTweenAnimations = Tutorial.GetComponentsInChildren<DOTweenAnimation>();
         foreach (var child in dOTweenAnimations) child.DORestart();
     }
 
-    public void EyeOpenManual(bool isActive)
+    public void EyeOpenTutorial(bool isActive)
     {
-        ShowManual(eyeOpenManual, isActive);
+        ShowTutorial(eyeOpenTutorial, isActive);
     }
 
     public bool GetEyeOpenManaul()
     {
-        return eyeOpenManual.activeSelf;
+        return eyeOpenTutorial.activeSelf;
     }
 
-    public void LeftMoveManual(bool isActive)
+    public void LeftMoveTutorial(bool isActive)
     {
-        ShowManual(leftMoveManaul, isActive);
+        ShowTutorial(leftMoveTutorial, isActive);
     }
 
-    public bool GetLeftMoveManual()
+    public bool GetLeftMoveTutorial()
     {
-        return leftMoveManaul.activeSelf;
+        return leftMoveTutorial.activeSelf;
     }
 
-    public void OpenOptionManual(bool isActive)
+    public void OpenOptionTutorial(bool isActive)
     {
-        ShowManual(openOptionManual, isActive);
+        ShowTutorial(openOptionTutorial, isActive);
     }
 
-    public bool GetOpenOptionManual()
+    public bool GetOpenOptionTutorial()
     {
-        return openOptionManual.activeSelf;
+        return openOptionTutorial.activeSelf;
     }
 
-    public void BlinkManual(bool isActive)
+    public void BlinkTutorial(bool isActive)
     {
-        ShowManual(blinkManaual, isActive);
+        ShowTutorial(blinkTutorial, isActive);
     }
 
-    public bool GetBlinkManual()
+    public bool GetBlinkTutorial()
     {
-        return blinkManaual.activeSelf;
+        return blinkTutorial.activeSelf;
     }
 }
