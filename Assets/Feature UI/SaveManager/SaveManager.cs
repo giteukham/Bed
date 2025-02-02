@@ -168,18 +168,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         return PlayerPrefs.GetFloat("DeadZoneValue", 0.1f);
     }
 
-    //isTwoDaysLater 관련
-    public void SaveIsTwoDaysLater(bool value)
-    {
-        PlayerPrefs.SetInt("IsTwoDaysLater", Convert.ToInt32(value));
-        PlayerPrefs.Save();
-    }
-
-    public bool LoadIsTwoDaysLater()
-    {
-        return Convert.ToBoolean(PlayerPrefs.GetInt("IsTwoDaysLater", 1));
-    }
-
     //마지막 플레이 시간 저장 관련
     public void SaveLastPlayedTime(string value)
     {
@@ -189,20 +177,6 @@ public class SaveManager : MonoSingleton<SaveManager>
 
     public string LoadLastPlayedTime()
     {
-        DateTime now = DateTime.Now;
-        return PlayerPrefs.GetString("LastPlayedTime", now.ToString("yyyyMMddHHmm"));
-    }
-
-    //게임 처음 시작 여부 관련()
-    public void SaveIsFirstPlay(bool value)
-    {
-        PlayerPrefs.SetInt("isFirstPlay", Convert.ToInt32(value));
-        PlayerPrefs.Save();
-    }
-
-    public bool LoadIsFirstPlay()
-    {
-        //첫게임일시 true 반환
-        return Convert.ToBoolean(PlayerPrefs.GetInt("isFirstPlay", 1));
+        return PlayerPrefs.GetString("LastPlayedTime", "200001010000");
     }
 }

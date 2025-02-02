@@ -65,23 +65,12 @@ public class GameManager : MonoSingleton<GameManager>
         TimeSpan timeDifference = now - ago;
         Debug.Log(timeDifference.TotalHours);
 
-        //게임 실행시 마지막 접속이후 48시간 넘었는지 확인하고 저장
-        if (timeDifference.TotalHours > 48.0d)
-        {
-            SaveManager.Instance.SaveIsTwoDaysLater(true);
-        }
-        else
-        {
-            SaveManager.Instance.SaveIsTwoDaysLater(false);
-        }
+        bool isTwoDaysLater = timeDifference.TotalHours > 48.0d;
 
-        //첫게임 플레이인지 여부 || 48시간 이후 접속 여부
-        if (SaveManager.Instance.LoadIsFirstPlay() || SaveManager.Instance.LoadIsTwoDaysLater())
+        //48시간 이후 접속 여부
+        if (isTwoDaysLater == true)
         {
             //튜토리얼 실행 코드 작성
-            
-            //첫게임 플레이 여부 false
-            SaveManager.Instance.SaveIsFirstPlay(false);
         }
         else
         {
