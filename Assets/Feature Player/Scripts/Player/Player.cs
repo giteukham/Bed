@@ -305,7 +305,12 @@ public class Player : PlayerBase
         // 위치 조정
 
         // --------머리 움직임 소리
-        if ((deltaHorizontalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
+        if (PlayerConstant.isShock)
+        {
+            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
+        }
+        else if ((deltaHorizontalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
             || (deltaVerticalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
             || PlayerConstant.isMovingState)  
         {
@@ -314,16 +319,16 @@ public class Player : PlayerBase
         
             if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f) 
             {
-                if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-                headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
+            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
             }
         }
         else 
         {
             if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) > 0.0f) 
             {
-                if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-                headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
+            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
             }
         }
         

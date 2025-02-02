@@ -44,7 +44,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private Coroutine doorKnockCoroutine;
     private static GameState currentState;
-    private bool isNotMove = true;
+    private bool isNotOpen = true;
 
     void Awake()
     {
@@ -111,14 +111,15 @@ public class GameManager : MonoSingleton<GameManager>
     private IEnumerator EyeOpenTutorialCoroutine()
     {
         yield return new WaitForSeconds(0.25f);
-        while(isNotMove)
+        float startTime = Time.time;
+        while(isNotOpen)
         {
-            if (Time.time >= 8f && PlayerConstant.isEyeOpen == false && isNotMove == true) UIManager.Instance.EyeOpenTutorial(true);
+            if (Time.time - startTime >= 8f && PlayerConstant.isEyeOpen == false && isNotOpen == true) UIManager.Instance.EyeOpenTutorial(true);
             if (BlinkEffect.Blink <= 0.93f) 
             {
-                isNotMove = false;
+                isNotOpen = false;
                 UIManager.Instance.EyeOpenTutorial(false);
-                if (doorKnockCoroutine == null) doorKnockCoroutine = StartCoroutine(DoorKnock());
+                doorKnockCoroutine = StartCoroutine(DoorKnock());
                 StartCoroutine(LeftMoveTutorialCoroutine());
                 yield break;
             }
@@ -177,7 +178,6 @@ public class GameManager : MonoSingleton<GameManager>
     private void GamePlay()
     {
         Debug.Log("GamePlay !!");
-        StopCoroutine(doorKnockCoroutine);
         StartCoroutine(GamePlayCoroutine());
         // Door.SetNoSound(50, 0.5f);
         // BedRoomLightSwitch.SwitchAction(false);
@@ -186,7 +186,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     IEnumerator GamePlayCoroutine()
     {
-        doorKnockCoroutine = null;
+        isNotOpen = true;
+        StopCoroutine(doorKnockCoroutine);
         yield return new WaitForSeconds(1.5f);
         Door.Set(30, 0.15f);
         yield return new WaitForSeconds(0.2f);

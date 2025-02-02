@@ -44,7 +44,7 @@ public class TimeManager : MonoBehaviour
     
     private void OnEnable()
     {
-        timeText.text = $"{hours:00}:{minutes:00}";
+        timeText.text = $"{hours:11}:{minutes:00}";
         skyboxMaterial = RenderSettings.skybox;
         skyboxMaterial.SetFloat("_Exposure", 0.9f);
         RenderSettings.ambientSkyColor = startSkyColor;
