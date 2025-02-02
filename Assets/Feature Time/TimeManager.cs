@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System;
 
 public class TimeManager : MonoBehaviour
 {
@@ -87,7 +88,8 @@ public class TimeManager : MonoBehaviour
         {
             playTimeToMin ++; // 게임 시간 1분 증가
             GimmickManager.Instance.RedefineProbability(); // 기믹 확률 재정의
-            realTimeCounter = 0;  
+            realTimeCounter = 0;
+            SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmm"));
         }
 
         if (30 > playTimeToMin) // 30분 전
