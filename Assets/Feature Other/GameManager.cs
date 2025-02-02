@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public enum GameState
 {
@@ -29,10 +31,8 @@ public class GameManager : MonoSingleton<GameManager>
     #region Reference Components
     [Header("Reference Components")]
     [SerializeField] private Player player;
-    [SerializeField] private GameObject timeManagerObject;
-    private TimeManager timeManager;
     #endregion
-
+    
     #region Objects related Components
     [Header("Objects related Components")]
     [SerializeField] private GameObject mother;
@@ -43,15 +43,18 @@ public class GameManager : MonoSingleton<GameManager>
     [Header("Quit Settings")]
     [SerializeField] private bool isBlinkInit;
     #endregion
-
-    private Coroutine doorKnockCoroutine;
-    private static GameState currentState;
-    private bool isNotOpen = true;
-
+    
+    #region Managers
+    [SerializeField] private TimeManager timeManager;
+    [SerializeField] private TutorialManager tutorialManager;
+    #endregion
+    
+    private GameState currentState;
+    
     void Awake()
     {
+        motherAnimator = mother.GetComponent<Animator>();
         //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
-        timeManager = timeManagerObject.GetComponent<TimeManager>();
 
         //예전 마지막 플레이 시간 가져옴
         DateTime ago = DateTime.ParseExact(SaveManager.Instance.LoadLastPlayedTime(), "yyyyMMddHHmm", CultureInfo.InvariantCulture);
@@ -89,8 +92,7 @@ public class GameManager : MonoSingleton<GameManager>
     void Start()
     {
         SetState(GameState.Preparation);
-        motherAnimator = mother.GetComponent<Animator>();
-
+        
         #if UNITY_EDITOR
             if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
             if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
@@ -98,14 +100,18 @@ public class GameManager : MonoSingleton<GameManager>
         #endif
     }
 
-    protected override void OnApplicationQuit()
+    private void Update()
     {
-        if ( isBlinkInit ) BlinkEffect.Blink = 1f;
-    }
+        if (Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) ||
+            (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
+            else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
+        }
 
-    public GameState GetState()
-    {   
-        return currentState;
+        #if UNITY_EDITOR
+            DebugFunctions();
+        #endif
     }
 
     public void SetState(GameState state)
@@ -113,7 +119,7 @@ public class GameManager : MonoSingleton<GameManager>
         currentState = state;
         UpdateState();
     }
-
+    
     private void UpdateState()
     {
         switch (currentState)
@@ -129,86 +135,18 @@ public class GameManager : MonoSingleton<GameManager>
                 break;
         }
     }
-
+    
     private void Prepartion()
     {
         BedRoomLightSwitch.SwitchActionNoSound(true);
         LivingRoomLightSwitch.SwitchAction(true);
         player.EyeControl(PlayerEyeStateTypes.Close);
-        timeManagerObject.SetActive(false);
+        timeManager.gameObject.SetActive(false);
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
-        StartCoroutine(EyeOpenTutorialCoroutine());
-        StartCoroutine(ReadyCheckCoroutine());
+        tutorialManager.ReadyTutorial();
     }
-
-    private IEnumerator EyeOpenTutorialCoroutine()
-    {
-        yield return new WaitForSeconds(0.25f);
-        float startTime = Time.time;
-        while(isNotOpen)
-        {
-            if (Time.time - startTime >= 8f && PlayerConstant.isEyeOpen == false && isNotOpen == true) UIManager.Instance.EyeOpenTutorial(true);
-            if (BlinkEffect.Blink <= 0.93f) 
-            {
-                isNotOpen = false;
-                UIManager.Instance.EyeOpenTutorial(false);
-                doorKnockCoroutine = StartCoroutine(DoorKnock());
-                StartCoroutine(LeftMoveTutorialCoroutine());
-                yield break;
-            }
-            yield return null;
-        }
-    }
-
-    private IEnumerator ReadyCheckCoroutine()
-    {
-        float checkTime = 0f;
-
-        while (true)
-        {
-            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
-            {
-                checkTime += Time.deltaTime;
-                if (checkTime >= 2f)
-                {
-                    SetState(GameState.GamePlay);
-                    yield break;
-                }
-            }
-            else
-                checkTime = 0f;
-
-            yield return null;
-        }
-    }
-
-
-    private IEnumerator LeftMoveTutorialCoroutine()
-    {
-        float startTime = Time.time;
-        while(true)
-        {
-            if (Time.time - startTime >= 10f && PlayerConstant.isLeftState == false) UIManager.Instance.LeftMoveTutorial(true);
-            if (PlayerConstant.isLeftState == true) 
-            {
-                UIManager.Instance.LeftMoveTutorial(false);
-                yield break;
-            }
-            yield return null;
-        }
-    }
-
-    private IEnumerator DoorKnock()
-    {
-        while(true)
-        {
-            float randomNum = UnityEngine.Random.Range(2.5f, 5f);
-            yield return new WaitForSeconds(randomNum);
-            AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorKnock, Door.GetPosition());
-        }
-    }
-
+    
     private void GamePlay()
     {
         Debug.Log("GamePlay !!");
@@ -217,11 +155,11 @@ public class GameManager : MonoSingleton<GameManager>
         // BedRoomLightSwitch.SwitchAction(false);
         // timeManagerObject.SetActive(true);
     }
-
+    
     IEnumerator GamePlayCoroutine()
     {
-        isNotOpen = true;
-        StopCoroutine(doorKnockCoroutine);
+        tutorialManager.IsNotOpen(true);
+        tutorialManager.StopDoorKnock();
         yield return new WaitForSeconds(1.5f);
         Door.Set(30, 0.15f);
         yield return new WaitForSeconds(0.2f);
@@ -239,9 +177,9 @@ public class GameManager : MonoSingleton<GameManager>
         mother.SetActive(false);
         //LivingRoomLightSwitch.SwitchAction(false);
         yield return new WaitForSeconds(1f);
-        timeManagerObject.SetActive(true);
+        timeManager.gameObject.SetActive(true);
     }
-
+    
     private void GameOver()
     {
         Debug.Log("GameOver !!");
@@ -249,23 +187,10 @@ public class GameManager : MonoSingleton<GameManager>
         PlayerConstant.isShock = true;
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
     }
-
+    
     private void DelayTurnToMiddle()
     {
         player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
-    }
-
-    private void Update()
-    { 
-        if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape)) 
-        {
-            if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
-            else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
-        }
-
-        #if UNITY_EDITOR
-            DebugFunctions();
-        #endif
     }
 
     private void DebugFunctions()
@@ -273,9 +198,9 @@ public class GameManager : MonoSingleton<GameManager>
         #if UNITY_EDITOR   
         if (Input.GetKeyDown(KeyCode.U))
         {
-            if (GetState() == GameState.Preparation) SetState(GameState.GamePlay);
-            else if (GetState() == GameState.GamePlay) SetState(GameState.GameOver);
-            else if (GetState() == GameState.GameOver) SetState(GameState.Preparation);
+            if (currentState == GameState.Preparation) SetState(GameState.GamePlay);
+            else if (currentState == GameState.GamePlay) SetState(GameState.GameOver);
+            else if (currentState == GameState.GameOver) SetState(GameState.Preparation);
         }
         
         if (Input.GetKeyDown(KeyCode.B)) 
@@ -342,6 +267,11 @@ public class GameManager : MonoSingleton<GameManager>
                 $"DownLookLAT: <color=yellow>{PlayerConstant.DownLookLAT}</color>\n";
 
         #endif
+    }
+    
+    protected override void OnApplicationQuit()
+    {
+        if (isBlinkInit) BlinkEffect.Blink = 1f;
     }
 
     public void GameEnd()

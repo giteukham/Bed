@@ -85,12 +85,12 @@ public class Player : PlayerBase
     private void Awake()
     {
         POVCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
+        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
     }
 
     private void Start()
     {
-        playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
-        playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
         // Post Processing
         postProcessing = playerVirtualCamera.GetComponent<CinemachinePostProcessing>();

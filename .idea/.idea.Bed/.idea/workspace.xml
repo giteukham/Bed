@@ -5,13 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1fcfbd98-c863-4ab0-a550-bb8889065656" name="�?�?" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Feature Other/TutorialManager.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Feature Other/TutorialManager.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Bed/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Assets by LeartesStudios/Wills Room/BuiltIn/WillsRoomBuiltIn.unitypackage.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature Player/Scripts/Util/MonoSingleton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Player/Scripts/Util/MonoSingleton.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/SaveManager/SaveManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/SaveManager/SaveManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Mouse/MouseDeadZoneArrow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Mouse/MouseDeadZoneArrow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Mouse/MouseDeadZoneUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Mouse/MouseDeadZoneUI.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Mouse/MouseSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature UI/Scripts/Mouse/MouseSettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Interactive Objects/Door/Door.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Interactive Objects/Door/Door.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Other/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Other/GameManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Feature Player/Scripts/Player/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Feature Player/Scripts/Player/Player.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Kwon.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Kwon.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,16 +19,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DpaMonitoringSettings">
-    <option name="autoShow" value="false" />
+    <option name="firstShow" value="false" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/c7/66fb4d00/PlayerPrefs.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/779cc116a5954f1c9b92496e62345641175c00/f5/9efd601f/RectTransform.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/muryu/Desktop/Bed/Assets/Feature Other/GameManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/muryu/Desktop/Bed/Assets/Feature Other/GameManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Feature Player/Scripts/Player/MouseSettingsPreviewPlayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.cinemachine@2.10.0/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.cinemachine@2.10.0/Runtime/Behaviours/CinemachineVirtualCamera.cs" root0="SKIP_HIGHLIGHTING" />
@@ -72,10 +72,11 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Unity ?��?��?��?�� ?���?.Unity ?��?��?��?�� ?���?.executor&quot;: &quot;Debug&quot;,
     &quot;Unity 에디터에 연결.Unity 에디터에 연결.executor&quot;: &quot;Debug&quot;,
     &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.503125&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/mouse-option&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/intro&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -139,6 +140,9 @@
       <option name="listenPortForConnections" value="false" />
       <option name="pid" />
       <option name="projectPathOnTarget" />
+      <option name="runtimes">
+        <list />
+      </option>
       <option name="selectedOptions">
         <list />
       </option>
@@ -149,6 +153,9 @@
       <option name="listenPortForConnections" value="false" />
       <option name="pid" />
       <option name="projectPathOnTarget" />
+      <option name="runtimes">
+        <list />
+      </option>
       <option name="selectedOptions">
         <list />
       </option>
@@ -205,6 +212,7 @@
       <workItem from="1732238441673" duration="14395000" />
       <workItem from="1732265298555" duration="5162000" />
       <workItem from="1732270939420" duration="11719000" />
+      <workItem from="1738464992790" duration="12322000" />
     </task>
     <servers />
   </component>

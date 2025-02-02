@@ -1,3 +1,4 @@
+using System.Collections;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -7,6 +8,14 @@ public class Door : MonoBehaviour
     private float doorInitialAngle = 270f;
 
     static private bool isRotating = false;
+    
+    private Coroutine doorKnockCoroutine;
+    private bool isNotOpen = true;
+    public bool IsNotOpen
+    {
+        get => isNotOpen;
+        set => isNotOpen = value;
+    }
 
     void Awake()
     {
@@ -16,6 +25,26 @@ public class Door : MonoBehaviour
     {
         Vector3 doorInitialRotation = door.transform.eulerAngles;
         door.transform.eulerAngles = new Vector3(doorInitialRotation.x, doorInitialAngle, doorInitialRotation.z);
+    }
+    
+    public void StartDoorKnock()
+    {
+        doorKnockCoroutine = StartCoroutine(DoorKnock());
+    }
+    
+    public void StopDoorKnock()
+    {
+        if (doorKnockCoroutine != null) StopCoroutine(doorKnockCoroutine);
+    }
+    
+    private IEnumerator DoorKnock()
+    {
+        while (true)
+        {
+            float randomNum = Random.Range(2.5f, 5f);
+            yield return new WaitForSeconds(randomNum);
+            AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorKnock, Door.GetPosition());
+        }
     }
 
     /// <summary>
