@@ -44,8 +44,7 @@ public class MeteorGimmick : Gimmick
     
     [Space]
     [SerializeField] private GameObject[] fracturedObjects;
-
-    private GameObject chunksParent;
+    [SerializeField] private FractureData fractureData;
     
     private SequenceController sequenceController;
     
@@ -72,8 +71,6 @@ public class MeteorGimmick : Gimmick
         originHouse.SetActive(false);
         fracturedHouse.SetActive(true);
         
-        chunksParent = new GameObject("Chunks Parent");
-        
         foreach (var obj in fracturedObjects)
         {
             Rigidbody rigid = obj.AddComponent<Rigidbody>();
@@ -84,7 +81,7 @@ public class MeteorGimmick : Gimmick
             MeshCollider col = obj.AddComponent<MeshCollider>();
             col.convex = true;
             
-            AddFractureComponent(obj);
+            GenerateFacture(obj);
         }
         
         ChangeSirenObjectsTag("Gimmick");
@@ -176,11 +173,11 @@ public class MeteorGimmick : Gimmick
     
     #endregion
     
-    private void AddFractureComponent(GameObject obj)
+    private void GenerateFacture(GameObject obj)
     {
-        var fracture = obj.AddComponent<Fracture>();
-        fracture.InitSettings(null, 3f, 1f, 10);
-        fracture.GenerateChunk(chunksParent);
+        var fracture = obj.AddComponent<FractureInPlayMode>();
+        fracture.FractureData = fractureData;
+        fracture.GenerateFracture();
     }
     
     private void ResetToken(ref CancellationTokenSource token)

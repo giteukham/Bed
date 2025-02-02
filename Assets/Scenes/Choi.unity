@@ -11132,7 +11132,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!199 &1120569553
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -25356,7 +25356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!199 &2022315859
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -33175,6 +33175,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3106388817105361811, guid: 5119393ed7871c543b034ffdfcf75180, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4250147451082989749, guid: 5119393ed7871c543b034ffdfcf75180, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.7000402
@@ -33223,6 +33227,10 @@ PrefabInstance:
       propertyPath: originHouse
       value: 
       objectReference: {fileID: 370423253}
+    - target: {fileID: 4735839530594075992, guid: 5119393ed7871c543b034ffdfcf75180, type: 3}
+      propertyPath: fractureData
+      value: 
+      objectReference: {fileID: 11400000, guid: a62fe86a2cbc9754aaf6582d8ebc776a, type: 2}
     - target: {fileID: 4735839530594075992, guid: 5119393ed7871c543b034ffdfcf75180, type: 3}
       propertyPath: actorJointRigid
       value: 

@@ -44,10 +44,10 @@ public abstract class DisposablePtr : IDisposable
         }
     }
 
-    // ~DisposablePtr()
-    // {
-    //     Dispose(false);
-    // }
+    ~DisposablePtr()
+    {
+        Dispose(false);
+    }
 
     private IntPtr _ptr = IntPtr.Zero;
 }
