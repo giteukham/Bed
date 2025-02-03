@@ -7,66 +7,36 @@ using Random = UnityEngine.Random;
 
 public class TutorialManager : MonoSingleton<TutorialManager>
 {
-    [SerializeField] private Door door;
-    
-    public void IsNotOpen(bool isNotOpen)
-    {
-        this.door.IsNotOpen = isNotOpen;
-    }
-    
-    public void StartDoorKnock() => door.StartDoorKnock();
-    public void StopDoorKnock() => door.StopDoorKnock();
+    private bool isEyeOpenTutorialEnabled = false;
 
     public void ReadyTutorial()
     {
         StartCoroutine(EyeOpenTutorialCoroutine());
-        StartCoroutine(ReadyCheckCoroutine());
     }
     
     private IEnumerator EyeOpenTutorialCoroutine()
     {
-        yield return new WaitForSeconds(0.25f);
+        if(!GameManager.Instance.isBlinkInit) yield return new WaitForSeconds(0.25f);
         float startTime = Time.time;
         
-        while(door.IsNotOpen)
+        while(isEyeOpenTutorialEnabled == false)
         {
-            if (Time.time - startTime >= 8f && PlayerConstant.isEyeOpen == false && door.IsNotOpen == true) UIManager.Instance.EyeOpenTutorial(true);
+            if (Time.time - startTime >= 8f && PlayerConstant.isEyeOpen == false && isEyeOpenTutorialEnabled == false) UIManager.Instance.EyeOpenTutorial(true);
             if (BlinkEffect.Blink <= 0.93f) 
             {
-                door.IsNotOpen = false;
+                isEyeOpenTutorialEnabled = true;
                 UIManager.Instance.EyeOpenTutorial(false);
-                door.StartDoorKnock();
-                StartCoroutine(LeftMoveTutorialCoroutine());
+                //StartCoroutine(LeftMoveTutorialCoroutine());
                 yield break;
             }
-            yield return null;
-        }
-    }
-    
-    private IEnumerator ReadyCheckCoroutine()
-    {
-        float checkTime = 0f;
-
-        while (true)
-        {
-            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
-            {
-                checkTime += Time.deltaTime;
-                if (checkTime >= 2f)
-                {
-                    GameManager.Instance.SetState(GameState.GamePlay);
-                    yield break;
-                }
-            }
-            else
-                checkTime = 0f;
-
             yield return null;
         }
     }
 
     private IEnumerator LeftMoveTutorialCoroutine()
     {
+        isEyeOpenTutorialEnabled = true;
+
         float startTime = Time.time;
         while (true)
         {

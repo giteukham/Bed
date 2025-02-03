@@ -10,12 +10,6 @@ public class Door : MonoBehaviour
     static private bool isRotating = false;
     
     private Coroutine doorKnockCoroutine;
-    private bool isNotOpen = true;
-    public bool IsNotOpen
-    {
-        get => isNotOpen;
-        set => isNotOpen = value;
-    }
 
     void Awake()
     {
@@ -29,12 +23,14 @@ public class Door : MonoBehaviour
     
     public void StartDoorKnock()
     {
-        doorKnockCoroutine = StartCoroutine(DoorKnock());
+        if (doorKnockCoroutine != null) return;
+        else doorKnockCoroutine = StartCoroutine(DoorKnock());
     }
     
     public void StopDoorKnock()
     {
-        if (doorKnockCoroutine != null) StopCoroutine(doorKnockCoroutine);
+        if (doorKnockCoroutine == null) return;
+        else StopCoroutine(doorKnockCoroutine);
     }
     
     private IEnumerator DoorKnock()

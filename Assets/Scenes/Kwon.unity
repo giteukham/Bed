@@ -14294,6 +14294,8 @@ MonoBehaviour:
   isBlinkInit: 0
   timeManager: {fileID: 290243064}
   tutorialManager: {fileID: 1374396587}
+  door: {fileID: 984148487}
+  testEnable: 1
 --- !u!1 &1396281236
 GameObject:
   m_ObjectHideFlags: 0
@@ -18642,7 +18644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 251437876228443475, guid: 695cf5e47fb84e84d9faba188c823a79, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 591829477082568681, guid: 695cf5e47fb84e84d9faba188c823a79, type: 3}
       propertyPath: m_LocalScale.x

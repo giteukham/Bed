@@ -41,15 +41,17 @@ public class GameManager : MonoSingleton<GameManager>
 
     #region Quit Settings
     [Header("Quit Settings")]
-    [SerializeField] private bool isBlinkInit;
+    public bool isBlinkInit;
     #endregion
     
     #region Managers
     [SerializeField] private TimeManager timeManager;
-    [SerializeField] private TutorialManager tutorialManager;
     #endregion
     
+    [SerializeField] private Door door;
     private GameState currentState;
+    private bool isTutorialEnable;
+    public bool testEnable;
     
     void Awake()
     {
@@ -63,12 +65,11 @@ public class GameManager : MonoSingleton<GameManager>
 
         //시간 비교
         TimeSpan timeDifference = now - ago;
-        Debug.Log(timeDifference.TotalHours);
 
-        bool isTwoDaysLater = timeDifference.TotalHours > 48.0d;
+        isTutorialEnable = timeDifference.TotalHours >= 48.0d;
 
         //48시간 이후 접속 여부
-        if (isTwoDaysLater == true)
+        if (isTutorialEnable == true)
         {
             //튜토리얼 실행 코드 작성
         }
@@ -133,7 +134,34 @@ public class GameManager : MonoSingleton<GameManager>
         timeManager.gameObject.SetActive(false);
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
-        tutorialManager.ReadyTutorial();
+
+        if (testEnable) TutorialManager.Instance.ReadyTutorial();
+        StartCoroutine(ReadyCheckCoroutine());
+    }
+
+    private IEnumerator ReadyCheckCoroutine()
+    {
+        if (!isBlinkInit) yield return new WaitForSeconds(0.25f);
+        float checkTime = 0f;
+
+        while (true)
+        {
+            // if (BlinkEffect.Blink <= 0.93f) door.StartDoorKnock();
+
+            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
+            {
+                checkTime += Time.deltaTime;
+                if (checkTime >= 3f)
+                {
+                    SetState(GameState.GamePlay);
+                    yield break;
+                }
+            }
+            else
+                checkTime = 0f;
+
+            yield return null;
+        }
     }
     
     private void GamePlay()
@@ -147,22 +175,21 @@ public class GameManager : MonoSingleton<GameManager>
     
     IEnumerator GamePlayCoroutine()
     {
-        tutorialManager.IsNotOpen(true);
-        tutorialManager.StopDoorKnock();
-        yield return new WaitForSeconds(1.5f);
-        Door.Set(30, 0.15f);
-        yield return new WaitForSeconds(0.2f);
+        door.StopDoorKnock();
+        yield return new WaitForSeconds(2f);
+        Door.Set(30, 0.35f);
+        yield return new WaitForSeconds(0.41f);
         mother.SetActive(true);
 
-        float randomNum = UnityEngine.Random.Range(3f, 6f);
+        float randomNum = UnityEngine.Random.Range(5f, 8f);
         yield return new WaitForSeconds(randomNum);
 
         BedRoomLightSwitch.SwitchAction(false);
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.45f);
         motherAnimator.SetTrigger("Leave");
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
         Door.Set(0, 0.4f);
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.35f);
         mother.SetActive(false);
         //LivingRoomLightSwitch.SwitchAction(false);
         yield return new WaitForSeconds(1f);
