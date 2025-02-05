@@ -8,7 +8,7 @@ using DG.Tweening;
 public class UIManager : MonoSingleton<UIManager>
 {
     [SerializeField] GameObject uiCanvas;   
-    public bool isMenuScreenActive = false;
+    //public bool isMenuScreenActive = false;
     #region Menu
     [Header("Menu")]
     [SerializeField] private GameObject menuScreen;
@@ -17,19 +17,12 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] private GameObject mouseSettingsScreen;
     #endregion
 
-    #region Tutorials
-    [Header("Tutorials")]
-    [SerializeField] private GameObject eyeOpenTutorial;
-    [SerializeField] private GameObject leftMoveTutorial;
-    [SerializeField] private GameObject openOptionTutorial;
-    [SerializeField] private GameObject blinkTutorial;
-    #endregion
-
     private void Update() 
     {
         ActivateUICanvas();
 
-        if (Input.GetMouseButton(1)) ShowMenuScreen();
+        if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
+        else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) PlayerConstant.isPlayerStop = false;
     }
 
     private void Awake()
@@ -120,54 +113,5 @@ public class UIManager : MonoSingleton<UIManager>
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
-    }
-
-    private void ShowTutorial(GameObject Tutorial, bool isActive)
-    {
-        if (Tutorial.activeSelf == isActive) return;
-
-        Tutorial.SetActive(isActive);
-        DOTweenAnimation[] dOTweenAnimations = Tutorial.GetComponentsInChildren<DOTweenAnimation>();
-        foreach (var child in dOTweenAnimations) child.DORestart();
-    }
-
-    public void EyeOpenTutorial(bool isActive)
-    {
-        ShowTutorial(eyeOpenTutorial, isActive);
-    }
-
-    public bool GetEyeOpenManaul()
-    {
-        return eyeOpenTutorial.activeSelf;
-    }
-
-    public void LeftMoveTutorial(bool isActive)
-    {
-        ShowTutorial(leftMoveTutorial, isActive);
-    }
-
-    public bool GetLeftMoveTutorial()
-    {
-        return leftMoveTutorial.activeSelf;
-    }
-
-    public void OpenOptionTutorial(bool isActive)
-    {
-        ShowTutorial(openOptionTutorial, isActive);
-    }
-
-    public bool GetOpenOptionTutorial()
-    {
-        return openOptionTutorial.activeSelf;
-    }
-
-    public void BlinkTutorial(bool isActive)
-    {
-        ShowTutorial(blinkTutorial, isActive);
-    }
-
-    public bool GetBlinkTutorial()
-    {
-        return blinkTutorial.activeSelf;
     }
 }

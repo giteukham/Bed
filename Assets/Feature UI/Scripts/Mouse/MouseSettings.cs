@@ -21,6 +21,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     
     [SerializeField] private Player player;
     [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
+    [SerializeField] private Camera playerCamera;
     
     [Tooltip("기본 값은 오른쪽 방향으로 3, 왼쪽 방향으로 -3")]
     [SerializeField] private float turnRightSpeed, turnLeftSpeed;
@@ -58,16 +59,19 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     private void Awake()
     {
         InitMouseSetting();
-        
+
         MouseWindowUI.OnScreenActive += () =>
         {
             ActivePlayerObject(false);
             previewPlayer?.EnablePlayerObject(true);
 
+            playerCamera.cullingMask = 1 << LayerMask.NameToLayer("Test Room");
+
             mainPlayerPos = previewPlayerPos.position;
             previewPlayerPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
             InitCameraSettings(previewPlayer);
         };
+
         MouseWindowUI.OnScreenDeactive += () =>
         {
             if (Application.isPlaying == false) return;
@@ -75,6 +79,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
             ActivePlayerObject(true);
             previewPlayer?.EnablePlayerObject(false);
             
+            playerCamera.cullingMask = -1;
+
             previewPlayerPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
         };
     }

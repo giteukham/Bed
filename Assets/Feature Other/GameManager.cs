@@ -45,14 +45,52 @@ public class GameManager : MonoSingleton<GameManager>
     #endregion
     
     #region Managers
+    [Header("Managers")]
     [SerializeField] private TimeManager timeManager;
     #endregion
-    
+
+    #region Intro Scene Related Values
+    [Header("Intro Scene Related Values")]
+    [SerializeField, Tooltip("준비 확인 시간")]
+    private float ready_CheckTime;
+
+    [SerializeField, Tooltip("문 열리기 전 지연 시간")]
+    private float door_Open_BeforeDelayTime;
+
+    [SerializeField, Tooltip("엄마 등장 전 지연 시간")]
+    private float mother_Appear_BeforeDelayTime;
+
+    [SerializeField, Tooltip("엄마 퇴장 전 지연 시간")]
+    private float mother_Leave_BeforeDelayTime;
+
+    [SerializeField, Tooltip("문 닫히기 전 지연 시간")]
+    private float door_Close_BeforeDelayTime;
+
+    [SerializeField, Tooltip("엄마 비활성화 전 지연 시간")]
+    private float mother_Deactivate_BeforeDelayTime;
+
+    [SerializeField, Tooltip("게임 시작 전 지연 시간")]
+    private float game_Start_BeforeDelayTime;
+    #endregion
+
+    [Space(10f)]
     [SerializeField] private Door door;
     private GameState currentState;
     private bool isTutorialEnable;
     public bool testEnable;
     
+    private void OnValidate()
+    // 값이 0이면 기본 값으로 설정
+    {
+        if (ready_CheckTime <= 0) ready_CheckTime = 2.5f;                             
+        if (door_Open_BeforeDelayTime <= 0) door_Open_BeforeDelayTime = 2f;             
+        if (mother_Appear_BeforeDelayTime <= 0) mother_Appear_BeforeDelayTime = 0.4f; 
+        if (mother_Leave_BeforeDelayTime <= 0) mother_Leave_BeforeDelayTime = 0.45f;
+        if (door_Close_BeforeDelayTime <= 0) door_Close_BeforeDelayTime = 0.2f;
+        if (mother_Deactivate_BeforeDelayTime <= 0) mother_Deactivate_BeforeDelayTime = 0.1f;
+        if (game_Start_BeforeDelayTime <= 0) game_Start_BeforeDelayTime = 1f;
+    }
+
     void Awake()
     {
         motherAnimator = mother.GetComponent<Animator>();
@@ -142,7 +180,7 @@ public class GameManager : MonoSingleton<GameManager>
     private IEnumerator ReadyCheckCoroutine()
     {
         if (!isBlinkInit) yield return new WaitForSeconds(0.25f);
-        float checkTime = 0f;
+        float time = 0f;
 
         while (true)
         {
@@ -150,15 +188,15 @@ public class GameManager : MonoSingleton<GameManager>
 
             if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
             {
-                checkTime += Time.deltaTime;
-                if (checkTime >= 3f)
+                time += Time.deltaTime;
+                if (time >= ready_CheckTime)
                 {
                     SetState(GameState.GamePlay);
                     yield break;
                 }
             }
             else
-                checkTime = 0f;
+                time = 0f;
 
             yield return null;
         }
@@ -168,31 +206,28 @@ public class GameManager : MonoSingleton<GameManager>
     {
         Debug.Log("GamePlay !!");
         StartCoroutine(GamePlayCoroutine());
-        // Door.SetNoSound(50, 0.5f);
-        // BedRoomLightSwitch.SwitchAction(false);
-        // timeManagerObject.SetActive(true);
     }
     
     IEnumerator GamePlayCoroutine()
     {
         door.StopDoorKnock();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(door_Open_BeforeDelayTime);
         Door.Set(30, 0.35f);
-        yield return new WaitForSeconds(0.41f);
+        yield return new WaitForSeconds(mother_Appear_BeforeDelayTime);
         mother.SetActive(true);
 
         float randomNum = UnityEngine.Random.Range(5f, 8f);
         yield return new WaitForSeconds(randomNum);
 
         BedRoomLightSwitch.SwitchAction(false);
-        yield return new WaitForSeconds(0.45f);
+        yield return new WaitForSeconds(mother_Leave_BeforeDelayTime);
         motherAnimator.SetTrigger("Leave");
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(door_Close_BeforeDelayTime);
         Door.Set(0, 0.4f);
-        yield return new WaitForSeconds(0.35f);
+        yield return new WaitForSeconds(mother_Deactivate_BeforeDelayTime);
         mother.SetActive(false);
         //LivingRoomLightSwitch.SwitchAction(false);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(game_Start_BeforeDelayTime);
         timeManager.gameObject.SetActive(true);
     }
     

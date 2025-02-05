@@ -8896,6 +8896,7 @@ MonoBehaviour:
   - {fileID: 2142733323}
   player: {fileID: 427841148}
   previewPlayer: {fileID: 1647553765}
+  playerCamera: {fileID: 1732393634}
   turnRightSpeed: 3
   turnLeftSpeed: -3
   mouseAxisLimit: 10
@@ -10870,13 +10871,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1085726937}
+  - component: {fileID: 1085726939}
+  - component: {fileID: 1085726938}
   m_Layer: 5
   m_Name: Menu UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1085726937
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10898,8 +10901,46 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -1820, y: -980}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1085726938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085726936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1085726939
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085726936}
+  m_CullTransparentMesh: 1
 --- !u!1 &1095580962
 GameObject:
   m_ObjectHideFlags: 0
@@ -13844,7 +13885,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50addb2e5c2a4a6aa3f99bfcd388e161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  door: {fileID: 984148487}
+  eyeOpenTutorial: {fileID: 5970609012627450965}
+  leftMoveTutorial: {fileID: 1406680264030410502}
+  openOptionTutorial: {fileID: 7427124473211908642}
+  blinkTutorial: {fileID: 8261912669058394718}
+  eyeOpenTutorial_ActiveTime: 6
+  leftMoveTutorial_ActiveTime: 8
 --- !u!1 &1375662030
 GameObject:
   m_ObjectHideFlags: 0
@@ -14293,7 +14339,13 @@ MonoBehaviour:
   mother: {fileID: 4750164002904241433}
   isBlinkInit: 0
   timeManager: {fileID: 290243064}
-  tutorialManager: {fileID: 1374396587}
+  ready_CheckTime: 2.5
+  door_Open_BeforeDelayTime: 2
+  mother_Appear_BeforeDelayTime: 0.4
+  mother_Leave_BeforeDelayTime: 0.45
+  door_Close_BeforeDelayTime: 0.2
+  mother_Deactivate_BeforeDelayTime: 0.1
+  game_Start_BeforeDelayTime: 1
   door: {fileID: 984148487}
   testEnable: 1
 --- !u!1 &1396281236
@@ -16604,8 +16656,8 @@ RectTransform:
   - {fileID: 670431568}
   - {fileID: 1003692745}
   - {fileID: 1385739453}
-  - {fileID: 1085726937}
   - {fileID: 1480550429}
+  - {fileID: 1085726937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -25093,15 +25145,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiCanvas: {fileID: 1085726936}
-  isMenuScreenActive: 0
   menuScreen: {fileID: 6346182895357402428}
   soundSettingsScreen: {fileID: 3769650287513392305}
   resolutionSettingsScreen: {fileID: 949841976}
   mouseSettingsScreen: {fileID: 1811092869836967947}
-  eyeOpenTutorial: {fileID: 5970609012627450965}
-  leftMoveTutorial: {fileID: 1406680264030410502}
-  openOptionTutorial: {fileID: 7427124473211908642}
-  blinkTutorial: {fileID: 8261912669058394718}
 --- !u!114 &4544167233734508386
 MonoBehaviour:
   m_ObjectHideFlags: 0
