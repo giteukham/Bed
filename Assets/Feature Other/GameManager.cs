@@ -77,7 +77,13 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField] private Door door;
     private GameState currentState;
     private bool isTutorialEnable;
-    public bool testEnable;
+    public bool tutorialTestEnable;
+
+    private float lastLeftClickTime = -1f;
+    private float lastRightClickTime = -1f;
+
+    [Tooltip("동시 클릭 허용 시간")]
+    public float bothClickToleranceTime;
     
     private void OnValidate()
     // 값이 0이면 기본 값으로 설정
@@ -89,6 +95,7 @@ public class GameManager : MonoSingleton<GameManager>
         if (door_Close_BeforeDelayTime <= 0) door_Close_BeforeDelayTime = 0.2f;
         if (mother_Deactivate_BeforeDelayTime <= 0) mother_Deactivate_BeforeDelayTime = 0.1f;
         if (game_Start_BeforeDelayTime <= 0) game_Start_BeforeDelayTime = 1f;
+        if (bothClickToleranceTime <= 0) bothClickToleranceTime = 0.1f;
     }
 
     void Awake()
@@ -128,10 +135,13 @@ public class GameManager : MonoSingleton<GameManager>
         #endif
     }
 
+    
+
     private void Update()
     {
-        if (Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) ||
-            (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape))
+        if (UIManager.Instance.isRightClikHeld == false &&
+            IsBothMouseClicked() || 
+            Input.GetKeyDown(KeyCode.Escape))
         {
             if (PlayerConstant.isPlayerStop == true) PlayerConstant.isPlayerStop = false;
             else if (PlayerConstant.isPlayerStop == false) PlayerConstant.isPlayerStop = true;
@@ -173,7 +183,7 @@ public class GameManager : MonoSingleton<GameManager>
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
 
-        if (testEnable) TutorialManager.Instance.ReadyTutorial();
+        if (tutorialTestEnable) TutorialManager.Instance.ReadyTutorial();
         StartCoroutine(ReadyCheckCoroutine());
     }
 
@@ -239,6 +249,31 @@ public class GameManager : MonoSingleton<GameManager>
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
     }
     
+    public bool IsBothMouseClicked()
+    {
+        bool isLeftClick = Input.GetMouseButtonDown(0);
+        bool isRightClick = Input.GetMouseButtonDown(1);
+
+        if (isLeftClick)
+        {
+            if (Time.time - lastRightClickTime <= bothClickToleranceTime)
+            {
+                return true;
+            }
+            lastLeftClickTime = Time.time;
+        }
+
+        if (isRightClick)
+        {
+            if (Time.time - lastLeftClickTime <= bothClickToleranceTime)
+            {
+                return true;
+            }
+            lastRightClickTime = Time.time;
+        }
+        return false;
+    }
+
     private void DelayTurnToMiddle()
     {
         player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);

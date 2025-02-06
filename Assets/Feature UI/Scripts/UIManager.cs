@@ -17,12 +17,23 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] private GameObject mouseSettingsScreen;
     #endregion
 
+    public bool isRightClikHeld = false;
+    private float rightClickStartTime  = 0f;
+
     private void Update() 
     {
         ActivateUICanvas();
 
         if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
         else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) PlayerConstant.isPlayerStop = false;
+
+        
+        if (uiCanvas.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
+        {
+            if (!isRightClikHeld) rightClickStartTime = Time.time;
+            isRightClikHeld = true;
+        }
+        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !uiCanvas.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
     }
 
     private void Awake()
