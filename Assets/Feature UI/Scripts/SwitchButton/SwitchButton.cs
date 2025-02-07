@@ -36,16 +36,16 @@ public class SwitchButton : MonoBehaviour
         if (isReverse == true)
         {
             switchDot.transform.DOLocalMoveX(50, switchSpeed);
-            rotationIcon.transform.DORotate(new Vector3(0, 0, -180), switchSpeed, RotateMode.FastBeyond360).SetRelative()
-                .OnKill(() => rotationIcon.transform.eulerAngles = new Vector3(0, 0, -180));
+            rotationIcon.DORotate(new Vector3(0, 0, rotationIcon.eulerAngles.z - 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear);
+                //.OnKill(() => rotationIcon.transform.eulerAngles = new Vector3(0, 0, -180));
 
             backGround.DOColor(switchColor_On, switchSpeed);
         }
         else
         {
             switchDot.transform.DOLocalMoveX(-50, switchSpeed);
-            rotationIcon.transform.DORotate(new Vector3(0, 0, 180), switchSpeed, RotateMode.Fast).SetRelative()
-                .OnKill(() => rotationIcon.transform.eulerAngles = new Vector3(0, 0, 180));
+            rotationIcon.DORotate(new Vector3(0, 0, rotationIcon.eulerAngles.z + 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear);
+                //.OnKill(() => rotationIcon.transform.eulerAngles = new Vector3(0, 0, 180));
 
             backGround.DOColor(switchColor_Off, switchSpeed);
         }
