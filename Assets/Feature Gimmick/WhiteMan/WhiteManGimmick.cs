@@ -5,43 +5,32 @@ using UnityEngine;
 
 public class WhiteManGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Human;
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField]public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    [SerializeField]
-    private Transform player;
-
-    [SerializeField]
-    private Transform waist;
-    
-    [SerializeField]
-    private Transform neck;
-
-    [SerializeField]
-    private Transform head;
-
-    [SerializeField]
-    private Transform leftArm;
-
-    [SerializeField]
-    private Transform rightArm;
-
-    [SerializeField]
-    private Transform clockKey;
-
-    [SerializeField]
-    private Transform movePoints;
-
-    [SerializeField]
-    private Transform[] pointsArray;
-
-    //기믹에서 플레이어 방향의 반대방향을 저장할 변수
-    private Vector3 dir;
-
+    #region Variables
+    [SerializeField] private Transform player;
+    [SerializeField] private Transform waist;
+    [SerializeField] private Transform neck;
+    [SerializeField] private Transform head;
+    [SerializeField] private Transform leftArm;
+    [SerializeField] private Transform rightArm;
+    [SerializeField] private Transform clockKey;
+    [SerializeField] private Transform movePoints;
+    [SerializeField] private Transform[] pointsArray;
+    private Vector3 dir; //기믹에서 플레이어 방향의 반대방향을 저장할 변수
     private float rotationY;
     private float rotationZ;
     private float currentY;
-
+    #endregion
     private void Awake()
     {
         pointsArray = movePoints.GetComponentsInChildren<Transform>();
@@ -64,7 +53,7 @@ public class WhiteManGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         //포인트 오브젝트 월드 오브젝트로 바꿈
         movePoints.SetParent(null);
         StartCoroutine(MainCode());
@@ -72,27 +61,13 @@ public class WhiteManGimmick : Gimmick
 
     public override void Deactivate()
     {
-        //기믹 상태 원래위치로 변경하고 로테이션 원래대로
-        waist.localRotation = Quaternion.identity;
-        neck.localRotation = Quaternion.identity;
-        head.localRotation = Quaternion.identity;
-        rightArm.localRotation = Quaternion.Euler(80, 10, 16);
-        leftArm.localRotation = Quaternion.Euler(80, -10, -16);
-
-        transform.position = pointsArray[0].position;
-        transform.rotation = Quaternion.Euler(0, 180, 0);
-
-        //포인트 오브젝트 로컬 오브젝트로 바꿈
-        movePoints.SetParent(transform);
-
-        gimmickManager.LowerProbability(this);
-        gimmickManager.humanGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
-        Probability = 100;
+        probability = 100;
     }
 
     private IEnumerator MainCode()
@@ -101,13 +76,13 @@ public class WhiteManGimmick : Gimmick
         transform.LookAt(pointsArray[1].position);
 
         //노크소리가 들리고 잠시 후 문이 열림
-        AudioManager.instance.PlaySound(AudioManager.instance.knock, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.knock, transform.position);
 
         yield return new WaitForSeconds(3);
 
         currentY = transform.eulerAngles.y;
         //문 넘어서 살짝 앞으로 직진함
-        AudioManager.instance.PlaySound(AudioManager.instance.toyWalk, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.toyWalk, transform.position);
         timeLimit = 0;
         while (timeLimit <= 3)
         {
@@ -117,18 +92,18 @@ public class WhiteManGimmick : Gimmick
             PenguinMove();
         }
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0);
-        AudioManager.instance.StopSound(AudioManager.instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.Instance.StopSound(AudioManager.Instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         yield return new WaitForSeconds(2);
         //소리 난뒤 갑자기 두번째 포인트 쪽으로 고개 확 돌림
-        AudioManager.instance.PlaySound(AudioManager.instance.neckSnap, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.neckSnap, transform.position);
         neck.LookAt(new Vector3(pointsArray[2].position.x, neck.position.y, pointsArray[2].position.z));
         
         //잠시 대기
         yield return new WaitForSeconds(2);
 
         //몸을 두번째 포인트로 향할 때 까지 3초 동안 회전
-        AudioManager.instance.PlaySound(AudioManager.instance.cogWheell, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.cogWheel, transform.position);
         timeLimit = 0;
         while (timeLimit <= 3)
         {
@@ -136,7 +111,7 @@ public class WhiteManGimmick : Gimmick
             transform.rotation = Quaternion.Slerp(transform.rotation, neck.rotation, Time.deltaTime);
             neck.LookAt(new Vector3(pointsArray[2].position.x, neck.position.y, pointsArray[2].position.z));
         }
-        AudioManager.instance.StopSound(AudioManager.instance.cogWheell, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.Instance.StopSound(AudioManager.Instance.cogWheel, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         //목 원상복귀
         neck.localRotation = Quaternion.identity;
@@ -146,7 +121,7 @@ public class WhiteManGimmick : Gimmick
 
         currentY = transform.eulerAngles.y;
         //두번째 포인트로 직진
-        AudioManager.instance.PlaySound(AudioManager.instance.toyWalk, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.toyWalk, transform.position);
         timeLimit = 0;
         while (timeLimit <= 5.5f)
         {
@@ -156,7 +131,7 @@ public class WhiteManGimmick : Gimmick
             PenguinMove();
         }
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0);
-        AudioManager.instance.StopSound(AudioManager.instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.Instance.StopSound(AudioManager.Instance.toyWalk, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         //웃는 소리 재생(너무 뻔함)
         yield return new WaitForSeconds(2);
@@ -169,11 +144,11 @@ public class WhiteManGimmick : Gimmick
             neck.localRotation = Quaternion.Slerp(neck.localRotation, Quaternion.Euler(0, 90, 0), Time.deltaTime);
         }
         //목 갑자기 플레이어 쪽으로 확 꺾음
-        AudioManager.instance.PlaySound(AudioManager.instance.neckSnap, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.neckSnap, transform.position);
         neck.LookAt(player.position);
         yield return new WaitForSeconds(2);
 
-        AudioManager.instance.PlaySound(AudioManager.instance.cogWheell, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.cogWheel, transform.position);
         timeLimit = 0;
         while (timeLimit <= 5)
         {
@@ -205,7 +180,7 @@ public class WhiteManGimmick : Gimmick
             yield return null;
             transform.Translate(Vector3.forward * Time.deltaTime * 0.1f);
         }
-        AudioManager.instance.StopSound(AudioManager.instance.cogWheell, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioManager.Instance.StopSound(AudioManager.Instance.cogWheel, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         yield return new WaitForSeconds(4);
 
@@ -252,5 +227,21 @@ public class WhiteManGimmick : Gimmick
         rotationZ = -(Mathf.PingPong(Time.time * 15, 12) - 6);
         //현재 Z 회전값에 회전 추가
         transform.rotation = Quaternion.Euler(transform.eulerAngles.x, rotationY, rotationZ);
+    }
+
+    public override void Initialize()
+    {
+        //기믹 상태 원래위치로 변경하고 로테이션 원래대로
+        waist.localRotation = Quaternion.identity;
+        neck.localRotation = Quaternion.identity;
+        head.localRotation = Quaternion.identity;
+        rightArm.localRotation = Quaternion.Euler(80, 10, 16);
+        leftArm.localRotation = Quaternion.Euler(80, -10, -16);
+
+        transform.position = pointsArray[0].position;
+        transform.rotation = Quaternion.Euler(0, 180, 0);
+
+        //포인트 오브젝트 로컬 오브젝트로 바꿈
+        movePoints.SetParent(transform);
     }
 }

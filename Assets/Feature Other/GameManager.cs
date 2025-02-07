@@ -19,8 +19,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
     }
 
     void Start()
@@ -28,10 +27,28 @@ public class GameManager : MonoBehaviour
         if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
         if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
         if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
+        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
-    {
+    { 
+        if(Input.GetMouseButton(0) && Input.GetMouseButtonDown(1) || (Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) || Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            if (PlayerConstant.isPlayerStop == true)
+            {
+                PlayerConstant.isPlayerStop = false;
+                UIManager.Instance.ActivateUICanvas(false);
+            }
+            else if (PlayerConstant.isPlayerStop == false)
+            {
+                PlayerConstant.isPlayerStop = true;
+                UIManager.Instance.ActivateUICanvas(true);
+            }
+            
+        }
+
         if (Input.GetKeyDown(KeyCode.R)) PlayerConstant.ResetLATStats();
 
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.ResetPlayTime();
@@ -50,13 +67,13 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.BackQuote) && Input.GetKey(KeyCode.LeftShift)) debugColiderImage.SetActive(!debugColiderImage.activeSelf);
 
-        if (Input.GetKeyDown(KeyCode.F) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, 10);
+        if (Input.GetKeyDown(KeyCode.F) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, 10);
 
-        if (Input.GetKeyDown(KeyCode.F) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Fear, -10);
+        if (Input.GetKeyDown(KeyCode.F) && Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, -10);
 
-        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, 10);
+        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, 10);
 
-        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) GaugeController.instance.SetGuage(GaugeController.GaugeTypes.Stress, -10);
+        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, -10);
 
         int hour = TimeManager.playTimeToMin >= 60 ? 11 + TimeManager.playTimeToMin / 60 - 12 : 11 + TimeManager.playTimeToMin / 60;
         int minute = TimeManager.playTimeToMin % 60;

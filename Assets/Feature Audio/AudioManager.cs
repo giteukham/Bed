@@ -5,16 +5,11 @@ using FMODUnity;
 using Unity.VisualScripting;
 using FMOD.Studio;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : MonoSingleton<AudioManager>
 {
-    public static AudioManager instance { get; private set;}
-
-    #region FMOD Events
+    #region Other FMOD Events
     [field: Header("Cat SFX")]
     [field: SerializeField] public EventReference catMeow {get; private set;}
-
-    [field: Header("Player SFX")]
-    [field: SerializeField] public EventReference blanketMoving {get; private set;}
 
     [field: Header("Radio SFX")]
     [field: SerializeField] public EventReference radio { get; private set; }
@@ -61,18 +56,6 @@ public class AudioManager : MonoBehaviour
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
 
-    [field: Header("ElevatorCrash SFX")]
-    [field: SerializeField] public EventReference elevatorCrash { get; private set; }
-
-    [field: Header("ElevatorMove SFX")]
-    [field: SerializeField] public EventReference elevatorMove { get; private set; }
-
-    [field: Header("ElevatorFast SFX")]
-    [field: SerializeField] public EventReference elevatorFast { get; private set; }
-
-    [field: Header("Hit SFX")]
-    [field: SerializeField] public EventReference hit { get; private set; }
-
     [field: Header("ToyWalk SFX")]
     [field: SerializeField] public EventReference toyWalk { get; private set; }
 
@@ -80,7 +63,7 @@ public class AudioManager : MonoBehaviour
     [field: SerializeField] public EventReference knock { get; private set; }
 
     [field: Header("CogWheell SFX")]
-    [field: SerializeField] public EventReference cogWheell { get; private set; }
+    [field: SerializeField] public EventReference cogWheel { get; private set; }
 
     [field: Header("NeckSnap SFX")]
     [field: SerializeField] public EventReference neckSnap { get; private set; }
@@ -111,7 +94,13 @@ public class AudioManager : MonoBehaviour
 
     [field: Header("Chair2 SFX")]
     [field: SerializeField] public EventReference chair2 { get; private set; }
-    
+
+    #endregion
+
+    #region Player FMOD Events
+    [field: Header("Head Move On Pillow SFX")]
+    [field: SerializeField] public EventReference headMove {get; private set;}
+
     [field: Header("Fear Whisper SFX")]
     [field: SerializeField] public EventReference fearHal {get; private set;}
 
@@ -124,21 +113,15 @@ public class AudioManager : MonoBehaviour
     [field: Header("Player Exhale SFX")]
     [field: SerializeField] public EventReference exhale {get; private set;}
 
-    [field: Header("Head Move On Pillow SFX")]
-    [field: SerializeField] public EventReference headMove {get; private set;}
+    [field: Header("blanketMoving SFX")]
+    [field: SerializeField] public EventReference blanketMoving {get; private set;}
     #endregion
 
-    // Key ì´ë²¤íŠ¸ ì°¸ì¡° ê°’, Value ì´ë²¤íŠ¸ ì¸ìŠ¤í„´ìŠ¤
+    // Key ÀÌº¥Æ® ÂüÁ¶ °ª, Value ÀÌº¥Æ® ÀÎ½ºÅÏ½º
     private Dictionary<EventReference, EventInstance> eventInstances = new(); 
 
-    private void Awake() 
-    {
-        if (instance != null) Debug.LogError("Audio Manager already exists");
-        instance = this;
-    }
-    
     /// <summary>
-    /// ì†Œë¦¬ êº¼ì§€ê¸° ì „ê¹Œì§€ ì‹¤í–‰
+    /// ¼Ò¸® ²¨Áö±â Àü±îÁö ½ÇÇà
     /// </summary>
     public void PlaySound(EventReference _eventRef, Vector3 _pos)
     {
@@ -171,7 +154,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ï¿½Ò¸ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+    /// ¼Ò¸® À§Ä¡ ¼³Á¤
     /// </summary>
     public void SetPosition(EventReference _eventRef, Vector3 _pos)
     {
@@ -179,9 +162,9 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ì†Œë¦¬ ë„ê¸°
+    /// ¼Ò¸® ²ô±â
     /// </summary>
-    /// <param name="_mode">ì†Œë¦¬ ë„ëŠ” ëª¨ë“œ IMMEDIATE == ì¼ë°˜, ALLOWFADEOUT == í˜ì´ë“œ ì•„ì›ƒ</param>
+    /// <param name="_mode">¼Ò¸® ²ô´Â ¸ğµå IMMEDIATE == ÀÏ¹İ, ALLOWFADEOUT == ÆäÀÌµå ¾Æ¿ô</param>
     public void StopSound(EventReference _eventRef, FMOD.Studio.STOP_MODE _mode)
     {
         if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
@@ -193,9 +176,9 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ëª¨ë“  ì†Œë¦¬ ë‹¤ ë„ê¸°
+    /// ¸ğµç ¼Ò¸® ´Ù ²ô±â
     /// </summary>
-    /// /// <param name="_mode">ì†Œë¦¬ ë„ëŠ” ëª¨ë“œ, IMMEDIATE == ì¼ë°˜, ALLOWFADEOUT  == í˜ì´ë“œ ì•„ì›ƒ</param>
+    /// /// <param name="_mode">¼Ò¸® ²ô´Â ¸ğµå, IMMEDIATE == ÀÏ¹İ, ALLOWFADEOUT  == ÆäÀÌµå ¾Æ¿ô</param>
     public void StopAllSounds(FMOD.Studio.STOP_MODE _mode)
     {
         foreach (EventInstance eventInstance in eventInstances.Values)
@@ -207,7 +190,7 @@ public class AudioManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ì†Œë¦¬ ì¼ì‹œì •ì§€
+    /// ¼Ò¸® ÀÏ½ÃÁ¤Áö
     /// </summary>
     public void PauseSound(EventReference _eventRef)
     {
@@ -215,7 +198,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ëª¨ë“  ì†Œë¦¬ ì¼ì‹œì •ì§€
+    /// ¸ğµç ¼Ò¸® ÀÏ½ÃÁ¤Áö
     /// </summary>
     public void PauseAllSounds()
     {
@@ -223,7 +206,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ì†Œë¦¬ ì¬ê°œ
+    /// ¼Ò¸® Àç°³
     /// </summary>
     public void ResumeSound(EventReference _eventRef)
     {
@@ -231,7 +214,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ëª¨ë“  ì†Œë¦¬ ì¬ê°œ
+    /// ¸ğµç ¼Ò¸® Àç°³
     /// </summary>
     public void ResumeAllSounds()
     {
@@ -239,7 +222,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    /// º¼·ı Á¶Àı
     /// </summary>
     public void VolumeControl(EventReference _eventRef, float _volume)
     {
@@ -247,7 +230,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    /// º¼·ı °ª °¡Á®¿À±â
     /// </summary>
     public float GetVolume(EventReference _eventRef)
     {
@@ -261,7 +244,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ßºï¿½ Ã¼Å©
+    /// È¿°úÀ½ Áßº¹ Ã¼Å©
     /// </summary>
     public bool DuplicateCheck(EventReference _eventRef)
     {
@@ -270,19 +253,19 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    /// ÆÄ¶ó¹ÌÅÍ °ª ¼³Á¤
     /// </summary>
-    /// <param name="_paramName">ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½</param>
-    /// <param name="_value">ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½</param>
+    /// <param name="_paramName">ÆÄ¶ó¹ÌÅÍ ÀÌ¸§</param>
+    /// <param name="_value">ÆÄ¶ó¹ÌÅÍ °ª</param>
     public void SetParameter(EventReference _eventRef, string _paramName, float _value)
     {
         if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setParameterByName(_paramName, _value);
     }
 
     /// <summary>
-    /// ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    /// ÆÄ¶ó¹ÌÅÍ °ª °¡Á®¿À±â
     /// </summary>
-    /// <param name="_paramName">ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½</param>
+    /// <param name="_paramName">ÆÄ¶ó¹ÌÅÍ ÀÌ¸§</param>
     public float GetParameter(EventReference _eventRef, string _paramName)
     {
         if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))

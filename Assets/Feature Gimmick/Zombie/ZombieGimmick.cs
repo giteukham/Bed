@@ -5,16 +5,25 @@ using UnityEngine;
 
 public class ZombieGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
+    #region Variables
     private Animator animator;
     private Rigidbody rig;
-
     private Vector3 startPoint;
     private Vector3 startRotation;
     private bool isRun = false;
     private float beforeSpeed = 0;
+    #endregion
 
     private void Awake()
     {
@@ -36,11 +45,22 @@ public class ZombieGimmick : Gimmick
 
     public override void Activate()
     {
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
+    {
+        base.Deactivate();
+        gameObject.SetActive(false);
+    }
+
+    public override void UpdateProbability()
+    {
+        probability = 100;
+    }
+
+    public override void Initialize()
     {
         //초기 위치로 이동, 회전
         animator.speed = 1;
@@ -50,15 +70,6 @@ public class ZombieGimmick : Gimmick
         transform.rotation = Quaternion.Euler(startRotation);
         isRun = false;
         isDetected = false;
-
-        gimmickManager.LowerProbability(this);
-        gimmickManager.unrealGimmick = null;
-        gameObject.SetActive(false);
-    }
-
-    public override void UpdateProbability()
-    {
-        Probability = 100;
     }
 
     private IEnumerator MainCode()
@@ -66,6 +77,7 @@ public class ZombieGimmick : Gimmick
         //처음에 기어옴
         animator.speed = 0.7f;
         animator.SetTrigger("Crawl");
+        print("크라울");
         timeLimit = 0;
         while (timeLimit <= 5f)
         {

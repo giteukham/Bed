@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="MixerGroup" id="{3bda73bb-45f0-4bbd-b2a6-f315dd06e533}">
+		<property name="name">
+			<value>Gimmick SFX</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{fa2a7b43-ed7f-4234-8fa5-67afa0b53563}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{57284b3e-477f-4fd4-9756-0a13bce932e3}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{56265647-5b06-4115-8021-17c68e0163d1}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{fa2a7b43-ed7f-4234-8fa5-67afa0b53563}">
+		<relationship name="effects">
+			<destination>{268198c3-b87e-413e-a983-6ff8fcca3e68}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{57284b3e-477f-4fd4-9756-0a13bce932e3}" />
+	<object class="MixerBusFader" id="{268198c3-b87e-413e-a983-6ff8fcca3e68}" />
+</objects>

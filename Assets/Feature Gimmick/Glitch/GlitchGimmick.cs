@@ -7,8 +7,16 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class GlitchGimmick : Gimmick
 {
-    public override GimmickType Type { get; protected set; } = GimmickType.Unreal;
-    public override float Probability { get; set; } = 100;
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
     private void Awake()
     {
@@ -36,23 +44,15 @@ public class GlitchGimmick : Gimmick
 
     public override void Activate()
     {
-        try
-        {
-            SettingVariables();
-            StartCoroutine(MainCode());
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.Message);
-        }
+        base.Activate();
+        StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
         try
         {
-            gimmickManager.LowerProbability(this);
-            gimmickManager.unrealGimmick = null;
+            base.Deactivate();
             gameObject.SetActive(false);
         }
         catch (Exception e)
@@ -63,16 +63,18 @@ public class GlitchGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        //ëˆˆ ìì£¼ ê°ìœ¼ë©´ ê¸°ë¯¹ ë‚˜ì˜¤ê²Œ í•˜ê³  ì‹¶ìŒ, ê·¸ë¦¬ê³  ê²Œì„ ì¤‘ ë‹¨ í•œë²ˆë§Œ ë‚˜ì™”ìœ¼ë©´ í•¨
+        //´« ÀÚÁÖ °¨À¸¸é ±â¹Í ³ª¿À°Ô ÇÏ°í ½ÍÀ½, ±×¸®°í °ÔÀÓ Áß ´Ü ÇÑ¹ø¸¸ ³ª¿ÔÀ¸¸é ÇÔ
         try
         {
-            Probability = 100;
+            probability = 100;
         }
         catch (Exception e)
         {
             Debug.LogError(e.Message);
         }
     }
+
+    public override void Initialize(){}
 
     private IEnumerator MainCode()
     {
@@ -89,11 +91,11 @@ public class GlitchGimmick : Gimmick
 
     private IEnumerator GlitchOn()
     {
-        //ì‚- ê±°ë¦¬ëŠ” ì†Œë¦¬
-        AudioManager.instance.PlaySound(AudioManager.instance.lag2, transform.position);
+        //»ß- °Å¸®´Â ¼Ò¸®
+        AudioManager.Instance.PlaySound(AudioManager.Instance.lag2, transform.position);
         yield return new WaitForSeconds(6);
 
-        //í”Œë ˆì´ì–´ì—ê²Œ ë°ë¯¸ì§€ ì£¼ëŠ” ì½”ë“œ ì‚½ì…
+        //ÇÃ·¹ÀÌ¾î¿¡°Ô µ¥¹ÌÁö ÁÖ´Â ÄÚµå »ğÀÔ
         Deactivate();
     }
 }

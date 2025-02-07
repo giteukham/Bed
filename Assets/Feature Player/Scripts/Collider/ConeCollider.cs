@@ -1,5 +1,7 @@
 
 using System;
+using AbstractGimmick;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,21 +19,33 @@ namespace Bed.Collider
         private float coliderVerticalValue;
         private MeshCollider coneCollider;
         
+        private Vector3 currentScale; // 콜라이더 스케일일
+
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
-        {
-            /*if (other.CompareTag("Test"))
+        {  
+            if (other.gameObject.CompareTag("Gimmick"))
             {
-                Debug.Log($"{other.name} Enter");
-            }*/
+                Debug.Log("Enter");
+                if (other.gameObject.TryGetComponent(out Gimmick gimmick))
+                {
+                    Debug.Log("isDetected = true");
+                    gimmick.isDetected = true;
+                }
+            } 
         }
         
         private void OnTriggerExit(UnityEngine.Collider other)
         {
-            /*if (other.CompareTag("Test"))
+            if (other.gameObject.CompareTag("Gimmick"))
             {
-                Debug.Log($"{other.name} Exit");    
-            }*/
+                Debug.Log("Exit");
+                if (other.gameObject.TryGetComponent(out Gimmick gimmick))
+                {
+                    Debug.Log("isDetected = false");
+                    gimmick.isDetected = false;
+                }
+            }
         }
         
         private void Awake()
@@ -48,6 +62,8 @@ namespace Bed.Collider
 
             coliderVerticalValue = vertical;
             debugImageVerticalValue = debugImageVertical;
+
+            currentScale = coneCollider.transform.localScale;
         }
 
         // 인스펙터에서 값이 변경될 때마다 호출
@@ -107,30 +123,33 @@ namespace Bed.Collider
 
             return mesh;
         }
-        public void SetColider(float value)
+
+        public void SetColider()
         {
             if(!gameObject.activeSelf) gameObject.SetActive(true);
             if(!debugImage.GetComponent<Image>().IsActive()) debugImage.GetComponent<Image>().enabled = true;
 
-            if(value == 0f) 
+            if(BlinkEffect.Blink == 0f) 
             {
                 vertical = coliderVerticalValue;
                  debugImage.GetComponent<RectTransform>().sizeDelta = 
                         new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVertical); 
             }
-            else if(value == 1)
+            else if(BlinkEffect.Blink == 1)
             {
                 gameObject.SetActive(false);
                  debugImage.GetComponent<Image>().enabled = false;
             }
-            else if(value != 0 && value != 1)
+            else if(BlinkEffect.Blink != 0 && BlinkEffect.Blink != 1)
             {
-                vertical = coliderVerticalValue * (1 - value);
+                vertical = coliderVerticalValue * (1 - BlinkEffect.Blink);
                 
                 debugImage.GetComponent<RectTransform>().sizeDelta =    // 디버그 이미지 사이즈 조절
-                        new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVerticalValue * (1 - value));    
+                        new Vector2(debugImage.GetComponent<RectTransform>().sizeDelta.x, debugImageVerticalValue * (1 - BlinkEffect.Blink));    
             }
-            OnValidate();
+                
+            currentScale.y = 1 - BlinkEffect.Blink;
+            coneCollider.transform.localScale = currentScale;
         }
     }
     

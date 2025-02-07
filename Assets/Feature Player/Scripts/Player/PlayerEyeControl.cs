@@ -1,4 +1,3 @@
-using Bed.PostProcessing;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
@@ -31,7 +30,7 @@ public class PlayerEyeControl : IPlayerControl
     float lastScrollTime = 0;
     float moveValue = 0;
     float? currentValue = null;
-    float? targetValue = BLINK_VALUE_MIN;
+    public float? targetValue = BLINK_VALUE_MIN;
 
     public PlayerEyeControl(StateMachine playerEyeStateMachine)
     {

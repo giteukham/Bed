@@ -5,12 +5,24 @@ using UnityEngine;
 
 public class RadioGimmick : Gimmick
 {
+    #region Override Variables
+    [field: SerializeField] public override GimmickType type { get; protected set; }
+    [SerializeField] private float _probability;
+    public override float probability 
+    { 
+        get => _probability; 
+        set => _probability = Mathf.Clamp(value, 0, 100); 
+    }
+    [field: SerializeField] public override List<Gimmick> ExclusionGimmickList { get; set; }
+    #endregion
 
-    public override GimmickType Type { get; protected set; } = GimmickType.Object;
-    public override float Probability { get; set; } = 100;
+    #region Variables
+    // ±â¹Í °³ÀÎ º¯¼ö
+    #endregion  
 
     private void Awake()
     {
+        //±âº»ÀûÀÎ ±¸¼ºÈÄ¿¡ ¿ÀºêÁ§Æ® ¹Ù·Î ²û(¹Ù·Î ²ô±â ¶§¹®¿¡ OnEnable ½ÇÇàµÇÁö ¾ÊÀ½)
         gameObject.SetActive(false);
     }
 
@@ -21,43 +33,43 @@ public class RadioGimmick : Gimmick
 
     public override void Activate()
     {
-        print("ë¼ë””ì˜¤ê¸°ë¯¹ ì‹¤í–‰");
-        SettingVariables();
+        base.Activate();
         StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
     {
-        gimmickManager.LowerProbability(this);
-        gimmickManager.objectGimmick = null;
+        base.Deactivate();
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
-        //Probabilityì— ëŒ€í•œ ê³„ì‚°ì‹
-        Probability = 100;
+        //Probability¿¡ ´ëÇÑ °è»ê½Ä
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        AudioManager.instance.PlaySound(AudioManager.instance.radio, transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.radio, transform.position);
         while (timeLimit < 10)
         {
             yield return null;
-            //ê¸°ë¯¹ íŒŒí›¼ ì„±ê³µì‹œ
+            //±â¹Í ÆÄÈÑ ¼º°ø½Ã
             if (false)
             {
-                Deactivate();
+                //Deactivate();
             }
         }
 
-        //10ì´ˆ ì§€ë‚˜ì„œ ê¸°ë¯¹ íŒŒí›¼ ì‹¤íŒ¨ í–ˆì„ ë•Œ
+        //10ÃÊ Áö³ª¼­ ±â¹Í ÆÄÈÑ ½ÇÆĞ ÇßÀ» ¶§
 
-        //ëŒ€ì¶© ê¸°ë¯¹íŒŒí›¼ ì‹¤íŒ¨ì‹œ í”Œë ˆì´ì–´ ìŠ¤íŠ¸ë ˆìŠ¤ ì§€ìˆ˜ ì˜¬ë¦¬ëŠ” ì½”ë“œ
+        //´ëÃæ ±â¹ÍÆÄÈÑ ½ÇÆĞ½Ã ÇÃ·¹ÀÌ¾î ½ºÆ®·¹½º Áö¼ö ¿Ã¸®´Â ÄÚµå
 
-        //ì´í›„ Deactivate ì‹¤í–‰
+        //ÀÌÈÄ Deactivate ½ÇÇà
         Deactivate();
 
     }
+
+    public override void Initialize(){}
 }
