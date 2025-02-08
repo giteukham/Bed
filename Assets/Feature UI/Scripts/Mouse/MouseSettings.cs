@@ -8,18 +8,13 @@ using UnityEngine.Serialization;
 
 public class MouseSettings : MonoSingleton<MouseSettings>
 {
-    [FormerlySerializedAs("globalPlayersPos")]
     [Header("Preview Settings")] 
     [SerializeField] private Transform previewPlayerPos;                                           
-
-    [Header("Preview Settings")] 
     [SerializeField] private Transform meshesPos;                         // 플레이어의 부모 오브젝트 Global Position, 건물 Mesh의 위치                             
-
     private Vector3 mainPlayerPos;
+
     
-    [SerializeField] private GameObject[] playerDeActiveObjects;                                    // 꺼버릴 player의 오브젝트들
-    
-    [FormerlySerializedAs("player")] [SerializeField] private Player mainPlayer;
+    [SerializeField] private Player player;
     [SerializeField] private MouseSettingsPreviewPlayer previewPlayer;
     
     [Tooltip("기본 값은 오른쪽 방향으로 3, 왼쪽 방향으로 -3")]
@@ -58,68 +53,20 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     private void Awake()
     {
         InitMouseSetting();
-        
-        MouseScreen.OnScreenActivate += () =>
-        {
-            if (mainPlayer != null)
-            {
-                mainPlayer.SetActivatePlayer(false);
-                mainPlayerPos = previewPlayerPos.position;
-            }
-
-            if (previewPlayer != null)
-            {
-                previewPlayer.SetActivatePlayer(true);
-                previewPlayerPos.position = meshesPos.position;                 // 플레이어의 부모 오브젝트 Global Position을 건물 Mesh의 위치로 이동
-                InitCameraSettings(previewPlayer);
-            }
-        };
-        MouseScreen.OnScreenDeactivate += () =>
-        {
-            if (mainPlayer != null)
-            {
-                mainPlayer.SetActivatePlayer(true);
-            }
-            
-            if (previewPlayer != null)
-            {
-                previewPlayer.SetActivatePlayer(false);
-                previewPlayerPos.position = mainPlayerPos;                      // 플레이어의 부모 오브젝트 Global Position을 원래 플레이어의 위치로 이동
-            }
-        };
-    }
-    
-    private void ActivePlayerObject(bool isActivate)
-    {
-        foreach (GameObject playerObject in playerDeActiveObjects)
-        {
-            if (playerObject == null) continue;
-            playerObject.SetActive(isActivate);
-        }
-    }
-    
-    private bool CheckPlayerObjectActive()
-    {
-        bool isActive = false;
-        foreach (GameObject playerObject in playerDeActiveObjects)
-        {
-            isActive = playerObject.activeSelf;
-        }
-        return isActive;
     }
 
     private void Start()
     {
-        InitCameraSettings(mainPlayer);
+        InitCameraSettings(player);
     }
     
     private void Update()
     {
-        if (mainPlayer.isActiveAndEnabled == true)
+        if (player.isActiveAndEnabled == true)
         {
-            CalculateMouseSpeed(mainPlayer); 
+            CalculateMouseSpeed(player); 
         }
-        else if (mainPlayer.isActiveAndEnabled == false && previewPlayer.isActiveAndEnabled)
+        else if (player.isActiveAndEnabled == false && previewPlayer.isActiveAndEnabled)
         {
             CalculateMouseSpeed(previewPlayer);
         }
@@ -152,7 +99,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         ChangeTurnAxisSpeed(deadZoneSliderValue);
     }
 
-    private void InitCameraSettings(PlayerBase player)
+    public void InitCameraSettings(PlayerBase player)
     {
         player.povCamera.m_VerticalAxis.Value = 0f;
         player.povCamera.m_HorizontalAxis.Value = 0f;
@@ -168,7 +115,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     public void MouseVerticalReverse()
     {
         ToggleVerticalReverse();
-        mainPlayer.povCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
+        player.povCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
         previewPlayer.povCamera.m_VerticalAxis.m_InvertInput = !isVerticalReverse;
         OnVerticalReverse?.Invoke(isVerticalReverse);
     }
@@ -184,7 +131,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     public void MouseHorizontalReverse()
     {
         ToggleHorizontalReverse();
-        mainPlayer.povCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
+        player.povCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         previewPlayer.povCamera.m_HorizontalAxis.m_InvertInput = isHorizontalReverse;
         OnHorizontalReverse?.Invoke(isHorizontalReverse);
     }
@@ -203,8 +150,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         mouseSensitivity = value;
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;
         
-        mainPlayer.povCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
-        mainPlayer.povCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
+        player.povCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
+        player.povCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
         previewPlayer.povCamera.m_VerticalAxis.m_MaxSpeed = mouseMaxSpeed;
         previewPlayer.povCamera.m_HorizontalAxis.m_MaxSpeed = mouseMaxSpeed;
         

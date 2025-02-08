@@ -80,16 +80,11 @@ public class Player : PlayerBase
     private Vector3 playerPillowSoundInitRotation;
     private float currentFearSFXVolume, currentStressSFXVolume, currentHeadMoveSFXVolume;
     private Coroutine headMoveSFXCoroutine;
-    [SerializeField]private Animator headAnimator;
     #endregion
-
-    private void Awake()
-    {
-        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
-    }
 
     private void Start()
     {
+        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
@@ -397,7 +392,7 @@ public class Player : PlayerBase
     
     private void StopPlayer()
     {
-        StopPlayer(PlayerConstant.isPlayerStop);
+        base.StopPlayer(PlayerConstant.isPlayerStop);
         if (PlayerConstant.isPlayerStop && PlayerConstant.isEyeOpen)
         {
             playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
@@ -416,11 +411,6 @@ public class Player : PlayerBase
             playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
             playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
         }
-    }
-    
-    public void EnablePlayerObject(bool isActivate)
-    {
-        gameObject?.SetActive(isActivate);
     }
 }
 

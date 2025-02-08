@@ -6,6 +6,15 @@ using UnityEngine;
 
 public class UIManager : MonoSingleton<UIManager>
 {
+    enum SettingScreenType
+    {
+        Off,
+        Menu,
+        SoundSettings,
+        ResolutionSettings,
+        MouseSettings
+    }
+    
     [SerializeField] GameObject uiCanvas;   
     public bool isMenuScreenActive = false;
     #region Menu
@@ -14,6 +23,18 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] private GameObject resolutionSettingsScreen;
     [SerializeField] private GameObject mouseSettingsScreen;
     #endregion
+    
+    #region Players
+    [Header("Player")]
+    [SerializeField] private Player player;
+    #endregion
+
+    private SettingScreenType currentScreenType = SettingScreenType.Off;
+    
+    public Action OnMenuScreenActive, OnMenuScreenDeactive;
+    public Action OnSoundSettingsScreenActive, OnSoundSettingsScreenDeactive;
+    public Action OnResolutionSettingsScreenActive, OnResolutionSettingsScreenDeactive;
+    public Action OnMouseSettingsScreenActive, OnMouseSettingsScreenDeactive;
 
     private void Update() 
     {
@@ -25,62 +46,76 @@ public class UIManager : MonoSingleton<UIManager>
 
     private void Awake()
     {
-        DeActivateActivatedScreen();
+        ToggleScreenObject(SettingScreenType.Off, false);
     }
 
     /// <summary>
     /// 처음 시작할 때 메뉴 안에 있는 화면을 비활성화 시키는 함수
     /// 11-22 최무령
     /// </summary>
-    private void DeActivateActivatedScreen()
+    private void ToggleScreenObject(SettingScreenType screenType, bool isActive)
     {
-        if (menuScreen.activeSelf)
+        switch (screenType)
         {
-            menuScreen.SetActive(false);
-        }
-        if (soundSettingsScreen.activeSelf)
-        {
-            soundSettingsScreen.SetActive(false);
-        }
-        if (resolutionSettingsScreen.activeSelf)
-        {
-            resolutionSettingsScreen.SetActive(false);
-        }
-        if (mouseSettingsScreen.activeSelf)
-        {
-            Debug.LogError("마우스 설정 스크린은 게임 시작 전에 비활성화 되어야 합니다.");
+            case SettingScreenType.Off:
+                menuScreen.SetActive(false);
+                soundSettingsScreen.SetActive(false);
+                resolutionSettingsScreen.SetActive(false);
+                mouseSettingsScreen.SetActive(false);
+                break;
+            case SettingScreenType.Menu:
+                if (isActive) OnMenuScreenActive?.Invoke();
+                else OnMenuScreenDeactive?.Invoke();
+                
+                menuScreen.SetActive(isActive);
+                break;
+            case SettingScreenType.SoundSettings:
+                if (isActive) OnSoundSettingsScreenActive?.Invoke();
+                else OnSoundSettingsScreenDeactive?.Invoke();
+                
+                soundSettingsScreen.SetActive(isActive);
+                break;
+            case SettingScreenType.ResolutionSettings:
+                if (isActive) OnResolutionSettingsScreenActive?.Invoke();
+                else OnResolutionSettingsScreenDeactive?.Invoke();
+                
+                resolutionSettingsScreen.SetActive(isActive);
+                break;
+            case SettingScreenType.MouseSettings:
+                if (isActive) OnMouseSettingsScreenActive?.Invoke();
+                else OnMouseSettingsScreenDeactive?.Invoke();
+                
+                mouseSettingsScreen.SetActive(isActive);
+                break;
         }
     }
 
-    private void ShowScreen(GameObject _screen)
+    private void ShowScreen(SettingScreenType nextScreenType)
     {
-        if(_screen.activeSelf) return;
-        menuScreen.SetActive(false);
-        soundSettingsScreen.SetActive(false);
-        resolutionSettingsScreen.SetActive(false);
-        mouseSettingsScreen.SetActive(false);
-
-        _screen.SetActive(true);
+        if (currentScreenType == nextScreenType) return;
+        ToggleScreenObject(currentScreenType, false);
+        ToggleScreenObject(nextScreenType, true);
+        currentScreenType = nextScreenType;
     }
 
     public void ShowMenuScreen()
     {
-        ShowScreen(menuScreen);
+        ShowScreen(SettingScreenType.Menu);
     }
 
     public void ShowSoundSettingsScreen()
     {
-        ShowScreen(soundSettingsScreen);
+        ShowScreen(SettingScreenType.SoundSettings);
     }
 
     public void ShowResolutionSettingsScreen()
     {
-        ShowScreen(resolutionSettingsScreen);
+        ShowScreen(SettingScreenType.ResolutionSettings);
     }
 
     public void ShowMouseSettingsScreen()
     {
-        ShowScreen(mouseSettingsScreen);
+        ShowScreen(SettingScreenType.MouseSettings);
     }
 
     /// <summary>
@@ -90,18 +125,21 @@ public class UIManager : MonoSingleton<UIManager>
     {
         if (isActivate)
         {
+            player.StopPlayer(true);
             isMenuScreenActive = true;
             uiCanvas.SetActive(true);
-            ShowMenuScreen();
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            ShowScreen(SettingScreenType.Menu);
         }
         else
         {
+            player.StopPlayer(false);
             isMenuScreenActive = false;
             uiCanvas.SetActive(false);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+            ShowScreen(SettingScreenType.Off);
         }
         
         // if (PlayerConstant.isPlayerStop == true)

@@ -17,9 +17,9 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    public const float BLINK_VALUE_MIN = 0f, BLINK_VALUE_MAX = 1f;   // VignetteÀÇ Blink °ª ÃÖ¼Ú°ª, ÃÖ´ñ°ª.
-    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone ColliderÀÇ ÃÖ´ë °ª
-    public const int MOUSE_SCROLL_VALUE = 120;    // ¸¶¿ì½º ÈÙ °ª
+    public const float BLINK_VALUE_MIN = 0f, BLINK_VALUE_MAX = 1f;   // Vignetteì˜ Blink ê°’ ìµœì†Ÿê°’, ìµœëŒ“ê°’.
+    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Colliderì˜ ìµœëŒ€ ê°’
+    public const int MOUSE_SCROLL_VALUE = 120;    // ë§ˆìš°ìŠ¤ íœ  ê°’
     
     private StateMachine playerEyeStateMachine;
     private PlayerEyeStates playerEyeStates;
@@ -69,7 +69,7 @@ public class PlayerEyeControl : IPlayerControl
             lastScrollTime = currentScrollTime;
         }
 
-        if (mouseScrollValue < 0) // ÈÙ ´Ù¿î
+        if (mouseScrollValue < 0) // íœ  ë‹¤ìš´
         {
             targetValue += moveValue;
             if (targetValue > 1) targetValue = 1; 
@@ -87,7 +87,7 @@ public class PlayerEyeControl : IPlayerControl
             currentValue = null;
         }
 
-        if (mouseScrollValue > 0) // ÈÙ ¾÷
+        if (mouseScrollValue > 0) // íœ  ì—…
         {
             targetValue -= moveValue;
             if (targetValue < 0) targetValue = 0;
@@ -119,11 +119,11 @@ public class PlayerEyeControl : IPlayerControl
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Closing], true);
         }
-        else if (prevBlinkValue > BlinkEffect.Blink || prevBlinkValue == BlinkEffect.Blink) // °°Àº À§Ä¡¿¡¼­ °è¼Ó ±ôºı(ÈÙ Å¬¸¯)ÀÌ¸é Opening »óÅÂ°¡ µÇ°Ô
+        else if (prevBlinkValue > BlinkEffect.Blink || prevBlinkValue == BlinkEffect.Blink) // ê°™ì€ ìœ„ì¹˜ì—ì„œ ê³„ì† ê¹œë¹¡(íœ  í´ë¦­)ì´ë©´ Opening ìƒíƒœê°€ ë˜ê²Œ
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Opening], true);
         }
-        //Debug.Log("ÇöÀç »óÅÂ : " + playerEyeStateMachine.ToString());
+        //Debug.Log("í˜„ì¬ ìƒíƒœ : " + playerEyeStateMachine.ToString());
         prevBlinkValue = BlinkEffect.Blink;
     }
     
