@@ -17,9 +17,9 @@ public class PlayerEyeControl : IPlayerControl
         { PlayerEyeStateTypes.Blink, new PlayerEyeStates.BlinkEyeState() }
     };
     
-    public const float BLINK_VALUE_MIN = 0f, BLINK_VALUE_MAX = 1f;   // Vignette�� Blink �� �ּڰ�, �ִ�.
-    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Collider�� �ִ� ��
-    public const int MOUSE_SCROLL_VALUE = 120;    // ���콺 �� ��
+    public const float BLINK_VALUE_MIN = 0f, BLINK_VALUE_MAX = 1f;   // Vignette의 Blink 값 최솟값, 최댓값.
+    public const int COLIDER_VALUE_MIN = 3, COLIDER_VALUE_MAX = 0;    // Cone Collider의 최대 값
+    public const int MOUSE_SCROLL_VALUE = 120;    // 마우스 휠 값
     
     private StateMachine playerEyeStateMachine;
     private PlayerEyeStates playerEyeStates;
@@ -69,7 +69,7 @@ public class PlayerEyeControl : IPlayerControl
             lastScrollTime = currentScrollTime;
         }
 
-        if (mouseScrollValue < 0) // �� �ٿ�
+        if (mouseScrollValue < 0) // 휠 다운
         {
             targetValue += moveValue;
             if (targetValue > 1) targetValue = 1; 
@@ -87,7 +87,7 @@ public class PlayerEyeControl : IPlayerControl
             currentValue = null;
         }
 
-        if (mouseScrollValue > 0) // �� ��
+        if (mouseScrollValue > 0) // 휠 업
         {
             targetValue -= moveValue;
             if (targetValue < 0) targetValue = 0;
@@ -119,11 +119,11 @@ public class PlayerEyeControl : IPlayerControl
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Closing], true);
         }
-        else if (prevBlinkValue > BlinkEffect.Blink || prevBlinkValue == BlinkEffect.Blink) // ���� ��ġ���� ��� ����(�� Ŭ��)�̸� Opening ���°� �ǰ�
+        else if (prevBlinkValue > BlinkEffect.Blink || prevBlinkValue == BlinkEffect.Blink) // 같은 위치에서 계속 깜빡(휠 클릭)이면 Opening 상태가 되게
         {
             playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Opening], true);
         }
-        //Debug.Log("���� ���� : " + playerEyeStateMachine.ToString());
+        //Debug.Log("현재 상태 : " + playerEyeStateMachine.ToString());
         prevBlinkValue = BlinkEffect.Blink;
     }
     

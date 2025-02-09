@@ -22,7 +22,7 @@ public class PlayerBase : MonoBehaviour
         }
     }
     
-    public void SetActivatePlayer(bool isActivate)
+    public void TogglePlayer(bool isActivate)
     {
         gameObject.SetActive(isActivate);
     }

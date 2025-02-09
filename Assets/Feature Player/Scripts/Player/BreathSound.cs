@@ -1,20 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 public class BreathSound : MonoBehaviour
 {
+    [SerializeField] private PlayerBase player;
+
     private Animator headAnimator;
-    
-    private void Start()
+
+    private void Awake()
     {
         headAnimator = GetComponent<Animator>();
     }
 
     private void Update()
     {
+        transform.position = player.transform.position;
         StopBreath(PlayerConstant.isMovingState);
+
     }
 
     public void InhaleSound()
