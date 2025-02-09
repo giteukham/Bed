@@ -25,8 +25,10 @@ public class MouseSensitiveUI : MonoBehaviour
     [Header("Mouse UI")]
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private TMP_InputField sensitivityValue;
-    [SerializeField] private Image verticalSwitch;
-    [SerializeField] private Image horizontalSwitch;
+    //[SerializeField] private Image verticalSwitch;
+    //[SerializeField] private Image horizontalSwitch;
+    [SerializeField] private GameObject VerticalSwitch;
+    [SerializeField] private GameObject HorizontalSwitch;
     
     [SerializeField] private Sprite onImage;                                                // 초록색 스위치 이미지
     [SerializeField] private Sprite offImage;                                               // 빨강 스위치 이미지
@@ -48,15 +50,21 @@ public class MouseSensitiveUI : MonoBehaviour
             { Arrow.Left, arrows[Arrow.Left].GetComponent<Image>() },
             { Arrow.Right, arrows[Arrow.Right].GetComponent<Image>() }
         };
-        mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, horizontalSwitch);
-        mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, verticalSwitch);
-        
+        //mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, horizontalSwitch);
+        //mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, verticalSwitch);
+
+        mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, HorizontalSwitch);
+        mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, VerticalSwitch);
+
         sensitivitySlider.onValueChanged.AddListener(ChangeSensitive);
         sensitivityValue.onEndEdit.AddListener(ChangeSensitivityOnInputField);
         ChangeSensitive(mouseSettings.MouseSensitivity);
         
-        verticalSwitch.sprite = mouseSettings.IsVerticalReverse ? onImage : offImage;
-        horizontalSwitch.sprite = mouseSettings.IsHorizontalReverse ? onImage : offImage;
+        //verticalSwitch.sprite = mouseSettings.IsVerticalReverse ? onImage : offImage;
+        //horizontalSwitch.sprite = mouseSettings.IsHorizontalReverse ? onImage : offImage;
+
+        VerticalSwitch.GetComponent<SwitchButton>().SwitchLoadDataApply(mouseSettings.IsVerticalReverse);
+        HorizontalSwitch.GetComponent<SwitchButton>().SwitchLoadDataApply(mouseSettings.IsHorizontalReverse);
     }
     
     private void OnDisable()
@@ -136,5 +144,6 @@ public class MouseSensitiveUI : MonoBehaviour
     }
     
     //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
-    private void ToggleSwitch(bool isReverse, Image switchImage) => switchImage.sprite = isReverse ? onImage : offImage;
+    //private void ToggleSwitch(bool isReverse, Image switchImage) => switchImage.sprite = isReverse ? onImage : offImage;
+    private void ToggleSwitch(bool isReverse, GameObject switchObject) => switchObject.GetComponent<SwitchButton>().OnSwitchButtonClicked(isReverse);
 }
