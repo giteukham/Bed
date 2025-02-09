@@ -20,6 +20,7 @@ public class TransparentPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
         transparentPanel.DOFade(0f, 0.2f);
         previewPlayer.StopPlayer(false);
         Cursor.lockState = CursorLockMode.Locked;
@@ -27,6 +28,7 @@ public class TransparentPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
         transparentPanel.DOFade(0.5f, 0.2f);
         previewPlayer.StopPlayer(true);
         Cursor.lockState = CursorLockMode.None;

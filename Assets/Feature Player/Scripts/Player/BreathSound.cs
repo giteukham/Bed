@@ -18,8 +18,9 @@ public class BreathSound : MonoBehaviour
     private void Update()
     {
         transform.position = player.transform.position;
+        AudioManager.Instance.SetPosition(AudioManager.Instance.inhale, transform.position);
+        AudioManager.Instance.SetPosition(AudioManager.Instance.exhale, transform.position);
         StopBreath(PlayerConstant.isMovingState);
-
     }
 
     public void InhaleSound()
