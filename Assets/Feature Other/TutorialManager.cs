@@ -33,7 +33,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         if (leftMoveTutorial_ActiveTime <= 0) leftMoveTutorial_ActiveTime = 8f;   
     }
 
-    public void ReadyTutorial()
+    public void EyeOpenTutorialStart()
     {
         StartCoroutine(EyeOpenTutorialCoroutine());
     }
@@ -57,6 +57,11 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         }
     }
 
+    public void LeftMoveTutorialStart()
+    {
+        StartCoroutine(LeftMoveTutorialCoroutine());
+    }
+    
     private IEnumerator LeftMoveTutorialCoroutine()
     {
         isEyeOpenTutorialEnabled = true;

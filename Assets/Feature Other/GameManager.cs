@@ -183,7 +183,7 @@ public class GameManager : MonoSingleton<GameManager>
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
 
-        if (tutorialTestEnable) TutorialManager.Instance.ReadyTutorial();
+        if (tutorialTestEnable) TutorialManager.Instance.EyeOpenTutorialStart();
         StartCoroutine(ReadyCheckCoroutine());
     }
 
