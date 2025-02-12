@@ -7,9 +7,9 @@ public class TurnOnOption : MonoBehaviour
 {
 
     private CanvasGroup canvasGroup;
-    private float fadeDuration = 0.4f;  // 페이드 인/아웃 시간
-    private float moveDuration = 1f; // 이동 시간
-    private float moveOffset = 10f;  // 위로 올라가는 거리
+    [SerializeField] private float fadeDuration = 0.4f;  // 페이드 인/아웃 시간
+    [SerializeField] private float moveDuration = 1f; // 이동 시간
+    [SerializeField] private float moveOffset = 10f;  // 위로 올라가는 거리
 
     void Start()
     {

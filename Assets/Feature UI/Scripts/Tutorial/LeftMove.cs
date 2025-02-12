@@ -6,9 +6,9 @@ using UnityEngine;
 public class LeftMove : MonoBehaviour
 {
     private CanvasGroup canvasGroup;
-    private float fadeDuration = 0.4f;  // 페이드 인/아웃 시간
-    private float moveDuration = 0.6f; // 이동 시간
-    [SerializeField] private RectTransform target;
+    [SerializeField] private float fadeDuration = 0.4f;  // 페이드 인/아웃 시간
+    [SerializeField] private float moveDuration = 0.6f; // 이동 시간
+    [SerializeField] private float moveOffset = -300f;  // 왼쪽으로 가는 거리
 
     private void Start()
     {
@@ -28,7 +28,7 @@ public class LeftMove : MonoBehaviour
         sequence.Append(canvasGroup.DOFade(1, fadeDuration));
 
         //목표로 이동 (RectTransform의 anchoredPosition 사용)
-        sequence.Append(GetComponent<RectTransform>().DOAnchorPos(target.anchoredPosition, moveDuration));
+        sequence.Append(GetComponent<RectTransform>().DOAnchorPosX(GetComponent<RectTransform>().anchoredPosition.x + moveOffset, moveDuration));
 
         //서서히 사라짐
         sequence.Append(canvasGroup.DOFade(0, fadeDuration));

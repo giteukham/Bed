@@ -6,8 +6,8 @@ using UnityEngine;
 public class Blink : MonoBehaviour
 {
     private CanvasGroup canvasGroup;
-    private float fadeInDuration = 0.1f;  // 페이드 인
-    private float fadeOutDuration = 0.3f;  // 페이드 아웃
+    [SerializeField] private float fadeInDuration = 0.1f;  // 페이드 인
+    [SerializeField] private float fadeOutDuration = 0.3f;  // 페이드 아웃
 
     private void Start()
     {
