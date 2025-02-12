@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LeftMove : MonoBehaviour, ITutorialEffect
+public class LeftMove : MonoBehaviour
 {
     private Sequence sequence;
     private CanvasGroup canvasGroup;
@@ -22,38 +22,27 @@ public class LeftMove : MonoBehaviour, ITutorialEffect
         parentCanvasGroup = parent.GetComponent<CanvasGroup>();
     }
 
-    private void OnEnable()
+    public void TutorialActivate(bool isActivate)
     {
-        //모든 이펙트 투명화로 시작
-        canvasGroup.alpha = 0;
-        parentCanvasGroup.alpha = 0;
-
-        //이펙트 전체가 천천히 나타남
-        parent.GetComponent<CanvasGroup>().DOFade(1, fadeInDuration);
-
-        if (sequence != null)
-        {
-            //시퀀스 재시작
-            sequence.Restart();
-        }
+        if (isActivate) gameObject.SetActive(true);
         else
         {
-            //이펙트 시퀀스에 등록
-            PlayEffect();
+            parentCanvasGroup.DOFade(0, fadeInDuration).OnComplete(() =>
+            {
+                canvasGroup.alpha = 0;
+                parentCanvasGroup.alpha = 0;
+                gameObject.SetActive(false);
+            }
+            );
         }
     }
 
-    public void OffEffect()
+    private void OnEnable()
     {
-        //이펙트 전체가 천천히 사라짐
-        parentCanvasGroup.DOFade(0, fadeInDuration).OnComplete(() =>
-        {
-            //이펙트 일시정지
-            sequence.Pause();
-            //이펙트 비활성화
-            gameObject.SetActive(false);
-        }
-        );
+        parent.GetComponent<CanvasGroup>().DOFade(1, fadeInDuration);
+
+        if (sequence != null) sequence.Restart();
+        else PlayEffect();
     }
 
     private void PlayEffect()
