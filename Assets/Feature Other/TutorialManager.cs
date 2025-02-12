@@ -24,6 +24,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
     private float leftMoveTutorial_ActiveTime;
     #endregion
 
+    [SerializeField] private GameObject cockroach;
     private bool isEyeOpenTutorialEnabled = false;
 
     private void OnValidate()
@@ -31,6 +32,11 @@ public class TutorialManager : MonoSingleton<TutorialManager>
     {
         if (eyeOpenTutorial_ActiveTime <= 0) eyeOpenTutorial_ActiveTime = 6f; 
         if (leftMoveTutorial_ActiveTime <= 0) leftMoveTutorial_ActiveTime = 8f;   
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab)) cockroach.GetComponent<CockroachForTutorial>().Exit();
     }
 
     public void EyeOpenTutorialStart()

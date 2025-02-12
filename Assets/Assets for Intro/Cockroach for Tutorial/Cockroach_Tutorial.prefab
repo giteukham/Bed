@@ -357,6 +357,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4417461321268921238}
   - component: {fileID: 3645210823030584770}
+  - component: {fileID: 787633332118832958}
   m_Layer: 0
   m_Name: Cockroach_Tutorial
   m_TagString: Untagged
@@ -372,7 +373,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2586710779136276225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.6384587, y: 0.31459284, z: 0.097110204, w: -0.69568056}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.014, y: -0.0021, z: 0.0132}
   m_LocalScale: {x: 0.060000006, y: 0.05999997, z: 0.059999976}
   m_ConstrainProportionsScale: 1
@@ -380,7 +381,7 @@ Transform:
   - {fileID: 6487429913200549381}
   - {fileID: 6944076396758653672}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 55.815, y: -451.346, z: -72.829}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3645210823030584770
 Animator:
   serializedVersion: 5
@@ -402,6 +403,32 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &787633332118832958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2586710779136276225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec2493736c0d3ac40816eb6db3f379f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minMoveDistance: 0.01
+  maxMoveDistance: 0.04
+  minMoveDuration: 0.1
+  maxMoveDuration: 0.3
+  minRotateAngle: -50
+  maxRotateAngle: 50
+  minRotateDuration: 0.04
+  maxRotateDuration: 0.12
+  minWaitTime: 0.8
+  maxWaitTime: 1.8
+  minX: -0.04
+  maxX: 0.04
+  minY: -0.04
+  maxY: 0.04
 --- !u!1 &3151327040340974570
 GameObject:
   m_ObjectHideFlags: 0
