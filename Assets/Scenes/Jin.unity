@@ -1449,6 +1449,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 39895185}
+  - component: {fileID: 39895186}
   m_Layer: 5
   m_Name: Eye Open Tutorial
   m_TagString: Untagged
@@ -1476,6 +1477,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &39895186
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39895184}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &39990729
 GameObject:
   m_ObjectHideFlags: 0
@@ -6155,9 +6168,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d83a2cb47ef34734ca2a5275646003cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 0.2
+  parent: {fileID: 39895184}
+  runTimeFadeDuration: 0.2
   moveDuration: 0.6
   moveOffset: 10
+  fadeInDuration: 0.4
+  fadeOutDuration: 0.4
 --- !u!114 &492068720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23711,6 +23727,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7477288053086334305}
+  - component: {fileID: 7477288053086334306}
   m_Layer: 5
   m_Name: Left Move Tutorial
   m_TagString: Untagged
@@ -26887,8 +26904,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dd006fd4a757964081fd4ff1a387ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeInDuration: 0.1
-  fadeOutDuration: 0.3
+  parent: {fileID: 7427124473211908642}
+  runTimeFadeInDuration: 0.1
+  runTimeFadeOutDuration: 0.3
+  fadeInDuration: 0.4
+  fadeOutDuration: 0.4
 --- !u!225 &5535139625821196959
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -28197,8 +28217,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56a2f884fa0b7cb40a98bddc7ddd5920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeInDuration: 0.1
-  fadeOutDuration: 0.3
+  parent: {fileID: 8261912669058394718}
+  runTimeFadeInDuration: 0.1
+  runTimeFadeOutDuration: 0.3
+  fadeInDuration: 0.4
+  fadeOutDuration: 0.4
 --- !u!137 &7301752297491074181
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -28344,6 +28367,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6105030105350438385}
+  - component: {fileID: 7427124473211908643}
   m_Layer: 5
   m_Name: Eye Close and Option Open Tutorial
   m_TagString: Untagged
@@ -28351,6 +28375,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!225 &7427124473211908643
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7427124473211908642}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &7453307599802600491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28402,6 +28438,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &7477288053086334306
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406680264030410502}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &7552075775994600467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29130,6 +29178,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8907039751562539041}
+  - component: {fileID: 8907039751562539042}
   m_Layer: 5
   m_Name: Blink Tutorial
   m_TagString: Untagged
@@ -29635,6 +29684,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &8907039751562539042
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8261912669058394718}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8948047641293423993
 GameObject:
   m_ObjectHideFlags: 0
@@ -29804,9 +29865,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 967cfd5b4530c58418d57c7a9510a410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 0.2
+  parent: {fileID: 1406680264030410502}
+  runTimeFadeDuration: 0.2
   moveDuration: 0.7
   moveOffset: -300
+  fadeInDuration: 0.4
+  fadeOutDuration: 0.4
 --- !u!224 &9146429715295626324
 RectTransform:
   m_ObjectHideFlags: 0
