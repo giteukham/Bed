@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Windows.Forms;
 
 public class CockroachForTutorial : MonoBehaviour
 {
@@ -20,9 +21,11 @@ public class CockroachForTutorial : MonoBehaviour
     public float minWaitTime;
     public float maxWaitTime ;
     public float minX, maxX, minY, maxY;
+
+    [SerializeField]private Transform leftTop, rightTop, leftMid, rightMid, leftBottom, rightBottom;
     private Vector3 initPosition;
-    
-    private void Start()
+    private int prevEyeBlinkCAT, prevEyeBlinkLAT;
+    private void Awake()
     {
         animator = GetComponent<Animator>();
         initPosition = transform.localPosition;
@@ -30,15 +33,16 @@ public class CockroachForTutorial : MonoBehaviour
 
     public void Exit()
     {
-        StopCoroutine(randomMoveCoroutine);
-
-        Vector3 moveDirection = -transform.forward;
-        Vector3 targetPosition = transform.localPosition + moveDirection * 1f;
-        transform.DOLocalMove(targetPosition, 0.8f)
+        if (randomMoveCoroutine != null) StopCoroutine(randomMoveCoroutine);
+        Vector3 moveDirection = transform.localRotation * -Vector3.forward;  
+        Vector3 targetPosition = transform.localPosition + moveDirection * 5f;
+        targetPosition.z = 0.024f;
+        if (animator != null) animator.speed = 1.8f;
+        else animator = GetComponent<Animator>();
+        transform.DOLocalMove(targetPosition, 3f)
             .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
-                isMoving = false;
                 transform.localPosition = initPosition;
                 gameObject.SetActive(false);
             });
@@ -46,7 +50,7 @@ public class CockroachForTutorial : MonoBehaviour
 
     public void OnEnable()
     {
-        Vector3 moveDirection = transform.forward;  
+        Vector3 moveDirection = transform.localRotation * -Vector3.forward;  
         float moveDistance = Random.Range(minMoveDistance, maxMoveDistance);
         float moveDuration = Random.Range(minMoveDuration, maxMoveDuration);
 
@@ -56,31 +60,49 @@ public class CockroachForTutorial : MonoBehaviour
         targetPosition.y = Mathf.Clamp(targetPosition.y, minY, maxY);
         targetPosition.z = 0.024f;
 
-        transform.DOLocalMove(targetPosition, 0.2f)
+        transform.DOLocalMove(targetPosition, 1f)
             .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
                 isMoving = false;
-                animator.Play("Idle");
-                randomMoveCoroutine = StartCoroutine(RandomMoveLoop());
+                animator.speed = 0;
+                StartCoroutine(MainCode());
             });
     }
 
-    private IEnumerator RandomMoveLoop()
+    private IEnumerator MainCode()
+    {
+        randomMoveCoroutine = StartCoroutine(RandomMove());
+        prevEyeBlinkCAT = PlayerConstant.EyeBlinkCAT;
+        prevEyeBlinkLAT = PlayerConstant.EyeBlinkLAT;
+        while(true)
+        {
+            if (PlayerConstant.EyeBlinkCAT > prevEyeBlinkCAT || PlayerConstant.EyeBlinkLAT > prevEyeBlinkLAT || PlayerConstant.isMovingState || PlayerConstant.headMoveSpeed >= 13f) 
+            {
+                Exit();
+                yield break;
+            }
+            prevEyeBlinkCAT = PlayerConstant.EyeBlinkCAT;
+            prevEyeBlinkLAT = PlayerConstant.EyeBlinkLAT;
+            yield return null;
+        }
+    }
+
+    private IEnumerator RandomMove()
     {
         while (true)
         {
             yield return new WaitForSeconds(Random.Range(minWaitTime, maxWaitTime));
-            MoveRandom();
+            RandomRotation();
         }
     }
 
-    private void MoveRandom()
+    private void RandomRotation()
     {
         if (isMoving) return; 
 
         isMoving = true;
-        animator.Play("Move");
+        animator.speed = 1.2f;
 
         float rotateAngle = Random.Range(minRotateAngle, maxRotateAngle);
         float rotateDuration = Random.Range(minRotateDuration, maxRotateDuration);
@@ -89,7 +111,7 @@ public class CockroachForTutorial : MonoBehaviour
         Quaternion targetRotation = transform.localRotation * rotationDelta;
 
         transform.DOLocalRotateQuaternion(targetRotation, rotateDuration)
-            .SetEase(Ease.OutBounce)
+            .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
                 MoveAfterRotation();
@@ -98,12 +120,11 @@ public class CockroachForTutorial : MonoBehaviour
 
     private void MoveAfterRotation()
     {
-        Vector3 moveDirection = -transform.forward;  
+        Vector3 moveDirection = transform.localRotation * -Vector3.forward;  
         float moveDistance = Random.Range(minMoveDistance, maxMoveDistance);
         float moveDuration = Random.Range(minMoveDuration, maxMoveDuration);
 
         Vector3 targetPosition = transform.localPosition + moveDirection * moveDistance;
-
         targetPosition.x = Mathf.Clamp(targetPosition.x, minX, maxX);
         targetPosition.y = Mathf.Clamp(targetPosition.y, minY, maxY);
         targetPosition.z = 0.024f;
@@ -113,7 +134,37 @@ public class CockroachForTutorial : MonoBehaviour
             .OnComplete(() =>
             {
                 isMoving = false;
-                animator.Play("Idle");
+                animator.speed = 0;
             });
+    }
+
+    private void LeftTopScuttling()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.Cockroach, leftTop.position);
+    }
+
+    private void RightTopScuttling()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.Cockroach, rightTop.position);
+    }
+
+    private void LeftMidScuttling()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.Cockroach, leftMid.position);
+    }
+
+    private void RightMidScuttling()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.Cockroach, rightMid.position);
+    }
+
+    private void LeftBottomScuttling()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.Cockroach, leftBottom.position);
+    }
+
+    private void RightBottomScuttling()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.Cockroach, rightBottom.position);
     }
 }

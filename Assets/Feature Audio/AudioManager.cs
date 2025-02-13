@@ -115,6 +115,9 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     [field: Header("Door Creak SFX")]
     [field: SerializeField] public EventReference doorCreak {get; private set;}
+
+    [field: Header("Cockroach SFX")]
+    [field: SerializeField] public EventReference Cockroach {get; private set;}
     #endregion
 
     #region Player FMOD Events

@@ -182,6 +182,8 @@ public class GameManager : MonoSingleton<GameManager>
         timeManager.gameObject.SetActive(false);
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
+        TutorialManager.Instance.isEyeOpenTutorialActivate = false;
+        TutorialManager.Instance.isBlinkTutorialActivate = false;
 
         if (tutorialTestEnable) TutorialManager.Instance.EyeOpenTutorialStart();
         StartCoroutine(ReadyCheckCoroutine());
@@ -194,9 +196,9 @@ public class GameManager : MonoSingleton<GameManager>
 
         while (true)
         {
-            // if (BlinkEffect.Blink <= 0.93f) door.StartDoorKnock();
+            if (TutorialManager.Instance.CheckCockroachActive() && BlinkEffect.Blink <= 0.93f) door.StartDoorKnock();
 
-            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen)
+            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && !tutorialTestEnable)
             {
                 time += Time.deltaTime;
                 if (time >= ready_CheckTime)
@@ -205,8 +207,7 @@ public class GameManager : MonoSingleton<GameManager>
                     yield break;
                 }
             }
-            else
-                time = 0f;
+            else time = 0f;
 
             yield return null;
         }
@@ -244,6 +245,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void GameOver()
     {
         Debug.Log("GameOver !!");
+        tutorialTestEnable = true;
         player.EyeControl(PlayerEyeStateTypes.Close);
         PlayerConstant.isShock = true;
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
@@ -322,6 +324,7 @@ public class GameManager : MonoSingleton<GameManager>
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
                 $"<size=120%><b>Stress Gauge: <color=#80ffff></b>{PlayerConstant.stressGauge} / 100</color></size>\n" +
                 $"<size=120%><b>Fear Gauge: <color=#80ffff></b>{PlayerConstant.fearGauge} / 100</color></size>\n" +
+                $"haedMoveSpeed: <color=#80ffff>{PlayerConstant.headMoveSpeed}</color>\n" +
                 $"isParalysis: <color=#80ffff>{PlayerConstant.isParalysis}</color>\n" +
                 $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
                 $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
