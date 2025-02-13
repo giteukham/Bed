@@ -3,18 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LeftMove : MonoBehaviour
+public class LeftMove : Tutorial
 {
-    private Sequence sequence;
-    private CanvasGroup canvasGroup;
-    private CanvasGroup parentCanvasGroup;
-
-    [SerializeField] private GameObject parent;
     [SerializeField] private float runTimeFadeDuration = 0.2f;  // 페이드 인/아웃 시간
     [SerializeField] private float moveDuration = 0.7f; // 이동 시간
     [SerializeField] private float moveOffset = -300f;  // 왼쪽으로 가는 거리
-    [SerializeField] private float fadeInDuration = 0.4f;
-    [SerializeField] private float fadeOutDuration = 0.4f;
 
     private void Awake()
     {
@@ -22,46 +15,39 @@ public class LeftMove : MonoBehaviour
         parentCanvasGroup = parent.GetComponent<CanvasGroup>();
     }
 
-    public void TutorialActivate(bool isActivate)
-    {
-        if (isActivate) gameObject.SetActive(true);
-        else
-        {
-            parentCanvasGroup.DOFade(0, fadeInDuration).OnComplete(() =>
-            {
-                canvasGroup.alpha = 0;
-                parentCanvasGroup.alpha = 0;
-                gameObject.SetActive(false);
-            }
-            );
-        }
-    }
-
     private void OnEnable()
     {
         parent.GetComponent<CanvasGroup>().DOFade(1, fadeInDuration);
 
-        if (sequence != null) sequence.Restart();
+        if (sequenceOwn != null && sequenceShake != null)
+        {
+            sequenceOwn.Restart();
+            sequenceShake.Restart();
+        }
         else PlayEffect();
     }
 
     private void PlayEffect()
     {
-        sequence = DOTween.Sequence();
+        sequenceShake = DOTween.Sequence();
+        sequenceShake.Append(Shake());
+
+        sequenceOwn = DOTween.Sequence();
 
         //서서히 나타남
-        sequence.Append(canvasGroup.DOFade(1, runTimeFadeDuration));
+        sequenceOwn.Append(canvasGroup.DOFade(1, runTimeFadeDuration));
 
         //목표로 이동 (RectTransform의 anchoredPosition 사용)
-        sequence.Append(GetComponent<RectTransform>().DOAnchorPosX(GetComponent<RectTransform>().anchoredPosition.x + moveOffset, moveDuration));
+        sequenceOwn.Append(GetComponent<RectTransform>().DOAnchorPosX(GetComponent<RectTransform>().anchoredPosition.x + moveOffset, moveDuration));
 
         //서서히 사라짐
-        sequence.Append(canvasGroup.DOFade(0, runTimeFadeDuration));
+        sequenceOwn.Append(canvasGroup.DOFade(0, runTimeFadeDuration));
 
         //마우스 위치 빠르게 원위치
-        sequence.OnComplete(() => GetComponent<RectTransform>().anchoredPosition = Vector2.zero);
+        sequenceOwn.OnComplete(() => GetComponent<RectTransform>().anchoredPosition = Vector2.zero);
 
         //무한 반복 설정
-        sequence.SetLoops(-1);
+        sequenceOwn.SetLoops(-1);
+
     }
 }

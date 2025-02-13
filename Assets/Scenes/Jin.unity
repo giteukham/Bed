@@ -1456,7 +1456,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &39895185
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6169,11 +6169,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 39895184}
+  fadeInDuration: 0.4
+  fadeOutDuration: 0.4
   runTimeFadeDuration: 0.2
   moveDuration: 0.6
   moveOffset: 10
-  fadeInDuration: 0.4
-  fadeOutDuration: 0.4
 --- !u!114 &492068720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14461,12 +14461,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50addb2e5c2a4a6aa3f99bfcd388e161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eyeOpenTutorial: {fileID: 0}
+  eyeOpenTutorial: {fileID: 39895184}
   leftMoveTutorial: {fileID: 1406680264030410502}
   openOptionTutorial: {fileID: 7427124473211908642}
   blinkTutorial: {fileID: 8261912669058394718}
   eyeOpenTutorial_ActiveTime: 6
   leftMoveTutorial_ActiveTime: 8
+  cockroach: {fileID: 0}
 --- !u!1 &1375662030
 GameObject:
   m_ObjectHideFlags: 0
@@ -26905,10 +26906,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 7427124473211908642}
-  runTimeFadeInDuration: 0.1
-  runTimeFadeOutDuration: 0.3
   fadeInDuration: 0.4
   fadeOutDuration: 0.4
+  runTimeFadeInDuration: 0.1
+  runTimeFadeOutDuration: 0.3
 --- !u!225 &5535139625821196959
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -28218,10 +28219,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 8261912669058394718}
-  runTimeFadeInDuration: 0.1
-  runTimeFadeOutDuration: 0.3
   fadeInDuration: 0.4
   fadeOutDuration: 0.4
+  runTimeFadeInDuration: 0.1
+  runTimeFadeOutDuration: 0.3
 --- !u!137 &7301752297491074181
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -29866,11 +29867,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 1406680264030410502}
+  fadeInDuration: 0.4
+  fadeOutDuration: 0.4
   runTimeFadeDuration: 0.2
   moveDuration: 0.7
   moveOffset: -300
-  fadeInDuration: 0.4
-  fadeOutDuration: 0.4
 --- !u!224 &9146429715295626324
 RectTransform:
   m_ObjectHideFlags: 0

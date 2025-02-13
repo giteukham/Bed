@@ -91,10 +91,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
     private void ShowTutorial(GameObject Tutorial, bool isActive)
     {
         if (Tutorial.activeSelf == isActive) return;
-
-        Tutorial.SetActive(isActive);
-        DOTweenAnimation[] dOTweenAnimations = Tutorial.GetComponentsInChildren<DOTweenAnimation>();
-        foreach (var child in dOTweenAnimations) child.DORestart();
+        Tutorial.GetComponentInChildren<Tutorial>().TutorialActivate(isActive);
     }
 
     public void EyeOpenTutorial(bool isActive)
