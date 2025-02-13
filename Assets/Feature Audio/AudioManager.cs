@@ -94,7 +94,9 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     [field: Header("Chair2 SFX")]
     [field: SerializeField] public EventReference chair2 { get; private set; }
-
+    
+    [field: Header("Poster")]
+    [field: SerializeField] public EventReference poster { get; private set; }
     #endregion
 
     #region Player FMOD Events
