@@ -24,6 +24,9 @@ public class TutorialManager : MonoSingleton<TutorialManager>
     [SerializeField, Tooltip("몸 방향 왼쪽으로 바꾸기 튜토리얼 활성화 시간")]
     private float leftMoveTutorial_ActiveTime;
 
+    [SerializeField, Tooltip("눈 깜빡이기 튜토리얼 활성화 시간간")]
+    private float blink_ActiveTime;
+
     [SerializeField, Tooltip("튜토리얼 스킵 시간")]
     private float ready_CheckTime;
     #endregion
@@ -40,6 +43,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
     {
         if (eyeOpenTutorial_ActiveTime <= 0) eyeOpenTutorial_ActiveTime = 6f; 
         if (leftMoveTutorial_ActiveTime <= 0) leftMoveTutorial_ActiveTime = 8f;   
+        if ( blink_ActiveTime <= 0) blink_ActiveTime = 4f;
         if (ready_CheckTime <= 0) ready_CheckTime = 1f;
     }
 
@@ -98,13 +102,15 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         yield return new WaitForSeconds(ready_CheckTime + randomNum);
         cockroach.gameObject.SetActive(true);
         
-        //튜토리얼 띄우기
+        yield return new WaitForSeconds(blink_ActiveTime);
+        BlinkTutorial(true);
+
         while(true)
         {
-            if(!cockroach.gameObject.activeSelf) 
+            if(isBlinkTutorialActivate) 
             {
+                BlinkTutorial(false);
                 LeftMoveTutorialStart();
-                isBlinkTutorialActivate = true;
                 yield break;
             }
             yield return null;
@@ -123,8 +129,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         float startTime = Time.time;
         while (true)
         {
-            if (Time.time - startTime >= leftMoveTutorial_ActiveTime && PlayerConstant.isLeftState == false)
-                LeftMoveTutorial(true);
+            if (Time.time - startTime >= leftMoveTutorial_ActiveTime && PlayerConstant.isLeftState == false) LeftMoveTutorial(true);
 
             if (PlayerConstant.isLeftState == true)
             {
@@ -139,12 +144,8 @@ public class TutorialManager : MonoSingleton<TutorialManager>
 
     public bool CheckCockroachActive()
     {
-        if (GameManager.Instance.tutorialTestEnable) return isBlinkTutorialActivate && !cockroach.gameObject.activeSelf;
-        else 
-        {
-            Debug.Log(!cockroach.gameObject.activeSelf);
-            return !cockroach.gameObject.activeSelf;
-        }
+        if (GameManager.Instance.tutorialTestEnable) return isBlinkTutorialActivate;
+        else return !cockroach.gameObject.activeSelf;
     }
 
     private void ShowTutorial(GameObject Tutorial, bool isActive)

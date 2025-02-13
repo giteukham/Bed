@@ -39,6 +39,7 @@ public class CockroachForTutorial : MonoBehaviour
         targetPosition.z = 0.024f;
         if (animator != null) animator.speed = 1.8f;
         else animator = GetComponent<Animator>();
+        TutorialManager.Instance.isBlinkTutorialActivate = true;
         transform.DOLocalMove(targetPosition, 3f)
             .SetEase(Ease.Linear)
             .OnComplete(() =>

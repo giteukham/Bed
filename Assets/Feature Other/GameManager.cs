@@ -245,7 +245,10 @@ public class GameManager : MonoSingleton<GameManager>
     private void GameOver()
     {
         Debug.Log("GameOver !!");
+
+        // 테스트용
         tutorialTestEnable = true;
+
         player.EyeControl(PlayerEyeStateTypes.Close);
         PlayerConstant.isShock = true;
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
