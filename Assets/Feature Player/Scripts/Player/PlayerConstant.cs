@@ -9,6 +9,7 @@ public static class PlayerConstant
     public static int stressGauge = 0, fearGauge = 0;
     public static int stressGaugeMax = 100, fearGaugeMax = 100;
     public static int stressGaugeMin = 0, fearGaugeMin = 0;
+    public static float headMoveSpeed = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
     public static bool isFainting, isParalysis, isShock = false;

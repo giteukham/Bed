@@ -4,6 +4,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.AI;
 
 public class TutorialManager : MonoSingleton<TutorialManager>
 {
@@ -22,26 +23,49 @@ public class TutorialManager : MonoSingleton<TutorialManager>
 
     [SerializeField, Tooltip("몸 방향 왼쪽으로 바꾸기 튜토리얼 활성화 시간")]
     private float leftMoveTutorial_ActiveTime;
+
+    [SerializeField, Tooltip("튜토리얼 스킵 시간")]
+    private float ready_CheckTime;
     #endregion
 
-    [SerializeField] private GameObject cockroach;
-    private bool isEyeOpenTutorialEnabled = false;
+    [SerializeField] private CockroachForTutorial cockroach;
+    public bool isEyeOpenTutorialActivate = false;
+    public bool isBlinkTutorialActivate = false;
+
+    private Coroutine eyeOpenTutorialCoroutine, blinkTutorialCoroutine, leftMoveTutorialCoroutine;
+    float time = 0f;
 
     private void OnValidate()
     // 값이 0이면 기본 값으로 설정
     {
         if (eyeOpenTutorial_ActiveTime <= 0) eyeOpenTutorial_ActiveTime = 6f; 
         if (leftMoveTutorial_ActiveTime <= 0) leftMoveTutorial_ActiveTime = 8f;   
+        if (ready_CheckTime <= 0) ready_CheckTime = 1f;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab)) cockroach.GetComponent<CockroachForTutorial>().Exit();
+        if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && GameManager.Instance.tutorialTestEnable)
+        {
+            time += Time.deltaTime;
+            if (time >= ready_CheckTime)
+            {
+                if (eyeOpenTutorial.activeSelf) EyeOpenTutorial(false);
+                if (eyeOpenTutorialCoroutine != null) StopCoroutine(eyeOpenTutorialCoroutine);
+                if (leftMoveTutorial.activeSelf) LeftMoveTutorial(false);
+                if (leftMoveTutorialCoroutine != null) StopCoroutine(leftMoveTutorialCoroutine);
+                if (blinkTutorial.activeSelf) BlinkTutorial(false);
+                if (blinkTutorialCoroutine != null) StopCoroutine(blinkTutorialCoroutine);
+                if (cockroach.gameObject.activeSelf) cockroach.Exit();
+                GameManager.Instance.tutorialTestEnable = false;
+            }
+        }
+        else time = 0f;
     }
 
     public void EyeOpenTutorialStart()
     {
-        StartCoroutine(EyeOpenTutorialCoroutine());
+        eyeOpenTutorialCoroutine = StartCoroutine(EyeOpenTutorialCoroutine());
     }
     
     private IEnumerator EyeOpenTutorialCoroutine()
@@ -49,14 +73,38 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         if(!GameManager.Instance.isBlinkInit) yield return new WaitForSeconds(0.25f);
         float startTime = Time.time;
         
-        while(isEyeOpenTutorialEnabled == false)
+        while(isEyeOpenTutorialActivate == false)
         {
-            if (Time.time - startTime >= eyeOpenTutorial_ActiveTime && PlayerConstant.isEyeOpen == false && isEyeOpenTutorialEnabled == false) EyeOpenTutorial(true);
+            if (Time.time - startTime >= eyeOpenTutorial_ActiveTime && PlayerConstant.isEyeOpen == false && isEyeOpenTutorialActivate == false) EyeOpenTutorial(true);
             if (BlinkEffect.Blink <= 0.93f) 
             {
-                isEyeOpenTutorialEnabled = true;
+                isEyeOpenTutorialActivate = true;
                 EyeOpenTutorial(false);
-                //StartCoroutine(LeftMoveTutorialCoroutine());
+                BlinkTutorialStart();
+                yield break;
+            }
+            yield return null;
+        }
+    }
+    
+    public void BlinkTutorialStart()
+    {
+        blinkTutorialCoroutine = StartCoroutine(BlinkTutorialCoroutine());
+    }   
+
+    private IEnumerator BlinkTutorialCoroutine()
+    {
+        float randomNum = UnityEngine.Random.Range(3.5f, 5f);
+        yield return new WaitForSeconds(ready_CheckTime + randomNum);
+        cockroach.gameObject.SetActive(true);
+        
+        //튜토리얼 띄우기
+        while(true)
+        {
+            if(!cockroach.gameObject.activeSelf) 
+            {
+                LeftMoveTutorialStart();
+                isBlinkTutorialActivate = true;
                 yield break;
             }
             yield return null;
@@ -65,12 +113,12 @@ public class TutorialManager : MonoSingleton<TutorialManager>
 
     public void LeftMoveTutorialStart()
     {
-        StartCoroutine(LeftMoveTutorialCoroutine());
+        leftMoveTutorialCoroutine = StartCoroutine(LeftMoveTutorialCoroutine());
     }
     
     private IEnumerator LeftMoveTutorialCoroutine()
     {
-        isEyeOpenTutorialEnabled = true;
+        isEyeOpenTutorialActivate = false;
 
         float startTime = Time.time;
         while (true)
@@ -81,10 +129,21 @@ public class TutorialManager : MonoSingleton<TutorialManager>
             if (PlayerConstant.isLeftState == true)
             {
                 LeftMoveTutorial(false);
+                GameManager.Instance.tutorialTestEnable = false;
                 yield break;
             }
 
             yield return null;
+        }
+    }
+
+    public bool CheckCockroachActive()
+    {
+        if (GameManager.Instance.tutorialTestEnable) return isBlinkTutorialActivate && !cockroach.gameObject.activeSelf;
+        else 
+        {
+            Debug.Log(!cockroach.gameObject.activeSelf);
+            return !cockroach.gameObject.activeSelf;
         }
     }
 
@@ -99,19 +158,9 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         ShowTutorial(eyeOpenTutorial, isActive);
     }
 
-    public bool GetEyeOpenManaul()
-    {
-        return eyeOpenTutorial.activeSelf;
-    }
-
     public void LeftMoveTutorial(bool isActive)
     {
         ShowTutorial(leftMoveTutorial, isActive);
-    }
-
-    public bool GetLeftMoveTutorial()
-    {
-        return leftMoveTutorial.activeSelf;
     }
 
     public void OpenOptionTutorial(bool isActive)
@@ -119,18 +168,8 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         ShowTutorial(openOptionTutorial, isActive);
     }
 
-    public bool GetOpenOptionTutorial()
-    {
-        return openOptionTutorial.activeSelf;
-    }
-
     public void BlinkTutorial(bool isActive)
     {
         ShowTutorial(blinkTutorial, isActive);
-    }
-
-    public bool GetBlinkTutorial()
-    {
-        return blinkTutorial.activeSelf;
     }
 }

@@ -30,7 +30,11 @@ public class Door : MonoBehaviour
     public void StopDoorKnock()
     {
         if (doorKnockCoroutine == null) return;
-        else StopCoroutine(doorKnockCoroutine);
+        else 
+        {
+            StopCoroutine(doorKnockCoroutine);
+            doorKnockCoroutine = null;
+        }
     }
     
     private IEnumerator DoorKnock()
@@ -62,8 +66,6 @@ public class Door : MonoBehaviour
         float elapsedTime = 0f;
         float targetAngle = 270f - angle;
         float prevAngle = door.transform.eulerAngles.y;
-        
-        Debug.Log(prevAngle);
 
         if(angle > 0) if ( prevAngle - 270f == 0f ) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorOpen, GetPosition());
 
