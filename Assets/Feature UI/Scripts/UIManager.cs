@@ -3,6 +3,7 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class UIManager : MonoSingleton<UIManager>
 {
@@ -16,8 +17,9 @@ public class UIManager : MonoSingleton<UIManager>
     }
     
     [SerializeField] GameObject uiCanvas;   
-    public bool isMenuScreenActive = false;
+    //public bool isMenuScreenActive = false;
     #region Menu
+    [Header("Menu")]
     [SerializeField] private GameObject menuScreen;
     [SerializeField] private GameObject soundSettingsScreen;
     [SerializeField] private GameObject resolutionSettingsScreen;
@@ -36,12 +38,28 @@ public class UIManager : MonoSingleton<UIManager>
     public Action OnResolutionSettingsScreenActive, OnResolutionSettingsScreenDeactive;
     public Action OnMouseSettingsScreenActive, OnMouseSettingsScreenDeactive;
 
+    #region Bible Verses
+    [SerializeField] private GameObject deut;
+    [SerializeField] private GameObject neh;
+    #endregion
+
+    public bool isRightClikHeld = false;
+    private float rightClickStartTime  = 0f;
+
     private void Update() 
     {
-        if (isMenuScreenActive == true)
+        ActivateUICanvas();
+
+        if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
+        else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) PlayerConstant.isPlayerStop = false;
+
+        
+        if (uiCanvas.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
         {
-            if (Input.GetMouseButton(1)) ShowMenuScreen();
+            if (!isRightClikHeld) rightClickStartTime = Time.time;
+            isRightClikHeld = true;
         }
+        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !uiCanvas.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
     }
 
     private void Awake()
@@ -160,5 +178,15 @@ public class UIManager : MonoSingleton<UIManager>
         //     Cursor.visible = false;
         //     Cursor.lockState = CursorLockMode.Locked;
         // }
+    }
+
+    public void DeutActivate(bool isActive)
+    {
+        deut.SetActive(isActive);
+    }
+
+    public void NehActivate(bool isActive)
+    {
+        neh.SetActive(isActive);
     }
 }

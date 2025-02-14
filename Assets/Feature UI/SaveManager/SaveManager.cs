@@ -171,4 +171,15 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         return PlayerPrefs.GetFloat("PixelationFactor", 0.25f / (Display.main.systemWidth / 1920f));
     }
+    //마지막 플레이 시간 저장 관련
+    public void SaveLastPlayedTime(string value)
+    {
+        PlayerPrefs.SetString("LastPlayedTime", value);
+        PlayerPrefs.Save();
+    }
+
+    public string LoadLastPlayedTime()
+    {
+        return PlayerPrefs.GetString("LastPlayedTime", "200001010000");
+    }
 }
