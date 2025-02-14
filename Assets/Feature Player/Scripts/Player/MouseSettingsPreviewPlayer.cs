@@ -11,8 +11,6 @@ public class MouseSettingsPreviewPlayer : PlayerBase
     [SerializeField] protected StateMachine playerDirectionStateMachine;
     private PreviewPlayerDirectionStates previewPlayerDirectionStates;
     private PlayerDirectionControl playerDirectionControl;
-
-    [SerializeField] private CinemachineVirtualCamera playerVirtualCamera;
     
     private Dictionary<PlayerDirectionStateTypes, IState> directionStates = new Dictionary<PlayerDirectionStateTypes, IState>()
     {

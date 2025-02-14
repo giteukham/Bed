@@ -34,7 +34,6 @@ public class Player : PlayerBase
     
     [Header("Player Camera")]
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private CinemachineVirtualCamera playerVirtualCamera;
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
@@ -84,7 +83,6 @@ public class Player : PlayerBase
 
     private void Start()
     {
-        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
         playerDirectionControl = new PlayerDirectionControl(playerDirectionStateMachine);
         playerEyeControl = new PlayerEyeControl(playerEyeStateMachine);
         playerEyeControl.SubscribeToEvents();
