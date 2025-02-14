@@ -175,13 +175,13 @@ public class UIManager : MonoSingleton<UIManager>
         // }
     }
 
-    // public void DeutActivate(bool isActive)
-    // {
-    //     deut.SetActive(isActive);
-    // }
+    public void DeutActivate(bool isActive)
+    {
+        deut.SetActive(isActive);
+    }
 
-    // public void NehActivate(bool isActive)
-    // {
-    //     neh.SetActive(isActive);
-    // }
+    public void NehActivate(bool isActive)
+    {
+        neh.SetActive(isActive);
+    }
 }
