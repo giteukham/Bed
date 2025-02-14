@@ -49,7 +49,11 @@ public class UIManager : MonoSingleton<UIManager>
     private void Update() 
     {
         if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
-        else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) PlayerConstant.isPlayerStop = false;
+        else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) 
+        {
+            PlayerConstant.isPlayerStop = false;
+            ActivateUICanvas(false);
+        }
         
         if (uiCanvas.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
         {
@@ -140,11 +144,15 @@ public class UIManager : MonoSingleton<UIManager>
     {
         if (isActivate)
         {
-            player.StopPlayer(true);
-            uiCanvas.SetActive(true);
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-            ShowScreen(SettingScreenType.Menu);
+            if (PlayerConstant.isEyeOpen == false) 
+            {
+                ShowMenuScreen();
+                player.StopPlayer(true);
+                uiCanvas.SetActive(true);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else Cursor.visible = false;
         }
         else
         {
@@ -152,8 +160,24 @@ public class UIManager : MonoSingleton<UIManager>
             uiCanvas.SetActive(false);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
-            ShowScreen(SettingScreenType.Off);
+            ShowMenuScreen();
         }
+        // if (isActivate)
+        // {
+        //     player.StopPlayer(true);
+        //     uiCanvas.SetActive(true);
+        //     Cursor.visible = true;
+        //     Cursor.lockState = CursorLockMode.None;
+        //     ShowScreen(SettingScreenType.Menu);
+        // }
+        // else
+        // {
+        //     player.StopPlayer(false);
+        //     uiCanvas.SetActive(false);
+        //     Cursor.visible = false;
+        //     Cursor.lockState = CursorLockMode.Locked;
+        //     ShowScreen(SettingScreenType.Off);
+        // }
         
         // if (PlayerConstant.isPlayerStop == true)
         // {
@@ -165,7 +189,7 @@ public class UIManager : MonoSingleton<UIManager>
         //     }
         // }
         // else Cursor.visible = false;
-        //
+        
         // if (PlayerConstant.isPlayerStop == false)
         // {
         //     uiCanvas.SetActive(false);
