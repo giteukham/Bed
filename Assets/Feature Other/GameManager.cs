@@ -147,12 +147,12 @@ public class GameManager : MonoSingleton<GameManager>
             if (PlayerConstant.isPlayerStop == true)
             {
                 PlayerConstant.isPlayerStop = false;
-                UIManager.Instance.ActivateUICanvas(false);
+                //UIManager.Instance.ActivateUICanvas(false);
             }
             else if (PlayerConstant.isPlayerStop == false)
             {
                 PlayerConstant.isPlayerStop = true;
-                UIManager.Instance.ActivateUICanvas(true);
+                //UIManager.Instance.ActivateUICanvas(true);
             }
         }
 

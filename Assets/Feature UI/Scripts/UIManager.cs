@@ -16,7 +16,7 @@ public class UIManager : MonoSingleton<UIManager>
         MouseSettings
     }
     
-    [SerializeField] GameObject uiCanvas;   
+    [SerializeField] GameObject menuUi;   
     //public bool isMenuScreenActive = false;
     #region Menu
     [Header("Menu")]
@@ -48,19 +48,20 @@ public class UIManager : MonoSingleton<UIManager>
 
     private void Update() 
     {
+        ActivateUICanvas();
+
         if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
         else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) 
         {
             PlayerConstant.isPlayerStop = false;
-            ActivateUICanvas(false);
         }
         
-        if (uiCanvas.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
+        if (menuUi.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
         {
             if (!isRightClikHeld) rightClickStartTime = Time.time;
             isRightClikHeld = true;
         }
-        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !uiCanvas.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
+        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !menuUi.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
     }
 
     private void Awake()
@@ -140,28 +141,8 @@ public class UIManager : MonoSingleton<UIManager>
     /// <summary>
     /// 수정 날짜 : 2024-11-14 최무령
     /// </summary>
-    public void ActivateUICanvas(bool isActivate)
+    public void ActivateUICanvas()
     {
-        if (isActivate)
-        {
-            if (PlayerConstant.isEyeOpen == false) 
-            {
-                ShowMenuScreen();
-                player.StopPlayer(true);
-                uiCanvas.SetActive(true);
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else Cursor.visible = false;
-        }
-        else
-        {
-            player.StopPlayer(false);
-            uiCanvas.SetActive(false);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            ShowMenuScreen();
-        }
         // if (isActivate)
         // {
         //     player.StopPlayer(true);
@@ -179,24 +160,24 @@ public class UIManager : MonoSingleton<UIManager>
         //     ShowScreen(SettingScreenType.Off);
         // }
         
-        // if (PlayerConstant.isPlayerStop == true)
-        // {
-        //     if (PlayerConstant.isEyeOpen == false) 
-        //     {
-        //         uiCanvas.SetActive(true);
-        //         Cursor.visible = true;
-        //         Cursor.lockState = CursorLockMode.None;
-        //     }
-        // }
-        // else Cursor.visible = false;
+        if (PlayerConstant.isPlayerStop == true)
+        {
+            if (PlayerConstant.isEyeOpen == false) 
+            {
+                menuUi.SetActive(true);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
+        else Cursor.visible = false;
         
-        // if (PlayerConstant.isPlayerStop == false)
-        // {
-        //     uiCanvas.SetActive(false);
-        //     ShowMenuScreen();
-        //     Cursor.visible = false;
-        //     Cursor.lockState = CursorLockMode.Locked;
-        // }
+        if (PlayerConstant.isPlayerStop == false)
+        {
+            menuUi.SetActive(false);
+            ShowMenuScreen();
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     public void DeutActivate(bool isActive)
