@@ -422,5 +422,25 @@ public class Player : PlayerBase
             playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
         }
     }
+
+    public void EnablePlayerObject(bool isActivate)
+    {
+        gameObject?.SetActive(isActivate);
+    }
+
+    public void EyeControl(PlayerEyeStateTypes types)
+    {
+        playerEyeControl.ChangeEyeState(types);
+    }
+
+    public void DirectionControl(PlayerDirectionStateTypes types)
+    {
+        playerDirectionControl.ChangeDirectionState(types);
+    }
+
+    public void DirectionControlNoSound(PlayerDirectionStateTypes types)
+    {
+        playerDirectionControl.ChangeDirectionStateNoSound(types);
+    }
 }
 

@@ -128,6 +128,9 @@ public class GameManager : MonoSingleton<GameManager>
     {
         SetState(GameState.Preparation);
         
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        
         #if UNITY_EDITOR
             if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
             if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
@@ -153,7 +156,6 @@ public class GameManager : MonoSingleton<GameManager>
                 PlayerConstant.isPlayerStop = true;
                 UIManager.Instance.ActivateUICanvas(true);
             }
-            
         }
 
         #if UNITY_EDITOR
@@ -194,7 +196,7 @@ public class GameManager : MonoSingleton<GameManager>
         TutorialManager.Instance.isEyeOpenTutorialActivate = false;
         TutorialManager.Instance.isBlinkTutorialActivate = false;
 
-        UIManager.Instance.DeutActivate(true);
+        //UIManager.Instance.DeutActivate(true);
 
         if (tutorialTestEnable) TutorialManager.Instance.EyeOpenTutorialStart();
         StartCoroutine(ReadyCheckCoroutine());
@@ -209,7 +211,7 @@ public class GameManager : MonoSingleton<GameManager>
         {
             if (BlinkEffect.Blink <= 0.93f)
             {
-                UIManager.Instance.DeutActivate(false);
+                //UIManager.Instance.DeutActivate(false);
                 if (TutorialManager.Instance.CheckCockroachActive()) door.StartDoorKnock();
             } 
             //if (TutorialManager.Instance.CheckCockroachActive() && BlinkEffect.Blink <= 0.93f) door.StartDoorKnock();

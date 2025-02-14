@@ -48,11 +48,8 @@ public class UIManager : MonoSingleton<UIManager>
 
     private void Update() 
     {
-        ActivateUICanvas();
-
         if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
         else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) PlayerConstant.isPlayerStop = false;
-
         
         if (uiCanvas.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
         {
@@ -144,7 +141,6 @@ public class UIManager : MonoSingleton<UIManager>
         if (isActivate)
         {
             player.StopPlayer(true);
-            isMenuScreenActive = true;
             uiCanvas.SetActive(true);
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
@@ -153,7 +149,6 @@ public class UIManager : MonoSingleton<UIManager>
         else
         {
             player.StopPlayer(false);
-            isMenuScreenActive = false;
             uiCanvas.SetActive(false);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
@@ -180,13 +175,13 @@ public class UIManager : MonoSingleton<UIManager>
         // }
     }
 
-    public void DeutActivate(bool isActive)
-    {
-        deut.SetActive(isActive);
-    }
+    // public void DeutActivate(bool isActive)
+    // {
+    //     deut.SetActive(isActive);
+    // }
 
-    public void NehActivate(bool isActive)
-    {
-        neh.SetActive(isActive);
-    }
+    // public void NehActivate(bool isActive)
+    // {
+    //     neh.SetActive(isActive);
+    // }
 }
