@@ -17,6 +17,11 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] private GameObject mouseSettingsScreen;
     #endregion
 
+    #region Bible Verses
+    [SerializeField] private GameObject deut;
+    [SerializeField] private GameObject neh;
+    #endregion
+
     public bool isRightClikHeld = false;
     private float rightClickStartTime  = 0f;
 
@@ -124,5 +129,15 @@ public class UIManager : MonoSingleton<UIManager>
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+    }
+
+    public void DeutActivate(bool isActive)
+    {
+        deut.SetActive(isActive);
+    }
+
+    public void NehActivate(bool isActive)
+    {
+        neh.SetActive(isActive);
     }
 }

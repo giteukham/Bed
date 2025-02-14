@@ -185,6 +185,8 @@ public class GameManager : MonoSingleton<GameManager>
         TutorialManager.Instance.isEyeOpenTutorialActivate = false;
         TutorialManager.Instance.isBlinkTutorialActivate = false;
 
+        UIManager.Instance.DeutActivate(true);
+
         if (tutorialTestEnable) TutorialManager.Instance.EyeOpenTutorialStart();
         StartCoroutine(ReadyCheckCoroutine());
     }
@@ -196,7 +198,12 @@ public class GameManager : MonoSingleton<GameManager>
 
         while (true)
         {
-            if (TutorialManager.Instance.CheckCockroachActive() && BlinkEffect.Blink <= 0.93f) door.StartDoorKnock();
+            if (BlinkEffect.Blink <= 0.93f)
+            {
+                UIManager.Instance.DeutActivate(false);
+                if (TutorialManager.Instance.CheckCockroachActive()) door.StartDoorKnock();
+            } 
+            //if (TutorialManager.Instance.CheckCockroachActive() && BlinkEffect.Blink <= 0.93f) door.StartDoorKnock();
 
             if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && !tutorialTestEnable)
             {
