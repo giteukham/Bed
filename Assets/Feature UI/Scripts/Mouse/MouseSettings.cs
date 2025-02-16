@@ -62,13 +62,13 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     
     private void Update()
     {
-        if (player.isActiveAndEnabled == true)
-        {
-            CalculateMouseSpeed(player); 
-        }
-        else if (player.isActiveAndEnabled == false && previewPlayer.isActiveAndEnabled)
+        if (previewPlayer.gameObject.activeSelf)
         {
             CalculateMouseSpeed(previewPlayer);
+        }
+        else if (player.gameObject.activeSelf)
+        {
+            CalculateMouseSpeed(player); 
         }
     }
 

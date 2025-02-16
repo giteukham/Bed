@@ -19,12 +19,6 @@ public class MouseSettingWindow : MonoBehaviour, IWindowUIBase
     
     private void OnEnable()
     {
-        if (player != null)
-        {
-            player.TogglePlayer(false);
-            playerPos.position = previewPlayerPos.position;
-        }
-        
         if (previewPlayer != null)
         {
             previewPlayer.TogglePlayer(true);

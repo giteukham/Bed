@@ -31,4 +31,12 @@ public class PlayerAnimation : MonoBehaviour
         PlayerConstant.BodyMovementCAT++;
         PlayerConstant.BodyMovementLAT++;
     }
+
+    public static void PlayAnimationNoSound(string triggerName)
+    {
+        playerAnimator.SetTrigger(triggerName);
+        blanketAnimator.SetTrigger(triggerName);
+        PlayerConstant.BodyMovementCAT++;
+        PlayerConstant.BodyMovementLAT++;
+    }
 }

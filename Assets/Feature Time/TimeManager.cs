@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System;
 
 public class TimeManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class TimeManager : MonoBehaviour
     [Header("AlarmClock Related Variables")]
     [SerializeField]private TextMeshPro timeText; 
     [SerializeField]private Renderer clockRenderer; 
+    [SerializeField]private Texture blankTexture;
     [SerializeField]private Texture amTexture;
     [SerializeField]private Texture pmTexture;
     private int hours; 
@@ -30,9 +32,8 @@ public class TimeManager : MonoBehaviour
 
     #region Lighting Related Variables
     [Header("Lighting Related Variables")]
-    [SerializeField] private GameObject moonLightObject;
+    [SerializeField] private GameObject moonLight;
     [SerializeField] private Light sunLight;
-    private Light moonLight;
     private Material skyboxMaterial;
 
     private Color startSkyColor = new Color32(50, 50, 50, 255);
@@ -42,14 +43,14 @@ public class TimeManager : MonoBehaviour
     private Color currentSkyColor, currentEquatorColor;
     #endregion
     
-    private void Start()
+    private void OnEnable()
     {
-        timeText.text = $"{hours:00}:{minutes:00}";
-        moonLight = moonLightObject.GetComponent<Light>();
+        timeText.text = $"{hours:11}:{minutes:00}";
         skyboxMaterial = RenderSettings.skybox;
         skyboxMaterial.SetFloat("_Exposure", 0.9f);
         RenderSettings.ambientSkyColor = startSkyColor;
         RenderSettings.ambientEquatorColor = startEquatorColor;
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.clockBeep, timeText.gameObject.transform.position);
 
         realTimeCounter = 0;
         gimmickPickTimeCounter = 0;
@@ -62,6 +63,22 @@ public class TimeManager : MonoBehaviour
         UpdateLighting();
     }
 
+    // 초기화
+    private void OnDisable()
+    {
+        timeText.text = "";
+        skyboxMaterial = RenderSettings.skybox;
+        skyboxMaterial.SetFloat("_Exposure", 0.9f);
+        RenderSettings.ambientSkyColor = startSkyColor;
+        RenderSettings.ambientEquatorColor = startEquatorColor;
+        realTimeCounter = 0;
+        gimmickPickTimeCounter = 0;
+        cycleInterval = timeInterval * 3;
+        playTimeToMin = 0;
+        UpdateLighting();
+        clockRenderer.material.SetTexture("_EmissionMap", blankTexture);
+    }
+
     private void UpdateTime() // 시간 갱신, 시간 관련 기능들
     {
         realTimeCounter += Time.deltaTime;
@@ -71,7 +88,8 @@ public class TimeManager : MonoBehaviour
         {
             playTimeToMin ++; // 게임 시간 1분 증가
             GimmickManager.Instance.RedefineProbability(); // 기믹 확률 재정의
-            realTimeCounter = 0;  
+            realTimeCounter = 0;
+            SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmm"));
         }
 
         if (30 > playTimeToMin) // 30분 전
@@ -135,11 +153,10 @@ public class TimeManager : MonoBehaviour
         }
         // ------ ambientEquatorColor 값만 조절 ------
 
-
         // ------ ambientSkyColor, moonLight, sunLight, skyboxMaterial 값 조절 ------
         if (playTimeToMin < 240) // 4시간 전까지는
         {
-            moonLight.intensity = 1;
+            moonLight.GetComponent<Light>().intensity = 1;
             sunLight.intensity = 0;
             skyboxMaterial.SetFloat("_Exposure", 0.9f);
             currentSkyColor = startSkyColor;
@@ -149,13 +166,13 @@ public class TimeManager : MonoBehaviour
         {
             float t = Mathf.InverseLerp(240, 450, playTimeToMin); 
             currentSkyColor = Color.Lerp(startSkyColor, endSkyColor, t);
-            moonLight.intensity = 1 - t; // 달빛이 점점 약해지게
+            moonLight.GetComponent<Light>().intensity = 1 - t; // 달빛이 점점 약해지게
             sunLight.intensity = t;      // 햋빛이 점점 밝아지게       
             skyboxMaterial.SetFloat("_Exposure", 0.9f + t); // 스카이박스가 밝아지게
         }
         // ------ ambientSkyColor, moonLight, sunLight, skyboxMaterial 값 조절 ------
 
-        moonLightObject.transform.rotation = Quaternion.Euler(20f-(0.09f * playTimeToMin), 110f+(0.09f * playTimeToMin), 0); // 조명 각도 갱신
+        moonLight.transform.rotation = Quaternion.Euler(20f-(0.09f * playTimeToMin), 110f+(0.09f * playTimeToMin), 0); // 조명 각도 갱신
         RenderSettings.ambientSkyColor = currentSkyColor;
         RenderSettings.ambientEquatorColor = currentEquatorColor;
     }

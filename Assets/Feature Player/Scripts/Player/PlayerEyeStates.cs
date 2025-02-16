@@ -110,10 +110,12 @@ public class PlayerEyeStates
 
         public void Execute()
         {
+
         }
 
         public void Exit()
         {
+            
         }
     }
     
@@ -133,7 +135,6 @@ public class PlayerEyeStates
                 await UniTask.Yield();
             } 
             //playerEyeControl.UpdateEyeState();
-
             PlayerConstant.EyeBlinkCAT++;
             PlayerConstant.EyeBlinkLAT++;
             PlayerConstant.EyeClosedCAT += Time.deltaTime;
@@ -147,6 +148,7 @@ public class PlayerEyeStates
                 BlinkEffect.Blink = Mathf.Lerp(BlinkEffect.Blink, currentBlinkValue, elapsedTime / PlayerConstant.blinkSpeed);
                 await UniTask.Yield();
             } 
+
             await UniTask.Yield();
 
             playerEyeControl.UpdateEyeState();

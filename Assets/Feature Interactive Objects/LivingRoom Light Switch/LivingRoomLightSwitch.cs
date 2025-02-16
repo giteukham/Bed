@@ -5,7 +5,7 @@ using UnityEngine;
 public class LivingRoomLightSwitch : MonoBehaviour
 {
     [SerializeField] private GameObject roomLight;
-    static public bool isOn = false;
+    static public bool isOn = true;
     static private GameObject livingRoomlightSwitch;
 
     void Awake()
@@ -14,7 +14,7 @@ public class LivingRoomLightSwitch : MonoBehaviour
     }
     void Start()
     {
-        isOn = false;
+        isOn = true;
     }
     void Update()
     {

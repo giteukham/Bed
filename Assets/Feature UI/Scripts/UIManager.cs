@@ -3,6 +3,7 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class UIManager : MonoSingleton<UIManager>
 {
@@ -15,9 +16,10 @@ public class UIManager : MonoSingleton<UIManager>
         MouseSettings
     }
     
-    [SerializeField] GameObject uiCanvas;   
-    public bool isMenuScreenActive = false;
+    [SerializeField] GameObject menuUi;   
+    //public bool isMenuScreenActive = false;
     #region Menu
+    [Header("Menu")]
     [SerializeField] private GameObject menuScreen;
     [SerializeField] private GameObject soundSettingsScreen;
     [SerializeField] private GameObject resolutionSettingsScreen;
@@ -36,12 +38,30 @@ public class UIManager : MonoSingleton<UIManager>
     public Action OnResolutionSettingsScreenActive, OnResolutionSettingsScreenDeactive;
     public Action OnMouseSettingsScreenActive, OnMouseSettingsScreenDeactive;
 
+    #region Bible Verses
+    [SerializeField] private GameObject deut;
+    [SerializeField] private GameObject neh;
+    #endregion
+
+    public bool isRightClikHeld = false;
+    private float rightClickStartTime  = 0f;
+
     private void Update() 
     {
-        if (isMenuScreenActive == true)
+        ActivateUICanvas();
+
+        if (Input.GetMouseButtonDown(1) && !menuScreen.activeSelf) ShowMenuScreen();
+        else if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0) && menuScreen.activeSelf) 
         {
-            if (Input.GetMouseButton(1)) ShowMenuScreen();
+            PlayerConstant.isPlayerStop = false;
         }
+        
+        if (menuUi.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
+        {
+            if (!isRightClikHeld) rightClickStartTime = Time.time;
+            isRightClikHeld = true;
+        }
+        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !menuUi.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
     }
 
     private void Awake()
@@ -121,44 +141,52 @@ public class UIManager : MonoSingleton<UIManager>
     /// <summary>
     /// 수정 날짜 : 2024-11-14 최무령
     /// </summary>
-    public void ActivateUICanvas(bool isActivate)
+    public void ActivateUICanvas()
     {
-        if (isActivate)
-        {
-            player.StopPlayer(true);
-            isMenuScreenActive = true;
-            uiCanvas.SetActive(true);
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-            ShowScreen(SettingScreenType.Menu);
-        }
-        else
-        {
-            player.StopPlayer(false);
-            isMenuScreenActive = false;
-            uiCanvas.SetActive(false);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            ShowScreen(SettingScreenType.Off);
-        }
-        
-        // if (PlayerConstant.isPlayerStop == true)
+        // if (isActivate)
         // {
-        //     if (PlayerConstant.isEyeOpen == false) 
-        //     {
-        //         uiCanvas.SetActive(true);
-        //         Cursor.visible = true;
-        //         Cursor.lockState = CursorLockMode.None;
-        //     }
+        //     player.StopPlayer(true);
+        //     uiCanvas.SetActive(true);
+        //     Cursor.visible = true;
+        //     Cursor.lockState = CursorLockMode.None;
+        //     ShowScreen(SettingScreenType.Menu);
         // }
-        // else Cursor.visible = false;
-        //
-        // if (PlayerConstant.isPlayerStop == false)
+        // else
         // {
+        //     player.StopPlayer(false);
         //     uiCanvas.SetActive(false);
-        //     ShowMenuScreen();
         //     Cursor.visible = false;
         //     Cursor.lockState = CursorLockMode.Locked;
+        //     ShowScreen(SettingScreenType.Off);
         // }
+        
+        if (PlayerConstant.isPlayerStop == true)
+        {
+            if (PlayerConstant.isEyeOpen == false) 
+            {
+                menuUi.SetActive(true);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
+        else Cursor.visible = false;
+        
+        if (PlayerConstant.isPlayerStop == false)
+        {
+            menuUi.SetActive(false);
+            ShowMenuScreen();
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
+
+    public void DeutActivate(bool isActive)
+    {
+        deut.SetActive(isActive);
+    }
+
+    public void NehActivate(bool isActive)
+    {
+        neh.SetActive(isActive);
     }
 }
