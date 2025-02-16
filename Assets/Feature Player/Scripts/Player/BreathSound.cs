@@ -7,13 +7,11 @@ using UnityEngine;
 
 public class BreathSound : MonoBehaviour
 {
-    [SerializeField] private PlayerBase player;
-
-    private Animator headAnimator;
+    private Animator breathAnimator;
 
     private void Awake()
     {
-        headAnimator = GetComponent<Animator>();
+        breathAnimator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -36,12 +34,12 @@ public class BreathSound : MonoBehaviour
     public async UniTaskVoid ToInhale()
     {
         await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
-        headAnimator.SetTrigger("toInhale");
+        breathAnimator.SetTrigger("toInhale");
     }
     
     public async UniTaskVoid ToExhale()
     {
         await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
-        headAnimator.SetTrigger("toExhale");
+        breathAnimator.SetTrigger("toExhale");
     }
 }

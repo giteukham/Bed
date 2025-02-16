@@ -2530,8 +2530,8 @@ MonoBehaviour:
   playerEyeStateMachine: {fileID: 1742733469}
   playerCamera: {fileID: 1732393634}
   coneCollider: {fileID: 801348871}
+  pillowSound: {fileID: 938605090}
   pixelationFactor: 0.25
-  playerPillowSoundPosition: {fileID: 1484757148}
 --- !u!1 &113133968
 GameObject:
   m_ObjectHideFlags: 0
@@ -8767,7 +8767,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7175d8df299cf443a385be9faceefbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 105610754}
 --- !u!95 &635529641
 Animator:
   serializedVersion: 5
@@ -12075,6 +12074,50 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &938605088
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 938605089}
+  - component: {fileID: 938605090}
+  m_Layer: 0
+  m_Name: Pillow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &938605089
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938605088}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1348675250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &938605090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938605088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d6473ceaa6f4d4b97f80af146725abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &945599789
 GameObject:
   m_ObjectHideFlags: 0
@@ -12403,7 +12446,7 @@ MonoBehaviour:
   fullscreenInside: {fileID: 21300000, guid: f0507d7efa4076f44a29ffefdf87c0fd, type: 3}
   windowedInside: {fileID: 21300000, guid: 9bab0f317c064394289edf5e85012cd4, type: 3}
   insideWindow: {fileID: 1057191997}
-  player: {fileID: 105610754}
+  player: {fileID: 0}
   OnFullScreenSwitched:
     m_PersistentCalls:
       m_Calls: []
@@ -12519,7 +12562,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 984148485}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.77159286, z: -0, w: -0.63611674}
+  m_LocalRotation: {x: -0, y: 0.839351, z: -0, w: -0.54358983}
   m_LocalPosition: {x: 5.23, y: 1.608, z: 5.09}
   m_LocalScale: {x: -1, y: 1.01, z: -1}
   m_ConstrainProportionsScale: 0
@@ -18069,6 +18112,7 @@ Transform:
   - {fileID: 635529638}
   - {fileID: 105610751}
   - {fileID: 638792220}
+  - {fileID: 938605089}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1354229534
@@ -18991,9 +19035,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backGround: {fileID: 1110291171}
   switchDot: {fileID: 1286475295}
-  switchColor_On: {r: 1, g: 1, b: 1, a: 1}
-  switchColor_Off: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  switchSpeed: 0.2
+  switchColor_On: {r: 0, g: 0, b: 0, a: 0}
+  switchColor_Off: {r: 0, g: 0, b: 0, a: 0}
+  switchSpeed: 0
   rotationIcon: {fileID: 2137946381}
 --- !u!224 &1393445009
 RectTransform:
@@ -23513,9 +23557,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backGround: {fileID: 1942988885}
   switchDot: {fileID: 1391211493}
-  switchColor_On: {r: 1, g: 1, b: 1, a: 1}
-  switchColor_Off: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  switchSpeed: 0.2
+  switchColor_On: {r: 0, g: 0, b: 0, a: 0}
+  switchColor_Off: {r: 0, g: 0, b: 0, a: 0}
+  switchSpeed: 0
   rotationIcon: {fileID: 779110277}
 --- !u!224 &1721294637
 RectTransform:

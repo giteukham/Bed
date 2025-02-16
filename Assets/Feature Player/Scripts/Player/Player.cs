@@ -37,6 +37,10 @@ public class Player : PlayerBase
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
+
+    [Header("Sound Effect")]
+    [SerializeField] private PillowSound pillowSound;
+    
     #endregion
 
     #region Camera Effect Variables
@@ -74,11 +78,7 @@ public class Player : PlayerBase
     #endregion
     
     #region Sound Effect Variables
-    [SerializeField]private Transform playerPillowSoundPosition;
-    private Vector3 playerPillowSoundInitPosition;
-    private Vector3 playerPillowSoundInitRotation;
     private float currentFearSFXVolume, currentStressSFXVolume, currentHeadMoveSFXVolume;
-    private Coroutine headMoveSFXCoroutine;
     #endregion
 
     private void Start()
@@ -102,9 +102,6 @@ public class Player : PlayerBase
         //AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.headMove, transform.position);
-
-        playerPillowSoundInitPosition = playerPillowSoundPosition.transform.position;
-        playerPillowSoundInitRotation = playerPillowSoundPosition.transform.eulerAngles;
 
         pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
@@ -293,72 +290,13 @@ public class Player : PlayerBase
 
     private void UpdateSFX()
     {
-        playerPillowSoundPosition.position = new Vector3(this.transform.position.x, playerPillowSoundInitPosition.y, playerPillowSoundInitPosition.z);
-        playerPillowSoundPosition.eulerAngles = new Vector3(playerPillowSoundInitRotation.x, playerPillowSoundInitRotation.y, playerPillowSoundInitRotation.z);
-        
         // 위치 조정
         //AudioManager.Instance.SetPosition(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.stressHal, transform.position);
-        AudioManager.Instance.SetPosition(AudioManager.Instance.headMove, playerPillowSoundPosition.position);
         // 위치 조정
-
-        // --------머리 움직임 소리
-        if (PlayerConstant.isShock)
-        {
-            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
-        }
-        else if ((deltaHorizontalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
-            || (deltaVerticalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
-            || PlayerConstant.isMovingState)  
-        {
-            if (PlayerConstant.isRightState || PlayerConstant.isLeftState) AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 1.6f);
-            else AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 4.5f);
         
-            if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f) 
-            {
-            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
-            }
-        }
-        else 
-        {
-            if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) > 0.0f) 
-            {
-            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
-            }
-        }
-        
-        IEnumerator headMoveSFXSet(bool _Up)
-        {
-            float volume = AudioManager.Instance.GetVolume(AudioManager.Instance.headMove);
-        
-            if(_Up)
-            {
-                AudioManager.Instance.ResumeSound(AudioManager.Instance.headMove);
-                while(volume < 1.0f)
-                {
-                    volume += 0.1f;
-                    volume = Mathf.Clamp(volume, 0.0f, 1.0f);
-                    AudioManager.Instance.VolumeControl(AudioManager.Instance.headMove, volume);
-                    yield return new WaitForSeconds(0.1f);
-                }
-                headMoveSFXCoroutine = null;
-            }
-            else
-            {
-                while(volume > 0.0f)
-                {
-                    volume -= 0.1f;
-                    volume = Mathf.Clamp(volume, 0.0f, 1.0f);
-                    AudioManager.Instance.VolumeControl(AudioManager.Instance.headMove, volume);
-                    yield return new WaitForSeconds(0.1f);
-                }
-                AudioManager.Instance.PauseSound(AudioManager.Instance.headMove);
-                headMoveSFXCoroutine = null;
-            }
-        }   
+        // -------------------------------------머리 움직임 효과음
+        pillowSound.PlaySound();
         
         // -------------------------------------게이지 효과음
         float targetFearSFXVolume, targetStressSFXVolume;
