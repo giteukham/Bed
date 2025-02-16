@@ -19,16 +19,36 @@ public class WardrobeGimmick : Gimmick
 
     #region Variables
     [SerializeField] private GameObject cat;
+    [SerializeField] private GameObject wardrobe;
+    [SerializeField] private GameObject rightDoor;
+    private Vector3 catPosition;
+    private Vector3 wardrobePosition;
+    private Quaternion wardrobeRotation;
     #endregion
 
     private void Awake()
     {
-        
+        catPosition = cat.transform.localPosition;
+        wardrobe.transform.SetParent(null);
+        wardrobePosition = wardrobe.transform.localPosition;
+        wardrobeRotation = wardrobe.transform.localRotation;
+
+    }
+
+    IEnumerator TestCode()
+    {
+        yield return new WaitForSeconds(5);
+        wardrobe.transform.DOShakePosition(1, 0.02f, 2, 90, false, false).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
     }
 
     private void Update()
     {
         timeLimit += Time.deltaTime;
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            wardrobe.transform.DOShakePosition(1, 0.02f, 5, 90, false, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
+            wardrobe.transform.DOShakeRotation(1, 0.05f, 5, 90, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localRotation = wardrobeRotation);
+        }
     }
 
     public override void Activate()
@@ -58,6 +78,9 @@ public class WardrobeGimmick : Gimmick
     {
         print("메인코드 실행");
         //삐그덕 거리는 소리 들리면서 옷장 흔들림
+        AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeHinges, transform.position);
+        wardrobe.transform.DOShakePosition(1, 1, 2, 90, false, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
+        wardrobe.transform.DOShakeRotation(1, 0.05f, 5, 90, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localRotation = wardrobeRotation);
 
         float num = PlayerConstant.LeftFrontLookCAT;
 
@@ -66,11 +89,12 @@ public class WardrobeGimmick : Gimmick
         if (PlayerConstant.LeftFrontLookCAT - num < 5)
         {
             print("오래 안봤음");
-            //Deactivate();
+            Deactivate();
         }
         else
         {
             //문이 서서히 열림
+            rightDoor.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, -15, 0) * rightDoor.transform.localRotation, 2f);
 
             //이후 확률에 따라 진행
             int randomNum = Random.Range(1, 101);
@@ -79,9 +103,9 @@ public class WardrobeGimmick : Gimmick
             {
                 print("고양이 기믹 실행");
                 //소리냄
-                AudioManager.Instance.PlaySound(AudioManager.Instance.WardrobeCat, cat.transform.position);
+                AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeCat, cat.transform.position);
                 //앞으로 살짝 나옴
-                cat.transform.DOLocalMove(new Vector3(cat.transform.localPosition.x - 0.15f, cat.transform.localPosition.y, cat.transform.localPosition.z + 0.11f), 2f).OnComplete(
+                cat.transform.DOLocalMove(new Vector3(-0.45f, 0, 0.015f), 2f).OnComplete(
                     () =>
                     {
                         GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
@@ -90,7 +114,7 @@ public class WardrobeGimmick : Gimmick
                 //잠시 대기
                 yield return new WaitForSeconds(10);
                 //다시 들어감
-                cat.transform.DOLocalMove(new Vector3(cat.transform.localPosition.x + 0.15f, cat.transform.localPosition.y, cat.transform.localPosition.z - 0.11f), 2f).OnComplete(
+                cat.transform.DOLocalMove(catPosition, 2f).OnComplete(
                     () =>
                     {
                         cat.transform.localPosition = new Vector3(-0.46f, 0.28f, -0.35f);
@@ -102,12 +126,15 @@ public class WardrobeGimmick : Gimmick
             //30퍼 확률로 장롱안에서 하얀색 안광만 보임
             else
             {
+                //잠시 대기
+                yield return new WaitForSeconds(5);
                 print("안광 기믹 실행");
                 GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +10);
                 GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +10);
             }
 
             //문 닫히는 코드 추가후 Deactivate();
+            rightDoor.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, 15, 0) * rightDoor.transform.localRotation, 2f).OnComplete(() => Deactivate());
         }
     }
 }
