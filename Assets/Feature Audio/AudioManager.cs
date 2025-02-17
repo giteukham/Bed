@@ -96,7 +96,11 @@ public class AudioManager : MonoSingleton<AudioManager>
     [field: SerializeField] public EventReference chair2 { get; private set; }
     
     [field: Header("Poster")]
-    [field: SerializeField] public EventReference poster { get; private set; }
+    [field: SerializeField] public EventReference poster1 { get; private set; }
+    
+    [field: SerializeField] public EventReference poster2 { get; private set; }
+    
+    [field: SerializeField] public EventReference poster3 { get; private set; }
 
     [field: Header("Door Knock SFX")]
     [field: SerializeField] public EventReference doorKnock { get; private set; }
@@ -267,6 +271,13 @@ public class AudioManager : MonoSingleton<AudioManager>
             return volume;
         }
         return 0;
+    }
+    
+    public PLAYBACK_STATE GetPlaybackState(EventReference _eventRef)
+    {
+        EventInstance eventInstance = eventInstances[_eventRef];
+        eventInstance.getPlaybackState(out PLAYBACK_STATE playbackState);
+        return playbackState;
     }
 
     /// <summary>

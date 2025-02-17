@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public static class PlayerConstant
@@ -22,7 +23,6 @@ public static class PlayerConstant
     /// 눈을 얼마나 감았는지 (누적)
     /// </summary>
     public static float EyeClosedCAT = 0;
-    
     /// <summary>
     /// 눈을 얼마나 감았는지 (최근)
     /// </summary>
@@ -32,6 +32,8 @@ public static class PlayerConstant
     /// 눈을 얼마나 깜빡이는지 (누적)
     /// </summary>
     public static int EyeBlinkCAT = 0;
+    
+    public static ReactiveProperty<int> EyeBlinkReactiveProperty = new ReactiveProperty<int>(0);
 
     /// <summary>
     /// 눈을 얼마나 깜빡이는지 (최근)

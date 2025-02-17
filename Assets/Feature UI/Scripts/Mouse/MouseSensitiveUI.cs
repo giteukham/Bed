@@ -53,8 +53,8 @@ public class MouseSensitiveUI : MonoBehaviour
         //mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, horizontalSwitch);
         //mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, verticalSwitch);
 
-        mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, HorizontalSwitch);
-        mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, VerticalSwitch);
+        mouseSettings.OnHorizontalReverse += ToggleHorizontalSwitch;
+        mouseSettings.OnVerticalReverse += ToggleVerticalSwitch;
 
         sensitivitySlider.onValueChanged.AddListener(ChangeSensitive);
         sensitivityValue.onEndEdit.AddListener(ChangeSensitivityOnInputField);
@@ -66,9 +66,14 @@ public class MouseSensitiveUI : MonoBehaviour
         VerticalSwitch.GetComponent<SwitchButton>().SwitchLoadDataApply(mouseSettings.IsVerticalReverse);
         HorizontalSwitch.GetComponent<SwitchButton>().SwitchLoadDataApply(mouseSettings.IsHorizontalReverse);
     }
+
+    private void ToggleHorizontalSwitch(bool isReverse) => HorizontalSwitch.GetComponent<SwitchButton>().OnSwitchButtonClicked(isReverse);
+    private void ToggleVerticalSwitch(bool isReverse) => VerticalSwitch.GetComponent<SwitchButton>().OnSwitchButtonClicked(isReverse);
     
     private void OnDisable()
     {
+        mouseSettings.OnHorizontalReverse -= ToggleHorizontalSwitch;
+        mouseSettings.OnVerticalReverse -= ToggleVerticalSwitch;
         sensitivitySlider.onValueChanged.RemoveAllListeners();
         sensitivityValue.onEndEdit.RemoveAllListeners();
     }
