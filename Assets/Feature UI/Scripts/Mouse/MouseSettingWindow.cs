@@ -16,11 +16,15 @@ public class MouseSettingWindow : MonoBehaviour, IWindowUIBase
     
     [SerializeField]
     private Transform playerPos, previewPlayerPos, meshesPos;
+
+    [SerializeField]
+    private Camera mainCamera;
     
     private void OnEnable()
     {
         if (previewPlayer != null)
         {
+            mainCamera.cullingMask = 1 << LayerMask.NameToLayer("Test Room");
             previewPlayer.TogglePlayer(true);
             previewPlayerPos.position = meshesPos.position;                 // �÷��̾��� �θ� ������Ʈ Global Position�� �ǹ� Mesh�� ��ġ�� �̵�
             MouseSettings.Instance.InitCameraSettings(previewPlayer);
@@ -33,6 +37,7 @@ public class MouseSettingWindow : MonoBehaviour, IWindowUIBase
     {
         if (player != null)
         {
+            mainCamera.cullingMask = -1;
             player.TogglePlayer(true);
         }
         
