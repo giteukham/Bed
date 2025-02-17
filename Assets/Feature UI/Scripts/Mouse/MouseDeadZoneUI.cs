@@ -4,6 +4,7 @@ using System.Globalization;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.VisualScripting.Dependencies.NCalc;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Controls;
@@ -14,17 +15,17 @@ public class MouseDeadZoneUI : MonoBehaviour
     [SerializeField] private RectTransform valueBarTransform, backgroundTransform, deadZoneAreaTransform;
     [SerializeField] private TMP_InputField deadZoneInputField;
     [SerializeField] private Slider deadZoneSlider;
+    
+    [Header("Components")]
+    [SerializeField] private MouseDeadZoneArrow mouseDeadZoneArrow;
 
     private MouseSettings mouseSettings;
 
-    public RectTransform BackgroundTransform => backgroundTransform;
-
-    public static event Action OnDeadZoneOffsetChange;
-
     private void OnEnable()
     {
+        mouseDeadZoneArrow.Init(backgroundTransform);
         mouseSettings = MouseSettings.Instance;
-        MouseDeadZoneArrow.OnArrowDrag += ChangeDeadZoneArea;
+        mouseDeadZoneArrow.OnArrowDrag += ChangeDeadZoneArea;
         
         deadZoneSlider.minValue = 0f;
         deadZoneSlider.maxValue = mouseSettings.DeadZoneLimit;
@@ -34,10 +35,14 @@ public class MouseDeadZoneUI : MonoBehaviour
         ChangeDeadZoneValueOnInputField(mouseSettings.DeadZoneSliderValue.ToString(CultureInfo.CurrentCulture));
         ChangeDeadZoneArea(mouseSettings.DeadZoneSliderValue);
         ChangeBarPosition();
+        
+        float normalValue = Mathf.InverseLerp(0f, mouseSettings.DeadZoneLimit, mouseSettings.DeadZoneSliderValue);
+        mouseDeadZoneArrow.ChangeArrowPositionWithLerp(normalValue);
     }
     
     private void OnDisable()
     {
+        mouseDeadZoneArrow.OnArrowDrag -= ChangeDeadZoneArea;
         deadZoneSlider.onValueChanged.RemoveAllListeners();
         deadZoneInputField.onEndEdit.RemoveAllListeners();
     }
@@ -87,7 +92,6 @@ public class MouseDeadZoneUI : MonoBehaviour
     {
         deadZoneAreaTransform.localScale = new Vector3(offset, deadZoneAreaTransform.localScale.y, deadZoneAreaTransform.localScale.z);;
         //deadZoneAreaTransform.offsetMin = new Vector2(offset, deadZoneAreaTransform.offsetMin.y);
-        OnDeadZoneOffsetChange?.Invoke();
     }
     
     private void ChangeDeadZoneValueOnInputField(string value)

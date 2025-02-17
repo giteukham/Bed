@@ -1,48 +1,57 @@
 
 using System;
+using System.Windows.Forms.VisualStyles;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
 {
     private MouseSettings mouseSettings;
-    [SerializeField] private MouseDeadZoneUI mouseDeadZoneUI;
+    
     private RectTransform arrowTransform;
+    private RectTransform backgroundTransform;
     private Vector2 arrowPos = Vector2.zero;
     
     private float minPosX, maxPosX;
     
-    public static event Action<float> OnArrowDrag;
+    public event Action<float> OnArrowDrag;
 
-    private void OnEnable()
+    public void Init(RectTransform backgroundTransform)
     {
+        this.backgroundTransform = backgroundTransform;
+        arrowTransform = GetComponent<RectTransform>();
         mouseSettings = MouseSettings.Instance;
-        TryGetComponent(out arrowTransform);
         
-        MouseDeadZoneUI.OnDeadZoneOffsetChange += ChangeArrowPosition;
+        float width = backgroundTransform.rect.width;
+        minPosX = (-width) * mouseSettings.DeadZoneLimit + (width / 2) + 10;
+        maxPosX = width * 0.5f + 10;
+    }
 
-        float temp = mouseDeadZoneUI.BackgroundTransform.rect.width;
-        minPosX = (-temp) * mouseSettings.DeadZoneLimit + (temp / 2) + 10;
-        maxPosX = temp * 0.5f + 10;
-        ChangeArrowPosition();
+    public void ChangeArrowPositionWithLerp(float x)
+    {
+        var value = Mathf.Lerp(maxPosX, minPosX, x);
+        ChangeArrowWidthPosition(value);
+    }
+
+    public void ChangeArrowWidthPosition(float x)
+    {
+        arrowPos.x = x;
+        arrowPos.y = arrowTransform.anchoredPosition.y;
+        arrowTransform.anchoredPosition = arrowPos;
+        
+        var normalValue = Mathf.InverseLerp(maxPosX, minPosX, arrowPos.x);
+        OnArrowDrag?.Invoke(Mathf.Lerp(0f, mouseSettings.DeadZoneLimit, normalValue));
     }
     
-    private void ChangeArrowPosition()
-    {
-        float normalValue = Mathf.InverseLerp(0f, mouseSettings.DeadZoneLimit, mouseSettings.DeadZoneSliderValue);
-        arrowPos.x = Mathf.Lerp(maxPosX, minPosX, normalValue);
-        arrowPos.y = arrowTransform.anchoredPosition.y;
-        arrowTransform.anchoredPosition = arrowPos;
-    }
-
     public void OnDrag(PointerEventData eventData)
     {
-        arrowPos.x = arrowTransform.anchoredPosition.x + eventData.delta.x;
-        arrowPos.x = Mathf.Clamp(arrowPos.x, minPosX, maxPosX);
-        arrowPos.y = arrowTransform.anchoredPosition.y;
-        arrowTransform.anchoredPosition = arrowPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(backgroundTransform, eventData.position, eventData.pressEventCamera, out var localPoint);
         
-        float normalValue = Mathf.InverseLerp(maxPosX, minPosX, arrowPos.x);
-        OnArrowDrag?.Invoke(Mathf.Lerp(0f, mouseSettings.DeadZoneLimit, normalValue));
+        var percent = localPoint.x / backgroundTransform.rect.width;
+        var deltaX = percent >= 1f - mouseSettings.DeadZoneLimit && percent <= 1f ? eventData.delta.x : 0f;
+        
+        var x = Mathf.Clamp(arrowTransform.anchoredPosition.x + deltaX, minPosX, maxPosX);
+        ChangeArrowWidthPosition(x);
     }
 }
