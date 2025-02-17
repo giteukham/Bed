@@ -12,8 +12,20 @@ public class SwitchButton : MonoBehaviour
     [SerializeField] private GameObject switchDot;
     [SerializeField] private Color switchColor_On;
     [SerializeField] private Color switchColor_Off;
-    [SerializeField] private float switchSpeed;
-    [SerializeField] private RectTransform rotationIcon;
+    [SerializeField] private float switchSpeed = 0.2f;
+    [SerializeField] private GameObject rotationIcon;
+    private RectTransform rotationIconRectTransform;
+
+    private void Awake()
+    {
+        rotationIconRectTransform = rotationIcon.GetComponent<RectTransform>();
+    }
+
+    private void OnEnable()
+    {
+        transform.GetComponent<Button>().enabled = true;
+        rotationIcon.GetComponent<Button>().enabled = true;
+    }
 
     public void OnSwitchButtonClicked()
     {
@@ -33,48 +45,45 @@ public class SwitchButton : MonoBehaviour
 
     public void OnSwitchButtonClicked(bool isReverse)
     {
+        SwitchButtonComponent();
         if (isReverse == true)
         {
             switchDot.transform.DOLocalMoveX(50, switchSpeed);
-            rotationIcon.DORotate(new Vector3(0, 0, rotationIcon.eulerAngles.z - 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear);
-                //.OnKill(() => rotationIcon.transform.eulerAngles = new Vector3(0, 0, -180));
-
             backGround.DOColor(switchColor_On, switchSpeed);
+            rotationIconRectTransform.DORotate(rotationIconRectTransform.eulerAngles + new Vector3(0, 0, -180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear).OnComplete(() => SwitchButtonComponent());
         }
         else
         {
             switchDot.transform.DOLocalMoveX(-50, switchSpeed);
-            rotationIcon.DORotate(new Vector3(0, 0, rotationIcon.eulerAngles.z + 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear);
-                //.OnKill(() => rotationIcon.transform.eulerAngles = new Vector3(0, 0, 180));
-
             backGround.DOColor(switchColor_Off, switchSpeed);
+            rotationIconRectTransform.DORotate(rotationIconRectTransform.eulerAngles + new Vector3(0, 0, 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear).OnComplete(() => SwitchButtonComponent());
         }
     }
-
-    /*public void OnSwitchButtonClicked(bool isReverse)
-    {
-        int targetX = isReverse ? 50 : -50; // 이동할 목표 위치
-        //애니메이션 실행 메소드(현재 값, 변환 적용식, 목표값, 바뀌는 시간)
-        DOTween.To(
-            () => switchDot.transform.localPosition.x,
-            changeValue => switchDot.transform.localPosition = new Vector3(changeValue, switchDot.transform.localPosition.y, switchDot.transform.localPosition.z),
-            targetX,
-            switchSpeed);
-
-        backGround.DOColor(isReverse ? switchColor_On : switchColor_Off, switchSpeed);
-    }*/
 
     public void SwitchLoadDataApply(bool isReverse)
     {
         if (isReverse == true)
         {
-            //switchDot.transform.DOLocalMoveX(100f, 0.01f).SetRelative();
             switchDot.transform.DOLocalMoveX(50, 0.01f);
             backGround.DOColor(switchColor_On, 0.01f);
         }
         else
         {
             backGround.DOColor(switchColor_Off, 0.01f);
+        }
+    }
+
+    private void SwitchButtonComponent()
+    {
+        if (transform.GetComponent<Button>().enabled == true)
+        {
+            transform.GetComponent<Button>().enabled = false;
+            rotationIcon.GetComponent<Button>().enabled = false;
+        }
+        else
+        {
+            transform.GetComponent<Button>().enabled = true;
+            rotationIcon.GetComponent<Button>().enabled = true;
         }
     }
 }
