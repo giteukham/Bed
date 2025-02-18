@@ -163,7 +163,7 @@ public class UIManager : MonoSingleton<UIManager>
         
         if (PlayerConstant.isPlayerStop == true)
         {
-            if (PlayerConstant.isEyeOpen == false) 
+            if (PlayerConstant.isEyeOpen == false && !menuUI.activeSelf) 
             {
                 menuUI.SetActive(true);
                 Cursor.visible = true;
