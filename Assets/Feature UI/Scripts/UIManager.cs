@@ -16,7 +16,7 @@ public class UIManager : MonoSingleton<UIManager>
         MouseSettings
     }
     
-    [SerializeField] GameObject menuUi;   
+    [SerializeField] GameObject menuUI;   
     //public bool isMenuScreenActive = false;
     #region Menu
     [Header("Menu")]
@@ -56,16 +56,17 @@ public class UIManager : MonoSingleton<UIManager>
             PlayerConstant.isPlayerStop = false;
         }
         
-        if (menuUi.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
+        if (menuUI.activeSelf && menuScreen.activeSelf && Input.GetMouseButton(1)) 
         {
             if (!isRightClikHeld) rightClickStartTime = Time.time;
             isRightClikHeld = true;
         }
-        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !menuUi.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
+        if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !menuUI.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
     }
 
     private void Awake()
     {
+        if (menuUI.activeSelf) menuUI.SetActive(false);
         ToggleScreenObject(SettingScreenType.Off, false);
     }
 
@@ -164,7 +165,7 @@ public class UIManager : MonoSingleton<UIManager>
         {
             if (PlayerConstant.isEyeOpen == false) 
             {
-                menuUi.SetActive(true);
+                menuUI.SetActive(true);
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
@@ -173,7 +174,7 @@ public class UIManager : MonoSingleton<UIManager>
         
         if (PlayerConstant.isPlayerStop == false)
         {
-            menuUi.SetActive(false);
+            menuUI.SetActive(false);
             ShowMenuScreen();
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
