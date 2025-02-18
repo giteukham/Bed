@@ -50,12 +50,14 @@ public class SwitchButton : MonoBehaviour
         {
             switchDot.transform.DOLocalMoveX(50, switchSpeed);
             backGround.DOColor(switchColor_On, switchSpeed);
+            rotationIcon.GetComponent<Image>().DOColor(switchColor_On, switchSpeed);
             rotationIconRectTransform.DORotate(rotationIconRectTransform.eulerAngles + new Vector3(0, 0, -180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear).OnComplete(() => SwitchButtonComponent());
         }
         else
         {
             switchDot.transform.DOLocalMoveX(-50, switchSpeed);
             backGround.DOColor(switchColor_Off, switchSpeed);
+            rotationIcon.GetComponent<Image>().DOColor(switchColor_Off, switchSpeed);
             rotationIconRectTransform.DORotate(rotationIconRectTransform.eulerAngles + new Vector3(0, 0, 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear).OnComplete(() => SwitchButtonComponent());
         }
     }
@@ -64,12 +66,14 @@ public class SwitchButton : MonoBehaviour
     {
         if (isReverse == true)
         {
-            switchDot.transform.DOLocalMoveX(50, 0.01f);
-            backGround.DOColor(switchColor_On, 0.01f);
+            switchDot.transform.DOLocalMoveX(50, 0);
+            backGround.DOColor(switchColor_On, 0);
+            rotationIcon.GetComponent<Image>().DOColor(switchColor_On, 0);
         }
         else
         {
-            backGround.DOColor(switchColor_Off, 0.01f);
+            backGround.DOColor(switchColor_Off, 0);
+            rotationIcon.GetComponent<Image>().DOColor(switchColor_Off, 0);
         }
     }
 
