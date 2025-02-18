@@ -35,7 +35,7 @@ public class GameManager : MonoSingleton<GameManager>
     
     #region Objects related Components
     [Header("Objects related Components")]
-    [SerializeField] private GameObject mother;
+    [SerializeField] private GameObject dad;
     private Animator motherAnimator;
     #endregion
 
@@ -100,7 +100,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     void Awake()
     {
-        motherAnimator = mother.GetComponent<Animator>();
+        motherAnimator = dad.GetComponent<Animator>();
         //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
 
         //예전 마지막 플레이 시간 가져옴
@@ -240,7 +240,7 @@ public class GameManager : MonoSingleton<GameManager>
         yield return new WaitForSeconds(door_Open_BeforeDelayTime);
         Door.Set(30, 0.35f);
         yield return new WaitForSeconds(mother_Appear_BeforeDelayTime);
-        mother.SetActive(true);
+        dad.SetActive(true);
 
         float randomNum = UnityEngine.Random.Range(5f, 8f);
         yield return new WaitForSeconds(randomNum);
@@ -251,7 +251,7 @@ public class GameManager : MonoSingleton<GameManager>
         yield return new WaitForSeconds(door_Close_BeforeDelayTime);
         Door.Set(0, 0.4f);
         yield return new WaitForSeconds(mother_Deactivate_BeforeDelayTime);
-        mother.SetActive(false);
+        dad.SetActive(false);
         //LivingRoomLightSwitch.SwitchAction(false);
         yield return new WaitForSeconds(game_Start_BeforeDelayTime);
         timeManager.gameObject.SetActive(true);

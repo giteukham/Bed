@@ -8,14 +8,21 @@ using UnityEngine;
 public class BreathSound : MonoBehaviour
 {
     private Animator breathAnimator;
+    [SerializeField] private Transform sourcePosition, sourceRotation;
+    private Vector3 intervalTrnasform, breathSoundPosition;
 
     private void Awake()
     {
         breathAnimator = GetComponent<Animator>();
+        intervalTrnasform = transform.position - sourcePosition.position;
     }
 
     private void Update()
     {
+        breathSoundPosition = sourcePosition.position + intervalTrnasform;
+        transform.position = new Vector3(breathSoundPosition.x, breathSoundPosition.y, breathSoundPosition.z);
+        transform.rotation = sourceRotation.rotation;
+
         AudioManager.Instance.SetPosition(AudioManager.Instance.inhale, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.exhale, transform.position);
     }

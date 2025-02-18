@@ -1,15 +1,24 @@
 
 using System;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 public class PillowSound : MonoBehaviour
 {
+    [SerializeField] private GameObject pillowSoundPosition;
+    [SerializeField] private GameObject sourcePosition;
     private Coroutine headMoveSFXCoroutine;
+
+    private void Start()
+    {
+        AudioManager.Instance.PlaySound(AudioManager.Instance.headMove, transform.position);
+    }
 
     private void Update()
     {
-        AudioManager.Instance.SetPosition(AudioManager.Instance.headMove, transform.position);
+        pillowSoundPosition.transform.localPosition = new Vector3(sourcePosition.transform.localPosition.x, pillowSoundPosition.transform.localPosition.y, pillowSoundPosition.transform.localPosition.z);
+        AudioManager.Instance.SetPosition(AudioManager.Instance.headMove, pillowSoundPosition.transform.localPosition);
         
         if (PlayerConstant.isRightState || PlayerConstant.isLeftState)  AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 1.6f);
         else AudioManager.Instance.SetParameter(AudioManager.Instance.headMove, "Lowpass", 4.5f);
@@ -19,7 +28,7 @@ public class PillowSound : MonoBehaviour
 
     public void PlaySound()
     {
-        // --------¸Ó¸® ¿òÁ÷ÀÓ ¼Ò¸®
+        // --------ï¿½Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½
         if ((PlayerConstant.headMoveSpeed > 0f || PlayerConstant.isMovingState) &&
             AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f)
         {

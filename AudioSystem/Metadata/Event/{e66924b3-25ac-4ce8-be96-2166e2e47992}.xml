@@ -126,7 +126,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{ba0b46f1-3e70-4737-a024-69becf0a8bf5}">
 		<property name="volume">
-			<value>-16.5</value>
+			<value>-14</value>
 		</property>
 		<property name="name">
 			<value>Audio 1</value>
@@ -189,6 +189,21 @@
 	<object class="SpatialiserEffect" id="{4f9a57af-1a73-42d0-b90c-10b3da71cc72}">
 		<property name="distanceRolloffType">
 			<value>1</value>
+		</property>
+		<property name="maximumDistance">
+			<value>50</value>
+		</property>
+		<property name="overrideRange">
+			<value>true</value>
+		</property>
+		<property name="extentMode">
+			<value>1</value>
+		</property>
+		<property name="userStereoSeparation">
+			<value>-30.1577759</value>
+		</property>
+		<property name="userStereoAxis">
+			<value>-180</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{eb6d13d5-eaf5-4125-b9ec-317c107bf65a}" />

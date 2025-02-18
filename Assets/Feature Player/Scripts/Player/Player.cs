@@ -101,7 +101,6 @@ public class Player : PlayerBase
         // fearHal 임시로 뺌뺌
         //AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
-        AudioManager.Instance.PlaySound(AudioManager.Instance.headMove, transform.position);
 
         pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
