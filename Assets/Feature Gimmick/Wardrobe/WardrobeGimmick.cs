@@ -69,7 +69,6 @@ public class WardrobeGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        print("¸ÞÀÎÄÚµå ½ÇÇà");
         //»ß±×´ö °Å¸®´Â ¼Ò¸® µé¸®¸é¼­ ¿ÊÀå Èçµé¸²
         AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeHinges, transform.position);
         wardrobe.transform.DOShakePosition(1, 0.02f, 5, 90, false, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
@@ -81,7 +80,6 @@ public class WardrobeGimmick : Gimmick
 
         if (PlayerConstant.LeftFrontLookCAT - num < 5)
         {
-            print("¿À·¡ ¾ÈºÃÀ½");
             Deactivate();
         }
         else
@@ -103,7 +101,6 @@ public class WardrobeGimmick : Gimmick
             //70ÆÛ È®·ü·Î °í¾çÀÌ°¡ »©²Ä ³ª¿Í¼­ ±×³É ¿ò
             if (randomNum <= 70)
             {
-                print("°í¾çÀÌ ±â¹Í ½ÇÇà");
                 cat.SetActive(true);
                 //¼Ò¸®³¿
                 AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeCat, cat.transform.position);
@@ -123,7 +120,6 @@ public class WardrobeGimmick : Gimmick
             //30ÆÛ È®·ü·Î Àå·Õ¾È¿¡¼­ ÇÏ¾á»ö ¾È±¤¸¸ º¸ÀÓ
             else
             {
-                print("¾È±¤ ±â¹Í ½ÇÇà");
                 eyesAndDark.SetActive(true);
                 //Àá½Ã ´ë±â
                 yield return new WaitForSeconds(5);
