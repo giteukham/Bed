@@ -8558,6 +8558,8 @@ GameObject:
   m_Component:
   - component: {fileID: 597004106}
   - component: {fileID: 597004107}
+  - component: {fileID: 597004109}
+  - component: {fileID: 597004108}
   m_Layer: 0
   m_Name: WardrobeGimmick
   m_TagString: Untagged
@@ -8573,7 +8575,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 597004105}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.43371442, z: -0, w: 0.9010504}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.26, y: 2.16, z: -0.613}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8582,7 +8584,7 @@ Transform:
   - {fileID: 697742068747252284}
   - {fileID: 628542366}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -51.407, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &597004107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8603,6 +8605,56 @@ MonoBehaviour:
   rightDoor: {fileID: 2173545987492170391}
   cat: {fileID: 1188391646676003556}
   eyesAndDark: {fileID: 628542365}
+  shakeTime: 5
+  detectedTime: 5
+--- !u!54 &597004108
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597004105}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &597004109
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597004105}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.07, y: 2.43, z: 1.65}
+  m_Center: {x: 0, y: 0.88, z: 0}
 --- !u!1 &608690841
 GameObject:
   m_ObjectHideFlags: 0
@@ -8999,9 +9051,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 628542365}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -0.152, y: 0.776, z: -0.051}
-  m_LocalScale: {x: 1.4336114, y: 2.1225, z: 1}
+  m_LocalRotation: {x: -0, y: 0.9010504, z: -0, w: 0.43371442}
+  m_LocalPosition: {x: -0.054953575, y: 0.776, z: -0.15061575}
+  m_LocalScale: {x: 1.4336115, y: 2.1225, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 996409045}
@@ -29663,9 +29715,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6974628204168118059}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.9438213, z: -0, w: 0.33045647}
-  m_LocalPosition: {x: -0.120284975, y: 0.7479999, z: 0.10743208}
-  m_LocalScale: {x: 1.4999999, y: 1.3, z: 1}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0.1590004, y: 0.7479999, z: -0.02700001}
+  m_LocalScale: {x: 1.5000006, y: 1.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6565027646788205867}
@@ -35567,9 +35619,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1188391646676003556}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.095845714, z: 0, w: 0.99539626}
-  m_LocalPosition: {x: -0.46, y: 0.28, z: -0.35}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalRotation: {x: -0, y: -0.3453559, z: -0, w: 0.93847185}
+  m_LocalPosition: {x: -0.013381481, y: 0.27999997, z: -0.57785887}
+  m_LocalScale: {x: 0.120000005, y: 0.12, z: 0.120000005}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1328358180027315752}

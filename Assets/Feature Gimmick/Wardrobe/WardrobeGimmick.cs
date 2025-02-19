@@ -2,6 +2,7 @@ using AbstractGimmick;
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class WardrobeGimmick : Gimmick
@@ -22,9 +23,15 @@ public class WardrobeGimmick : Gimmick
     [SerializeField] private GameObject rightDoor;
     [SerializeField] private GameObject cat;
     [SerializeField] private GameObject eyesAndDark;
+    [SerializeField] private float shakeTime = 5f;
+    [SerializeField] private float detectedTargetTime = 1f;
+    //private float remainingTime = 0f;
+    private bool realDetected = false;
     private Vector3 catPosition;
     private Vector3 wardrobePosition;
     private Quaternion wardrobeRotation;
+    private Tween shakePositionTween;
+    private Tween shakeRotationTween;
     #endregion
 
     private void Awake()
@@ -40,6 +47,7 @@ public class WardrobeGimmick : Gimmick
     private void Update()
     {
         timeLimit += Time.deltaTime;
+        print(isDetected);
     }
 
     public override void Activate()
@@ -51,38 +59,38 @@ public class WardrobeGimmick : Gimmick
     public override void Deactivate()
     {
         base.Deactivate();
-        cat.SetActive(false);
-        eyesAndDark.SetActive(false);
         gameObject.SetActive(false);
     }
 
     public override void Initialize()
     {
-        
+        cat.SetActive(false);
+        eyesAndDark.SetActive(false);
+        realDetected = false;
+        shakePositionTween = null;
+        shakeRotationTween = null;
     }
 
     public override void UpdateProbability()
     {
-        probability = (PlayerConstant.LeftFrontLookCAT) + (PlayerConstant.LeftFrontLookLAT / 4);
-        //probability = 100;
+        //probability = (PlayerConstant.LeftFrontLookCAT) + (PlayerConstant.LeftFrontLookLAT / 4);
+        probability = 100;
     }
 
     private IEnumerator MainCode()
     {
         //삐그덕 거리는 소리 들리면서 옷장 흔들림
         AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeHinges, transform.position);
-        wardrobe.transform.DOShakePosition(1, 0.02f, 5, 90, false, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
-        wardrobe.transform.DOShakeRotation(1, 0.05f, 5, 90, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localRotation = wardrobeRotation);
+        shakePositionTween = wardrobe.transform.DOShakePosition(shakeTime, 0.02f, 5, 90, false, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
+        shakeRotationTween = wardrobe.transform.DOShakeRotation(shakeTime, 0.05f, 5, 90, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localRotation = wardrobeRotation);
 
-        float num = PlayerConstant.LeftFrontLookCAT;
+        //옷장 흔들리는 중에 플레이어가 보는지 감지
+        StartCoroutine(CheckDetecting());
 
-        yield return new WaitForSeconds(7);
+        //shakeTime동안 대기
+        yield return new WaitForSeconds(shakeTime);
 
-        if (PlayerConstant.LeftFrontLookCAT - num < 5)
-        {
-            Deactivate();
-        }
-        else
+        if (realDetected == true)   //감지 성공
         {
             //이후 확률에 따라 진행
             int randomNum = Random.Range(1, 101);
@@ -97,11 +105,10 @@ public class WardrobeGimmick : Gimmick
 
             //문이 서서히 열림
             rightDoor.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, -25, 0) * rightDoor.transform.localRotation, 2f);
-            
+
             //70퍼 확률로 고양이가 빼꼼 나와서 그냥 움
             if (randomNum <= 70)
             {
-                cat.SetActive(true);
                 //소리냄
                 AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeCat, cat.transform.position);
                 //앞으로 살짝 나옴
@@ -120,7 +127,6 @@ public class WardrobeGimmick : Gimmick
             //30퍼 확률로 장롱안에서 하얀색 안광만 보임
             else
             {
-                eyesAndDark.SetActive(true);
                 //잠시 대기
                 yield return new WaitForSeconds(5);
                 GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +10);
@@ -130,5 +136,48 @@ public class WardrobeGimmick : Gimmick
             //문 닫히는 코드 추가후 Deactivate();
             rightDoor.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, 25, 0) * rightDoor.transform.localRotation, 2f).OnComplete(() => Deactivate());
         }
+        else    //감지 실패
+        {
+            Deactivate();
+        }
+    }
+
+    private IEnumerator CheckDetecting()
+    {
+        //목표 시간
+        float endTime = timeLimit + shakeTime;
+        //감지 시간
+        float detectedTime = 0f;
+
+        //1초 이상 바라보면 감지된 것으로 판단 후 반복문 종료
+        while (detectedTime < detectedTargetTime)
+        {
+            if (isDetected == true)
+            {
+                //오류 Update와 다름
+                detectedTime += Time.deltaTime;
+            }
+
+            //shakeTime만큼 시간 지나면 종료
+            if (endTime < timeLimit)
+            {
+                //감지 실패
+                //return false;
+                realDetected = false;
+                yield break;
+            }
+
+            //프레임마다 대기
+            yield return null;
+        }
+        //감지 성공
+        //remainingTime = endTime - timeLimit;
+        shakePositionTween?.Kill();
+        shakeRotationTween?.Kill();
+        wardrobe.transform.localPosition = wardrobePosition;
+        wardrobe.transform.localRotation = wardrobeRotation;
+        //return true;
+        realDetected = true;
+        yield break;
     }
 }
