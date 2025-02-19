@@ -124,6 +124,9 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     [field: Header("WardrobeHinges SFX")]
     [field: SerializeField] public EventReference wardrobeHinges { get; private set; }
+
+    [field: Header("WardrobeShake SFX")]
+    [field: SerializeField] public EventReference wardrobeShake { get; private set; }
     #endregion
 
     #region Player FMOD Events

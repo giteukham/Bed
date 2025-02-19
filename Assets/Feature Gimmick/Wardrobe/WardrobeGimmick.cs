@@ -25,7 +25,6 @@ public class WardrobeGimmick : Gimmick
     [SerializeField] private GameObject eyesAndDark;
     [SerializeField] private float shakeTime = 5f;
     [SerializeField] private float detectedTargetTime = 1f;
-    //private float remainingTime = 0f;
     private bool realDetected = false;
     private Vector3 catPosition;
     private Vector3 wardrobePosition;
@@ -47,7 +46,6 @@ public class WardrobeGimmick : Gimmick
     private void Update()
     {
         timeLimit += Time.deltaTime;
-        print(isDetected);
     }
 
     public override void Activate()
@@ -73,14 +71,14 @@ public class WardrobeGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        //probability = (PlayerConstant.LeftFrontLookCAT) + (PlayerConstant.LeftFrontLookLAT / 4);
-        probability = 100;
+        probability = (PlayerConstant.LeftFrontLookCAT) + (PlayerConstant.LeftFrontLookLAT / 4);
+        //probability = 100;
     }
 
     private IEnumerator MainCode()
     {
-        //삐그덕 거리는 소리 들리면서 옷장 흔들림
-        AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeHinges, transform.position);
+        //쿵쾅 거리는 소리 들리면서 옷장 흔들림
+        AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeShake, transform.position);
         shakePositionTween = wardrobe.transform.DOShakePosition(shakeTime, 0.02f, 5, 90, false, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localPosition = wardrobePosition);
         shakeRotationTween = wardrobe.transform.DOShakeRotation(shakeTime, 0.05f, 5, 90, false, ShakeRandomnessMode.Full).OnComplete(() => wardrobe.transform.localRotation = wardrobeRotation);
 
@@ -104,6 +102,7 @@ public class WardrobeGimmick : Gimmick
             }
 
             //문이 서서히 열림
+            AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeHinges, transform.position);
             rightDoor.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, -25, 0) * rightDoor.transform.localRotation, 2f);
 
             //70퍼 확률로 고양이가 빼꼼 나와서 그냥 움
@@ -134,6 +133,7 @@ public class WardrobeGimmick : Gimmick
             }
 
             //문 닫히는 코드 추가후 Deactivate();
+            AudioManager.Instance.PlaySound(AudioManager.Instance.wardrobeHinges, transform.position);
             rightDoor.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, 25, 0) * rightDoor.transform.localRotation, 2f).OnComplete(() => Deactivate());
         }
         else    //감지 실패
@@ -162,7 +162,6 @@ public class WardrobeGimmick : Gimmick
             if (endTime < timeLimit)
             {
                 //감지 실패
-                //return false;
                 realDetected = false;
                 yield break;
             }
@@ -171,12 +170,11 @@ public class WardrobeGimmick : Gimmick
             yield return null;
         }
         //감지 성공
-        //remainingTime = endTime - timeLimit;
         shakePositionTween?.Kill();
         shakeRotationTween?.Kill();
         wardrobe.transform.localPosition = wardrobePosition;
         wardrobe.transform.localRotation = wardrobeRotation;
-        //return true;
+        AudioManager.Instance.StopSound(AudioManager.Instance.wardrobeShake, FMOD.Studio.STOP_MODE.IMMEDIATE);
         realDetected = true;
         yield break;
     }
