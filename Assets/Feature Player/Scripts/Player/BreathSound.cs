@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FMODUnity;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BreathSound : MonoBehaviour
 {
+    [SerializeField] private Animator playerHeadAnimator;
     private Animator breathAnimator;
+    
     [SerializeField] private Transform sourcePosition, sourceRotation;
     private Vector3 intervalTrnasform, breathSoundPosition;
 
@@ -42,11 +45,13 @@ public class BreathSound : MonoBehaviour
     {
         await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
         breathAnimator.SetTrigger("toInhale");
+        playerHeadAnimator.SetTrigger("toInhale");
     }
     
     public async UniTaskVoid ToExhale()
     {
         await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
         breathAnimator.SetTrigger("toExhale");
+        playerHeadAnimator.SetTrigger("toExhale");
     }
 }
