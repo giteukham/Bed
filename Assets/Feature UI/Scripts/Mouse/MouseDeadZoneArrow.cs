@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
-public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
+public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler
 {
     private MouseSettings mouseSettings;
     
@@ -14,6 +14,8 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
     private Vector2 arrowPos = Vector2.zero;
     
     private float minPosX, maxPosX;
+
+    private bool isDraggable = false;
     
     public event Action<float> OnArrowDrag;
 
@@ -44,14 +46,27 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler
         OnArrowDrag?.Invoke(Mathf.Lerp(0f, mouseSettings.DeadZoneLimit, normalValue));
     }
     
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        isDraggable = RectTransformUtility.RectangleContainsScreenPoint(backgroundTransform, eventData.position);
+    }
+    
     public void OnDrag(PointerEventData eventData)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(backgroundTransform, eventData.position, eventData.pressEventCamera, out var localPoint);
+        if (!isDraggable) return;
         
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(backgroundTransform, eventData.position, eventData.pressEventCamera, out var localPoint);
+
         var percent = localPoint.x / backgroundTransform.rect.width;
         var deltaX = percent >= 1f - mouseSettings.DeadZoneLimit && percent <= 1f ? eventData.delta.x : 0f;
         
         var x = Mathf.Clamp(arrowTransform.anchoredPosition.x + deltaX, minPosX, maxPosX);
         ChangeArrowWidthPosition(x);
+    }
+
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        isDraggable = false;
     }
 }
