@@ -66,8 +66,8 @@ public class MouseSensitiveUI : MonoBehaviour
         //verticalSwitch.sprite = mouseSettings.IsVerticalReverse ? onImage : offImage;
         //horizontalSwitch.sprite = mouseSettings.IsHorizontalReverse ? onImage : offImage;
 
-        VerticalSwitch.GetComponent<SwitchButton>().SwitchLoadDataApply(mouseSettings.IsVerticalReverse);
-        HorizontalSwitch.GetComponent<SwitchButton>().SwitchLoadDataApply(mouseSettings.IsHorizontalReverse);
+        VerticalSwitch.GetComponent<SwitchButton_Mouse>().SwitchLoadDataApply(mouseSettings.IsVerticalReverse);
+        HorizontalSwitch.GetComponent<SwitchButton_Mouse>().SwitchLoadDataApply(mouseSettings.IsHorizontalReverse);
     }
     
     private void OnDisable()
@@ -150,8 +150,8 @@ public class MouseSensitiveUI : MonoBehaviour
     
     //버튼 이미지 변경(false일 경우 빨강, true일 경우 초록)
     //private void ToggleSwitch(bool isReverse, Image switchImage) => switchImage.sprite = isReverse ? onImage : offImage;
-    private void ToggleSwitch(bool isReverse, GameObject switchObject) => switchObject.GetComponent<SwitchButton>().OnSwitchButtonClicked(isReverse);
+    private void ToggleSwitch(bool isReverse, GameObject switchObject) => switchObject.GetComponent<SwitchButton_Mouse>().OnSwitchButtonClicked(isReverse);
 
-    private void ToggleHorizontalSwitch(bool isReverse) => HorizontalSwitch.GetComponent<SwitchButton>().OnSwitchButtonClicked(isReverse);
-    private void ToggleVerticalSwitch(bool isReverse) => VerticalSwitch.GetComponent<SwitchButton>().OnSwitchButtonClicked(isReverse);
+    private void ToggleHorizontalSwitch(bool isReverse) => HorizontalSwitch.GetComponent<SwitchButton_Mouse>().OnSwitchButtonClicked(isReverse);
+    private void ToggleVerticalSwitch(bool isReverse) => VerticalSwitch.GetComponent<SwitchButton_Mouse>().OnSwitchButtonClicked(isReverse);
 }

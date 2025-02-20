@@ -13,8 +13,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 {
     [SerializeField] private Camera cam;
     [SerializeField] private TMP_Text previewText;
-    [SerializeField] private Image fullScreenSwitch;
-    [SerializeField] private Image insideImage;
+    [SerializeField] private SwitchButton_Resolution fullScreenSwitch;
     [SerializeField] private TMP_InputField inputFieldWidth;
     [SerializeField] private TMP_InputField inputFieldHeight;
     [SerializeField] private TMP_Dropdown resolutiondropdown;
@@ -187,7 +186,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     {
         //창모드 관련 초기화
         IsWindowedScreenReady = isWindowedScreen;
-        fullScreenSwitch.sprite = isWindowedScreen ? checkImage : nonCheckImage;
+        fullScreenSwitch.SwitchLoadDataApply(isWindowedScreen);
 
         //현재 적용된 화면 해상도와 드롭다운에 있는 해상도를 비교하여 자동으로 같은 해상도를 선택해야함
         //드롭다운 아이템 현재 리스트로 교체
@@ -465,7 +464,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public void ReadyFullScreenSwitch()
     {
         IsWindowedScreenReady = !isWindowedScreenReady;
-        fullScreenSwitch.sprite = isWindowedScreenReady ? checkImage : nonCheckImage;
+        fullScreenSwitch.OnSwitchButtonClicked(isWindowedScreenReady);
 
         RedefineDropdown(isWindowedScreenReady);
 

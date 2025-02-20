@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SwitchButton : MonoBehaviour
+public class SwitchButton_Mouse : MonoBehaviour
 {
     private bool switchState = false;
     [SerializeField] private RawImage backGround;
@@ -27,8 +27,9 @@ public class SwitchButton : MonoBehaviour
         rotationIcon.GetComponent<Button>().enabled = true;
     }
 
-    public void OnSwitchButtonClicked()
+    /*public void OnSwitchButtonClicked()
     {
+        print("실행되었음");
         if (switchState == true)
         {
             switchDot.transform.DOLocalMoveX(-100f, switchSpeed).SetRelative();
@@ -41,8 +42,9 @@ public class SwitchButton : MonoBehaviour
             backGround.DOColor(switchColor_On, switchSpeed);
             switchState = true;
         }
-    }
+    }*/
 
+    //버튼 클릭시 호출
     public void OnSwitchButtonClicked(bool isReverse)
     {
         SwitchButtonComponent();
@@ -62,6 +64,7 @@ public class SwitchButton : MonoBehaviour
         }
     }
 
+    //저장된 데이터대로 스위치 On, Off에 반영
     public void SwitchLoadDataApply(bool isReverse)
     {
         if (isReverse == true)
