@@ -182,4 +182,37 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         return PlayerPrefs.GetString("LastPlayedTime", "200001010000");
     }
+
+    public float LoadMasterVolume()
+    {
+        return PlayerPrefs.GetFloat("MasterVolume", 1);
+    }
+
+    public void SaveMasterVolume(float value)
+    {
+        PlayerPrefs.SetFloat("MasterVolume", value);
+        PlayerPrefs.Save();
+    }
+
+    public float LoadGimmickVolume()
+    {
+        return PlayerPrefs.GetFloat("GimmickVolume", 1);
+    }
+
+    public void SaveGimmickVolume(float value)
+    {
+        PlayerPrefs.SetFloat("GimmickVolume", value);
+        PlayerPrefs.Save();
+    }
+
+    public float LoadPlayerVolume()
+    {
+        return PlayerPrefs.GetFloat("PlayerVolume", 1);
+    }
+
+    public void SavePlayerVolume(float value)
+    {
+        PlayerPrefs.SetFloat("PlayerVolume", value);
+        PlayerPrefs.Save();
+    }
 }

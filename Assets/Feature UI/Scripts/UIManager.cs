@@ -46,6 +46,18 @@ public class UIManager : MonoSingleton<UIManager>
     public bool isRightClikHeld = false;
     private float rightClickStartTime  = 0f;
 
+    private void Awake()
+    {
+        VolumeSliderManagement SoundSettings = soundSettingsScreen.GetComponent<VolumeSliderManagement>();
+        SoundSettings.LoadSoundSettings();          // 사운드 값 불러오기
+        MouseSettings.Instance.InitMouseSetting();  // 마우스 값 불러오기
+        // 해상도 값 불러오기
+
+
+        if (menuUI.activeSelf) menuUI.SetActive(false);
+        ToggleScreenObject(SettingScreenType.Off, false);
+    }
+
     private void Update() 
     {
         ActivateUICanvas();
@@ -64,11 +76,6 @@ public class UIManager : MonoSingleton<UIManager>
         if (Input.GetMouseButtonUp(1) || (isRightClikHeld && !menuUI.activeSelf && Time.time - rightClickStartTime >= GameManager.Instance.bothClickToleranceTime)) isRightClikHeld = false;
     }
 
-    private void Awake()
-    {
-        if (menuUI.activeSelf) menuUI.SetActive(false);
-        ToggleScreenObject(SettingScreenType.Off, false);
-    }
 
     /// <summary>
     /// 처음 시작할 때 메뉴 안에 있는 화면을 비활성화 시키는 함수

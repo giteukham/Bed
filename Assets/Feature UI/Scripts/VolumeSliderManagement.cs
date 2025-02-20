@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using FMODUnity;
+using VFolders.Libs;
 
 public class VolumeSliderManagement : MonoBehaviour
 {
@@ -19,8 +20,6 @@ public class VolumeSliderManagement : MonoBehaviour
         masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
         gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");
         playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player SFX");
-
-        LoadSettings();
         
         masterVolumeSlider.onValueChanged.AddListener(delegate { SetMasterVolume();});
         gimmickVolumeSlider.onValueChanged.AddListener(delegate { SetGimmickVolume();});
@@ -77,16 +76,20 @@ public class VolumeSliderManagement : MonoBehaviour
         SaveSettings();
     }
 
-    private void LoadSettings()
+    public void LoadSoundSettings()
     {
         masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 1);
         gimmickVolumeSlider.value = PlayerPrefs.GetFloat("GimmickVolume", 1);
         playerVolumeSlider.value = PlayerPrefs.GetFloat("PlayerVolume", 1);
     }
+
     private void SaveSettings()
     {
-        PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
-        PlayerPrefs.SetFloat("GimmickVolume", gimmickVolumeSlider.value);
-        PlayerPrefs.SetFloat("PlayerVolume", playerVolumeSlider.value);
+        // PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
+        // PlayerPrefs.SetFloat("GimmickVolume", gimmickVolumeSlider.value);
+        // PlayerPrefs.SetFloat("PlayerVolume", playerVolumeSlider.value);
+        SaveManager.Instance.SaveMasterVolume(masterVolumeSlider.value);
+        SaveManager.Instance.SaveGimmickVolume(gimmickVolumeSlider.value);
+        SaveManager.Instance.SavePlayerVolume(playerVolumeSlider.value);
     }
 }

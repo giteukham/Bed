@@ -50,11 +50,6 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     
     public event Action<bool> OnVerticalReverse, OnHorizontalReverse;
 
-    private void Awake()
-    {
-        InitMouseSetting();
-    }
-
     private void Start()
     {
         InitCameraSettings(player);
@@ -89,7 +84,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         }
     }
     
-    private void InitMouseSetting()
+    public void InitMouseSetting()
     {
         mouseSensitivity = SaveManager.Instance.LoadMouseSensitivity();
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;
