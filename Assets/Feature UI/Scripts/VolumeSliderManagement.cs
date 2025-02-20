@@ -17,10 +17,6 @@ public class VolumeSliderManagement : MonoBehaviour
 
     private void OnEnable()
     {
-        masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
-        gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");
-        playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player SFX");
-        
         masterVolumeSlider.onValueChanged.AddListener(delegate { SetMasterVolume();});
         gimmickVolumeSlider.onValueChanged.AddListener(delegate { SetGimmickVolume();});
         playerVolumeSlider.onValueChanged.AddListener(delegate { SetPlayerVolume();});
@@ -78,6 +74,14 @@ public class VolumeSliderManagement : MonoBehaviour
 
     public void LoadSoundSettings()
     {
+        masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
+        gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");
+        playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player SFX");
+
+        masterBus.setVolume(PlayerPrefs.GetFloat("MasterVolume", 1));
+        gimmickBus.setVolume(PlayerPrefs.GetFloat("GimmickVolume", 1));
+        playerBus.setVolume(PlayerPrefs.GetFloat("PlayerVolume", 1));
+        
         masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 1);
         gimmickVolumeSlider.value = PlayerPrefs.GetFloat("GimmickVolume", 1);
         playerVolumeSlider.value = PlayerPrefs.GetFloat("PlayerVolume", 1);

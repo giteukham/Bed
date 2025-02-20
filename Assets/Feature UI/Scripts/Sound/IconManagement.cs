@@ -35,21 +35,6 @@ public class IconManagement : MonoBehaviour
         gimmickIconList.RemoveAt(0);
     }
 
-    public void PlayerSoundTest()
-    {
-        // int randomIndex = Random.Range(0, 2);
-        // if(randomIndex == 0)
-        // {
-        //     int randomIndex2 = Random.Range(0, playerHeadPositionSounds.Length);
-        //     AudioManager.instance.PlayOneShot(playerHeadPositionSounds[randomIndex2], playerHeadPosition.transform.position);
-        // }
-        // else
-        // {
-        //     int randomIndex2 = Random.Range(0, playerBodyPositionSounds.Length);
-        //     AudioManager.instance.PlayOneShot(playerBodyPositionSounds[randomIndex2], playerBodyPosition.transform.position);
-        // }
-    }
-
     public async void AllGimmickSoundTest()
     {
         foreach (var gimmickIcon in gimmickIconList)

@@ -11,7 +11,7 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private Canvas canvas;
     private bool isDragging = false;
     private Vector2 offset, movePos, minPosition, maxPosition;
-    private float panelWidth, panelHeight, floorWidth, floorHeight, xRatio, yRatio;
+    private float panelWidth, panelHeight, floorWidth, floorHeight, xRatio, yRatio, panelXScale, panelYScale;
     private RectTransform panelRect;
     public GameObject testObject;
     private GameObject testObjectInstance;
@@ -60,8 +60,8 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, eventData.pressEventCamera, out Vector2 localMousePos);
-        offset = rectTransform.anchoredPosition - localMousePos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRect, eventData.position, eventData.pressEventCamera, out Vector2 localMousePos);
+        offset = rectTransform.anchoredPosition- localMousePos;
 
         isDragging = true;
     }
@@ -69,7 +69,7 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public void OnDrag(PointerEventData eventData)
     {
         if (!isDragging || canvas == null) return;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle( canvas.transform as RectTransform, eventData.position, eventData.pressEventCamera, out movePos );
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRect as RectTransform, eventData.position, eventData.pressEventCamera, out movePos );
 
         Vector2 targetPosition = movePos + offset;
 
