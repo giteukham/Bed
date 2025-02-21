@@ -13,6 +13,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 {
     [SerializeField] private Camera cam;
     [SerializeField] private TMP_Text previewText;
+    [SerializeField] private TMP_Text asteriskText;
     [SerializeField] private SwitchButton_Resolution fullScreenSwitch;
     [SerializeField] private TMP_InputField inputFieldWidth;
     [SerializeField] private TMP_InputField inputFieldHeight;
@@ -29,6 +30,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     [SerializeField] private InsideWindow insideWindow;
 
     [SerializeField] private Player player;
+
+    private ResolutionData savedData, readyData;
 
     bool isWindowedScreen = false;
     bool isWindowedScreenReady = false;
@@ -318,8 +321,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             resolutiondropdown.AddOptions(temp);
             //드롭다운 새로고침
             resolutiondropdown.RefreshShownValue();
+            
 
             nowList = currentList;
+            
+            resolutiondropdown.value = 0;
+            resolutiondropdown.value = nowList.Count - 1;
         }
     }
 
@@ -333,11 +340,16 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         RescaleWindow(width, height);
 
+
         SaveManager.Instance.SaveResolution((int)width, (int)height);
         nowWidthPixel = (int)width;
         nowHeightPixel = (int)height;
         player.pixelationFactor = 0.25f / (nowWidthPixel / 1920f);
         SaveManager.Instance.SavePixelationFactor(player.pixelationFactor);
+        
+        savedData.width = (int)width;
+        savedData.height = (int)height;
+        asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
         yield break;
     }
 
@@ -464,13 +476,14 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public void ReadyFullScreenSwitch()
     {
         IsWindowedScreenReady = !isWindowedScreenReady;
+        
         fullScreenSwitch.OnSwitchButtonClicked(isWindowedScreenReady);
 
         RedefineDropdown(isWindowedScreenReady);
 
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용(제일 큰해상도로 변경)
-        resolutiondropdown.value = 0;
-        resolutiondropdown.value = nowList.Count - 1;
+        // resolutiondropdown.value = 0;
+        // resolutiondropdown.value = nowList.Count - 1;
 
         //드롭다운 표시값 비우기
         resolutiondropdown.captionText.text = "";
@@ -483,6 +496,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     {
         IsWindowedScreen = isWindowedScreenReady;
         SaveManager.Instance.SaveIsWindowedScreen(isWindowedScreen);
+        
+        savedData.isWindowedScreen = isWindowedScreen;
+        asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
     }
 
     //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
@@ -497,6 +513,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 frameRateReady = 60;
                 break;
         }
+        
         if (lastApplyObject == resolutiondropdown.gameObject)
         {
             previewText.text = $"{(int)nowList[resolutiondropdown.value].x} X {(int)nowList[resolutiondropdown.value].y}\n{frameRateReady}hz";
@@ -515,6 +532,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = frameRate;
         SaveManager.Instance.SaveFrameRate(frameRate);
+        
+        savedData.frameRate = frameRate;
+        asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
     }
 
     //매개변수 0은 inputFieldWidth, 1은 inputFieldHeight
@@ -834,6 +854,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     public void InitResolutionSetting()
     {
+        asteriskText.gameObject.SetActive(false);
+        
         previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
         //저장된 풀스크린 여부 불러와서 isWindowedScreen 변수에 적용
         IsWindowedScreen = SaveManager.Instance.LoadIsWindowedScreen();
@@ -896,6 +918,41 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
 
         maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
+        
+        savedData = new ResolutionData(nowWidthPixel, nowHeightPixel, frameRate, isWindowedScreen);
+        readyData = savedData;
+        
+        inputFieldWidth.onValueChanged.AddListener((width) =>
+        {
+            readyData.width = int.Parse(width);
+            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
+        });
+        
+        inputFieldHeight.onValueChanged.AddListener((height) =>
+        {
+            readyData.height = int.Parse(height);
+            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
+        });
+        
+        frameRateDropdown.onValueChanged.AddListener((value) =>
+        {
+            switch (value)
+            {
+                case 0:
+                    readyData.frameRate = 30;
+                    break;
+                case 1:
+                    readyData.frameRate = 60;
+                    break;
+            }
+            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
+        });
+        
+        OnFullScreenSwitched.AddListener((value) =>
+        {
+            readyData.isWindowedScreen = value;
+            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
+        });
     }
 
 }
