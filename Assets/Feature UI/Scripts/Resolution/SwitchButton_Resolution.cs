@@ -27,12 +27,14 @@ public class SwitchButton_Resolution : MonoBehaviour
         {
             print("실행1");
             switchDot.transform.DOLocalMoveX(50, switchSpeed);
+            windowedIcon.GetComponent<Image>().DOColor(switchColor_On, switchSpeed);
             backGround.DOColor(switchColor_On, switchSpeed).OnComplete(() => SwitchButtonComponent());
         }
         else
         {
             print("실행2");
             switchDot.transform.DOLocalMoveX(-50, switchSpeed);
+            windowedIcon.GetComponent<Image>().DOColor(switchColor_Off, switchSpeed);
             backGround.DOColor(switchColor_Off, switchSpeed).OnComplete(() => SwitchButtonComponent());
         }
     }
@@ -44,10 +46,13 @@ public class SwitchButton_Resolution : MonoBehaviour
         {
             switchDot.transform.DOLocalMoveX(50, 0);
             backGround.DOColor(switchColor_On, 0);
+            windowedIcon.GetComponent<Image>().DOColor(switchColor_On, 0);
         }
         else
         {
+            switchDot.transform.DOLocalMoveX(-50, 0);
             backGround.DOColor(switchColor_Off, 0);
+            windowedIcon.GetComponent<Image>().DOColor(switchColor_Off, 0);
         }
     }
 

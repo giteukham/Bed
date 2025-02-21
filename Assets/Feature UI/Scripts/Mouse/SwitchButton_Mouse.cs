@@ -75,6 +75,7 @@ public class SwitchButton_Mouse : MonoBehaviour
         }
         else
         {
+            switchDot.transform.DOLocalMoveX(-50, 0);
             backGround.DOColor(switchColor_Off, 0);
             rotationIcon.GetComponent<Image>().DOColor(switchColor_Off, 0);
         }
