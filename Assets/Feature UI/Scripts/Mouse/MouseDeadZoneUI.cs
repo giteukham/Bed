@@ -101,7 +101,7 @@ public class MouseDeadZoneUI : MonoBehaviour
 
     private void ChangeDeadZoneAreaColor(Color color)
     {
-        deadZoneAreaImage.DOColor(color, 0.5f);
+        deadZoneAreaImage.DOColor(color, 0.2f);
     }
 
     /// <summary>

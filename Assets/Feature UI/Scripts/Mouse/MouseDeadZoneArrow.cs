@@ -38,7 +38,7 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler, IPointerDownHandl
     
     public void ChangeArrowColor(Color color)
     {
-        arrowImage.DOColor(color, 0.5f);
+        arrowImage.DOColor(color, 0.2f);
     }
 
     public void ChangeArrowPositionWithLerp(float x)
