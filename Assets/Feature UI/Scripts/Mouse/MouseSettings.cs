@@ -31,10 +31,12 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     private float mouseSensitivity = 1f;
     private float mouseMaxSpeed;                                                            // 마우스 최대 속도
     private float mouseHorizontalSpeed, mouseVerticalSpeed;                                     
-    private bool isVerticalReverse, isHorizontalReverse;                                    // false는 정상, true는 반전
+    private bool  isVerticalReverse, isHorizontalReverse;                                   // false는 정상, true는 반전
     private float deadZoneSliderValue;                                                      // 현재 Deadzone 영역의 값
     
     #region Properties
+    public PlayerBase Player => player;
+    public PlayerBase PreviewPlayer => previewPlayer;
     public float MouseSensitivity => mouseSensitivity;
     public float MouseMaxSpeed => mouseMaxSpeed;
     public float MouseAxisLimit => mouseAxisLimit;

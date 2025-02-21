@@ -9995,6 +9995,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivitySlider: {fileID: 208142704}
   sensitivityValue: {fileID: 1541557368}
+  sensitiveBar: {fileID: 1579148172}
   VerticalSwitch: {fileID: 1393445006}
   HorizontalSwitch: {fileID: 1721294634}
   onImage: {fileID: 21300000, guid: 7cd1297fa84869342b3f00ec3a1ec497, type: 3}
@@ -12258,7 +12259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &969374798
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16114,7 +16115,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1251459811
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25200,6 +25201,8 @@ MonoBehaviour:
   deadZoneInputField: {fileID: 232343991}
   deadZoneSlider: {fileID: 70245265}
   mouseDeadZoneArrow: {fileID: 716734681}
+  idleColor: {r: 1, g: 1, b: 1, a: 1}
+  activeColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!33 &1931144875
 MeshFilter:
   m_ObjectHideFlags: 0

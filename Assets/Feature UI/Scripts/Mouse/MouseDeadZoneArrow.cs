@@ -1,9 +1,11 @@
 
 using System;
 using System.Windows.Forms.VisualStyles;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler
 {
@@ -12,6 +14,7 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler, IPointerDownHandl
     private RectTransform arrowTransform;
     private RectTransform backgroundTransform;
     private Vector2 arrowPos = Vector2.zero;
+    private Image arrowImage;
     
     private float minPosX, maxPosX;
 
@@ -19,15 +22,23 @@ public class MouseDeadZoneArrow : MonoBehaviour, IDragHandler, IPointerDownHandl
     
     public event Action<float> OnArrowDrag;
 
-    public void Init(RectTransform backgroundTransform)
+    public void Init(RectTransform backgroundTransform, Color initColor)
     {
+        mouseSettings = MouseSettings.Instance;
+        
         this.backgroundTransform = backgroundTransform;
         arrowTransform = GetComponent<RectTransform>();
-        mouseSettings = MouseSettings.Instance;
+        arrowImage = GetComponent<Image>();
+        arrowImage.color = initColor;
         
         float width = backgroundTransform.rect.width;
         minPosX = (-width) * mouseSettings.DeadZoneLimit + (width / 2) + 10;
         maxPosX = width * 0.5f + 10;
+    }
+    
+    public void ChangeArrowColor(Color color)
+    {
+        arrowImage.DOColor(color, 0.5f);
     }
 
     public void ChangeArrowPositionWithLerp(float x)

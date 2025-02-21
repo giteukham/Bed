@@ -25,6 +25,7 @@ public class MouseSensitiveUI : MonoBehaviour
     [Header("Mouse UI")]
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private TMP_InputField sensitivityValue;
+    [SerializeField] private Image sensitiveBar;
     //[SerializeField] private Image verticalSwitch;
     //[SerializeField] private Image horizontalSwitch;
     [SerializeField] private GameObject VerticalSwitch;
@@ -50,17 +51,13 @@ public class MouseSensitiveUI : MonoBehaviour
             { Arrow.Left, arrows[Arrow.Left].GetComponent<Image>() },
             { Arrow.Right, arrows[Arrow.Right].GetComponent<Image>() }
         };
-        //mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, horizontalSwitch);
-        //mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, verticalSwitch);
-
-        //mouseSettings.OnHorizontalReverse += (isReverse) => ToggleSwitch(isReverse, HorizontalSwitch);
-        //mouseSettings.OnVerticalReverse += (isReverse) => ToggleSwitch(isReverse, VerticalSwitch);
 
         mouseSettings.OnHorizontalReverse += ToggleHorizontalSwitch;
         mouseSettings.OnVerticalReverse += ToggleVerticalSwitch;
 
         sensitivitySlider.onValueChanged.AddListener(ChangeSensitive);
         sensitivityValue.onEndEdit.AddListener(ChangeSensitivityOnInputField);
+        sensitiveBar.OnDoubleClick(() => ChangeSensitive(1f));
         ChangeSensitive(mouseSettings.MouseSensitivity);
         
         //verticalSwitch.sprite = mouseSettings.IsVerticalReverse ? onImage : offImage;

@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using TMPro;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEditor;
@@ -19,13 +20,45 @@ public class MouseDeadZoneUI : MonoBehaviour
     [Header("Components")]
     [SerializeField] private MouseDeadZoneArrow mouseDeadZoneArrow;
 
+    [Header("Settings")]
+    [SerializeField]
+    private Color idleColor;
+    
+    [SerializeField]
+    private Color activeColor;
+
     private MouseSettings mouseSettings;
+    private MouseSettingsPreviewPlayer previewPlayer;
+    
+    private Image deadZoneAreaImage;
+
+    private void Awake()
+    {
+        deadZoneAreaImage = deadZoneAreaTransform.GetComponent<Image>();
+        deadZoneAreaImage.color = idleColor;
+    }
 
     private void OnEnable()
     {
-        mouseDeadZoneArrow.Init(backgroundTransform);
         mouseSettings = MouseSettings.Instance;
+        
+        mouseDeadZoneArrow.Init(backgroundTransform, idleColor);
         mouseDeadZoneArrow.OnArrowDrag += ChangeDeadZoneArea;
+        
+        previewPlayer = (MouseSettingsPreviewPlayer) MouseSettings.Instance.PreviewPlayer;
+        previewPlayer.OnDirectionStateChanged += types =>
+        {
+            if (types == PlayerDirectionStateTypes.Switching)
+            {
+                ChangeDeadZoneAreaColor(activeColor);
+                mouseDeadZoneArrow.ChangeArrowColor(activeColor);
+            }
+            else if (deadZoneAreaImage.color != idleColor)
+            {
+                ChangeDeadZoneAreaColor(idleColor);
+                mouseDeadZoneArrow.ChangeArrowColor(idleColor);
+            }
+        };
         
         deadZoneSlider.minValue = 0f;
         deadZoneSlider.maxValue = mouseSettings.DeadZoneLimit;
@@ -64,6 +97,11 @@ public class MouseDeadZoneUI : MonoBehaviour
         ChangeDeadZoneValue(newSliderValue);
         CalculateDeadZoneOffset(newSliderValue);
         mouseSettings.ChangeTurnAxisSpeed(newSliderValue);
+    }
+
+    private void ChangeDeadZoneAreaColor(Color color)
+    {
+        deadZoneAreaImage.DOColor(color, 0.5f);
     }
 
     /// <summary>
@@ -129,12 +167,11 @@ public class MouseDeadZoneUI : MonoBehaviour
     /// </summary>
     private async void ChangeBarPosition()
     {
-        float targetValue = 0f;
         Vector2 barPos = valueBarTransform.anchoredPosition;
         
         while (true)
         {
-            targetValue = Mathf.Abs(mouseSettings.MouseHorizontalSpeed) * ((backgroundTransform.rect.width - 5f) / mouseSettings.MouseAxisLimit);
+            var targetValue = Mathf.Abs(mouseSettings.MouseHorizontalSpeed) * ((backgroundTransform.rect.width - 5f) / mouseSettings.MouseAxisLimit);
 
             // 현재 슬라이더 값을 목표 값으로 부드럽게 보간합니다.
             barPos.x = Mathf.Lerp(valueBarTransform.anchoredPosition.x, targetValue, Time.deltaTime * 100f);

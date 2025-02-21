@@ -12,6 +12,8 @@ public class MouseSettingsPreviewPlayer : PlayerBase
     private PreviewPlayerDirectionStates previewPlayerDirectionStates;
     private PlayerDirectionControl playerDirectionControl;
     
+    public Action<PlayerDirectionStateTypes> OnDirectionStateChanged;
+    
     private Dictionary<PlayerDirectionStateTypes, IState> directionStates = new Dictionary<PlayerDirectionStateTypes, IState>()
     {
         { PlayerDirectionStateTypes.Left, new PreviewPlayerDirectionStates.LeftDirectionState() },
@@ -32,6 +34,7 @@ public class MouseSettingsPreviewPlayer : PlayerBase
     {
         playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
         playerAnimator.SetTrigger("To Middle");
+        OnDirectionStateChanged = null;
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -40,15 +43,19 @@ public class MouseSettingsPreviewPlayer : PlayerBase
         {   
             case "Left":
                 playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Left]);
+                OnDirectionStateChanged?.Invoke(PlayerDirectionStateTypes.Left);
                 break;
             case "Middle":
                 playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Middle]);
+                OnDirectionStateChanged?.Invoke(PlayerDirectionStateTypes.Middle);
                 break;
             case "Right":
                 playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Right]);
+                OnDirectionStateChanged?.Invoke(PlayerDirectionStateTypes.Right);
                 break;
             case "Switching":
                 playerDirectionStateMachine.ChangeState(directionStates[PlayerDirectionStateTypes.Switching]);
+                OnDirectionStateChanged?.Invoke(PlayerDirectionStateTypes.Switching);
                 break;
         }
     }
