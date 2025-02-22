@@ -4,10 +4,10 @@ using UnityEngine;
 public struct ResolutionData
 {
     public int width, height;
-    public float frameRate;
+    public int frameRate;
     public bool isWindowedScreen;
     
-    public ResolutionData(int width, int height, float frameRate, bool isWindowedScreen)
+    public ResolutionData(int width, int height, int frameRate, bool isWindowedScreen)
     {
         this.width = width;
         this.height = height;
@@ -17,6 +17,7 @@ public struct ResolutionData
     
     public bool Equals(ResolutionData other)
     {
-        return width == other.width && height == other.height && Mathf.Approximately(frameRate, other.frameRate) && isWindowedScreen == other.isWindowedScreen;
+        Debug.Log($"실제 값: {width}, {height}, {frameRate}, {isWindowedScreen}, 준비 값: {other.width}, {other.height}, {other.frameRate}, {other.isWindowedScreen}");
+        return width == other.width && height == other.height && frameRate == other.frameRate && isWindowedScreen == other.isWindowedScreen;
     }
 }

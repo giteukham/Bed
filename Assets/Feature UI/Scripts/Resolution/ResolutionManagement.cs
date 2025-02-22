@@ -1,19 +1,16 @@
-using PSXShaderKit;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 {
     [SerializeField] private Camera cam;
     [SerializeField] private TMP_Text previewText;
-    [SerializeField] private TMP_Text asteriskText;
     [SerializeField] private SwitchButton_Resolution fullScreenSwitch;
     [SerializeField] private TMP_InputField inputFieldWidth;
     [SerializeField] private TMP_InputField inputFieldHeight;
@@ -31,8 +28,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     [SerializeField] private Player player;
 
-    private ResolutionData savedData, readyData;
-
     bool isWindowedScreen = false;
     bool isWindowedScreenReady = false;
     int frameRate = 60;
@@ -44,6 +39,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     const float CRITERIA_NUM = 16f / 9f;
     //해상도 설정 제일 마지막에 사용된 오브젝트 저장하는 용도
     GameObject lastApplyObject;
+    ResolutionData savedData, readyData;
 
     List<Vector2> hdList = new List<Vector2>();
 
@@ -254,6 +250,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
         //ResizePreviewImage(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text), inside);
         ResizePreviewImage(nowWidthPixel, nowHeightPixel, inside);
+        
+        savedData = new ResolutionData(nowWidthPixel, nowHeightPixel, frameRate, isWindowedScreen);
+        readyData = new ResolutionData(nowWidthPixel, nowHeightPixel, frameRate, isWindowedScreen);
 
         insideWindow.OnRectTransformReSize.AddListener(RectSizeChangedHandler);
     }
@@ -321,12 +320,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             resolutiondropdown.AddOptions(temp);
             //드롭다운 새로고침
             resolutiondropdown.RefreshShownValue();
-            
 
             nowList = currentList;
-            
-            resolutiondropdown.value = 0;
-            resolutiondropdown.value = nowList.Count - 1;
         }
     }
 
@@ -340,16 +335,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         RescaleWindow(width, height);
 
-
         SaveManager.Instance.SaveResolution((int)width, (int)height);
         nowWidthPixel = (int)width;
         nowHeightPixel = (int)height;
         player.pixelationFactor = 0.25f / (nowWidthPixel / 1920f);
         SaveManager.Instance.SavePixelationFactor(player.pixelationFactor);
-        
-        savedData.width = (int)width;
-        savedData.height = (int)height;
-        asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
         yield break;
     }
 
@@ -437,8 +427,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)currentList[value].x, (int)currentList[value].y, inside);
-            inputFieldWidth.text = $"{(int)currentList[value].x}";
-            inputFieldHeight.text = $"{(int)currentList[value].y}";
+            UpdateResolutionText((int)currentList[value].x, (int)currentList[value].y);
+            // inputFieldWidth.text = $"{(int)currentList[value].x}";
+            // inputFieldHeight.text = $"{(int)currentList[value].y}";
             lastApplyObject = resolutiondropdown.gameObject;
         }
         //'창모드'이거나, '전체화면'이면서 기준값 1.77 '이상'일때 - hdResolutions
@@ -447,8 +438,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             //항상 아웃사이드 먼저 해줘야함
             ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
             ResizePreviewImage((int)hdList[value].x, (int)hdList[value].y, inside);
-            inputFieldWidth.text = $"{(int)hdList[value].x}";
-            inputFieldHeight.text = $"{(int)hdList[value].y}";
+            UpdateResolutionText((int)hdList[value].x, (int)hdList[value].y);
+            // inputFieldWidth.text = $"{(int)hdList[value].x}";
+            // inputFieldHeight.text = $"{(int)hdList[value].y}";
             lastApplyObject = resolutiondropdown.gameObject;
         }
     }
@@ -476,19 +468,21 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public void ReadyFullScreenSwitch()
     {
         IsWindowedScreenReady = !isWindowedScreenReady;
-        
         fullScreenSwitch.OnSwitchButtonClicked(isWindowedScreenReady);
 
         RedefineDropdown(isWindowedScreenReady);
 
         //변경할 드롭다운이 현재 드롭다운과 번호가 같을때 대비 0으로 바꿔준뒤 다른 인덱스 적용(제일 큰해상도로 변경)
-        // resolutiondropdown.value = 0;
-        // resolutiondropdown.value = nowList.Count - 1;
+        resolutiondropdown.value = 0;
+        resolutiondropdown.value = nowList.Count - 1;
 
         //드롭다운 표시값 비우기
         resolutiondropdown.captionText.text = "";
 
         lastApplyObject = resolutiondropdown.gameObject;
+        
+        readyData.isWindowedScreen = isWindowedScreenReady;
+        ToggleAsteriskOnPreviewText(!savedData.Equals(readyData));
     }
 
     //확인버튼 누를시 풀스크린 여부 적용
@@ -496,9 +490,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     {
         IsWindowedScreen = isWindowedScreenReady;
         SaveManager.Instance.SaveIsWindowedScreen(isWindowedScreen);
-        
-        savedData.isWindowedScreen = isWindowedScreen;
-        asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
     }
 
     //프레임 드롭다운 아이템 클릭시 호출됨(자동으로 본인 인덱스를 매개변수로 전달)
@@ -513,7 +504,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 frameRateReady = 60;
                 break;
         }
-        
         if (lastApplyObject == resolutiondropdown.gameObject)
         {
             previewText.text = $"{(int)nowList[resolutiondropdown.value].x} X {(int)nowList[resolutiondropdown.value].y}\n{frameRateReady}hz";
@@ -523,6 +513,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             string[] parts = previewText.text.Split('\n')[0].Split(" X ", StringSplitOptions.None);
             previewText.text = $"{parts[0].Trim()} X {parts[1].Trim()}\n{frameRateReady}hz";
         }
+        
+        readyData.frameRate = frameRateReady;
+        ToggleAsteriskOnPreviewText(!savedData.Equals(readyData));
     }
 
     //확인버튼 누를시 프레임 적용
@@ -532,9 +525,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = frameRate;
         SaveManager.Instance.SaveFrameRate(frameRate);
-        
-        savedData.frameRate = frameRate;
-        asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
     }
 
     //매개변수 0은 inputFieldWidth, 1은 inputFieldHeight
@@ -687,6 +677,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             ApplyInsideWindow();
         }
         ApplyFrameRate();
+
+        savedData = readyData;
+        ToggleAsteriskOnPreviewText(false);
     }
 
     //프리뷰 화면 사이즈 조정 메소드
@@ -716,17 +709,18 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 ratio1 = 1;
                 ratio2 = 1;
                 //rect 변화 없기 때문에 텍스트 내용, 크기 변경 직접 실행
-                previewText.text = $"{inputFieldWidth.text} X {inputFieldHeight.text}\n{frameRateReady}hz";
-                previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
-
-                inputFieldWidth.text = $"{inputFieldWidth.text}";
-                inputFieldHeight.text = $"{inputFieldHeight.text}";
             }
             else
             {
                 ratio1 = 1 / (Display.main.systemWidth / targetWidth);
                 ratio2 = 1 / (Display.main.systemHeight / targetHeight);
             }
+            
+            previewText.text = $"{inputFieldWidth.text} X {inputFieldHeight.text}\n{frameRateReady}hz";
+            previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+
+            inputFieldWidth.text = $"{inputFieldWidth.text}";
+            inputFieldHeight.text = $"{inputFieldHeight.text}";
         
             InsideSize = new Vector2(outside.rect.width * ratio1, outside.rect.height * ratio2);
             rect.anchoredPosition = Vector2.zero;
@@ -766,7 +760,26 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         inputFieldWidth.text = $"{width}";
         inputFieldHeight.text = $"{height}";
         
+        readyData.width = width;
+        readyData.height = height;
+        ToggleAsteriskOnPreviewText(!savedData.Equals(readyData));
+        
         //screenText.text = width + " " + height;
+    }
+
+    private void ToggleAsteriskOnPreviewText(bool isOn)
+    {
+        StringBuilder sb = new StringBuilder(previewText.text);
+        
+        if (isOn && !sb.ToString().Contains("*"))
+        {
+            sb.Replace("\n", "*\n");
+        }
+        else if (!isOn && sb.ToString().Contains("*"))
+        {
+            sb.Replace("*\n", "\n");
+        }
+        previewText.text = sb.ToString();
     }
     
     public Vector2Int ConvertSizeToResolution(Vector2 sizeDelta)
@@ -837,16 +850,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
     }
     
-    public void SubscribeToInsideSizeChangedEvent(UnityAction<RectTransform> action)
-    {
-        insideWindow.OnRectTransformReSize.AddListener(action);
-    }
-    
-    public void UnsubscribeFromInsideSizeChangedEvent(UnityAction<RectTransform> action)
-    {
-        insideWindow.OnRectTransformReSize.RemoveListener(action);
-    }
-    
     public Vector2Int GetLowestResolution() => new (Display.main.systemWidth / 4, Display.main.systemHeight / 4);
 
     //레터박스 완전 검은색으로 나오게 함
@@ -854,8 +857,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     public void InitResolutionSetting()
     {
-        asteriskText.gameObject.SetActive(false);
-        
         previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
         //저장된 풀스크린 여부 불러와서 isWindowedScreen 변수에 적용
         IsWindowedScreen = SaveManager.Instance.LoadIsWindowedScreen();
@@ -918,41 +919,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
 
         maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
-        
-        savedData = new ResolutionData(nowWidthPixel, nowHeightPixel, frameRate, isWindowedScreen);
-        readyData = savedData;
-        
-        inputFieldWidth.onValueChanged.AddListener((width) =>
-        {
-            readyData.width = int.Parse(width);
-            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
-        });
-        
-        inputFieldHeight.onValueChanged.AddListener((height) =>
-        {
-            readyData.height = int.Parse(height);
-            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
-        });
-        
-        frameRateDropdown.onValueChanged.AddListener((value) =>
-        {
-            switch (value)
-            {
-                case 0:
-                    readyData.frameRate = 30;
-                    break;
-                case 1:
-                    readyData.frameRate = 60;
-                    break;
-            }
-            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
-        });
-        
-        OnFullScreenSwitched.AddListener((value) =>
-        {
-            readyData.isWindowedScreen = value;
-            asteriskText.gameObject.SetActive(!savedData.Equals(readyData));
-        });
     }
 
 }
