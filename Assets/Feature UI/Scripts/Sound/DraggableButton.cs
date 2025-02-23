@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using FMODUnity;
-using Unity.VisualScripting;
+using System.Drawing;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using Image = UnityEngine.UI.Image;
+using Sequence = DG.Tweening.Sequence;
 
 public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
@@ -17,6 +18,12 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private GameObject testObjectInstance;
     private Transform testObjectParent;
     [SerializeField] private bool isInitalBatch = false; // 생성 되는 거라면 flase, 이미 배치된 것이라면 true
+
+
+    Sequence sequence;
+    [SerializeField] private Image soundWave;
+    [SerializeField] private float fadeDuration = 0.1f;
+    [SerializeField] private float scaleDuration = 0.2f;
 
     // 가로 : 아이콘 y == 오브젝트 x,
     // 세로 : 아이콘 x == 오브젝트 z 
@@ -88,7 +95,15 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
     public void GimmickSoundTest()
     {
+        if (sequence != null && sequence.IsPlaying()) sequence.Kill();
+        sequence = DOTween.Sequence();
+        soundWave.transform.localScale = Vector3.zero;
+
         AudioManager.Instance.PlayOneShot(AudioManager.Instance.handClap, testObjectInstance.transform.position);
+        sequence.Append(soundWave.DOFade(0.05f, fadeDuration));
+        sequence.Join(soundWave.transform.DOScale(new Vector3(1.3f, 1.3f, 1f), scaleDuration).SetLoops(1, LoopType.Incremental));
+        sequence.Append(soundWave.DOFade(0f, fadeDuration));
+        sequence.Play();
     }
 
     public void OnDestroy()

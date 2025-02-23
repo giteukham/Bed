@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class IconManagement : MonoBehaviour
 {
-    [SerializeField] private GameObject gimmickIcon, initGimmickIcon;
+    [SerializeField] private GameObject gimmickIcon;
+    [SerializeField] private List<GameObject> initGimmickIconList = new List<GameObject>(3);
     [SerializeField] private Transform parentTransform;
     //[SerializeField] private Transform playerHeadPosition, playerBodyPosition;
     //private EventReference[] playerHeadPositionSounds, playerBodyPositionSounds;
@@ -15,7 +16,10 @@ public class IconManagement : MonoBehaviour
 
     private void Start()
     {
-        gimmickIconList.Add(initGimmickIcon);
+        foreach(GameObject initGimmickIcon in initGimmickIconList)
+        {
+            gimmickIconList.Add(initGimmickIcon);
+        }
     }
 
     public void GimmickIconAdd()
@@ -37,7 +41,7 @@ public class IconManagement : MonoBehaviour
 
     public async void AllGimmickSoundTest()
     {
-        foreach (var gimmickIcon in gimmickIconList)
+        foreach (GameObject gimmickIcon in gimmickIconList)
         {
             gimmickIcon.GetComponent<DraggableButton>().GimmickSoundTest();
             int randomTime = Random.Range(0, 180);
