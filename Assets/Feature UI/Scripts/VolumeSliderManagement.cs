@@ -89,9 +89,6 @@ public class VolumeSliderManagement : MonoBehaviour
 
     private void SaveSettings()
     {
-        // PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
-        // PlayerPrefs.SetFloat("GimmickVolume", gimmickVolumeSlider.value);
-        // PlayerPrefs.SetFloat("PlayerVolume", playerVolumeSlider.value);
         SaveManager.Instance.SaveMasterVolume(masterVolumeSlider.value);
         SaveManager.Instance.SaveGimmickVolume(gimmickVolumeSlider.value);
         SaveManager.Instance.SavePlayerVolume(playerVolumeSlider.value);

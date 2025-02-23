@@ -159,7 +159,7 @@ public class SaveManager : MonoSingleton<SaveManager>
     
     public float LoadDeadZoneValue()
     {
-        return PlayerPrefs.GetFloat("DeadZoneValue", 0.1f);
+        return PlayerPrefs.GetFloat("DeadZoneValue", 0.25f);
     }
 
     public void SavePixelationFactor(float value)
