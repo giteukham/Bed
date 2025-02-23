@@ -32,7 +32,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     private float mouseMaxSpeed;                                                            // 마우스 최대 속도
     private float mouseHorizontalSpeed, mouseVerticalSpeed;                                     
     private bool  isVerticalReverse, isHorizontalReverse;                                   // false는 정상, true는 반전
-    private float deadZoneSliderValue;                                                      // 현재 Deadzone 영역의 값
+    private float deadZoneCurrentValue;                                                      // 현재 Deadzone 영역의 값
     
     #region Properties
     public PlayerBase Player => player;
@@ -47,7 +47,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     public bool IsVerticalReverse => isVerticalReverse;
     public bool IsHorizontalReverse => isHorizontalReverse;
     public float DeadZoneLimit => deadZoneLimit;
-    public float DeadZoneSliderValue => deadZoneSliderValue;
+    public float DeadZoneCurrentValue => deadZoneCurrentValue;
     #endregion
     
     public event Action<bool> OnVerticalReverse, OnHorizontalReverse;
@@ -92,8 +92,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;
         isVerticalReverse = SaveManager.Instance.LoadMouseVerticalReverse();
         isHorizontalReverse = SaveManager.Instance.LoadMouseHorizontalReverse();
-        deadZoneSliderValue = SaveManager.Instance.LoadDeadZoneValue() > deadZoneLimit ? deadZoneLimit : SaveManager.Instance.LoadDeadZoneValue();
-        ChangeTurnAxisSpeed(deadZoneSliderValue);
+        deadZoneCurrentValue = SaveManager.Instance.LoadDeadZoneValue() > deadZoneLimit ? deadZoneLimit : SaveManager.Instance.LoadDeadZoneValue();
+        ChangeTurnAxisSpeed(deadZoneCurrentValue);
     }
 
     public void InitCameraSettings(PlayerBase player)
@@ -163,10 +163,10 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         turnLeftSpeed = -value;
     }
     
-    public void ChangeDeadZoneSliderValue(float value)
+    public void ChangeDeadZoneCurrentValue(float value)
     {
-        deadZoneSliderValue = value;
-        SaveManager.Instance.SaveDeadZoneValue(deadZoneSliderValue);
+        deadZoneCurrentValue = value;
+        SaveManager.Instance.SaveDeadZoneValue(deadZoneCurrentValue);
     }
 
     public void ResetMouseSpeed()

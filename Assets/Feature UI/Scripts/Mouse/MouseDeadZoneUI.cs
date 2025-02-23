@@ -2,6 +2,8 @@
 using System;
 using System.Globalization;
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
+using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using TMPro;
 using Unity.VisualScripting.Dependencies.NCalc;
@@ -9,16 +11,23 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class MouseDeadZoneUI : MonoBehaviour
 {
-    [SerializeField] private RectTransform valueBarTransform, backgroundTransform, deadZoneAreaTransform;
-    [SerializeField] private TMP_InputField deadZoneInputField;
-    [SerializeField] private Slider deadZoneSlider;
-    
     [Header("Components")]
-    [SerializeField] private MouseDeadZoneArrow mouseDeadZoneArrow;
+    [SerializeField]
+    private Slider deadZoneSlider;
+    
+    [SerializeField] 
+    private RectTransform backgroundTransform, valueBarTransform;
+
+    [SerializeField]
+    private RectTransform fill;
+    
+    [SerializeField]
+    private RectTransform handle;
 
     [Header("Settings")]
     [SerializeField]
@@ -30,155 +39,82 @@ public class MouseDeadZoneUI : MonoBehaviour
     private MouseSettings mouseSettings;
     private MouseSettingsPreviewPlayer previewPlayer;
     
-    private Image deadZoneAreaImage;
+    private MouseDeadZoneHandle mouseDeadZoneHandle;
+    private MouseDeadZoneFill   mouseDeadZoneFill;
 
     private void Awake()
     {
-        deadZoneAreaImage = deadZoneAreaTransform.GetComponent<Image>();
-        deadZoneAreaImage.color = idleColor;
+        mouseDeadZoneHandle = handle.GetComponent<MouseDeadZoneHandle>();
+        mouseDeadZoneFill = fill.GetComponent<MouseDeadZoneFill>();
+    }
+
+    private void Update()
+    {
+        ChangeValueBarPosition();
     }
 
     private void OnEnable()
     {
         mouseSettings = MouseSettings.Instance;
         
-        mouseDeadZoneArrow.Init(backgroundTransform, idleColor);
-        mouseDeadZoneArrow.OnArrowDrag += ChangeDeadZoneArea;
+        mouseDeadZoneHandle.Init(idleColor);
+        mouseDeadZoneFill.ChangeFillColor(idleColor);
         
         previewPlayer = (MouseSettingsPreviewPlayer) MouseSettings.Instance.PreviewPlayer;
-        previewPlayer.OnDirectionStateChanged += types =>
-        {
-            if (types == PlayerDirectionStateTypes.Switching)
-            {
-                ChangeDeadZoneAreaColor(activeColor);
-                mouseDeadZoneArrow.ChangeArrowColor(activeColor);
-            }
-            else if (deadZoneAreaImage.color != idleColor)
-            {
-                ChangeDeadZoneAreaColor(idleColor);
-                mouseDeadZoneArrow.ChangeArrowColor(idleColor);
-            }
-        };
-        
-        deadZoneSlider.minValue = 0f;
-        deadZoneSlider.maxValue = mouseSettings.DeadZoneLimit;
-        deadZoneSlider.onValueChanged.AddListener(ChangeDeadZoneArea);
-        deadZoneInputField.onEndEdit.AddListener(ChangeDeadZoneValueOnInputField);
-        
-        ChangeDeadZoneValueOnInputField(mouseSettings.DeadZoneSliderValue.ToString(CultureInfo.CurrentCulture));
-        ChangeDeadZoneArea(mouseSettings.DeadZoneSliderValue);
-        ChangeBarPosition();
-        
-        float normalValue = Mathf.InverseLerp(0f, mouseSettings.DeadZoneLimit, mouseSettings.DeadZoneSliderValue);
-        mouseDeadZoneArrow.ChangeArrowPositionWithLerp(normalValue);
+        previewPlayer.OnDirectionStateChanged += ChangeFillColorDependingOnDirection;
+        deadZoneSlider.value = mouseSettings.DeadZoneCurrentValue;
+        deadZoneSlider.onValueChanged.AddListener(OnValueChanged);
     }
     
     private void OnDisable()
     {
-        mouseDeadZoneArrow.OnArrowDrag -= ChangeDeadZoneArea;
         deadZoneSlider.onValueChanged.RemoveAllListeners();
-        deadZoneInputField.onEndEdit.RemoveAllListeners();
-    }
-
-    private void OnValidate()
-    {
-        if (mouseSettings != null)
-        {
-            ChangeDeadZoneArea(deadZoneSlider.value);
-        }
+        previewPlayer.OnDirectionStateChanged -= ChangeFillColorDependingOnDirection;
     }
 
     /// <summary>
     /// DeadZone 이미지의 크기를 조절
     /// </summary>
     /// <param name="value">슬라이더 값 0 ~ DeadZoneLimit 까지</param>
-    private void ChangeDeadZoneArea(float newSliderValue)
+    private void OnValueChanged(float value)
     {
-        ChangeDeadZoneValue(newSliderValue);
-        CalculateDeadZoneOffset(newSliderValue);
-        mouseSettings.ChangeTurnAxisSpeed(newSliderValue);
+        ChangeDeadZoneCurrentValue(value);
+        mouseSettings.ChangeTurnAxisSpeed(value);
     }
 
-    private void ChangeDeadZoneAreaColor(Color color)
+    private void ChangeFillColorDependingOnDirection(PlayerDirectionStateTypes types)
     {
-        deadZoneAreaImage.DOColor(color, 0.2f);
+        if (types == PlayerDirectionStateTypes.Switching)
+        {
+            mouseDeadZoneFill.ChangeFillColor(activeColor);
+            mouseDeadZoneHandle.ChangeHandleColor(activeColor);
+        }
+        else if (mouseDeadZoneFill.FillImage.color != idleColor)
+        {
+            mouseDeadZoneFill.ChangeFillColor(idleColor);
+            mouseDeadZoneHandle.ChangeHandleColor(idleColor);
+        }
     }
 
     /// <summary>
     /// 슬라이더의 값을 변경
     /// </summary>
-    /// <param name="newSliderValue"></param>
-    private void ChangeDeadZoneValue(float newSliderValue)
+    /// <param name="value"></param>
+    private void ChangeDeadZoneCurrentValue(float value)
     {
-        mouseSettings.ChangeDeadZoneSliderValue(newSliderValue);
-        deadZoneSlider.value = newSliderValue;
-        deadZoneInputField.text = (Mathf.Floor(newSliderValue * 100f) / 100f).ToString(CultureInfo.CurrentCulture);
+        mouseSettings.ChangeDeadZoneCurrentValue(value);
+        deadZoneSlider.value = Mathf.Clamp(value, 0f, mouseSettings.DeadZoneLimit);
     }
     
-    /// <summary>
-    /// DeadZone 이미지의 Left 값을 계산
-    /// </summary>
-    /// <param name="newSliderValue"></param>
-    private void CalculateDeadZoneOffset(float newSliderValue)
+    private void ChangeValueBarPosition()
     {
-        float normalValue = Mathf.InverseLerp(0f, mouseSettings.DeadZoneLimit, newSliderValue);
-        float deadZoneSpriteOffset = Mathf.Lerp(1f, -(backgroundTransform.rect.width - 5f) * mouseSettings.DeadZoneLimit, normalValue);
-        ChangeDeadZoneOffset(deadZoneSpriteOffset);
-    }
+        var barPos = valueBarTransform.anchoredPosition;
+        var targetValue = Mathf.Abs(mouseSettings.MouseHorizontalSpeed) * ((backgroundTransform.rect.width - 5f) / mouseSettings.MouseAxisLimit);
 
-    private void ChangeDeadZoneOffset(float offset)
-    {
-        deadZoneAreaTransform.localScale = new Vector3(offset, deadZoneAreaTransform.localScale.y, deadZoneAreaTransform.localScale.z);;
-        //deadZoneAreaTransform.offsetMin = new Vector2(offset, deadZoneAreaTransform.offsetMin.y);
+        // 현재 슬라이더 값을 목표 값으로 부드럽게 보간합니다.
+        barPos.x = Mathf.Lerp(valueBarTransform.anchoredPosition.x, targetValue, Time.deltaTime * 100f);
+        barPos.x = Mathf.Floor(barPos.x * 1000f) * 0.001f;
+        valueBarTransform.anchoredPosition = barPos;
     }
     
-    private void ChangeDeadZoneValueOnInputField(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            deadZoneInputField.text = "0";
-            return;
-        }
-
-        if (float.TryParse(value, out float result))
-        {
-            if (result < 0f)
-            {
-                deadZoneInputField.text = "0";
-                return;
-            }
-
-            if (result > mouseSettings.MouseAxisLimit)
-            {
-                deadZoneInputField.text = mouseSettings.MouseAxisLimit.ToString(CultureInfo.CurrentCulture);
-                return;
-            }
-
-            ChangeDeadZoneValue(result);
-        }
-        else
-        {
-            deadZoneInputField.text = "0";
-        }
-    }
-    
-    /// <summary>
-    /// OnEnable에서 호출하면 자동으로 Update에서 실행
-    /// </summary>
-    private async void ChangeBarPosition()
-    {
-        Vector2 barPos = valueBarTransform.anchoredPosition;
-        
-        while (true)
-        {
-            var targetValue = Mathf.Abs(mouseSettings.MouseHorizontalSpeed) * ((backgroundTransform.rect.width - 5f) / mouseSettings.MouseAxisLimit);
-
-            // 현재 슬라이더 값을 목표 값으로 부드럽게 보간합니다.
-            barPos.x = Mathf.Lerp(valueBarTransform.anchoredPosition.x, targetValue, Time.deltaTime * 100f);
-            barPos.x = Mathf.Floor(barPos.x * 1000f) * 0.001f;
-            valueBarTransform.anchoredPosition = barPos;
-
-            await UniTask.Yield(PlayerLoopTiming.Update);
-        }
-    }
 }
