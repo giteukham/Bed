@@ -115,15 +115,9 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public int PreviewMaxLength => previewMaxLength;
     #endregion
 
-    private void OnInputFieldChanged(string newText)
-    {
-        Debug.Log($"[{Time.frameCount}] inputFieldWidth.text가 변경됨: {newText}");
-        Debug.Log($"스택 트레이스: {System.Environment.StackTrace}");
-    }
-
     private void Awake()
     {
-        inputFieldWidth.onValueChanged.AddListener(OnInputFieldChanged);
+
     }
 
     private void OnEnable()
@@ -756,9 +750,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
     public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution)
     {
+        print($"리솔루션 : {resolution.x} {resolution.y}");
         //16 : 9보다 비율이 클때
         if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight)
         {
+            //print($"통과 : {Display.main.systemWidth} : {Display.main.systemHeight}");
             //resolution에 최대해상도에서 가장가까운 16:9 비율의 값 넣어야 함
             //가로가 세로보다 긴 정상적인 모니터의 경우
             if (Display.main.systemWidth >= Display.main.systemHeight)
@@ -883,7 +879,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
         }
 
-        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight / 9f * 16), (int) Display.main.systemHeight));
+        //maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight / 9f * 16), (int) Display.main.systemHeight));
+        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight * ((float)Display.main.systemWidth / Display.main.systemHeight)), (int) Display.main.systemHeight));
     }
 
 }
