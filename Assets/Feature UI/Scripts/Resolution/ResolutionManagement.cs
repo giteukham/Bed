@@ -124,68 +124,6 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     private void Awake()
     {
         inputFieldWidth.onValueChanged.AddListener(OnInputFieldChanged);
-        /*previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
-        //저장된 풀스크린 여부 불러와서 isWindowedScreen 변수에 적용
-        IsWindowedScreen = SaveManager.Instance.LoadIsWindowedScreen();
-
-        //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
-        SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
-        Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel));
-        insideWindow.SaveOffsets(offsets[0], offsets[1]);
-
-        switch (SaveManager.Instance.LoadLastApplyObject())
-        {
-            case 0:
-                lastApplyObject = resolutiondropdown.gameObject;
-                break;
-            case 1:
-                lastApplyObject = inputFieldWidth.gameObject;
-                break;
-            case 2:
-                lastApplyObject = inputFieldHeight.gameObject;
-                break;
-            case 3:
-                lastApplyObject = insideWindow.gameObject;
-                break;
-        }
-
-        //저장된 프레임 레이트 적용
-        frameRateReady = SaveManager.Instance.LoadFrameRate();
-
-        BlinkEffect.StartPoint = SaveManager.Instance.LoadStartPoint();
-
-        hdList.Clear();
-        currentList.Clear();
-
-        //모니터 해상도에 맞는 currentList 추가
-        float widthNum = (Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f;
-        float heightNum = (Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f;
-
-        for (int i = 9; i >= 0; i--)
-        {
-            currentList.Add(new Vector2((int)Math.Round(Display.main.systemWidth - widthNum * i), (int)Math.Round(Display.main.systemHeight - heightNum * i)));
-        }
-
-        if ((float)Display.main.systemWidth / Display.main.systemHeight > 16f / 9f)
-        {
-            widthNum = Display.main.systemHeight / 9f * 16;
-            heightNum = Display.main.systemHeight;
-        }
-        else if ((float)Display.main.systemWidth / Display.main.systemHeight <= 16f / 9f)
-        {
-            widthNum = Display.main.systemWidth;
-            heightNum = Display.main.systemWidth / 16f * 9;
-        }
-
-        float num1 = (widthNum - widthNum / 4f) / 9f;
-        float num2 = (heightNum - heightNum / 4f) / 9f;
-
-        for (int i = 9; i >= 0; i--)
-        {
-            hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
-        }
-
-        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));*/
     }
 
     private void OnEnable()
@@ -555,7 +493,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 {
                     maxNum = Display.main.systemWidth;
                     minNum = Display.main.systemWidth / 4;
-                    ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
+                    ratio = (float)Display.main.systemWidth / Display.main.systemHeight > CRITERIA_NUM ? CRITERIA_NUM : (float)Display.main.systemWidth / Display.main.systemHeight;
                 }
                 else if (isWindowedScreenReady == true)
                 {
@@ -594,7 +532,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 {
                     maxNum = Display.main.systemHeight;
                     minNum = Display.main.systemHeight / 4;
-                    ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
+                    ratio = (float)Display.main.systemWidth / Display.main.systemHeight > CRITERIA_NUM ? CRITERIA_NUM : (float)Display.main.systemWidth / Display.main.systemHeight;
+
                 }
                 else if (isWindowedScreenReady == true)
                 {
@@ -817,6 +756,19 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
     public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution)
     {
+        //16 : 9보다 비율이 클때
+        if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight)
+        {
+            //resolution에 최대해상도에서 가장가까운 16:9 비율의 값 넣어야 함
+            //가로가 세로보다 긴 정상적인 모니터의 경우
+            if (Display.main.systemWidth >= Display.main.systemHeight)
+            {
+                float num = Display.main.systemHeight * CRITERIA_NUM;
+                resolution.x = (int)num;
+                resolution.y = Display.main.systemHeight;
+            }
+            
+        }
         Vector2 size = ConvertResolutionToSize(resolution);
         
         Vector2 offsetMin = new Vector2(-size.x / 2, -size.y / 2);
