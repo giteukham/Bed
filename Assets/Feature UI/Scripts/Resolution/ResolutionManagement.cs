@@ -616,6 +616,8 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             }
         }
 
+        if (widthNum == readyData.width || heightNum == readyData.height) return;
+
         ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
         ResizePreviewImage(widthNum, heightNum, inside);
         previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
