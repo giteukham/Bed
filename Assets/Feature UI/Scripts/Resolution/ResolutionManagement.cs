@@ -931,7 +931,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
             hdList.Add(new Vector2((int)Math.Round(widthNum - num1 * i), (int)Math.Round(heightNum - num2 * i)));
         }
 
-        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
+        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight / 9f * 16), (int) Display.main.systemHeight));
     }
 
 }
