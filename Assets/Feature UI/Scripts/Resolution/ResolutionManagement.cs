@@ -115,8 +115,15 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     public int PreviewMaxLength => previewMaxLength;
     #endregion
 
+    private void OnInputFieldChanged(string newText)
+    {
+        Debug.Log($"[{Time.frameCount}] inputFieldWidth.text가 변경됨: {newText}");
+        Debug.Log($"스택 트레이스: {System.Environment.StackTrace}");
+    }
+
     private void Awake()
     {
+        inputFieldWidth.onValueChanged.AddListener(OnInputFieldChanged);
         /*previewFontRatio = (previewMaxLength - 100) / previewText.fontSize;
         //저장된 풀스크린 여부 불러와서 isWindowedScreen 변수에 적용
         IsWindowedScreen = SaveManager.Instance.LoadIsWindowedScreen();
@@ -744,6 +751,10 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <param name="rect"></param>
     private void RectSizeChangedHandler(RectTransform rect)
     {
+        if (isWindowedScreenReady == false)
+        {
+            return;
+        }
         Vector2Int resolution = ConvertSizeToResolution(rect.sizeDelta);
         UpdateResolutionText(resolution.x, resolution.y);
         lastApplyObject = insideWindow.gameObject;
