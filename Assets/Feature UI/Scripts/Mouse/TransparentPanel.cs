@@ -1,6 +1,7 @@
 
 using System;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -22,7 +23,12 @@ public class TransparentPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
         mouseLeftClickIcon.DOFade(0.5f, 0f);
     }
-    
+
+    private void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.None;
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
