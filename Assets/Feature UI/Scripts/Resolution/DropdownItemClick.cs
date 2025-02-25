@@ -23,7 +23,7 @@ public class DropdownItemClick : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log($"드롭다운 클릭! : {resolutionDropdown.value} : {dropdownValue}");
+        //Debug.Log($"드롭다운 클릭! : {resolutionDropdown.value} : {dropdownValue}");
 
         if (dropdownValue == resolutionDropdown.value)
         {

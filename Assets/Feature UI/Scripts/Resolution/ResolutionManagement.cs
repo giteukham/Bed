@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 {
@@ -117,7 +118,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
     private void Awake()
     {
-
+        
     }
 
     private void OnEnable()
@@ -774,11 +775,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <returns>Index 0은 OffsetMin, 1은 OffsetMax</returns>
-    public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution)
+    public Vector2[] ConvertResolutionToOffsets(Vector2Int resolution, bool flag)
     {
         print($"리솔루션 : {resolution.x} {resolution.y}");
-        //16 : 9보다 비율이 클때
-        if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight)
+        //16 : 9보다 비율이 클때 && flag가 true일때만 if문 적용
+        if (CRITERIA_NUM < (float)Display.main.systemWidth / Display.main.systemHeight && flag)
         {
             //print($"통과 : {Display.main.systemWidth} : {Display.main.systemHeight}");
             //resolution에 최대해상도에서 가장가까운 16:9 비율의 값 넣어야 함
@@ -855,7 +856,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
         SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
-        Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel));
+        Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel), true);
         insideWindow.SaveOffsets(offsets[0], offsets[1]);
 
         switch (SaveManager.Instance.LoadLastApplyObject())
@@ -911,7 +912,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
 
         //maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight / 9f * 16), (int) Display.main.systemHeight));
-        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight * ((float)Display.main.systemWidth / Display.main.systemHeight)), (int) Display.main.systemHeight));
+        maxResolutionToOffsets = ConvertResolutionToOffsets(new Vector2Int((int) (Display.main.systemHeight * ((float)Display.main.systemWidth / Display.main.systemHeight)), (int) Display.main.systemHeight), true);
     }
 
 }

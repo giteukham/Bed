@@ -95,7 +95,7 @@ public class InsideWindow : MonoBehaviour, IDragHandler, IPointerClickHandler
         resolutionManager = ResolutionManagement.Instance;
         insideRect = resolutionManager.InsideRectTransform;
         
-        Vector2[] offsets = resolutionManager.ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
+        Vector2[] offsets = resolutionManager.ConvertResolutionToOffsets(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight), false);
         insideBoundary.offsetMin = offsets[0];
         insideBoundary.offsetMax = offsets[1];
         
