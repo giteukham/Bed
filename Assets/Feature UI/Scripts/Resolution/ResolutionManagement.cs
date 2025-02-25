@@ -485,17 +485,32 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 //전체화면 여부에 따라서 최대값 숫자 정함
                 if (isWindowedScreenReady == false)
                 {
-                    maxNum = Display.main.systemWidth;
-                    minNum = Display.main.systemWidth / 4;
+                    //16:9보다 큰 비율을 가지고 있으면 강제로 비율 16:9로 만듦
                     ratio = (float)Display.main.systemWidth / Display.main.systemHeight > CRITERIA_NUM ? CRITERIA_NUM : (float)Display.main.systemWidth / Display.main.systemHeight;
+                    //16:9의 비율을 가지고 있다면 실행
+                    if (ratio == CRITERIA_NUM)
+                    {
+                        int tempHeight = (int)(Display.main.systemWidth * 9 / 16.0f);
+                        int tempWidth = (int)(Display.main.systemHeight * 16 / 9.0f);
+                        //16:9에 맞춰 구한 높이가 실제 모니터보다 높은지 검사
+                        maxNum = tempHeight > Display.main.systemHeight ? tempWidth : Display.main.systemWidth;
+                    }
+                    //16:9 비율보다 작을때
+                    else
+                    {
+                        maxNum = Display.main.systemWidth;
+                    }
+                    //maxNum = ratio != CRITERIA_NUM ? (int)(Display.main.systemHeight * CRITERIA_NUM) : Display.main.systemWidth;
+                    minNum = Display.main.systemWidth / 4;
+                    print($"결과 :{(float)Display.main.systemWidth / Display.main.systemHeight} : {ratio}");
                 }
                 else if (isWindowedScreenReady == true)
                 {
                     //maxNum = 1920;
                     //minNum = 1920 / 4;
+                    ratio = CRITERIA_NUM;
                     maxNum = (int)hdList[hdList.Count - 1].x;
                     minNum = (int)hdList[hdList.Count - 1].x / 4;
-                    ratio = CRITERIA_NUM;
                 }
 
                 //입력값이 최소값 최대값 넘지 않게 조정
@@ -524,19 +539,30 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                 //전체화면 여부에 따라서 최대값 숫자 정함
                 if (isWindowedScreenReady == false)
                 {
-                    maxNum = Display.main.systemHeight;
-                    minNum = Display.main.systemHeight / 4;
                     ratio = (float)Display.main.systemWidth / Display.main.systemHeight > CRITERIA_NUM ? CRITERIA_NUM : (float)Display.main.systemWidth / Display.main.systemHeight;
+                    //16:9의 비율을 가지고 있다면 실행
+                    if (ratio == CRITERIA_NUM)
+                    {
+                        int tempHeight = (int)(Display.main.systemWidth * 9 / 16.0f);
+                        int tempWidth = (int)(Display.main.systemHeight * 16 / 9.0f);
+                        //16:9에 맞춰 구한 너비가 실제 모니터보다 넓은지 검사
+                        maxNum = tempWidth > Display.main.systemWidth ? tempHeight : Display.main.systemHeight;
+                    }
+                    //16:9 비율보다 작을때
+                    else
+                    {
+                        maxNum = Display.main.systemHeight;
+                    }
+                    minNum = Display.main.systemHeight / 4;
 
                 }
                 else if (isWindowedScreenReady == true)
                 {
                     //maxNum = 1080;
                     //minNum = 1080 / 4;
+                    ratio = CRITERIA_NUM;
                     maxNum = (int)hdList[hdList.Count - 1].y;
                     minNum = (int)hdList[hdList.Count - 1].y / 4;
-
-                    ratio = CRITERIA_NUM;
                 }
 
                 //입력값이 최소값 최대값 넘지 않게 조정
@@ -756,11 +782,16 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         {
             //print($"통과 : {Display.main.systemWidth} : {Display.main.systemHeight}");
             //resolution에 최대해상도에서 가장가까운 16:9 비율의 값 넣어야 함
-            //가로가 세로보다 긴 정상적인 모니터의 경우
+            //가로가 세로보다 긴 정상적인 모니터의 경우(어차피 세로가 더 긴 모니터들은 비율이 16:9보다 낮아서 신경안써도 됨)
             if (Display.main.systemWidth >= Display.main.systemHeight)
             {
-                float num = Display.main.systemHeight * CRITERIA_NUM;
-                resolution.x = (int)num;
+                float tempHeight = Display.main.systemWidth * 9 / 16.0f;
+                float tempWidth = Display.main.systemHeight * CRITERIA_NUM;
+                //16:9에 맞춰 구한 높이가 실제 모니터보다 높은지 검사
+                resolution.x = tempHeight > Display.main.systemHeight ? (int)tempWidth : Display.main.systemWidth;
+                resolution.y = resolution.x == tempWidth ? Display.main.systemHeight : (int)tempHeight;
+
+                //resolution.x = (int)tempWidth;
                 resolution.y = Display.main.systemHeight;
             }
             
