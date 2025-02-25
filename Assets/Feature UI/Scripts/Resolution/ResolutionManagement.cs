@@ -495,14 +495,15 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         int tempWidth = (int)(Display.main.systemHeight * 16 / 9.0f);
                         //16:9에 맞춰 구한 높이가 실제 모니터보다 높은지 검사
                         maxNum = tempHeight > Display.main.systemHeight ? tempWidth : Display.main.systemWidth;
+                        minNum = maxNum / 4;
                     }
                     //16:9 비율보다 작을때
                     else
                     {
                         maxNum = Display.main.systemWidth;
+                        minNum = Display.main.systemWidth / 4;
                     }
                     //maxNum = ratio != CRITERIA_NUM ? (int)(Display.main.systemHeight * CRITERIA_NUM) : Display.main.systemWidth;
-                    minNum = Display.main.systemWidth / 4;
                     print($"결과 :{(float)Display.main.systemWidth / Display.main.systemHeight} : {ratio}");
                 }
                 else if (isWindowedScreenReady == true)
@@ -548,13 +549,14 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
                         int tempWidth = (int)(Display.main.systemHeight * 16 / 9.0f);
                         //16:9에 맞춰 구한 너비가 실제 모니터보다 넓은지 검사
                         maxNum = tempWidth > Display.main.systemWidth ? tempHeight : Display.main.systemHeight;
+                        minNum = maxNum / 4;
                     }
                     //16:9 비율보다 작을때
                     else
                     {
                         maxNum = Display.main.systemHeight;
+                        minNum = Display.main.systemHeight / 4;
                     }
-                    minNum = Display.main.systemHeight / 4;
 
                 }
                 else if (isWindowedScreenReady == true)
@@ -587,8 +589,12 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         ResizePreviewImage(Display.main.systemWidth, Display.main.systemHeight, outside);
         ResizePreviewImage(widthNum, heightNum, inside);
-        previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
-        previewText.text = $"{widthNum} X {heightNum}\n{frameRateReady}hz";
+        //previewText.fontSize = (inside.rect.width - 100) / previewFontRatio;
+        //previewText.text = $"{widthNum} X {heightNum}\n{frameRateReady}hz";
+        readyData.width = widthNum;
+        readyData.height = heightNum;
+        UpdateResolutionText(widthNum, heightNum);
+        //ToggleAsteriskOnPreviewText(!savedData.Equals(readyData));
     }
 
     public void ApplyInputField()
