@@ -1,31 +1,32 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ResolutionSettingsData : INotifyPropertyChanged
 {
-    private int resolutionX;
-    private int resolutionY;
+    private int resolutionWidth;
+    private int resolutionHeight;
     private int frameRate;
     private bool isWindowed;
 
-    public int ResolutionX
+    public int ResolutionWidth
     {
-        get => resolutionX;
+        get => resolutionWidth;
         set
         {
-            resolutionX = value;
-            OnPropertyChanged(nameof(ResolutionX));
+            resolutionWidth = value;
+            OnPropertyChanged(nameof(ResolutionWidth));
         }
     }
 
-    public int ResolutionY
+    public int ResolutionHeight
     {
-        get => resolutionY;
+        get => resolutionHeight;
         set
         {
-            resolutionY = value;
-            OnPropertyChanged(nameof(ResolutionY));
+            resolutionHeight = value;
+            OnPropertyChanged(nameof(ResolutionHeight));
         }
     }
     
@@ -62,10 +63,10 @@ public class ResolutionSettings : MonoBehaviour
     private ResolutionSettingsData resolutionData;
     
     [SerializeField]
-    private ResolutionControl resolutionControl;
+    private ResolutionSettingsPanel resolutionSettingsPanel;
     
     [SerializeField]
-    private ResolutionPreview resolutionPreview;
+    private ResolutionPreviewPanel resolutionPreviewPanel;
 
     private void Awake()
     {
@@ -73,8 +74,8 @@ public class ResolutionSettings : MonoBehaviour
         
         resolutionData = new ResolutionSettingsData()
         {
-            ResolutionX = resolutionX,
-            ResolutionY = resolutionY,
+            ResolutionWidth = resolutionX,
+            ResolutionHeight = resolutionY,
             FrameRate = SaveManager.Instance.LoadFrameRate(),
             IsWindowed = SaveManager.Instance.LoadIsWindowedScreen()
         };
@@ -82,21 +83,8 @@ public class ResolutionSettings : MonoBehaviour
 
     private void OnEnable()
     {
-        resolutionData.PropertyChanged += OnDataPropertyChanged;
-        resolutionControl.Initialize(resolutionData);
-        resolutionPreview.Initialize(resolutionData);
+        resolutionSettingsPanel.Initialize(resolutionData);
+        resolutionPreviewPanel.Initialize(resolutionData);
     }
     
-    private void OnDisable()
-    {
-        resolutionData.PropertyChanged -= OnDataPropertyChanged;
-    }
-
-    private void OnDataPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == "ResolutionX")
-        {
-            Debug.Log("ResolutionX Changed");
-        }
-    }
 }

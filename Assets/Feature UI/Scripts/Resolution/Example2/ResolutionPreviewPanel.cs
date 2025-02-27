@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-public class ResolutionPreview : MonoBehaviour
+public class ResolutionPreviewPanel : MonoBehaviour
 {
     [SerializeField]
     private ResolutionInside resolutionInside;
