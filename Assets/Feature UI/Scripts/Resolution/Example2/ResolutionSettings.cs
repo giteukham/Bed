@@ -15,8 +15,9 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         get => resolutionWidth;
         set
         {
+            if (resolutionWidth == value) return;
             resolutionWidth = value;
-            OnPropertyChanged(nameof(ResolutionWidth));
+            OnPropertyChanged();
         }
     }
 
@@ -25,8 +26,9 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         get => resolutionHeight;
         set
         {
+            if (resolutionHeight == value) return;
             resolutionHeight = value;
-            OnPropertyChanged(nameof(ResolutionHeight));
+            OnPropertyChanged();
         }
     }
     
@@ -35,8 +37,9 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         get => frameRate;
         set
         {
+            if (frameRate == value) return;
             frameRate = value;
-            OnPropertyChanged(nameof(FrameRate));
+            OnPropertyChanged();
         }
     }
     
@@ -45,8 +48,9 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         get => isWindowed;
         set
         {
+            if (isWindowed == value) return;
             isWindowed = value;
-            OnPropertyChanged(nameof(IsWindowed));
+            OnPropertyChanged();
         }
     }
 
@@ -70,14 +74,15 @@ public class ResolutionSettings : MonoBehaviour
 
     private void Awake()
     {
-        SaveManager.Instance.LoadResolution(out var resolutionX, out var resolutionY);
+        SaveManager saveMnaager = SaveManager.Instance;
+        saveMnaager.LoadResolution(out var resolutionX, out var resolutionY);
         
         resolutionData = new ResolutionSettingsData()
         {
             ResolutionWidth = resolutionX,
             ResolutionHeight = resolutionY,
-            FrameRate = SaveManager.Instance.LoadFrameRate(),
-            IsWindowed = SaveManager.Instance.LoadIsWindowedScreen()
+            FrameRate = saveMnaager.LoadFrameRate(),
+            IsWindowed = saveMnaager.LoadIsWindowedScreen()
         };
     }
 

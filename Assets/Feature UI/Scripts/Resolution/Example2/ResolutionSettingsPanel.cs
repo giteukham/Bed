@@ -87,10 +87,4 @@ public class ResolutionSettingsPanel : MonoBehaviour
             Debug.Log("IsWindowed: " + resolutionData.IsWindowed);
         }
     }
-    
-    private void OnDestroy()
-    {
-        resolutionData.PropertyChanged -= OnPropertyChanged;
-    }
-    
 }
