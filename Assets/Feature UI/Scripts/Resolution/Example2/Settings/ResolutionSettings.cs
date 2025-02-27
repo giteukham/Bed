@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -5,11 +6,12 @@ using UnityEngine.Serialization;
 
 public class ResolutionSettingsData : INotifyPropertyChanged
 {
-    private int resolutionWidth;
-    private int resolutionHeight;
-    private int frameRate;
-    private bool isWindowed;
-
+    private int resolutionWidth = 1920;
+    private int resolutionHeight = 1080;
+    private int frameRate = 60;
+    private bool isWindowed = false;
+    private float screenBrightness = 0f;
+    
     public int ResolutionWidth
     {
         get => resolutionWidth;
@@ -53,6 +55,26 @@ public class ResolutionSettingsData : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    public float ScreenBrightness
+    {
+        get => screenBrightness;
+        set
+        {
+            if (Mathf.Approximately(screenBrightness, value)) return;
+            screenBrightness = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public void ChangeData(ResolutionSettingsData data)
+    {
+        ResolutionWidth = data.ResolutionWidth;
+        ResolutionHeight = data.ResolutionHeight;
+        FrameRate = data.FrameRate;
+        IsWindowed = data.IsWindowed;
+        ScreenBrightness = data.ScreenBrightness;
+    }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -64,45 +86,47 @@ public class ResolutionSettingsData : INotifyPropertyChanged
 
 public class ResolutionSettings : MonoBehaviour
 {
-    public static ResolutionSettingsData backupData;
-    private ResolutionSettingsData resolutionData;
-    
     [SerializeField]
     private ResolutionSettingsPanel resolutionSettingsPanel;
     
     [SerializeField]
     private ResolutionPreviewPanel resolutionPreviewPanel;
+    
+    private ResolutionSettingsData backupData, previewData;
+    
+    public ResolutionSettingsData PreviewData => previewData;
+    public ResolutionSettingsData BackupData => backupData;
+    
+    private readonly string path = "Menu UI/Resolution Settings Screen/";
 
     public void InitResolutionSettings() // UIManager.Awake()에서 호출
     {
+        previewData = SaveManager.Instance.LoadResolutionSettings();
         backupData = SaveManager.Instance.LoadResolutionSettings();
+        Debug.Log(backupData.ScreenBrightness);
+        
+        resolutionSettingsPanel?.Initialize(previewData);
+        resolutionPreviewPanel?.Initialize(previewData);
+        
         Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
         Application.targetFrameRate = backupData.FrameRate; 
         if (QualitySettings.vSyncCount != 1) QualitySettings.vSyncCount = 1;
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
+        resolutionSettingsPanel?.ApplyBrightness(backupData.ScreenBrightness);
     }
 
     private void OnEnable()
     {
-        resolutionData = new ResolutionSettingsData()
-        {
-            ResolutionWidth = backupData.ResolutionWidth,
-            ResolutionHeight = backupData.ResolutionHeight,
-            FrameRate = backupData.FrameRate,
-            IsWindowed = backupData.IsWindowed
-        };
-
-        backupData.ResolutionWidth = resolutionData.ResolutionWidth;
-        backupData.ResolutionHeight = resolutionData.ResolutionHeight;
-        backupData.FrameRate = resolutionData.FrameRate;
-        backupData.IsWindowed = resolutionData.IsWindowed;
-
-        resolutionSettingsPanel.Initialize(resolutionData);
-        resolutionPreviewPanel.Initialize(resolutionData);
+        previewData.ChangeData(backupData);
     }
 
-    private void OnDisable()
+    public void ApplyResolutionSettings() // ApplyButton 오브젝트에 할당
     {
-        resolutionData = null;
+        backupData.ChangeData(previewData);
+        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
+        Application.targetFrameRate = backupData.FrameRate;
+        PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
+        resolutionSettingsPanel.ApplyBrightness(backupData.ScreenBrightness);
+        SaveManager.Instance.SaveResolutionSettings(backupData); // 해상도 설정 저장
     }
 }

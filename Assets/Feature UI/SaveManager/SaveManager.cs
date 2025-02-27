@@ -204,6 +204,7 @@ public class SaveManager : MonoSingleton<SaveManager>
         PlayerPrefs.SetInt("ResolutionHeight", data.ResolutionHeight);
         PlayerPrefs.SetInt("FrameRate", data.FrameRate);
         PlayerPrefs.SetInt("IsWindowed", data.IsWindowed ? 1 : 0);
+        PlayerPrefs.SetFloat("ScreenBrightness", data.ScreenBrightness);
         PlayerPrefs.Save();
     }
 
@@ -214,7 +215,8 @@ public class SaveManager : MonoSingleton<SaveManager>
             ResolutionWidth = PlayerPrefs.GetInt("ResolutionWidth", Screen.currentResolution.width),
             ResolutionHeight = PlayerPrefs.GetInt("ResolutionHeight", Screen.currentResolution.height),
             FrameRate = PlayerPrefs.GetInt("FrameRate", 60),
-            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 1
+            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 1,
+            ScreenBrightness = PlayerPrefs.GetFloat("ScreenBrightness", 0f)
         };
         return data;
     }
