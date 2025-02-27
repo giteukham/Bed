@@ -71,7 +71,7 @@ public class VolumeSliderManagement : MonoBehaviour
         SaveSettings();
     }
 
-    public void LoadSoundSettings()
+    public void InitSoundSettings()
     {
         masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
         gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");

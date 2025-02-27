@@ -49,10 +49,10 @@ public class UIManager : MonoSingleton<UIManager>
     private void Awake()
     {
         VolumeSliderManagement SoundSettings = soundSettingsScreen.GetComponent<VolumeSliderManagement>();
-        SoundSettings.LoadSoundSettings();          // 사운드 값 불러오기
-        MouseSettings.Instance.InitMouseSetting();  // 마우스 값 불러오기
-        //resolutionSettingsScreen.GetComponent<ResolutionManagement>().InitResolutionSetting(); // 해상도 값 불러오기
-
+        ResolutionSettings resolutionSettings = resolutionSettingsScreen.GetComponent<ResolutionSettings>();
+        SoundSettings.InitSoundSettings();          // 사운드 값 불러오기
+        resolutionSettings.InitResolutionSettings();  // 해상도 값 불러오기
+        MouseSettings.Instance.InitMouseSettings();  // 마우스 값 불러오기
 
         if (menuUI.activeSelf) menuUI.SetActive(false);
         ToggleScreenObject(SettingScreenType.Off, false);

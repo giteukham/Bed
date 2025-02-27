@@ -86,7 +86,7 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         }
     }
     
-    public void InitMouseSetting()
+    public void InitMouseSettings()
     {
         mouseSensitivity = SaveManager.Instance.LoadMouseSensitivity();
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;

@@ -87,4 +87,13 @@ public class ResolutionSettingsPanel : MonoBehaviour
             Debug.Log("IsWindowed: " + resolutionData.IsWindowed);
         }
     }
+
+    public void ApplyResolutionSettings() // ApplyButton 오브젝트에 할당
+    {
+        Screen.SetResolution(resolutionData.ResolutionWidth, resolutionData.ResolutionHeight, resolutionData.IsWindowed);
+        Application.targetFrameRate = resolutionData.FrameRate;
+        PlayerConstant.pixelationFactor = 0.25f / (resolutionData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
+        SaveManager.Instance.SaveResolutionSettings(resolutionData); // 해상도 설정 저장
+        ResolutionSettings.backupData = resolutionData; // 백업 데이터 갱신
+    }
 }

@@ -275,11 +275,11 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
 
         RescaleWindow(width, height);
 
-        SaveManager.Instance.SaveResolution((int)width, (int)height);
+        //SaveManager.Instance.SaveResolution((int)width, (int)height);
         nowWidthPixel = (int)width;
         nowHeightPixel = (int)height;
-        player.pixelationFactor = 0.25f / (nowWidthPixel / 1920f);
-        SaveManager.Instance.SavePixelationFactor(player.pixelationFactor);
+        //player.pixelationFactor = 0.25f / (nowWidthPixel / 1920f);
+        //SaveManager.Instance.SavePixelationFactor(player.pixelationFactor);
         yield break;
     }
 
@@ -606,7 +606,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         }
 
         StartCoroutine(ResolutionWindow(float.Parse(inputFieldWidth.text), float.Parse(inputFieldHeight.text)));
-        SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
+        //SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
         if (lastApplyObject == inputFieldWidth.gameObject)
         {
             SaveManager.Instance.SaveLastApplyObject(1);
@@ -628,7 +628,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         ResizePreviewImage(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text), inside);
         UpdateResolutionText(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
         
-        SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
+        //SaveManager.Instance.SaveResolution(int.Parse(inputFieldWidth.text), int.Parse(inputFieldHeight.text));
         SaveManager.Instance.SaveLastApplyObject(3);
     }
 
@@ -861,7 +861,7 @@ public class ResolutionManagement : MonoSingleton<ResolutionManagement>
         IsWindowedScreen = SaveManager.Instance.LoadIsWindowedScreen();
 
         //저장된 해상도 nowWidthPixel과 nowHeightPixel 변수에 적용
-        SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
+        //SaveManager.Instance.LoadResolution(out nowWidthPixel, out nowHeightPixel);
         Vector2[] offsets = ConvertResolutionToOffsets(new Vector2Int(nowWidthPixel, nowHeightPixel), true);
         insideWindow.SaveOffsets(offsets[0], offsets[1]);
 
