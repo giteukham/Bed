@@ -13,7 +13,8 @@ public class DisplayBrightnessController : MonoBehaviour
     private ColorGrading    colorGrading;
     private Material        brightnessImageMaterial;
     
-    private ResolutionSettingsData previewData, backupData;
+    private ResolutionSettingsData previewData;
+    private ResolutionSettingsDTO backupData;
     
     private float imageMinAlpha = 0.2f, imageMaxAlpha = 1.0f;
     
@@ -21,7 +22,7 @@ public class DisplayBrightnessController : MonoBehaviour
     
     public void Initialize(
         ResolutionSettingsData previewData,
-        ResolutionSettingsData backupData,
+        ResolutionSettingsDTO backupData,
         CinemachinePostProcessing postProcessing,
         Image brightnessCheckImage,
         Image brightnessBackgroundImage)

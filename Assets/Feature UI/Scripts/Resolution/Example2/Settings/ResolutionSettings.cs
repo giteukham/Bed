@@ -1,72 +1,64 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class ResolutionSettingsData : INotifyPropertyChanged
+
+public enum ResolutionSettingType
 {
-    private int resolutionWidth = 1920;
-    private int resolutionHeight = 1080;
-    private int frameRate = 60;
-    private bool isWindowed = false;
-    private float screenBrightness = 0f;
-    
-    public int ResolutionWidth
+    ResolutionWidth,
+    ResolutionHeight,
+    FrameRate,
+    IsWindowed,
+    ScreenBrightness
+}
+
+public interface IResolutionRule
+{
+    object Validate(object value);
+}
+
+public class ResolutionWidthRule : IResolutionRule
+{
+    public object Validate(object value)
     {
-        get => resolutionWidth;
-        set
-        {
-            if (resolutionWidth == value) return;
-            resolutionWidth = value;
-            OnPropertyChanged();
-        }
+        int width = (int)value;
+        // return null 지우고 규칙 내용 추가
+        return width;
+    }
+}
+
+public class ResolutionHeightRule : IResolutionRule
+{
+    public object Validate(object value)
+    {
+        int height = (int)value;
+        // return null 지우고 규칙 내용 추가
+        return height;
+    }
+}
+
+public class ResolutionSettingsDTO // Data Transfer Object
+{
+    public int ResolutionWidth;
+    public int ResolutionHeight;
+    public int FrameRate;
+    public bool IsWindowed;
+    public float ScreenBrightness;
+
+    public ResolutionSettingsDTO() {}
+
+    public ResolutionSettingsDTO(ResolutionSettingsData source)
+    {
+        ResolutionWidth = source.ResolutionWidth;
+        ResolutionHeight = source.ResolutionHeight;
+        FrameRate = source.FrameRate;
+        IsWindowed = source.IsWindowed;
+        ScreenBrightness = source.ScreenBrightness;
     }
 
-    public int ResolutionHeight
-    {
-        get => resolutionHeight;
-        set
-        {
-            if (resolutionHeight == value) return;
-            resolutionHeight = value;
-            OnPropertyChanged();
-        }
-    }
-    
-    public int FrameRate
-    {
-        get => frameRate;
-        set
-        {
-            if (frameRate == value) return;
-            frameRate = value;
-            OnPropertyChanged();
-        }
-    }
-    
-    public bool IsWindowed
-    {
-        get => isWindowed;
-        set
-        {
-            if (isWindowed == value) return;
-            isWindowed = value;
-            OnPropertyChanged();
-        }
-    }
-    
-    public float ScreenBrightness
-    {
-        get => screenBrightness;
-        set
-        {
-            if (Mathf.Approximately(screenBrightness, value)) return;
-            screenBrightness = value;
-            OnPropertyChanged();
-        }
-    }
-    
     public void ChangeData(ResolutionSettingsData data)
     {
         ResolutionWidth = data.ResolutionWidth;
@@ -74,6 +66,82 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         FrameRate = data.FrameRate;
         IsWindowed = data.IsWindowed;
         ScreenBrightness = data.ScreenBrightness;
+    }
+}
+
+public class ResolutionSettingsData : INotifyPropertyChanged
+{
+    // 설정 값 저장 Dictionary
+    private readonly Dictionary<ResolutionSettingType, object> settings = new();
+    // 규칙 저장 Dictionary
+    private readonly Dictionary<ResolutionSettingType, IResolutionRule> validationRules = new();
+
+    public ResolutionSettingsData()
+    { 
+        ResolutionSettingsDTO savedData = SaveManager.Instance.LoadResolutionSettings();
+        settings[ResolutionSettingType.ResolutionWidth] = savedData.ResolutionWidth;
+        settings[ResolutionSettingType.ResolutionHeight] = savedData.ResolutionHeight;
+        settings[ResolutionSettingType.FrameRate] = savedData.FrameRate;
+        settings[ResolutionSettingType.IsWindowed] = savedData.IsWindowed;
+        settings[ResolutionSettingType.ScreenBrightness] = savedData.ScreenBrightness;
+
+        validationRules[ResolutionSettingType.ResolutionWidth] = new ResolutionWidthRule();
+        validationRules[ResolutionSettingType.ResolutionHeight] = new ResolutionHeightRule();
+    }
+
+    private T GetSetting<T>(ResolutionSettingType type) => (T)settings[type];
+
+    private void SetSetting<T>(ResolutionSettingType type, T value)
+    {
+        if (validationRules.ContainsKey(type))
+        {
+            value = (T)validationRules[type].Validate(value);
+        }
+
+        if (!settings[type].Equals(value))
+        {
+            settings[type] = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ResolutionWidth
+    {
+        get => GetSetting<int>(ResolutionSettingType.ResolutionWidth);
+        set => SetSetting(ResolutionSettingType.ResolutionWidth, value);
+    }
+
+    public int ResolutionHeight
+    {
+        get => GetSetting<int>(ResolutionSettingType.ResolutionHeight);
+        set => SetSetting(ResolutionSettingType.ResolutionHeight, value);
+    }
+
+    public int FrameRate
+    {
+        get => GetSetting<int>(ResolutionSettingType.FrameRate);
+        set => SetSetting(ResolutionSettingType.FrameRate, value);
+    }
+
+    public bool IsWindowed
+    {
+        get => GetSetting<bool>(ResolutionSettingType.IsWindowed);
+        set => SetSetting(ResolutionSettingType.IsWindowed, value);
+    }
+
+    public float ScreenBrightness
+    {
+        get => GetSetting<float>(ResolutionSettingType.ScreenBrightness);
+        set => SetSetting(ResolutionSettingType.ScreenBrightness, value);
+    }
+    
+    public void ChangeData(ResolutionSettingsDTO data)
+    {
+        SetSetting(ResolutionSettingType.ResolutionWidth, data.ResolutionWidth);
+        SetSetting(ResolutionSettingType.ResolutionHeight, data.ResolutionHeight);
+        SetSetting(ResolutionSettingType.FrameRate, data.FrameRate);
+        SetSetting(ResolutionSettingType.IsWindowed, data.IsWindowed);
+        SetSetting(ResolutionSettingType.ScreenBrightness, data.ScreenBrightness);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -92,17 +160,18 @@ public class ResolutionSettings : MonoBehaviour
     [SerializeField]
     private ResolutionPreviewPanel resolutionPreviewPanel;
     
-    private ResolutionSettingsData backupData, previewData;
+    private ResolutionSettingsDTO backupData;
+    private ResolutionSettingsData previewData;
     
     public ResolutionSettingsData PreviewData => previewData;
-    public ResolutionSettingsData BackupData => backupData;
+    public ResolutionSettingsDTO BackupData => backupData;
     
     private readonly string path = "Menu UI/Resolution Settings Screen/";
 
     public void InitResolutionSettings() // UIManager.Awake()에서 호출
     {
-        previewData = SaveManager.Instance.LoadResolutionSettings();
-        backupData = SaveManager.Instance.LoadResolutionSettings();
+        previewData =  new ResolutionSettingsData();
+        backupData = new ResolutionSettingsDTO(previewData);
         
         resolutionSettingsPanel?.Initialize(previewData, backupData);
         resolutionPreviewPanel?.Initialize(previewData, backupData);

@@ -44,7 +44,8 @@ public class ResolutionSettingsPanel : MonoBehaviour
     [SerializeField]
     private Image brightnessHandleImage;
     
-    private ResolutionSettingsData previewData, backupData;
+    private ResolutionSettingsData previewData;
+    private ResolutionSettingsDTO backupData;
     
     private readonly string path = "Menu UI/Resolution Settings Screen/Settings Panel/";
 
@@ -52,7 +53,7 @@ public class ResolutionSettingsPanel : MonoBehaviour
     /// OnEnable에서 Resolution Data를 초기화
     /// </summary>
     /// <param name="preivewData"></param>
-    public void Initialize(ResolutionSettingsData preivewData, ResolutionSettingsData backupData)
+    public void Initialize(ResolutionSettingsData preivewData, ResolutionSettingsDTO backupData)
     {
         this.previewData = preivewData;
         this.backupData = backupData;

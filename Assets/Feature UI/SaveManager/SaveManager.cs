@@ -198,7 +198,7 @@ public class SaveManager : MonoSingleton<SaveManager>
         PlayerPrefs.Save();
     }
 
-    public void SaveResolutionSettings(ResolutionSettingsData data)
+    public void SaveResolutionSettings(ResolutionSettingsDTO data)
     {
         PlayerPrefs.SetInt("ResolutionWidth", data.ResolutionWidth);
         PlayerPrefs.SetInt("ResolutionHeight", data.ResolutionHeight);
@@ -208,9 +208,9 @@ public class SaveManager : MonoSingleton<SaveManager>
         PlayerPrefs.Save();
     }
 
-    public ResolutionSettingsData LoadResolutionSettings()
+    public ResolutionSettingsDTO LoadResolutionSettings()
     {
-        ResolutionSettingsData data = new ResolutionSettingsData
+        return new ResolutionSettingsDTO
         {
             ResolutionWidth = PlayerPrefs.GetInt("ResolutionWidth", Screen.currentResolution.width),
             ResolutionHeight = PlayerPrefs.GetInt("ResolutionHeight", Screen.currentResolution.height),
@@ -218,6 +218,5 @@ public class SaveManager : MonoSingleton<SaveManager>
             IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 1,
             ScreenBrightness = PlayerPrefs.GetFloat("ScreenBrightness", 0f)
         };
-        return data;
     }
 }
