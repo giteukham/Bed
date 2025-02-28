@@ -6361,9 +6361,10 @@ MonoBehaviour:
   resolutionHeightInput: {fileID: 1669122806}
   frameRateDropdown: {fileID: 216451543}
   windowModeToggle: {fileID: 1032246563}
-  screenBrightness: {fileID: 849194589}
+  displayBrightnessController: {fileID: 849194589}
   postProcessing: {fileID: 882794559}
-  brightnessImage: {fileID: 60153003}
+  brightnessCheckImage: {fileID: 60153003}
+  brightnessHandleImage: {fileID: 1433268099}
 --- !u!1 &406590842
 GameObject:
   m_ObjectHideFlags: 0
@@ -11712,8 +11713,8 @@ MonoBehaviour:
   m_FillRect: {fileID: 1679090369}
   m_HandleRect: {fileID: 1433268098}
   m_Direction: 0
-  m_MinValue: -1.25
-  m_MaxValue: 2
+  m_MinValue: -1
+  m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0.17
   m_OnValueChanged:
@@ -17114,7 +17115,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1251459811
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20711,8 +20712,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1918889807}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.4369231, y: 0}
+  m_AnchorMax: {x: 0.4369231, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -24363,7 +24364,7 @@ RectTransform:
   m_Father: {fileID: 94299562}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.4369231, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}

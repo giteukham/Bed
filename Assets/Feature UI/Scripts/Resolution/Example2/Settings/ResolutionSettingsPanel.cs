@@ -6,6 +6,7 @@ using Cinemachine.PostFX;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -32,44 +33,60 @@ public class ResolutionSettingsPanel : MonoBehaviour
     [Header("Screen Brightness")]
     
     [SerializeField]
-    private ScreenBrightness screenBrightness;
+    private DisplayBrightnessController displayBrightnessController;
     
     [SerializeField]
     private CinemachinePostProcessing postProcessing;
+
+    [SerializeField]
+    private Image brightnessCheckImage;
     
     [SerializeField]
-    private Image brightnessImage;
+    private Image brightnessHandleImage;
     
-    private ResolutionSettingsData previewData;
+    private ResolutionSettingsData previewData, backupData;
     
     private readonly string path = "Menu UI/Resolution Settings Screen/Settings Panel/";
 
     /// <summary>
     /// OnEnable에서 Resolution Data를 초기화
     /// </summary>
-    /// <param name="data"></param>
-    public void Initialize(ResolutionSettingsData data)
+    /// <param name="preivewData"></param>
+    public void Initialize(ResolutionSettingsData preivewData, ResolutionSettingsData backupData)
     {
-        previewData = data;
-        screenBrightness.Initialize(previewData, postProcessing, brightnessImage);
+        this.previewData = preivewData;
+        this.backupData = backupData;
+        
+        Assert.IsNotNull(postProcessing, $"{path}Post Processing is null");
+        Assert.IsNotNull(brightnessCheckImage, $"{path}Brightness Check Image is null");
+        Assert.IsNotNull(brightnessHandleImage, $"{path}Brightness Handle Image is null");
+        displayBrightnessController.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
     }
 
     private void OnEnable()
     {
         previewData.PropertyChanged += OnPropertyChanged;
+        
+        Assert.IsNotNull(resolutionWidthInput, $"{path}Resolution Width InputField is null");
         resolutionWidthInput.onEndEdit.AddListener(OnResolutionWidthInputChanged);
+        
+        Assert.IsNotNull(resolutionHeightInput, $"{path}Resolution Height InputField is null");
         resolutionHeightInput.onEndEdit.AddListener(OnResolutionHeightInputChanged);
+        
+        Assert.IsNotNull(windowModeToggle, $"{path}Window Mode Toggle is null");
         windowModeToggle.onValueChanged.AddListener(OnWindowModeToggleChanged);
+        
+        Assert.IsNotNull(frameRateDropdown, $"{path}Frame Rate Dropdown is null");
         frameRateDropdown.onValueChanged.AddListener(OnFrameRateDropDownChanged);
     }
 
     private void OnDisable()
     {
+        previewData.PropertyChanged -= OnPropertyChanged;
         resolutionWidthInput.onEndEdit.RemoveListener(OnResolutionWidthInputChanged);
         resolutionHeightInput.onEndEdit.RemoveListener(OnResolutionHeightInputChanged);
         windowModeToggle.onValueChanged.RemoveListener(OnWindowModeToggleChanged);
         frameRateDropdown.onValueChanged.RemoveListener(OnFrameRateDropDownChanged);
-        previewData.PropertyChanged -= OnPropertyChanged;
     }
 
     /// <summary>
@@ -118,6 +135,6 @@ public class ResolutionSettingsPanel : MonoBehaviour
     
     public void ApplyBrightness(float brightness)
     {
-        screenBrightness.ApplyBrightness(brightness);
+        displayBrightnessController.ApplyBrightness(brightness);
     }
 }

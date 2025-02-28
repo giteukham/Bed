@@ -10,18 +10,22 @@ public class ResolutionPreviewPanel : MonoBehaviour
     [SerializeField]
     private ResolutionOutside resolutionOutside;
     
-    private ResolutionSettingsData previewData;
+    private ResolutionSettingsData previewData, backupData;
     
     /// <summary>
     /// OnEnable에서 Resolution Data를 초기화
     /// </summary>
-    /// <param name="data"></param>
-    public void Initialize(ResolutionSettingsData data)
+    /// <param name="previewData"></param>
+    public void Initialize(ResolutionSettingsData previewData, ResolutionSettingsData backupData)
     {
-        previewData = data;
-        previewData.PropertyChanged += OnPropertyChanged;
-        
+        this.previewData = previewData;
+        this.backupData = backupData;
         //resolutionInside.Initialize(resolutionData);
+    }
+    
+    private void OnEnable()
+    {
+        previewData.PropertyChanged += OnPropertyChanged;
     }
     
     private void OnDisable()

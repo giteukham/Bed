@@ -103,10 +103,9 @@ public class ResolutionSettings : MonoBehaviour
     {
         previewData = SaveManager.Instance.LoadResolutionSettings();
         backupData = SaveManager.Instance.LoadResolutionSettings();
-        Debug.Log(backupData.ScreenBrightness);
         
-        resolutionSettingsPanel?.Initialize(previewData);
-        resolutionPreviewPanel?.Initialize(previewData);
+        resolutionSettingsPanel?.Initialize(previewData, backupData);
+        resolutionPreviewPanel?.Initialize(previewData, backupData);
         
         Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
         Application.targetFrameRate = backupData.FrameRate; 

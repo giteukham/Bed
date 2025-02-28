@@ -3,34 +3,43 @@ using System;
 using System.ComponentModel;
 using Cinemachine.PostFX;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 
-public class ScreenBrightness : MonoBehaviour
+public class DisplayBrightnessController : MonoBehaviour
 {
     private Slider          brightnessSlider;
     private ColorGrading    colorGrading;
     private Material        brightnessImageMaterial;
     
-    private ResolutionSettingsData previewData;
+    private ResolutionSettingsData previewData, backupData;
     
     private float imageMinAlpha = 0.2f, imageMaxAlpha = 1.0f;
     
-    public void Initialize(ResolutionSettingsData data, CinemachinePostProcessing postProcessing, Image brightnessImage)
+    private readonly string path = "Menu UI/Resolution Settings Screen/Settings Panel/";
+    
+    public void Initialize(
+        ResolutionSettingsData previewData,
+        ResolutionSettingsData backupData,
+        CinemachinePostProcessing postProcessing,
+        Image brightnessCheckImage,
+        Image brightnessBackgroundImage)
     {
-        previewData = data;
+        this.previewData = previewData;
+        this.backupData = backupData;
         
         brightnessSlider = GetComponent<Slider>();
-        brightnessSlider.value = previewData.ScreenBrightness;
         colorGrading = postProcessing.m_Profile.GetSetting<ColorGrading>();
         
-        brightnessImageMaterial = brightnessImage.material;
-        ChangeBrightnessImageAlpha(previewData.ScreenBrightness);
+        brightnessBackgroundImage.OnDoubleClick(() => brightnessSlider.value = 0f);
+        brightnessImageMaterial = brightnessCheckImage.material;
     }
 
     private void OnEnable()
     {
         previewData.PropertyChanged += OnPropertyChanged;
+        brightnessSlider.value = backupData.ScreenBrightness;
         brightnessSlider.onValueChanged.AddListener(OnBrightnessSliderChanged);
     }
 
