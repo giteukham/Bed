@@ -78,19 +78,18 @@ public class ResolutionSettingsData : INotifyPropertyChanged
 
     public ResolutionSettingsData()
     { 
-        ResolutionSettingsDTO savedData = SaveManager.Instance.LoadResolutionSettings();
-        settings[ResolutionSettingType.ResolutionWidth] = savedData.ResolutionWidth;
-        settings[ResolutionSettingType.ResolutionHeight] = savedData.ResolutionHeight;
-        settings[ResolutionSettingType.FrameRate] = savedData.FrameRate;
-        settings[ResolutionSettingType.IsWindowed] = savedData.IsWindowed;
-        settings[ResolutionSettingType.ScreenBrightness] = savedData.ScreenBrightness;
+        ResolutionSettingType[] keys = (ResolutionSettingType[])Enum.GetValues(typeof(ResolutionSettingType));
+        foreach (ResolutionSettingType key in keys)
+        {
+            settings[key] = null;
+        }
 
         validationRules[ResolutionSettingType.ResolutionWidth] = new ResolutionWidthRule();
         validationRules[ResolutionSettingType.ResolutionHeight] = new ResolutionHeightRule();
     }
 
     private T GetSetting<T>(ResolutionSettingType type) => (T)settings[type];
-
+ 
     private void SetSetting<T>(ResolutionSettingType type, T value)
     {
         if (validationRules.ContainsKey(type))
@@ -98,10 +97,10 @@ public class ResolutionSettingsData : INotifyPropertyChanged
             value = (T)validationRules[type].Validate(value);
         }
 
-        if (!settings[type].Equals(value))
+        if (settings[type] == null || !settings[type].Equals(value))
         {
             settings[type] = value;
-            OnPropertyChanged();
+            OnPropertyChanged(type.ToString());
         }
     }
 
@@ -171,16 +170,18 @@ public class ResolutionSettings : MonoBehaviour
     public void InitResolutionSettings() // UIManager.Awake()에서 호출
     {
         previewData =  new ResolutionSettingsData();
-        backupData = new ResolutionSettingsDTO(previewData);
+        backupData = SaveManager.Instance.LoadResolutionSettings();
         
         resolutionSettingsPanel?.Initialize(previewData, backupData);
         resolutionPreviewPanel?.Initialize(previewData, backupData);
+
+        previewData.ChangeData(backupData);
         
         Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
         Application.targetFrameRate = backupData.FrameRate; 
         if (QualitySettings.vSyncCount != 1) QualitySettings.vSyncCount = 1;
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
-        resolutionSettingsPanel?.ApplyBrightness(backupData.ScreenBrightness);
+        //resolutionSettingsPanel?.ApplyBrightness(backupData.ScreenBrightness);
     }
 
     private void OnEnable()

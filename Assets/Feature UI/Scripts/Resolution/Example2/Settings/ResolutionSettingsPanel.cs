@@ -19,7 +19,8 @@ public class ResolutionSettingsPanel : MonoBehaviour
     
     [SerializeField] 
     private TMP_InputField resolutionHeightInput;
-    
+    [SerializeField]
+    private ResolutionSelectController resolutionSelectController;    
     [Header("Frame Rate")]
     
     [SerializeField] 
@@ -57,61 +58,22 @@ public class ResolutionSettingsPanel : MonoBehaviour
     {
         this.previewData = preivewData;
         this.backupData = backupData;
-        
+        previewData.PropertyChanged += OnPropertyChanged;
         Assert.IsNotNull(postProcessing, $"{path}Post Processing is null");
         Assert.IsNotNull(brightnessCheckImage, $"{path}Brightness Check Image is null");
         Assert.IsNotNull(brightnessHandleImage, $"{path}Brightness Handle Image is null");
         displayBrightnessController.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
+        resolutionSelectController.Initialize(previewData);
     }
 
     private void OnEnable()
     {
-        previewData.PropertyChanged += OnPropertyChanged;
         
-        Assert.IsNotNull(resolutionWidthInput, $"{path}Resolution Width InputField is null");
-        resolutionWidthInput.onEndEdit.AddListener(OnResolutionWidthInputChanged);
-        
-        Assert.IsNotNull(resolutionHeightInput, $"{path}Resolution Height InputField is null");
-        resolutionHeightInput.onEndEdit.AddListener(OnResolutionHeightInputChanged);
-        
-        Assert.IsNotNull(windowModeToggle, $"{path}Window Mode Toggle is null");
-        windowModeToggle.onValueChanged.AddListener(OnWindowModeToggleChanged);
-        
-        Assert.IsNotNull(frameRateDropdown, $"{path}Frame Rate Dropdown is null");
-        frameRateDropdown.onValueChanged.AddListener(OnFrameRateDropDownChanged);
     }
 
     private void OnDisable()
     {
-        previewData.PropertyChanged -= OnPropertyChanged;
-        resolutionWidthInput.onEndEdit.RemoveListener(OnResolutionWidthInputChanged);
-        resolutionHeightInput.onEndEdit.RemoveListener(OnResolutionHeightInputChanged);
-        windowModeToggle.onValueChanged.RemoveListener(OnWindowModeToggleChanged);
-        frameRateDropdown.onValueChanged.RemoveListener(OnFrameRateDropDownChanged);
-    }
-
-    /// <summary>
-    /// 인게임에서 Width InputField 값이 변경될 때 호출되는 이벤트
-    /// </summary>
-    /// <param name="arg0"></param>
-    private void OnResolutionWidthInputChanged(string arg0)
-    {
-        previewData.ResolutionWidth = Convert.ToInt32(arg0);
-    }
-    
-    private void OnResolutionHeightInputChanged(string arg0)
-    {
-        previewData.ResolutionHeight = Convert.ToInt32(arg0);
-    }
-    
-    private void OnWindowModeToggleChanged(bool arg0)
-    {
-        previewData.IsWindowed = arg0;
-    }
-
-    private void OnFrameRateDropDownChanged(int arg0)
-    {
-        previewData.FrameRate = arg0;
+        // previewData.PropertyChanged -= OnPropertyChanged;
     }
     
     private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -131,6 +93,10 @@ public class ResolutionSettingsPanel : MonoBehaviour
         else if (e.PropertyName == nameof(ResolutionSettingsData.FrameRate))
         {
             frameRateDropdown.value = previewData.FrameRate;
+        }
+        else if (e.PropertyName == nameof(ResolutionSettingsData.ScreenBrightness))
+        {
+            displayBrightnessController.ApplyBrightness(previewData.ScreenBrightness);
         }
     }
     
