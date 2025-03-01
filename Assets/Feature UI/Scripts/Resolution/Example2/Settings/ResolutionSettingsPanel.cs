@@ -26,10 +26,16 @@ public class ResolutionSettingsPanel : MonoBehaviour
     [SerializeField] 
     private TMP_Dropdown frameRateDropdown;
     
+    [SerializeField]
+    private FrameRateController frameRateController;
+    
     [Header("Window Mode")]
     
     [SerializeField] 
     private Toggle windowModeToggle;
+    
+    [SerializeField]
+    private WindowModeController windowModeController;
     
     [Header("Screen Brightness")]
     
@@ -51,7 +57,7 @@ public class ResolutionSettingsPanel : MonoBehaviour
     private readonly string path = "Menu UI/Resolution Settings Screen/Settings Panel/";
 
     /// <summary>
-    /// OnEnable에서 Resolution Data를 초기화
+    /// Awake에서 Resolution Data를 초기화
     /// </summary>
     /// <param name="preivewData"></param>
     public void Initialize(ResolutionSettingsData preivewData, ResolutionSettingsDTO backupData)
@@ -59,21 +65,16 @@ public class ResolutionSettingsPanel : MonoBehaviour
         this.previewData = preivewData;
         this.backupData = backupData;
         previewData.PropertyChanged += OnPropertyChanged;
+        
         Assert.IsNotNull(postProcessing, $"{path}Post Processing is null");
         Assert.IsNotNull(brightnessCheckImage, $"{path}Brightness Check Image is null");
         Assert.IsNotNull(brightnessHandleImage, $"{path}Brightness Handle Image is null");
         displayBrightnessController.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
-        resolutionSelectController.Initialize(previewData);
-    }
-
-    private void OnEnable()
-    {
+        //resolutionSelectController.Initialize(previewData);
         
-    }
-
-    private void OnDisable()
-    {
-        // previewData.PropertyChanged -= OnPropertyChanged;
+        frameRateController?.Initialize(previewData, backupData, frameRateDropdown);
+        windowModeController?.Initialize(previewData, backupData, windowModeToggle);
+        displayBrightnessController?.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
     }
     
     private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -85,18 +86,6 @@ public class ResolutionSettingsPanel : MonoBehaviour
         else if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionHeight))
         {
             resolutionHeightInput.text = previewData.ResolutionHeight.ToString();
-        }
-        else if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
-        {
-            windowModeToggle.isOn = previewData.IsWindowed;
-        }
-        else if (e.PropertyName == nameof(ResolutionSettingsData.FrameRate))
-        {
-            frameRateDropdown.value = previewData.FrameRate;
-        }
-        else if (e.PropertyName == nameof(ResolutionSettingsData.ScreenBrightness))
-        {
-            displayBrightnessController.ApplyBrightness(previewData.ScreenBrightness);
         }
     }
     

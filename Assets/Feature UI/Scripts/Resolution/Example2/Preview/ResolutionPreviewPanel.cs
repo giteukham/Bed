@@ -21,21 +21,7 @@ public class ResolutionPreviewPanel : MonoBehaviour
     {
         this.previewData = previewData;
         this.backupData = backupData;
-        //resolutionInside.Initialize(resolutionData);
+        //resolutionInside.Initialize(previewData, backupData);
     }
     
-    private void OnEnable()
-    {
-        previewData.PropertyChanged += OnPropertyChanged;
-    }
-    
-    private void OnDisable()
-    {
-        previewData.PropertyChanged -= OnPropertyChanged;
-    }
-
-    private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        
-    }
 }

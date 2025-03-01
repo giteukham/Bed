@@ -7,14 +7,11 @@ using UnityEngine.Assertions;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 
-public class DisplayBrightnessController : MonoBehaviour
+public class DisplayBrightnessController : FunctionControllerBase
 {
     private Slider          brightnessSlider;
     private ColorGrading    colorGrading;
     private Material        brightnessImageMaterial;
-    
-    private ResolutionSettingsData previewData;
-    private ResolutionSettingsDTO backupData;
     
     private float imageMinAlpha = 0.2f, imageMaxAlpha = 1.0f;
     
@@ -27,40 +24,38 @@ public class DisplayBrightnessController : MonoBehaviour
         Image brightnessCheckImage,
         Image brightnessBackgroundImage)
     {
-        this.previewData = previewData;
-        this.backupData = backupData;
+        base.Initialize(previewData, backupData);
         
         brightnessSlider = GetComponent<Slider>();
         colorGrading = postProcessing.m_Profile.GetSetting<ColorGrading>();
         
         brightnessBackgroundImage.OnDoubleClick(() => brightnessSlider.value = 0f);
         brightnessImageMaterial = brightnessCheckImage.material;
+        
     }
 
     private void OnEnable()
     {
-        previewData.PropertyChanged += OnPropertyChanged;
-        brightnessSlider.value = backupData.ScreenBrightness;
         brightnessSlider.onValueChanged.AddListener(OnBrightnessSliderChanged);
     }
 
     private void OnDisable()
     {
-        previewData.PropertyChanged -= OnPropertyChanged;
         brightnessSlider.onValueChanged.RemoveListener(OnBrightnessSliderChanged);
     }
 
     private void OnBrightnessSliderChanged(float arg0)
     {
         previewData.ScreenBrightness = arg0;
-        ChangeBrightnessImageAlpha(arg0);
     }
     
-    private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ResolutionSettingsData.ScreenBrightness))
         {
             brightnessSlider.value = previewData.ScreenBrightness;
+            ChangeBrightnessImageAlpha(previewData.ScreenBrightness);
+            ApplyBrightness(previewData.ScreenBrightness);
         }
     }
 

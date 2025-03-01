@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
 
@@ -99,6 +100,7 @@ public class ResolutionSettingsData : INotifyPropertyChanged
 
         if (settings[type] == null || !settings[type].Equals(value))
         {
+            Debug.Log($"{type} : {settings[type]} -> {value}");
             settings[type] = value;
             OnPropertyChanged(type.ToString());
         }
@@ -169,6 +171,9 @@ public class ResolutionSettings : MonoBehaviour
 
     public void InitResolutionSettings() // UIManager.Awake()에서 호출
     {
+        Assert.IsNotNull(resolutionSettingsPanel, $"{path}Resolution Settings Panel is null");
+        Assert.IsNotNull(resolutionPreviewPanel, $"{path}Resolution Preview Panel is null");
+        
         previewData =  new ResolutionSettingsData();
         backupData = SaveManager.Instance.LoadResolutionSettings();
         
@@ -178,10 +183,9 @@ public class ResolutionSettings : MonoBehaviour
         previewData.ChangeData(backupData);
         
         Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
-        Application.targetFrameRate = backupData.FrameRate; 
+        Application.targetFrameRate = backupData.FrameRate;
         if (QualitySettings.vSyncCount != 1) QualitySettings.vSyncCount = 1;
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
-        //resolutionSettingsPanel?.ApplyBrightness(backupData.ScreenBrightness);
     }
 
     private void OnEnable()

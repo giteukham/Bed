@@ -51,7 +51,7 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     // [Header("기타 설정")]
     // [SerializeField] private Material previewMaskMaterial;
     // [SerializeField] private InsideNavigationBar insideNavigationBar;
-    // [FormerlySerializedAs("insideWindowZoom")] [SerializeField] private InsideWindowZoomButton insideWindowZoomButton;
+    // [SerializeField] private InsideWindowZoomButton insideWindowZoomButton;
     //
     //
     // private Dictionary<ResizeType, InsideResizer> resizeEvents = new Dictionary<ResizeType, InsideResizer>();
@@ -70,7 +70,8 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     // private readonly float aspectRatio = 1.777778f;
     //
     // private RectTransform insideRect;
-    // private ResolutionSettingsData resolutionSettingsData;
+    // private ResolutionSettingsData previewData;
+    // private ResolutionSettingsDTO backupData;
     //
     // public UnityEvent<RectTransform> OnRectTransformReSize;
     //
@@ -97,8 +98,8 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     //
     // private void OnEnable()
     // {
-    //     //ToggleResizeEvent(resolutionManager.IsWindowedScreenReady);
-    //     //insideNavigationBar.SetNavigationBarActive(resolutionManager.IsWindowedScreenReady);
+    //     ToggleResizeEvent(previewData.IsWindowed);
+    //     insideNavigationBar.SetNavigationBarActive(previewData.IsWindowed);
     //     //resolutionManager.OnFullScreenSwitched.AddListener(FullScreenSwitchHandler);
     //     
     //     // Vector2Int insideLowestResolution = resolutionManager.GetLowestResolution();
@@ -112,9 +113,10 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     //     //resolutionManager.OnFullScreenSwitched.RemoveListener(FullScreenSwitchHandler);
     // }
     //
-    // public void Initialize(ResolutionSettingsData resolutionSettingsData)
+    // public void Initialize(ResolutionSettingsData previewData, ResolutionSettingsDTO backupData)
     // {
-    //     this.resolutionSettingsData = resolutionSettingsData;
+    //     this.previewData = previewData;
+    //     this.backupData = backupData;
     // }
     //
     // private void OnRectTransformDimensionsChange()
@@ -156,11 +158,11 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     //                 break;
     //         }
     //         
-    //         InsideBoundaryResize insideBoundaryResize = CreateResizeEvent(resizeBound, type);
+    //         var insideBoundaryResize = CreateResizeEvent(resizeBound, type);
     //         
     //         if (resizeBound != null)
     //         {
-    //             this.resizeEvents.TryAdd(type, insideBoundaryResize);
+    //             //this.resizeEvents.TryAdd(type, insideBoundaryResize);
     //         }
     //     }
     // }
@@ -206,8 +208,8 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     // private void OnResizeStart(ResizeType type, PointerEventData eventData)
     // {
     //     currentResizeType = type;
-    //     prevOffsetMin = resolutionManager.InsideOffsetMin;
-    //     prevOffsetMax = resolutionManager.InsideOffsetMax;
+    //     // prevOffsetMin = resolutionManager.InsideOffsetMin;
+    //     // prevOffsetMax = resolutionManager.InsideOffsetMax;
     //     ZoomState = ZoomState.Minimize;
     //     isResizing = true;
     // }
@@ -215,8 +217,8 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     // private void OnResizeStay(PointerEventData eventData)
     // {
     //     ChangeCursorByType(currentResizeType);
-    //     insideOffsetMin = resolutionManager.InsideOffsetMin;
-    //     insideOffsetMax = resolutionManager.InsideOffsetMax;
+    //     // insideOffsetMin = resolutionManager.InsideOffsetMin;
+    //     // insideOffsetMax = resolutionManager.InsideOffsetMax;
     //     
     //     Vector2 localPoint = insideBoundary.InverseTransformPoint(eventData.position);
     //     
@@ -317,8 +319,8 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     //             break;
     //     }
     //
-    //     resolutionManager.InsideOffsetMin = insideOffsetMin;
-    //     resolutionManager.InsideOffsetMax = insideOffsetMax;
+    //     // resolutionManager.InsideOffsetMin = insideOffsetMin;
+    //     // resolutionManager.InsideOffsetMax = insideOffsetMax;
     // }
     //
     // private void OnResizeEnd()
@@ -341,7 +343,7 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     //
     // public void OnPointerClick(PointerEventData eventData)
     // {
-    //     resolutionManager.DoZoom(eventData);
+    //     //resolutionManager.DoZoom(eventData);
     // }
     //
     // /// <summary>
@@ -350,19 +352,19 @@ public class ResolutionInside : MonoBehaviour//, IDragHandler, IPointerClickHand
     // /// <param name="eventData"></param>
     // public void OnDrag(PointerEventData eventData)
     // {
-    //     if (!resolutionManager.IsWindowedScreenReady) return;
+    //     //if (!resolutionManager.IsWindowedScreenReady) return;
     //     
-    //     Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
-    //     Vector2 insideSize = resolutionManager.InsideSize;
-    //     
-    //     float distanceX = (insideBoundary.sizeDelta.x - insideSize.x) * 0.5f;
-    //     float distanceY = (insideBoundary.sizeDelta.y - insideSize.y) * 0.5f;
-    //
-    //     insideAnchoredPosition = new Vector2(
-    //         Mathf.Clamp(insideAnchoredPosition.x + (eventData.delta.x / previewPanelScale), -distanceX, distanceX),
-    //         Mathf.Clamp(insideAnchoredPosition.y + (eventData.delta.y / previewPanelScale), -distanceY, distanceY));
-    //
-    //     resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
+    //     // Vector2 insideAnchoredPosition = resolutionManager.InsideAnchoredPosition;
+    //     // Vector2 insideSize = resolutionManager.InsideSize;
+    //     //
+    //     // float distanceX = (insideBoundary.sizeDelta.x - insideSize.x) * 0.5f;
+    //     // float distanceY = (insideBoundary.sizeDelta.y - insideSize.y) * 0.5f;
+    //     //
+    //     // insideAnchoredPosition = new Vector2(
+    //     //     Mathf.Clamp(insideAnchoredPosition.x + (eventData.delta.x / previewPanelScale), -distanceX, distanceX),
+    //     //     Mathf.Clamp(insideAnchoredPosition.y + (eventData.delta.y / previewPanelScale), -distanceY, distanceY));
+    //     //
+    //     // resolutionManager.InsideAnchoredPosition = insideAnchoredPosition;
     // }
     //
     //
