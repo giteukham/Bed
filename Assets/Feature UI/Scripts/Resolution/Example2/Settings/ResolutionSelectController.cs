@@ -38,20 +38,21 @@ public class ResolutionSelectController : MonoBehaviour
             value.x < 1000 ? "\u200A\u200A\u200A\u200A\u200A\u200A" + value.x + " X " + value.y 
             : value.x + " X " + value.y
         ));
+        // resolutionDropdown.options.Insert(0, new TMP_Dropdown.OptionData("------------------------"));
     }
 
     private void OnEnable()
     {
         inputWidth.onEndEdit.AddListener(OnWidthChanged);
         inputHeight.onEndEdit.AddListener(OnHeightChanged);
-        resolutionDropdown.onValueChanged.AddListener(OnDropdownChanged);
+        // resolutionDropdown.onValueChanged.AddListener(OnDropdownChanged);
     }
 
     private void OnDisable()
     {
         inputWidth.onEndEdit.RemoveListener(OnWidthChanged);
         inputHeight.onEndEdit.RemoveListener(OnHeightChanged);
-        resolutionDropdown.onValueChanged.RemoveListener(OnDropdownChanged);
+        // resolutionDropdown.onValueChanged.RemoveListener(OnDropdownChanged);
     }
 
     public void OnWidthChanged(string value)
@@ -91,11 +92,10 @@ public class ResolutionSelectController : MonoBehaviour
             }
         }
     }
-
-    private void OnDropdownChanged(int index)
+    public void OnSelection()
     {
-        Debug.Log("OnDropdownChanged");
-        string[] values = resolutionDropdown.options[index].text.Split('X');
+        Debug.Log("OnSelection");
+        string[] values = resolutionDropdown.options[resolutionDropdown.value].text.Split('X');
         if (values.Length == 2 && int.TryParse(values[0].Trim(), out int x) && int.TryParse(values[1].Trim(), out int y))
         {
             previewData.ResolutionWidth = x;
