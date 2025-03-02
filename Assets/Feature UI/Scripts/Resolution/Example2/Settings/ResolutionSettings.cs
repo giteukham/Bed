@@ -95,7 +95,7 @@ public class ResolutionSettingsData : INotifyPropertyChanged
 
     private T GetSetting<T>(ResolutionSettingType type) => (T)settings[type];
  
-    private void SetSetting<T>(ResolutionSettingType type, T value)
+    private T SetSetting<T>(ResolutionSettingType type, T value)
     {
         if (validationRules.ContainsKey(type)) // 해상도 높이와 넓이만 규칙 적용됨
         {
@@ -103,6 +103,8 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         }
         settings[type] = value;
         OnPropertyChanged(type.ToString());
+        if (settings[type] != null) return value; // 규칙 적용 후 값 반환
+        else return default;
     }
 
     public int ResolutionWidth
@@ -110,8 +112,10 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         get => GetSetting<int>(ResolutionSettingType.ResolutionWidth);
         set
         {
-            SetSetting(ResolutionSettingType.ResolutionWidth, value);
-            int targetHieght = (int)Mathf.Round(value / ratio);
+            int validationValue = SetSetting(ResolutionSettingType.ResolutionWidth, value);
+            validationValue = validationValue == default ? value : validationValue; // 반환 값이 없으면 그대로 : 있으면 그 값으로 설정
+
+            int targetHieght = (int)Mathf.Round(validationValue / ratio);
             if (ResolutionHeight != targetHieght)
                 ResolutionHeight = targetHieght;
         }
@@ -122,8 +126,10 @@ public class ResolutionSettingsData : INotifyPropertyChanged
         get => GetSetting<int>(ResolutionSettingType.ResolutionHeight);
         set
         {
-            SetSetting(ResolutionSettingType.ResolutionHeight, value);
-            int targetWidth = (int)Mathf.Round(value * ratio);
+            int validationValue = SetSetting(ResolutionSettingType.ResolutionHeight, value);
+            validationValue = validationValue == default ? value : validationValue; // 반환 값이 없으면 그대로 : 있으면 그 값으로 설정
+
+            int targetWidth = (int)Mathf.Round(validationValue * ratio);
             if (ResolutionWidth != targetWidth)
                 ResolutionWidth = targetWidth;
         }

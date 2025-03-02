@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ResolutionSelectController : MonoBehaviour
+public class ResolutionSelectController : FunctionControllerBase
 {
-    private ResolutionSettingsData previewData;
     [SerializeField] private TMP_InputField inputWidth, inputHeight;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
     private int minWidth, minHeight, maxWidth, maxHeight;
@@ -16,8 +16,7 @@ public class ResolutionSelectController : MonoBehaviour
 
     public void Initialize(ResolutionSettingsData previewData)
     {
-        this.previewData = previewData;
-        
+        base.Initialize(previewData, backupData);
         resolutionDropdown.ClearOptions();
 
         //ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
@@ -99,6 +98,18 @@ public class ResolutionSelectController : MonoBehaviour
         {
             previewData.ResolutionWidth = x;
             previewData.ResolutionHeight = y;
+        }
+    }
+
+    protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionWidth))
+        {
+            inputWidth.text = previewData.ResolutionWidth.ToString();
+        }
+        else if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionHeight))
+        {
+            inputHeight.text = previewData.ResolutionHeight.ToString();
         }
     }
 }

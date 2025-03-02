@@ -64,7 +64,6 @@ public class ResolutionSettingsPanel : MonoBehaviour
     {
         this.previewData = preivewData;
         this.backupData = backupData;
-        previewData.PropertyChanged += OnPropertyChanged;
         
         Assert.IsNotNull(postProcessing, $"{path}Post Processing is null");
         Assert.IsNotNull(brightnessCheckImage, $"{path}Brightness Check Image is null");
@@ -75,18 +74,6 @@ public class ResolutionSettingsPanel : MonoBehaviour
         frameRateController?.Initialize(previewData, backupData, frameRateDropdown);
         windowModeController?.Initialize(previewData, backupData, windowModeToggle);
         displayBrightnessController?.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
-    }
-    
-    private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionWidth))
-        {
-            resolutionWidthInput.text = previewData.ResolutionWidth.ToString();
-        }
-        else if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionHeight))
-        {
-            resolutionHeightInput.text = previewData.ResolutionHeight.ToString();
-        }
     }
     
     public void ApplyBrightness(float brightness)
