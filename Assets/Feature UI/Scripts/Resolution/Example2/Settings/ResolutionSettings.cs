@@ -79,6 +79,8 @@ public class ResolutionSettingsData : INotifyPropertyChanged
     // 규칙 저장 Dictionary
     private readonly Dictionary<ResolutionSettingType, IResolutionRule> validationRules = new();
 
+    private float ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
+
     public ResolutionSettingsData()
     { 
         ResolutionSettingType[] keys = (ResolutionSettingType[])Enum.GetValues(typeof(ResolutionSettingType));
@@ -106,13 +108,25 @@ public class ResolutionSettingsData : INotifyPropertyChanged
     public int ResolutionWidth
     {
         get => GetSetting<int>(ResolutionSettingType.ResolutionWidth);
-        set => SetSetting(ResolutionSettingType.ResolutionWidth, value);
+        set
+        {
+            SetSetting(ResolutionSettingType.ResolutionWidth, value);
+            int targetHieght = (int)Mathf.Round(value / ratio);
+            if (ResolutionHeight != targetHieght)
+                ResolutionHeight = targetHieght;
+        }
     }
 
     public int ResolutionHeight
     {
         get => GetSetting<int>(ResolutionSettingType.ResolutionHeight);
-        set => SetSetting(ResolutionSettingType.ResolutionHeight, value);
+        set
+        {
+            SetSetting(ResolutionSettingType.ResolutionHeight, value);
+            int targetWidth = (int)Mathf.Round(value * ratio);
+            if (ResolutionWidth != targetWidth)
+                ResolutionWidth = targetWidth;
+        }
     }
 
     public int FrameRate

@@ -11,7 +11,7 @@ public class ResolutionSelectController : MonoBehaviour
     [SerializeField] private TMP_InputField inputWidth, inputHeight;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
     private int minWidth, minHeight, maxWidth, maxHeight;
-    private float ratio;
+    //private float ratio;
     List<Vector2Int> resolutions = new();
 
     public void Initialize(ResolutionSettingsData previewData)
@@ -20,7 +20,7 @@ public class ResolutionSelectController : MonoBehaviour
         
         resolutionDropdown.ClearOptions();
 
-        ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
+        //ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
         minWidth = Display.main.systemWidth / 4;
         minHeight = Display.main.systemHeight / 4;
         maxWidth = Display.main.systemWidth;
@@ -60,7 +60,7 @@ public class ResolutionSelectController : MonoBehaviour
         if (int.TryParse(value, out int x))
         {
             previewData.ResolutionWidth = x;
-            previewData.ResolutionHeight = (int)Mathf.Round(x / ratio);
+            // previewData.ResolutionHeight = (int)Mathf.Round(x / ratio);
             
             foreach (Vector2Int resolution in resolutions)
             {
@@ -79,7 +79,7 @@ public class ResolutionSelectController : MonoBehaviour
         if (int.TryParse(value, out int y))
         {
             previewData.ResolutionHeight = y;
-            previewData.ResolutionWidth = (int)Mathf.Round(y * ratio);
+            //previewData.ResolutionWidth = (int)Mathf.Round(y * ratio);
 
             foreach (Vector2Int resolution in resolutions)
             {
@@ -94,7 +94,6 @@ public class ResolutionSelectController : MonoBehaviour
     }
     public void OnSelection()
     {
-        Debug.Log("OnSelection");
         string[] values = resolutionDropdown.options[resolutionDropdown.value].text.Split('X');
         if (values.Length == 2 && int.TryParse(values[0].Trim(), out int x) && int.TryParse(values[1].Trim(), out int y))
         {
