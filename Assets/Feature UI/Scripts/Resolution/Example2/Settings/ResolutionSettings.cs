@@ -23,21 +23,23 @@ public interface IResolutionRule
 
 public class ResolutionWidthRule : IResolutionRule
 {
+    int minWidth = Display.main.systemWidth / 4;
+    int maxWidth = Display.main.systemWidth;
     public object Validate(object value)
     {
         int width = (int)value;
-        // return null 지우고 규칙 내용 추가
-        return width;
+        return Mathf.Clamp(width, minWidth, maxWidth);
     }
 }
 
 public class ResolutionHeightRule : IResolutionRule
 {
+    int minHeight = Display.main.systemHeight / 4;
+    int maxHeight = Display.main.systemHeight;
     public object Validate(object value)
     {
         int height = (int)value;
-        // return null 지우고 규칙 내용 추가
-        return height;
+        return Mathf.Clamp(height, minHeight, maxHeight);
     }
 }
 
@@ -93,17 +95,12 @@ public class ResolutionSettingsData : INotifyPropertyChanged
  
     private void SetSetting<T>(ResolutionSettingType type, T value)
     {
-        if (validationRules.ContainsKey(type))
+        if (validationRules.ContainsKey(type)) // 해상도 높이와 넓이만 규칙 적용됨
         {
             value = (T)validationRules[type].Validate(value);
         }
-
-        if (settings[type] == null || !settings[type].Equals(value))
-        {
-            Debug.Log($"{type} : {settings[type]} -> {value}");
-            settings[type] = value;
-            OnPropertyChanged(type.ToString());
-        }
+        settings[type] = value;
+        OnPropertyChanged(type.ToString());
     }
 
     public int ResolutionWidth
@@ -188,10 +185,10 @@ public class ResolutionSettings : MonoBehaviour
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
     }
 
-    private void OnEnable()
-    {
-        previewData.ChangeData(backupData);
-    }
+    // private void OnEnable()
+    // {
+    //     previewData.ChangeData(backupData);
+    // }
 
     public void ApplyResolutionSettings() // ApplyButton 오브젝트에 할당
     {

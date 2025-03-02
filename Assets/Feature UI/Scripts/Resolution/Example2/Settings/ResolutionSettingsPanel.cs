@@ -69,9 +69,9 @@ public class ResolutionSettingsPanel : MonoBehaviour
         Assert.IsNotNull(postProcessing, $"{path}Post Processing is null");
         Assert.IsNotNull(brightnessCheckImage, $"{path}Brightness Check Image is null");
         Assert.IsNotNull(brightnessHandleImage, $"{path}Brightness Handle Image is null");
-        displayBrightnessController.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
-        //resolutionSelectController.Initialize(previewData);
+        //displayBrightnessController.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
         
+        resolutionSelectController.Initialize(previewData);
         frameRateController?.Initialize(previewData, backupData, frameRateDropdown);
         windowModeController?.Initialize(previewData, backupData, windowModeToggle);
         displayBrightnessController?.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
