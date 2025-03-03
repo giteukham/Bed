@@ -1,25 +1,22 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+
 public class InsideNavigationBar : MonoBehaviour, IPointerClickHandler
 {
-    //private ResolutionManagement resolutionManagement;
-
-    private void Awake()
-    {
-        //resolutionManagement = ResolutionManagement.Instance;
-    }
+    public OnZoomEvent onZoom = new OnZoomEvent();
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        //resolutionManagement.DoZoom(eventData);
+        if (eventData.clickCount == 2) onZoom?.Invoke();
     }
 
     public void SetNavigationBarActive(bool active)
     {
-        gameObject.SetActive(active);
+        gameObject?.SetActive(active);
     }
 }
