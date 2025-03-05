@@ -323,13 +323,13 @@ public class GameManager : MonoSingleton<GameManager>
 
         if (Input.GetKeyDown(KeyCode.BackQuote) && Input.GetKey(KeyCode.LeftShift)) debugColiderImage.SetActive(!debugColiderImage.activeSelf);
 
-        if (Input.GetKeyDown(KeyCode.F) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, 10);
+        if (Input.GetKeyDown(KeyCode.N) && !Input.GetKey(KeyCode.LeftShift)) PlayerLevelController.Instance.OnNoiseChanged.Invoke(10);
 
-        if (Input.GetKeyDown(KeyCode.F) && Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, -10);
+        if (Input.GetKeyDown(KeyCode.N) && Input.GetKey(KeyCode.LeftShift)) PlayerLevelController.Instance.OnNoiseChanged.Invoke(-10);
 
-        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, 10);
+        if (Input.GetKeyDown(KeyCode.S) && !Input.GetKey(KeyCode.LeftShift)) PlayerLevelController.Instance.OnStressChanged.Invoke(10);
 
-        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)) GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, -10);
+        if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift))PlayerLevelController.Instance.OnStressChanged.Invoke(-10);
 
         int hour = TimeManager.playTimeToMin >= 60 ? 11 + TimeManager.playTimeToMin / 60 - 12 : 11 + TimeManager.playTimeToMin / 60;
         int minute = TimeManager.playTimeToMin % 60;
@@ -340,10 +340,9 @@ public class GameManager : MonoSingleton<GameManager>
                 $"<size=130%><b>Play Time: <color=#ff808f></b>{TimeManager.playTimeToMin}/480</color></size>\n" +
                 $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
-                $"<size=120%><b>Stress Gauge: <color=#80ffff></b>{PlayerConstant.stressGauge} / 100</color></size>\n" +
-                $"<size=120%><b>Fear Gauge: <color=#80ffff></b>{PlayerConstant.fearGauge} / 100</color></size>\n" +
+                $"<size=120%><b>Stress Gauge: <color=#80ffff></b>{PlayerConstant.stressLevel} / 100</color></size>\n" +
+                $"<size=120%><b>Noise Level: <color=#80ffff></b>{PlayerConstant.noiseLevel} / 100</color></size>\n" +
                 $"haedMoveSpeed: <color=#80ffff>{PlayerConstant.headMoveSpeed}</color>\n" +
-                $"isParalysis: <color=#80ffff>{PlayerConstant.isParalysis}</color>\n" +
                 $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
                 $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
                 $"EyeBlinkCAT: <color=yellow>{PlayerConstant.EyeBlinkCAT}</color>\n" +

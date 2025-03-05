@@ -54,8 +54,8 @@ public class CoverGimcik : Gimmick
         animator.Play("CoverEye");
 
         yield return new WaitForSeconds(0.16f);
-        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
-        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +10);
+        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
+        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +10);
 
         AudioManager.Instance.PlaySound(AudioManager.Instance.roughBreath, this.transform.position);
 

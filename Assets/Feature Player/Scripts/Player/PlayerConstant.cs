@@ -6,13 +6,13 @@ public static class PlayerConstant
 {
     #region Player Stats 
     //게이지
-    public static int stressGauge = 0, fearGauge = 0;
-    public static int stressGaugeMax = 100, fearGaugeMax = 100;
-    public static int stressGaugeMin = 0, fearGaugeMin = 0;
+    public static int stressLevel = 0, noiseLevel = 0;
+    public static int stressLevelMax = 100, noiseLevelMax = 100;
+    public static int stressLevelMin = 0, noiseLevelMin = 0;
     public static float headMoveSpeed = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
-    public static bool isFainting, isParalysis, isShock = false;
+    public static bool isShock = false;
     public static bool isPlayerStop = false;
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)

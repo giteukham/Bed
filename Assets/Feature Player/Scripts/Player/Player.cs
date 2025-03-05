@@ -78,7 +78,7 @@ public class Player : PlayerBase
     #endregion
     
     #region Sound Effect Variables
-    private float currentFearSFXVolume, currentStressSFXVolume, currentHeadMoveSFXVolume;
+    private float currentStressSFXVolume, currentHeadMoveSFXVolume;
     #endregion
 
     private void Start()
@@ -98,8 +98,6 @@ public class Player : PlayerBase
         //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
-        // fearHal 임시로 뺌뺌
-        //AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
 
         pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
@@ -115,11 +113,10 @@ public class Player : PlayerBase
             timeSinceLastUpdate = 0f;
         }
         UpdateCamera();
-        UpdateGauge();
-        SetPlayerState();
         UpdatePostProcessing();
         UpdateSFX();
         StopPlayer();
+        LevelUpdate();
         coneCollider.SetColider();
         
         #if UNITY_EDITOR
@@ -223,11 +220,6 @@ public class Player : PlayerBase
 
     private void UpdateCamera()
     {
-        // if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 4f;
-        // else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 3f;
-        // else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 2f;
-        // else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 1f;
-
         StartCoroutine(StressShake());
     }
 
@@ -237,37 +229,24 @@ public class Player : PlayerBase
         {
             float shakeIntensity = 0f;
 
-            if      (PlayerConstant.stressGauge >= 80) shakeIntensity = 1.3f;
-            else if (PlayerConstant.stressGauge >= 65) shakeIntensity = 0.75f;
-            else if (PlayerConstant.stressGauge >= 50) shakeIntensity = 0.35f;
-            else if (PlayerConstant.stressGauge >= 25) shakeIntensity = 0.1f;
-            else if (PlayerConstant.stressGauge < 25)  shakeIntensity = 0f;
+            if      (PlayerConstant.stressLevel >= 80) shakeIntensity = 1.3f;
+            else if (PlayerConstant.stressLevel >= 65) shakeIntensity = 0.75f;
+            else if (PlayerConstant.stressLevel >= 50) shakeIntensity = 0.35f;
+            else if (PlayerConstant.stressLevel >= 25) shakeIntensity = 0.1f;
+            else if (PlayerConstant.stressLevel < 25)  shakeIntensity = 0f;
 
             playerVirtualCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
             yield return new WaitForSeconds(0.1f);
         }
     }
 
-
-    private void UpdateGauge() 
-    {
-        if (PlayerConstant.stressGauge >= PlayerConstant.stressGaugeMax) PlayerConstant.isFainting = true;
-        else PlayerConstant.isFainting = false;
-        
-        if (PlayerConstant.fearGauge >= PlayerConstant.fearGaugeMax) PlayerConstant.isParalysis = true;
-        else PlayerConstant.isParalysis = false;
-
-        PlayerConstant.stressGauge = Mathf.Clamp(PlayerConstant.stressGauge, PlayerConstant.stressGaugeMin, PlayerConstant.stressGaugeMax);
-        PlayerConstant.fearGauge = Mathf.Clamp(PlayerConstant.fearGauge, PlayerConstant.fearGaugeMin, PlayerConstant.fearGaugeMax);
-    }
-
     private void UpdatePostProcessing()
     {
         StartCoroutine(ChromaticAberrationEffect());
-        grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
+        grain.intensity.value = PlayerConstant.stressLevel * 0.01f;
 
-        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(pixelationFactor, pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
-        colorGrading.saturation.value = -PlayerConstant.fearGauge;
+        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(pixelationFactor, pixelationFactor * 0.4f, PlayerConstant.stressLevel / 100f);
+        colorGrading.saturation.value = -PlayerConstant.stressLevel;
 
         depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
         if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
@@ -280,9 +259,9 @@ public class Player : PlayerBase
     {
         while (true)
         {
-            chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f;
+            chromaticAberration.intensity.value = PlayerConstant.stressLevel * 0.01f;
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.03f, 0.12f));
-            chromaticAberration.intensity.value = PlayerConstant.stressGauge * 0.01f / UnityEngine.Random.Range(2f, 4f);
+            chromaticAberration.intensity.value = PlayerConstant.stressLevel * 0.01f / UnityEngine.Random.Range(2f, 4f);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.03f, 0.1f));
         }
     }
@@ -290,33 +269,16 @@ public class Player : PlayerBase
     private void UpdateSFX()
     {
         // 위치 조정
-        //AudioManager.Instance.SetPosition(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.stressHal, transform.position);
-        // 위치 조정
         
         // -------------------------------------머리 움직임 효과음
         pillowSound.PlaySound();
         
         // -------------------------------------게이지 효과음
-        float targetFearSFXVolume, targetStressSFXVolume;
+        float targetStressSFXVolume;
 
-        if (PlayerConstant.fearGauge < 40) targetFearSFXVolume = 0.0f;
-        else targetFearSFXVolume = Mathf.Clamp((PlayerConstant.fearGauge - 39) / 60f, 0f, 1f);
-
-        if (PlayerConstant.stressGauge < 25) targetStressSFXVolume = 0.0f;
-        else targetStressSFXVolume = Mathf.Clamp((PlayerConstant.stressGauge - 25) / 75f, 0f, 1f);
-
-        if (currentFearSFXVolume > targetFearSFXVolume)
-        {
-            currentFearSFXVolume -= 0.1f * Time.deltaTime;
-            currentFearSFXVolume = Mathf.Max(currentFearSFXVolume, targetFearSFXVolume);
-        }
-
-        if (currentFearSFXVolume < targetFearSFXVolume)
-        {
-            currentFearSFXVolume += 0.1f * Time.deltaTime;
-            currentFearSFXVolume = Mathf.Min(currentFearSFXVolume, targetFearSFXVolume);
-        }
+        if (PlayerConstant.stressLevel < 25) targetStressSFXVolume = 0.0f;
+        else targetStressSFXVolume = Mathf.Clamp((PlayerConstant.stressLevel - 25) / 75f, 0f, 1f);
 
         if (currentStressSFXVolume > targetStressSFXVolume)
         {
@@ -330,7 +292,6 @@ public class Player : PlayerBase
             currentStressSFXVolume = Mathf.Min(currentStressSFXVolume, targetStressSFXVolume);
         }
 
-        //AudioManager.Instance.VolumeControl(AudioManager.Instance.fearHal, currentFearSFXVolume);
         AudioManager.Instance.VolumeControl(AudioManager.Instance.stressHal, currentStressSFXVolume);
         // -------------------------------------게이지 효과음
     }
@@ -343,21 +304,12 @@ public class Player : PlayerBase
             playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
         }
     }
-    
-    private void SetPlayerState()
-    {   
-        if (PlayerConstant.isParalysis)
-        {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 5f;
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 5f;
-        }
-        else
-        {
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
-            playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
-        }
-    }
 
+    private void LevelUpdate()
+    {
+        if (PlayerConstant.headMoveSpeed > 4) PlayerLevelController.Instance.AdjustNoise(0);
+    }
+    
     public void EnablePlayerObject(bool isActivate)
     {
         gameObject?.SetActive(isActivate);

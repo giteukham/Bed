@@ -66,13 +66,13 @@ public class ClapGimcik : Gimmick
     private IEnumerator MainCode()
     {
         Door.Set(45, 0.7f); // 방문 열기
-        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
-        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +5);
+        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
+        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +5);
         yield return new WaitForSeconds(1.3f);
         LivingRoomLightSwitch.SwitchAction(true);   // 복도 불 켜기
 
         yield return new WaitForSeconds(0.4f);
-        GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Fear, +5);
+        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +5);
         animator.Play("Clapping");
 
         yield return new WaitForSeconds(1.5f);

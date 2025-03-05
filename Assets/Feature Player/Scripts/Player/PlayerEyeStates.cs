@@ -139,6 +139,7 @@ public class PlayerEyeStates
             PlayerConstant.EyeBlinkLAT++;
             PlayerConstant.EyeClosedCAT += Time.deltaTime;
             PlayerConstant.EyeClosedLAT += Time.deltaTime;
+            PlayerLevelController.Instance.OnNoiseChanged.Invoke(1);
             await UniTask.Delay(150);
             elapsedTime = 0f;
 
