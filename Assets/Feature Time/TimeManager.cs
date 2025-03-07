@@ -184,14 +184,4 @@ public class TimeManager : MonoBehaviour
     {
         playTimeToMin = 0;
     }   
-
-    /// <summary>
-    /// 게임 시간 파라미터 값 만큼 빼기
-    /// </summary>
-    /// <param name="_time"></param>
-    public static void BackPlayTime(int _time)
-    {
-        if(playTimeToMin < _time) playTimeToMin = 0;
-        else playTimeToMin -= _time;
-    }
 }

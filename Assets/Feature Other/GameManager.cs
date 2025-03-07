@@ -189,6 +189,7 @@ public class GameManager : MonoSingleton<GameManager>
         LivingRoomLightSwitch.SwitchAction(true);
         player.EyeControl(PlayerEyeStateTypes.Close);
         timeManager.gameObject.SetActive(false);
+        PlayerLevelController.Instance.Initialize();
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
         TutorialManager.Instance.isEyeOpenTutorialActivate = false;
@@ -255,6 +256,9 @@ public class GameManager : MonoSingleton<GameManager>
         //LivingRoomLightSwitch.SwitchAction(false);
         yield return new WaitForSeconds(game_Start_BeforeDelayTime);
         timeManager.gameObject.SetActive(true);
+        PlayerLevelController.Instance.OnGameStart();
+        PlayerConstant.ResetAllStats();
+
     }
     
     private void GameOver()
@@ -341,6 +345,7 @@ public class GameManager : MonoSingleton<GameManager>
                 $"<size=120%><b>Camera Horizontal Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.y}</color></size>\n" +
                 $"<size=120%><b>Camera Vertical Value: <color=#80ffff></b>{mainCamera.transform.eulerAngles.x}</color></size>\n" +
                 $"<size=120%><b>Stress Gauge: <color=#80ffff></b>{PlayerConstant.stressLevel} / 100</color></size>\n" +
+                $"<size=120%><b>Noise Stage: <color=#80ffff></b>{PlayerConstant.noiseStage}</color></size>\n" +
                 $"<size=120%><b>Noise Level: <color=#80ffff></b>{PlayerConstant.noiseLevel} / 100</color></size>\n" +
                 $"haedMoveSpeed: <color=#80ffff>{PlayerConstant.headMoveSpeed}</color>\n" +
                 $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +

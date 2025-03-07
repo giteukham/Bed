@@ -101,9 +101,26 @@ public class TutorialManager : MonoSingleton<TutorialManager>
         float randomNum = UnityEngine.Random.Range(3.5f, 5f);
         yield return new WaitForSeconds(ready_CheckTime + randomNum);
         cockroach.gameObject.SetActive(true);
-        
+        if (isEyeOpenTutorialActivate)
+        {
+            BlinkTutorial(false);
+            LeftMoveTutorialStart();
+            yield break;
+        }
         yield return new WaitForSeconds(blink_ActiveTime);
+        if (isEyeOpenTutorialActivate)
+        {
+            BlinkTutorial(false);
+            LeftMoveTutorialStart();
+            yield break;
+        }
         BlinkTutorial(true);
+        if (isEyeOpenTutorialActivate)
+        {
+            BlinkTutorial(false);
+            LeftMoveTutorialStart();
+            yield break;
+        }
 
         while(true)
         {

@@ -6,9 +6,10 @@ public static class PlayerConstant
 {
     #region Player Stats 
     //∞‘¿Ã¡ˆ
-    public static int stressLevel = 0, noiseLevel = 0;
-    public static int stressLevelMax = 100, noiseLevelMax = 100;
-    public static int stressLevelMin = 0, noiseLevelMin = 0;
+    public static int stressLevel = 0, noiseLevel = 0, noiseStage = 0;
+    public static int stressLevelMax, noiseLevelMax = 100;
+    public static int stressLevelMin, noiseLevelMin = 0;
+    public static int noiseStageMax = 10, noiseStageMin = -10;
     public static float headMoveSpeed = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
@@ -178,6 +179,30 @@ public static class PlayerConstant
         FrontLookLAT = 0;
         UpLookLAT = 0;
         DownLookLAT = 0;
+    }
+
+    public static void ResetCATStats()
+    {
+        EyeClosedCAT = 0;
+        EyeBlinkCAT = 0;
+        HeadMovementCAT = 0;
+        BodyMovementCAT = 0;
+        LeftStateCAT = 0;
+        RightStateCAT = 0;
+        MiddleStateCAT = 0;
+        LeftLookCAT = 0;
+        LeftFrontLookCAT = 0;
+        RightLookCAT = 0;
+        RightFrontLookCAT = 0;
+        FrontLookCAT = 0;
+        UpLookCAT = 0;
+        DownLookCAT = 0;
+    }
+
+    public static void ResetAllStats()
+    {
+        ResetLATStats();
+        ResetCATStats();
     }
 
     #region Player Eye Control Constants
