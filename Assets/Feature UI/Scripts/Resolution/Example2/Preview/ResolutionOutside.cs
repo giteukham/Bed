@@ -1,5 +1,6 @@
 
 using System;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -11,24 +12,59 @@ public class ResolutionOutside : MonoBehaviour
     [SerializeField]
     private RectTransform blankRect;
 
-    private ResolutionPreviewPanel.UIPreviewData uiData;
+    private ResolutionSettingsData previewData;
+    private ResolutionSettingsDTO backupData;
+    private DynamicUIData dynamicUIData;
     
-    private readonly int blankSizeDecrease = 30;            // Blank 사이즈를 줄이기 위한 값   
+    private readonly float outsideMaxAspectRatio = 1920f / 1080f;           // 가로 비율 / 세로 비율
+    private readonly float outsideMaxReverseAspectRatio = 1080f / 1920f;    // 세로 비율 / 가로 비율
+    private readonly int blankSizeDecrease = 30;                            // Blank 사이즈를 줄이기 위한 값   
     private readonly string path = "Menu UI/Resolution Settings Screen/Preview Panel/Outside/";
+
+    private readonly Color fullScreenBlankColor = Color.black;
+    private readonly Color windowScreenBlankColor = Color.gray;
     
-    public void Initialize(ResolutionPreviewPanel.UIPreviewData uiData)
+    public void Initialize(ResolutionSettingsData previewData, ResolutionSettingsDTO backupData, DynamicUIData dynamicUIData)
     {
         Assert.IsNotNull(blankRect, $"{path}BlankRect is null");
         
+        this.previewData = previewData;
+        this.backupData = backupData;
+        this.dynamicUIData = dynamicUIData;
+        
+        this.previewData.PropertyChanged += OnPropertyChanged;
+        
         outsideRect = GetComponent<RectTransform>();
-        this.uiData = uiData;
+    }
+
+    private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionWidth) ||
+            e.PropertyName == nameof(ResolutionSettingsData.ResolutionHeight))
+        {
+            ResizeOutside();
+        }
+        
+        // 전체모드일 땐 Blank가 검은색, 창모드일 땐 회색
+        if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
+        {
+            ChangeBlankColor(previewData.IsWindowed ? windowScreenBlankColor : fullScreenBlankColor);
+        }
     }
 
     private void OnEnable()
     {
-        //aspectRatio = (float) previewData.ResolutionWidth / previewData.ResolutionHeight;
-        uiData.AspectRatio = (float)Display.main.systemWidth / Display.main.systemHeight; // TODO: 임시 값. 나중에 위 코드로 변경,
-        outsideRect.sizeDelta = new Vector2(uiData.OutSideMaxSize.x, uiData.OutSideMaxSize.y + (blankSizeDecrease * 0.5f));
-        blankRect.sizeDelta = new Vector2(uiData.InsideMaxSize.x, uiData.InsideMaxSize.y);
+        ResizeOutside();
+    }
+    
+    private void ResizeOutside()
+    {
+        outsideRect.sizeDelta = dynamicUIData.OutSideSize;
+        blankRect.sizeDelta = dynamicUIData.BlankSize;
+    }
+
+    private void ChangeBlankColor(Color color)
+    {
+        blankRect.GetComponent<UnityEngine.UI.Image>().color = color;
     }
 }

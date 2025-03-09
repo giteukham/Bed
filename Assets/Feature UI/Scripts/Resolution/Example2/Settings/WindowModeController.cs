@@ -23,9 +23,9 @@ public class WindowModeController : FunctionControllerBase
     {
         Assert.IsNotNull(windowModeToggle, $"{path}Window Mode Toggle is null");
         
-        windowModeToggle.isOn = previewData.IsWindowed;
         windowModeToggle.onValueChanged.AddListener(OnWindowModeToggleChanged);
-        switchAnimator.SetBool("IsOn", previewData.IsWindowed);
+        windowModeToggle.isOn = backupData.IsWindowed;
+        switchAnimator.SetBool("IsOn", backupData.IsWindowed);
     }
 
     private void OnDisable()
@@ -42,9 +42,7 @@ public class WindowModeController : FunctionControllerBase
     {
         if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
         {
-            windowModeToggle.isOn = previewData.IsWindowed;
             switchAnimator.SetBool("IsOn", previewData.IsWindowed);
-            Screen.fullScreen = previewData.IsWindowed;
         }
     }
 }

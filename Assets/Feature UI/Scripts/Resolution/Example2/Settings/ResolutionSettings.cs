@@ -194,29 +194,25 @@ public class ResolutionSettings : MonoBehaviour
         previewData =  new ResolutionSettingsData();
         backupData = SaveManager.Instance.LoadResolutionSettings();
         
-        resolutionSettingsPanel?.Initialize(previewData, backupData);
-        resolutionPreviewPanel?.Initialize(previewData, backupData);
-
         previewData.ChangeData(backupData);
         
-        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
+        resolutionSettingsPanel?.Initialize(previewData, backupData);
+        resolutionPreviewPanel?.Initialize(previewData, backupData);
+        
+        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, !backupData.IsWindowed);
         Application.targetFrameRate = backupData.FrameRate;
         if (QualitySettings.vSyncCount != 1) QualitySettings.vSyncCount = 1;
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
     }
 
-    // private void OnEnable()
-    // {
-    //     previewData.ChangeData(backupData);
-    // }
-
     public void ApplyResolutionSettings() // ApplyButton 오브젝트에 할당
     {
         backupData.ChangeData(previewData);
-        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.IsWindowed);
+        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, !backupData.IsWindowed);
         Application.targetFrameRate = backupData.FrameRate;
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
         resolutionSettingsPanel.ApplyBrightness(backupData.ScreenBrightness);
+        resolutionPreviewPanel.SetResolutionText(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.FrameRate, false);
         SaveManager.Instance.SaveResolutionSettings(backupData); // 해상도 설정 저장
     }
 }

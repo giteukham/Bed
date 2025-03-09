@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,6 +14,8 @@ public class ResolutionSelectController : FunctionControllerBase
     private int minWidth, minHeight, maxWidth, maxHeight;
     //private float ratio;
     List<Vector2Int> resolutions = new();
+
+    public Action OnSelectChanged;
 
     public void Initialize(ResolutionSettingsData previewData)
     {
@@ -99,6 +102,7 @@ public class ResolutionSelectController : FunctionControllerBase
             previewData.ResolutionWidth = x;
             previewData.ResolutionHeight = y;
         }
+        OnSelectChanged?.Invoke();
     }
 
     protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

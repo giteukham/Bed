@@ -6,9 +6,9 @@ public static class ResolutionUtility
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="width">ÇØ»óµµ Width</param>
-    /// <param name="height">ÇØ»óµµ Height</param>
-    /// <param name="sizeInDecreaseRate">UI »çÀÌÁî¸¦ ±¸ÇÏ±â À§ÇØ ³ª´²Áö°Å³ª °öÇØÁö´Â °ª. ¿¹¸¦ µé¾î 1920 / 3 = 640ÀÌ¸é UI Width´Â 640</param>
+    /// <param name="width">ï¿½Ø»ï¿½ Width</param>
+    /// <param name="height">ï¿½Ø»ï¿½ Height</param>
+    /// <param name="sizeInDecreaseRate">UI ï¿½ï¿½ï¿½ï¿½ï¿½î¸¦ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 1920 / 3 = 640ï¿½Ì¸ï¿½ UI Widthï¿½ï¿½ 640</param>
     /// <returns></returns>
     public static Vector2[] ConvertResolutionToOffset(int width, int height, float sizeInDecreaseRate = 3)
     {
@@ -20,7 +20,7 @@ public static class ResolutionUtility
         return new[] { offsetMin, offsetMax };
     }
 
-    public static Vector2 ConvertResolutionToSize(int width, int height, float sizeInDecreaseRate = 3)
+    public static Vector2 ConvertResolutionToSize(int width, int height, float sizeInDecreaseRate = 3f)
     {
         var sizeWidth = width / sizeInDecreaseRate;
         var sizeHeight = height / sizeInDecreaseRate;
@@ -30,9 +30,39 @@ public static class ResolutionUtility
     
     public static Vector2[] ConvertSizeToOffset(Vector2 size)
     {
-        var offsetMin = new Vector2(-size.x / 2, -size.y / 2);
-        var offsetMax = new Vector2(size.x / 2, size.y / 2);
+        var offsetMin = new Vector2(-size.x / 2f, -size.y / 2f);
+        var offsetMax = new Vector2(size.x / 2f, size.y / 2f);
 
         return new[] { offsetMin, offsetMax };
     }
+    
+    public static Vector2Int ConvertSizeToResolution(Vector2 size, float sizeInDecreaseRate = 3)
+    {
+        var width = size.x * sizeInDecreaseRate;
+        var height = size.y * sizeInDecreaseRate;
+        
+        return new Vector2Int(Mathf.CeilToInt(width), Mathf.CeilToInt(height));
+    }
+    
+    public static Vector2 ConvertOffsetsToSize(Vector2[] offset)
+    {
+        var sizeWidth = offset[1].x - offset[0].x;
+        var sizeHeight = offset[1].y - offset[0].y;
+        
+        return new Vector2(sizeWidth, sizeHeight);
+    }
+    
+    public static Vector2 ConvertOffsetsToResolution(Vector2[] offset, float sizeInDecreaseRate = 3)
+    {
+        var size = ConvertOffsetsToSize(offset);
+        var resolution = ConvertSizeToResolution(size, sizeInDecreaseRate);
+        
+        return resolution;
+    }
+
+    public static Vector2 Max(Vector2 a, Vector2 b)
+    {
+        return new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+    }
+ 
 }

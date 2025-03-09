@@ -4,71 +4,150 @@ using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class ResolutionPreviewPanel : MonoBehaviour
+public static class StaticUIData
 {
-    /// <summary>
-    /// Aspect Ratio를 먼저 넣어줄 것
-    /// </summary>
-    public class UIPreviewData
-    {
-        // Inside는 Outside - 30
-        private Vector2 outsideMaxSize, insideMaxSize;
-        private Vector2 outsideMinSize, insideMinSize;
-        private float aspectRatio, reverseAspectRatio;
+    public static readonly Vector2 OutsideMaxBaseSize = new(670, 390);      // Outside 최대 기준 사이즈.
+    public static readonly float BaseAspectRatio = 16f / 9f;
+    public static readonly float BaseReverseAspectRatio = 9f / 16f;
+    public static readonly int BaseWidth = 1920;
+    public static readonly int BaseHeight = 1080;
+    public static readonly float OutsideAndInsideDistance = 30f;
+}
 
-        public float AspectRatio
-        {
-            get => aspectRatio;
-            set
-            {
-                aspectRatio = value;
-                reverseAspectRatio = 1 / aspectRatio;
-            }
-        }
-        public float ReverseAspectRatio => reverseAspectRatio;
-        public Vector2 OutSideMaxSize
-        {
-            get
-            {
-                if (Mathf.Approximately(AspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
-                outsideMaxSize.y = outsideMaxSize.x * reverseAspectRatio;
-                return outsideMaxSize;
-            }
-            set => outsideMaxSize = value;
-        }
-        public Vector2 InsideMaxSize
-        {
-            get
-            {
-                if (Mathf.Approximately(AspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
-                insideMaxSize.y = insideMaxSize.x * reverseAspectRatio;
-                return insideMaxSize;
-            }
-            set => insideMaxSize = value;
-        }
-        public Vector2 OutSideMinSize
-        {
-            get
-            {
-                if (Mathf.Approximately(AspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
-                outsideMinSize.y = outsideMinSize.x * reverseAspectRatio;
-                return outsideMinSize;
-            }
-            set => outsideMinSize = value;
-        }
-        public Vector2 InsideMinSize
-        {
-            get
-            {
-                if (Mathf.Approximately(AspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
-                insideMinSize.y = insideMinSize.x * reverseAspectRatio;
-                return insideMinSize;
-            }
-            set => insideMinSize = value;
-        }
-        
+/// <summary>
+/// Aspect Ratio를 먼저 넣어줄 것
+/// </summary>
+public class DynamicUIData
+{
+    private ResolutionSettingsData previewData;
+    
+    public DynamicUIData(ResolutionSettingsData previewData)
+    {
+        this.previewData = previewData;
     }
     
+    public float UserAspectRatio => Display.main.systemWidth / (float) Display.main.systemHeight;
+    
+    public float UserReverseAspectRatio => Display.main.systemHeight / (float) Display.main.systemWidth;
+
+    public Vector2 BlankSize
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            
+            var size = CalculateSize(Display.main.systemWidth, Display.main.systemHeight);
+            
+            if (UserAspectRatio >= StaticUIData.BaseAspectRatio)
+            {
+                size.x = size.y * UserAspectRatio;
+            }
+            else
+            {
+                size.y = size.x * UserReverseAspectRatio;
+            }
+            
+            return size;
+        }
+    }
+    
+    public Vector2 OutSideSize
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            if (BlankSize == Vector2.zero) Debug.LogWarning("InsideMaxSize is 0");
+
+            var size = new Vector2(BlankSize.x + StaticUIData.OutsideAndInsideDistance, BlankSize.y + StaticUIData.OutsideAndInsideDistance);
+            return size;
+        }
+    }
+    
+    public Vector2 InsideMaxSize
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            
+            var size = CalculateSize(Display.main.systemWidth, Display.main.systemHeight);
+
+            
+            return size;
+        }
+    }
+    
+    public Vector2[] InsideMaxOffsets
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            if (OutSideSize == Vector2.zero) Debug.LogWarning("OutSideMaxSize is 0");
+
+            return ResolutionUtility.ConvertSizeToOffset(InsideMaxSize);
+        }
+    }
+    
+    public Vector2 InsideMinSize
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            
+            return CalculateSize(Display.main.systemWidth / 4f, Display.main.systemHeight / 4f);
+        }
+    }
+    
+    public Vector2[] InsideMinOffsets
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            if (InsideMinSize == Vector2.zero) Debug.LogWarning("InsideMinSize is 0");
+
+            return ResolutionUtility.ConvertSizeToOffset(InsideMinSize);
+        }
+    }
+    
+    public Vector2 InsideCurrentSize
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            
+            return CalculateSize(previewData.ResolutionWidth, previewData.ResolutionHeight);
+        }
+    }
+    
+    public Vector2[] InsideCurrentOffsets
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            if (InsideCurrentSize == Vector2.zero) Debug.LogWarning("InsideCurrentSize is 0");
+
+            return ResolutionUtility.ConvertSizeToOffset(InsideCurrentSize);
+        }
+    }
+
+    private Vector2 CalculateSize(float x, float y)
+    {
+        if (UserAspectRatio >= StaticUIData.BaseAspectRatio)
+        {
+            y /= (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
+            x = y * StaticUIData.BaseAspectRatio;
+        }
+        else
+        {
+            x /= (Display.main.systemWidth / (StaticUIData.BaseWidth / 3f));
+            y = x * StaticUIData.BaseReverseAspectRatio;
+        }
+        
+        return new Vector2(x, y);
+    }
+}
+
+public class ResolutionPreviewPanel : MonoBehaviour
+{
     [SerializeField]
     private ResolutionInside resolutionInside;
     
@@ -77,7 +156,7 @@ public class ResolutionPreviewPanel : MonoBehaviour
     
     private ResolutionSettingsData previewData;
     private ResolutionSettingsDTO backupData;
-    private UIPreviewData uiData;
+    private DynamicUIData dynamicUIData;
     
     private readonly string path = "Menu UI/Resolution Settings Screen/Preview Panel/";
     
@@ -92,18 +171,15 @@ public class ResolutionPreviewPanel : MonoBehaviour
         
         this.previewData = previewData;
         this.backupData = backupData;
+
+        dynamicUIData = new DynamicUIData(previewData);
         
-        uiData = new UIPreviewData
-        {
-            //aspectRatio = (float) previewData.ResolutionWidth / previewData.ResolutionHeight,
-            AspectRatio = (float) Display.main.systemWidth / Display.main.systemHeight, // TODO: 임시 값. 나중에 위 코드로 변경,
-            OutSideMaxSize = new Vector2(640, 360),
-            InsideMaxSize = new Vector2(610, 343),
-            OutSideMinSize = new Vector2(320, 180),         // TODO: 임시 값
-            InsideMinSize = new Vector2(290, 163)           // TODO: 임시 값    
-        };
-        
-        resolutionOutside?.Initialize(uiData);
-        resolutionInside?.Initialize(previewData, backupData, uiData);
+        resolutionOutside?.Initialize(previewData, backupData, dynamicUIData);
+        resolutionInside?.Initialize(previewData, backupData, dynamicUIData);
+    }
+
+    public void SetResolutionText(int width, int height, int frame, bool isModified)
+    {
+        resolutionInside?.SetResolutionText(width, height, frame, isModified);
     }
 }
