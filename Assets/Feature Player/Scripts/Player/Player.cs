@@ -116,7 +116,6 @@ public class Player : PlayerBase
         UpdatePostProcessing();
         UpdateSFX();
         StopPlayer();
-        LevelUpdate();
         coneCollider.SetColider();
         
         #if UNITY_EDITOR
@@ -303,11 +302,6 @@ public class Player : PlayerBase
         {
             playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
         }
-    }
-
-    private void LevelUpdate()
-    {
-        if (PlayerConstant.headMoveSpeed > 4) PlayerLevelController.Instance.AdjustNoise(0);
     }
     
     public void EnablePlayerObject(bool isActivate)

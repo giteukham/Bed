@@ -5,26 +5,37 @@ using UnityEngine.Events;
 
 public class PlayerLevelController : MonoSingleton<PlayerLevelController>
 {
-    private Coroutine noiseLevelDecayRoutine, stressLevelDecayRoutine, noiseMonitorRoutine;
+    private Coroutine noiseLevelDecayRoutine, stressLevelDecayRoutine, noiseMonitorRoutine, headMoveMonitorRoutine;
     [HideInInspector]public UnityEvent<int> OnNoiseChanged, OnStressChanged = new UnityEvent<int>();
     private float lowNoiseDuration = 0f;
     private int prevNoiseLevel, currentNoiseLevel;
 
-    public void OnGameStart()
+    #region Level Related Values
+    [SerializeField]private float stressLevel_ActivityDetectionTime;
+    [SerializeField]private float stressLevel_DecreaseLatency;
+    [SerializeField]private float noiseLevel_ActivityDetectionTime;
+    [SerializeField]private float noiseLevel_DecreaseLatency;
+    [SerializeField]private float noiseStage_UpdateLatency;
+    [SerializeField]private float headMove_MonitorLatency;
+    #endregion
+
+    private void OnValidate()
+    // 값이 0이면 기본 값으로 설정
     {
-        OnStressChanged.AddListener(AdjustStress);
-        OnNoiseChanged.AddListener(AdjustNoise);
-        
-        if (noiseMonitorRoutine != null)
-        StopCoroutine(noiseMonitorRoutine);
-    
-        noiseMonitorRoutine = StartCoroutine(MonitorNoiseLevel());
+        if (stressLevel_ActivityDetectionTime <= 0) stressLevel_ActivityDetectionTime = 8f;
+        if (stressLevel_DecreaseLatency <= 0) stressLevel_DecreaseLatency = 1;
+        if (noiseLevel_ActivityDetectionTime <= 0 ) noiseLevel_ActivityDetectionTime = 5f;
+        if (noiseLevel_DecreaseLatency <= 0) noiseLevel_DecreaseLatency = 0.5f;
+        if (noiseStage_UpdateLatency <= 0) noiseStage_UpdateLatency = 6f; 
+        if (headMove_MonitorLatency <=0) headMove_MonitorLatency = 1f;
     }
 
     public void Initialize()
     {
         if (noiseMonitorRoutine != null) StopCoroutine(noiseMonitorRoutine);
         noiseMonitorRoutine = null;
+        if (headMoveMonitorRoutine != null) StopCoroutine(headMoveMonitorRoutine);
+        headMoveMonitorRoutine = null;
         OnStressChanged.RemoveListener(AdjustStress);
         OnNoiseChanged.RemoveListener(AdjustNoise);
         PlayerConstant.noiseLevel = 0;
@@ -32,15 +43,27 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
         PlayerConstant.noiseStage = 0;
     }
 
+    public void OnGameStart()
+    {
+        OnStressChanged.AddListener(AdjustStress);
+        OnNoiseChanged.AddListener(AdjustNoise);
+        
+        if (noiseMonitorRoutine != null) StopCoroutine(noiseMonitorRoutine);
+        noiseMonitorRoutine = StartCoroutine(MonitorNoiseLevel());
+
+        if (headMoveMonitorRoutine != null) StopCoroutine(headMoveMonitorRoutine);
+        headMoveMonitorRoutine = StartCoroutine(MonitorHeadMove());
+    }
+
     private IEnumerator MonitorNoiseLevel()
     {
-        yield return new WaitForSeconds(9f);
+        yield return new WaitForSeconds(noiseStage_UpdateLatency);
         while (true)
         {
             if (PlayerConstant.noiseLevel < 30)
             {
                 PlayerConstant.noiseStage = Mathf.Clamp(PlayerConstant.noiseStage - 1, PlayerConstant.noiseStageMin, PlayerConstant.noiseStageMax);
-                yield return new WaitForSeconds(9f);
+                yield return new WaitForSeconds(noiseStage_UpdateLatency);
             }
             else
             {
@@ -50,7 +73,7 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
                 
                 if (lowNoiseDuration != 0f) lowNoiseDuration = 0f;
                 prevNoiseLevel = PlayerConstant.noiseLevel;
-                yield return new WaitForSeconds(9f);
+                yield return new WaitForSeconds(noiseStage_UpdateLatency);
             }
         }
     }
@@ -70,12 +93,12 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
 
     private IEnumerator StartStressLevelDecay()
     {
-        yield return new WaitForSeconds(8f);
+        yield return new WaitForSeconds(stressLevel_ActivityDetectionTime);
 
         while (PlayerConstant.stressLevel > PlayerConstant.stressLevelMin)
         {
             PlayerConstant.stressLevel--;
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(stressLevel_DecreaseLatency);
         }
     }
 
@@ -97,12 +120,31 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
 
     private IEnumerator StartNoiseLevelDecay()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(noiseLevel_ActivityDetectionTime);
 
         while (PlayerConstant.noiseLevel > PlayerConstant.noiseLevelMin)
         {
             PlayerConstant.noiseLevel--;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(noiseLevel_DecreaseLatency);
+        }
+    }
+
+    private IEnumerator MonitorHeadMove()
+    {
+        yield return new WaitForSeconds(headMove_MonitorLatency);
+        while(true)
+        {
+            if (PlayerConstant.headMoveSpeed > 8) 
+            { 
+                OnNoiseChanged.Invoke(5);
+                yield return new WaitForSeconds(headMove_MonitorLatency);
+            }
+            else if (PlayerConstant.headMoveSpeed <= 8 && PlayerConstant.headMoveSpeed >= 4) 
+            {
+                OnNoiseChanged.Invoke(0);
+                yield return new WaitForSeconds(headMove_MonitorLatency);
+            }
+            else yield return null;
         }
     }
 }
