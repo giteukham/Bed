@@ -342,15 +342,15 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
         float baseScaleY = parentSize.y / insideSize.y;
     
         // 조정된 스케일 - 작은 창일수록 낮은 스케일 적용
-        float adjustedScaleX = Mathf.Lerp(1f, baseScaleX, insideSize.x / parentSize.x);
-        float adjustedScaleY = Mathf.Lerp(1f, baseScaleY, insideSize.y / parentSize.y);
+        float adjustedScaleX = Mathf.Lerp(0f, Screen.height / (float) Screen.width, insideSize.x / parentSize.x);
+        float adjustedScaleY = Mathf.Lerp(0f, Screen.height / (float) Screen.width, insideSize.y / parentSize.y);
     
         float distanceX = (parentSize.x - insideSize.x) * 0.5f;
         float distanceY = (parentSize.y - insideSize.y) * 0.5f;
     
         insideScreenRect.anchoredPosition = new Vector2(
-            Mathf.Clamp(insideScreenRect.anchoredPosition.x + (eventData.delta.x * adjustedScaleX), -distanceX, distanceX),
-            Mathf.Clamp(insideScreenRect.anchoredPosition.y + (eventData.delta.y * adjustedScaleY), -distanceY, distanceY));
+            Mathf.Clamp(insideScreenRect.anchoredPosition.x + (eventData.delta.x * (Screen.height / (float) Screen.width)), -distanceX, distanceX),
+            Mathf.Clamp(insideScreenRect.anchoredPosition.y + (eventData.delta.y * (Screen.height / (float) Screen.width)), -distanceY, distanceY));
     }
     
     public void DoZoom()
