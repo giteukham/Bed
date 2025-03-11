@@ -31,11 +31,17 @@ public class ResolutionSettingsPanel : MonoBehaviour
     
     [Header("Window Mode")]
     
-    [SerializeField] 
-    private Toggle windowModeToggle;
-    
     [SerializeField]
     private WindowModeController windowModeController;
+    
+    [SerializeField]
+    private Color offColor;
+
+    [SerializeField]
+    private Color onColor;
+
+    [SerializeField, Min(0.1f)]
+    private float speed = 1f;
     
     [Header("Screen Brightness")]
     
@@ -71,7 +77,7 @@ public class ResolutionSettingsPanel : MonoBehaviour
 
         resolutionSelectController?.Initialize(previewData);
         frameRateController?.Initialize(previewData, backupData, frameRateDropdown);
-        windowModeController?.Initialize(previewData, backupData);
+        windowModeController?.Initialize(previewData, backupData, ref offColor, ref onColor, speed);
         displayBrightnessController?.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);
     }
     

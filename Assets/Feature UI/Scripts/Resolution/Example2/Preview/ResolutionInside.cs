@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Bed.UI;
+using Cysharp.Threading.Tasks.Triggers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -38,7 +39,7 @@ public class ResizeBounds
 }
 
 
-public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandler
+public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandler, IPointerDownHandler
 {
     [Header("내부 UI")]
     [SerializeField]
@@ -326,6 +327,13 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
         if (eventData.clickCount == 2) DoZoom();
     }
     
+    private Vector2 insideMoveBaseOffset;
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(blankRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
+        insideMoveBaseOffset = insideScreenRect.anchoredPosition - localPoint;
+    }
+    
     /// <summary>
     /// Preview 창을 드래그할 때 창을 움직일 수 있게 하는 함수
     /// </summary>
@@ -333,26 +341,18 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     public void OnDrag(PointerEventData eventData)
     {
         if (!previewData.IsWindowed) return;
-    
-        Vector2 insideSize = insideScreenRect.sizeDelta;
-        Vector2 parentSize = blankRect.sizeDelta;
-
-        // 기본 스케일 계산
-        float baseScaleX = parentSize.x / insideSize.x;
-        float baseScaleY = parentSize.y / insideSize.y;
-    
-        // 조정된 스케일 - 작은 창일수록 낮은 스케일 적용
-        float adjustedScaleX = Mathf.Lerp(0f, Screen.height / (float) Screen.width, insideSize.x / parentSize.x);
-        float adjustedScaleY = Mathf.Lerp(0f, Screen.height / (float) Screen.width, insideSize.y / parentSize.y);
-    
-        float distanceX = (parentSize.x - insideSize.x) * 0.5f;
-        float distanceY = (parentSize.y - insideSize.y) * 0.5f;
-    
-        insideScreenRect.anchoredPosition = new Vector2(
-            Mathf.Clamp(insideScreenRect.anchoredPosition.x + (eventData.delta.x * (Screen.height / (float) Screen.width)), -distanceX, distanceX),
-            Mathf.Clamp(insideScreenRect.anchoredPosition.y + (eventData.delta.y * (Screen.height / (float) Screen.width)), -distanceY, distanceY));
+        
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(blankRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
+        Vector2 targetPos = localPoint + insideMoveBaseOffset;
+        
+        targetPos.x = Mathf.Clamp(targetPos.x,
+            (blankRect.rect.min - insideScreenRect.rect.min).x, (blankRect.rect.max - insideScreenRect.rect.max).x);
+        targetPos.y = Mathf.Clamp(targetPos.y,
+                (blankRect.rect.min - insideScreenRect.rect.min).y, (blankRect.rect.max - insideScreenRect.rect.max).y);
+        
+        insideScreenRect.anchoredPosition = targetPos;
     }
-    
+
     public void DoZoom()
     {
         if (!previewData.IsWindowed) return;

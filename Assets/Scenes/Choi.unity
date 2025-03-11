@@ -2189,7 +2189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -6089,8 +6089,10 @@ MonoBehaviour:
   resolutionSelectController: {fileID: 1162549886}
   frameRateDropdown: {fileID: 216451543}
   frameRateController: {fileID: 216451547}
-  windowModeToggle: {fileID: 1032246563}
   windowModeController: {fileID: 1032246565}
+  offColor: {r: 1, g: 0.3066038, b: 0.3066038, a: 1}
+  onColor: {r: 0.28773582, g: 0.5120495, b: 1, a: 1}
+  speed: 0.1
   displayBrightnessController: {fileID: 849194589}
   postProcessing: {fileID: 882794559}
   brightnessCheckImage: {fileID: 89734418}
