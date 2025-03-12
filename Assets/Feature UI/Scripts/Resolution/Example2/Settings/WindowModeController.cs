@@ -1,17 +1,20 @@
 
 using System;
 using System.ComponentModel;
+using Cysharp.Threading.Tasks.Linq;
+using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class WindowModeController : FunctionControllerBase
 {
     private Toggle windowModeToggle;
     private Animator switchAnimator;
-    private Image switchImage;
+    private RawImage switchBgImage;
     private Color offColor, onColor;
     
     private bool isPlayingToggleAnimation = false;
@@ -27,9 +30,12 @@ public class WindowModeController : FunctionControllerBase
         
         this.windowModeToggle = GetComponent<Toggle>();
         this.switchAnimator = GetComponent<Animator>();
-        this.switchImage = transform.Find("Background").Find("Toggle Switch").GetComponent<Image>();
+        this.switchBgImage = transform.Find("Background").GetComponent<RawImage>();
         this.offColor = offColor;
         this.onColor = onColor;
+
+        switchBgImage.GetAsyncPointerEnterTrigger().Subscribe(_ => OnBackgroundImagePointerEnter());
+        switchBgImage.GetAsyncPointerExitTrigger().Subscribe(_ => OnBackgroundImagePointerExit());
         
         ChangeToggleSpeed(speed);
     }
@@ -99,8 +105,20 @@ public class WindowModeController : FunctionControllerBase
         if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
         {
             switchAnimator.SetBool("IsOn", previewData.IsWindowed);
-            switchImage.DOColor(previewData.IsWindowed ? onColor : offColor, 0.08f);
+            switchBgImage.DOColor(previewData.IsWindowed ? onColor : offColor, 0.2f);
         }
+    }
+
+    private void OnBackgroundImagePointerEnter()
+    {
+        switchBgImage.DOColor(previewData.IsWindowed ? 
+            onColor - new Color(0.2f, 0.2f, 0.2f, 0.0f) : 
+            offColor - new Color(0.1f, 0.1f, 0.1f, 0.0f), 0.2f);
+    }
+    
+    private void OnBackgroundImagePointerExit()
+    {
+        switchBgImage.DOColor(previewData.IsWindowed ? onColor : offColor, 0.2f);
     }
 
     public void AnimationEvent_OnCheckPlayingAnimation()
