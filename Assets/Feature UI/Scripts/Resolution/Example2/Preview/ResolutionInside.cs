@@ -40,7 +40,7 @@ public class ResizeBounds
 }
 
 
-public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
+public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandler, IPointerDownHandler
 {
     [Header("내부 UI")]
     [SerializeField]
@@ -96,14 +96,11 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
         resolutionSelectController.OnSelectChanged += OnDropdownSelectChanged;
         
         AddAllResizeEvent();
-        
-        insideImage.pixelsPerUnitMultiplier = Mathf.Approximately(dynamicUIData.UserAspectRatio, StaticUIData.BaseAspectRatio) ? insideImageBasePixelMultiplier : 50f;
-        insideNavigationBar?.ChangeNavigationBarPixelMultiplier(insideImage.pixelsPerUnitMultiplier);
     }
     
     private void OnDropdownSelectChanged()
     {
-        insideScreenRect.sizeDelta = previewData.IsWindowed ? dynamicUIData.InsideCurrentSize : dynamicUIData.InsideMaxSize;
+        insideScreenRect.sizeDelta = previewData.IsWindowed ? dynamicUIData.InsideCurrentSize : dynamicUIData.BlankSize;
         insideScreenRect.anchoredPosition = Vector2.zero;
     }
     
@@ -116,15 +113,23 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
             if (previewData.IsWindowed)
             {
                 ResizeInsideByOffsets(dynamicUIData.InsideCurrentOffsets[0], dynamicUIData.InsideCurrentOffsets[1]);
+                ChangeInsidePixelMultiplier(insideImageBasePixelMultiplier);
             }
             else
             {
                 ResizeInsideByOffsets(dynamicUIData.InsideMaxOffsets[0], dynamicUIData.InsideMaxOffsets[1]);
+                ChangeInsidePixelMultiplier(Math.Round(dynamicUIData.UserAspectRatio, 2) == Math.Round(StaticUIData.BaseAspectRatio, 2) ? insideImageBasePixelMultiplier : 50f);
             }
             
             insideScreenRect.anchoredPosition = Vector2.zero;
             ToggleNavigationBar(previewData.IsWindowed);
         }
+    }
+    
+    private void ChangeInsidePixelMultiplier(float pixelMultiplier)
+    {
+        insideImage.pixelsPerUnitMultiplier = pixelMultiplier;
+        insideNavigationBar?.ChangeNavigationBarPixelMultiplier(insideImage.pixelsPerUnitMultiplier);
     }
 
     private void ChangeAsteriskOnModified()
@@ -360,9 +365,6 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     private Vector2 insideMoveBaseOffset;
     public void OnPointerDown(PointerEventData eventData)
     {
-        UnsubscribeAllResizeEvent();
-        Cursor.SetCursor(CursorType.Normal);
-        
         RectTransformUtility.ScreenPointToLocalPointInRectangle(blankRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
         insideMoveBaseOffset = insideScreenRect.anchoredPosition - localPoint;
     }
@@ -384,11 +386,8 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
                 (blankRect.rect.min - insideScreenRect.rect.min).y, (blankRect.rect.max - insideScreenRect.rect.max).y);
         
         insideScreenRect.anchoredPosition = targetPos;
-    }
-    
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        SubscribeAllResizeEvent();
+        
+        Cursor.SetCursor(CursorType.Normal);
     }
 
     public void DoZoom()
@@ -447,7 +446,7 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
         var size = insideScreenRect.sizeDelta;
         
         // 나의 해상도 비율이 16:9 보다 클 때
-        if (dynamicUIData.UserAspectRatio > StaticUIData.BaseAspectRatio)
+        if (dynamicUIData.UserAspectRatio >= StaticUIData.BaseAspectRatio)
         {
             size.y *= (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
             size.x = size.y * dynamicUIData.UserAspectRatio;

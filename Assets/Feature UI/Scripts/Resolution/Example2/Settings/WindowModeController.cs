@@ -12,10 +12,11 @@ using UnityEngine.UI;
 
 public class WindowModeController : FunctionControllerBase
 {
-    private Toggle windowModeToggle;
-    private Animator switchAnimator;
-    private RawImage switchBgImage;
-    private Color offColor, onColor;
+    private Toggle      windowModeToggle;
+    private Animator    switchAnimator;
+    private RawImage    switchBgImage;
+    private Image       switchIcon;
+    private Color       offColor, onColor;
     
     private bool isPlayingToggleAnimation = false;
     
@@ -31,6 +32,7 @@ public class WindowModeController : FunctionControllerBase
         this.windowModeToggle = GetComponent<Toggle>();
         this.switchAnimator = GetComponent<Animator>();
         this.switchBgImage = transform.Find("Background").GetComponent<RawImage>();
+        this.switchIcon = transform.Find("Windowed Mode Icon").GetComponent<Image>();
         this.offColor = offColor;
         this.onColor = onColor;
 
@@ -106,6 +108,7 @@ public class WindowModeController : FunctionControllerBase
         {
             switchAnimator.SetBool("IsOn", previewData.IsWindowed);
             switchBgImage.DOColor(previewData.IsWindowed ? onColor : offColor, 0.2f);
+            switchIcon.DOColor(previewData.IsWindowed ? onColor : offColor, 0.2f);
         }
     }
 
