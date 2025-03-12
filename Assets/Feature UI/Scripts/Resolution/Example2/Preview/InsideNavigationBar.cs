@@ -9,6 +9,13 @@ using UnityEngine.UI;
 public class InsideNavigationBar : MonoBehaviour, IPointerClickHandler
 {
     public OnZoomEvent onZoom = new OnZoomEvent();
+    
+    private Image navigationBarImage;
+
+    public void Initialize()
+    {
+        navigationBarImage = GetComponent<Image>();
+    }
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -18,5 +25,10 @@ public class InsideNavigationBar : MonoBehaviour, IPointerClickHandler
     public void SetNavigationBarActive(bool active)
     {
         gameObject?.SetActive(active);
+    }
+    
+    public void ChangeNavigationBarPixelMultiplier(float pixelMultiplier)
+    {
+        navigationBarImage.pixelsPerUnitMultiplier = pixelMultiplier;
     }
 }
