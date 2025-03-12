@@ -100,7 +100,7 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     
     private void OnDropdownSelectChanged()
     {
-        insideScreenRect.sizeDelta = previewData.IsWindowed ? dynamicUIData.InsideCurrentSize : dynamicUIData.BlankSize;
+        insideScreenRect.sizeDelta = previewData.IsWindowed ? dynamicUIData.InsideCurrentSize : dynamicUIData.InsideMaxSize;
         insideScreenRect.anchoredPosition = Vector2.zero;
     }
     

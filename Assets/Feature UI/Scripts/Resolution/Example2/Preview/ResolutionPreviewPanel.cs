@@ -63,6 +63,18 @@ public class DynamicUIData
         }
     }
     
+    public Vector2 InsideMaxSize
+    {
+        get
+        {
+            if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+            
+            var size = CalculateSize(Display.main.systemWidth, Display.main.systemHeight);
+            
+            return size;
+        }
+    }
+    
     public Vector2[] InsideMaxOffsets
     {
         get
@@ -70,7 +82,7 @@ public class DynamicUIData
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
             if (OutSideSize == Vector2.zero) Debug.LogWarning("OutSideMaxSize is 0");
 
-            return ResolutionUtility.ConvertSizeToOffset(BlankSize);
+            return ResolutionUtility.ConvertSizeToOffset(InsideMaxSize);
         }
     }
     
@@ -120,8 +132,8 @@ public class DynamicUIData
     {
         if (UserAspectRatio >= StaticUIData.BaseAspectRatio)
         {
-            y /= (float) (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
-            x = (float) y * StaticUIData.BaseAspectRatio;
+            y /= (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
+            x = y * StaticUIData.BaseAspectRatio;
         }
         else
         {
