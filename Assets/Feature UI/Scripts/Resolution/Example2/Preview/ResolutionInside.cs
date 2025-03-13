@@ -252,84 +252,106 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
         isResizing = true;
     }
     
-    private void OnResizeStay(PointerEventData eventData)
+private void OnResizeStay(PointerEventData eventData)
+{
+    ChangeCursorByType(resizeCurrentType);
+    
+    var localPoint = blankRect.InverseTransformPoint(eventData.position);
+    
+    float minWidth = dynamicUIData.InsideMinSize.x;
+    float minHeight = dynamicUIData.InsideMinSize.y;
+    
+    switch (resizeCurrentType)
     {
-        ChangeCursorByType(resizeCurrentType);
+        case ResizeType.Left:
+        case ResizeType.LeftUp:
+            float leftOffsetMaxY = Mathf.Min(
+                insideScreenRect.offsetMax.y - (Mathf.Clamp(localPoint.x, blankRect.offsetMin.x, blankRect.offsetMax.x) - insideScreenRect.offsetMin.x) / StaticUIData.BaseAspectRatio,
+                blankRect.offsetMax.y
+            );
+
+            leftOffsetMaxY = Mathf.Max(leftOffsetMaxY, insideScreenRect.offsetMin.y + minHeight);
+
+            float leftOffsetMinX = insideScreenRect.offsetMin.x + (insideScreenRect.offsetMax.y - leftOffsetMaxY) * StaticUIData.BaseAspectRatio;
+            
+            leftOffsetMinX = Mathf.Min(leftOffsetMinX, insideScreenRect.offsetMax.x - minWidth);
+
+            ResizeInsideByOffsets(
+                new Vector2(leftOffsetMinX, insideScreenRect.offsetMin.y), 
+                new Vector2(insideScreenRect.offsetMax.x, leftOffsetMaxY));
+            break;
         
-        var localPoint = blankRect.InverseTransformPoint(eventData.position);
+        case ResizeType.Right:
+        case ResizeType.RightUp:
+            float rightOffsetMaxY = Mathf.Min(
+                insideScreenRect.offsetMax.y - (insideScreenRect.offsetMax.x - Mathf.Clamp(localPoint.x, blankRect.offsetMin.x, blankRect.offsetMax.x)) / StaticUIData.BaseAspectRatio,
+                blankRect.offsetMax.y
+            );
+            
+            rightOffsetMaxY = Mathf.Max(rightOffsetMaxY, insideScreenRect.offsetMin.y + minHeight);
+            
+            float rightOffsetMaxX = insideScreenRect.offsetMax.x - (insideScreenRect.offsetMax.y - rightOffsetMaxY) * StaticUIData.BaseAspectRatio;
+            
+            rightOffsetMaxX = Mathf.Max(rightOffsetMaxX, insideScreenRect.offsetMin.x + minWidth);
+
+            ResizeInsideByOffsets(
+                new Vector2(insideScreenRect.offsetMin.x, insideScreenRect.offsetMin.y), 
+                new Vector2(rightOffsetMaxX, rightOffsetMaxY));
+            break;
         
-        switch (resizeCurrentType)
-        {
-            case ResizeType.Left:
-            case ResizeType.LeftUp:
-                float leftOffsetMaxY = Mathf.Min(
-                    insideScreenRect.offsetMax.y - (Mathf.Clamp(localPoint.x, blankRect.offsetMin.x, blankRect.offsetMax.x) - insideScreenRect.offsetMin.x) / StaticUIData.BaseAspectRatio,
-                    blankRect.offsetMax.y
-                );
-
-                float leftOffsetMinX = insideScreenRect.offsetMin.x + (insideScreenRect.offsetMax.y - leftOffsetMaxY) * StaticUIData.BaseAspectRatio;
-
-                ResizeInsideByOffsets(
-                    new Vector2(leftOffsetMinX, insideScreenRect.offsetMin.y), 
-                    new Vector2(insideScreenRect.offsetMax.x, leftOffsetMaxY));
-                break;
+        case ResizeType.Up:
+            float upOffsetMaxX = Mathf.Min(
+                insideScreenRect.offsetMax.x + (Mathf.Clamp(localPoint.y, blankRect.offsetMin.y, blankRect.offsetMax.y) - insideScreenRect.offsetMax.y) * StaticUIData.BaseAspectRatio,
+                blankRect.offsetMax.x
+            );
             
-            case ResizeType.Right:
-            case ResizeType.RightUp:
-                float rightOffsetMaxY = Mathf.Min(
-                    insideScreenRect.offsetMax.y - (insideScreenRect.offsetMax.x - Mathf.Clamp(localPoint.x, blankRect.offsetMin.x, blankRect.offsetMax.x)) / StaticUIData.BaseAspectRatio,
-                    blankRect.offsetMax.y
-                );
-                float rightOffsetMaxX = insideScreenRect.offsetMax.x - (insideScreenRect.offsetMax.y - rightOffsetMaxY) * StaticUIData.BaseAspectRatio;
-
-                ResizeInsideByOffsets(
-                    new Vector2(insideScreenRect.offsetMin.x, insideScreenRect.offsetMin.y), 
-                    new Vector2(rightOffsetMaxX, rightOffsetMaxY));
-                break;
+            upOffsetMaxX = Mathf.Max(upOffsetMaxX, insideScreenRect.offsetMin.x + minWidth);
             
-            case ResizeType.Up:
-                float upOffsetMaxX = Mathf.Min(
-                    insideScreenRect.offsetMax.x + (Mathf.Clamp(localPoint.y, blankRect.offsetMin.y, blankRect.offsetMax.y) - insideScreenRect.offsetMax.y) * StaticUIData.BaseAspectRatio,
-                    blankRect.offsetMax.x
-                );
-                
-                float upOffsetMaxY = insideScreenRect.offsetMax.y + (upOffsetMaxX - insideScreenRect.offsetMax.x) / StaticUIData.BaseAspectRatio;
-
-                ResizeInsideByOffsets(
-                    new Vector2(insideScreenRect.offsetMin.x, insideScreenRect.offsetMin.y), 
-                    new Vector2(upOffsetMaxX, upOffsetMaxY));
-                break;
+            float upOffsetMaxY = insideScreenRect.offsetMax.y + (upOffsetMaxX - insideScreenRect.offsetMax.x) / StaticUIData.BaseAspectRatio;
             
-            case ResizeType.Down:
-            case ResizeType.LeftDown:
-                float downOffsetMinX = Mathf.Max(
-                    insideScreenRect.offsetMin.x + (Mathf.Clamp(localPoint.y, blankRect.offsetMin.y, blankRect.offsetMax.y) - insideScreenRect.offsetMin.y) * StaticUIData.BaseAspectRatio,
-                    blankRect.offsetMin.x
-                );
-                
-                float downOffsetMinY = insideScreenRect.offsetMin.y + (downOffsetMinX - insideScreenRect.offsetMin.x) / StaticUIData.BaseAspectRatio;
+            upOffsetMaxY = Mathf.Max(upOffsetMaxY, insideScreenRect.offsetMin.y + minHeight);
 
-                ResizeInsideByOffsets(
-                    new Vector2(downOffsetMinX, downOffsetMinY),
-                    new Vector2(insideScreenRect.offsetMax.x, insideScreenRect.offsetMax.y));
-                break;
+            ResizeInsideByOffsets(
+                new Vector2(insideScreenRect.offsetMin.x, insideScreenRect.offsetMin.y), 
+                new Vector2(upOffsetMaxX, upOffsetMaxY));
+            break;
+        
+        case ResizeType.Down:
+        case ResizeType.LeftDown:
+            float downOffsetMinX = Mathf.Max(
+                insideScreenRect.offsetMin.x + (Mathf.Clamp(localPoint.y, blankRect.offsetMin.y, blankRect.offsetMax.y) - insideScreenRect.offsetMin.y) * StaticUIData.BaseAspectRatio,
+                blankRect.offsetMin.x
+            );
             
-            case ResizeType.RightDown:
-// X축 최대값 계산 및 제한
-                float rightDownOffsetMaxX = Mathf.Min(
-                    insideScreenRect.offsetMax.x - (Mathf.Clamp(localPoint.y, blankRect.offsetMin.y, blankRect.offsetMax.y) - insideScreenRect.offsetMin.y) * StaticUIData.BaseAspectRatio,
-                    blankRect.offsetMax.x
-                );
+            downOffsetMinX = Mathf.Min(downOffsetMinX, insideScreenRect.offsetMax.x - minWidth);
+            
+            float downOffsetMinY = insideScreenRect.offsetMin.y + (downOffsetMinX - insideScreenRect.offsetMin.x) / StaticUIData.BaseAspectRatio;
+            
+            downOffsetMinY = Mathf.Min(downOffsetMinY, insideScreenRect.offsetMax.y - minHeight);
 
-// 최종 X값에 기반하여 Y값 계산
-                float rightDownOffsetMinY = insideScreenRect.offsetMin.y + (insideScreenRect.offsetMax.x - rightDownOffsetMaxX) / StaticUIData.BaseAspectRatio;
+            ResizeInsideByOffsets(
+                new Vector2(downOffsetMinX, downOffsetMinY),
+                new Vector2(insideScreenRect.offsetMax.x, insideScreenRect.offsetMax.y));
+            break;
+        
+        case ResizeType.RightDown:
+            float rightDownOffsetMaxX = Mathf.Min(
+                insideScreenRect.offsetMax.x - (Mathf.Clamp(localPoint.y, blankRect.offsetMin.y, blankRect.offsetMax.y) - insideScreenRect.offsetMin.y) * StaticUIData.BaseAspectRatio,
+                blankRect.offsetMax.x
+            );
+            
+            rightDownOffsetMaxX = Mathf.Max(rightDownOffsetMaxX, insideScreenRect.offsetMin.x + minWidth);
 
-                ResizeInsideByOffsets(
-                    new Vector2(insideScreenRect.offsetMin.x, rightDownOffsetMinY), 
-                    new Vector2(rightDownOffsetMaxX, insideScreenRect.offsetMax.y));
-                break;
-        }
+            float rightDownOffsetMinY = insideScreenRect.offsetMin.y + (insideScreenRect.offsetMax.x - rightDownOffsetMaxX) / StaticUIData.BaseAspectRatio;
+            
+            rightDownOffsetMinY = Mathf.Min(rightDownOffsetMinY, insideScreenRect.offsetMax.y - minHeight);
+
+            ResizeInsideByOffsets(
+                new Vector2(insideScreenRect.offsetMin.x, rightDownOffsetMinY), 
+                new Vector2(rightDownOffsetMaxX, insideScreenRect.offsetMax.y));
+            break;
     }
+}
     
     private void OnResizeEnd()
     {
@@ -425,26 +447,11 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     
     private void ResizeInsideByOffsets(Vector2 offsetMin, Vector2 offsetMax)
     {
-        // 먼저 offset 값을 적용해보고 체크
-        Vector2 originalOffsetMin = insideScreenRect.offsetMin;
-        Vector2 originalOffsetMax = insideScreenRect.offsetMax;
-    
-        // 새 offset 임시 적용
         insideScreenRect.offsetMin = offsetMin;
         insideScreenRect.offsetMax = offsetMax;
     
-        // 적용 후 사이즈가 최소값보다 작은지 체크
-        if (insideScreenRect.sizeDelta.x < dynamicUIData.InsideMinSize.x || 
-            insideScreenRect.sizeDelta.y < dynamicUIData.InsideMinSize.y)
-        {
-            // 원래 값으로 복원하고 리턴
-            insideScreenRect.offsetMin = originalOffsetMin;
-            insideScreenRect.offsetMax = originalOffsetMax;
-            return;
-        }
-
         var size = insideScreenRect.sizeDelta;
-        
+    
         // 나의 해상도 비율이 16:9 보다 클 때
         if (dynamicUIData.UserAspectRatio >= StaticUIData.BaseAspectRatio)
         {
@@ -456,10 +463,9 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
             size.x *= (Display.main.systemWidth / (StaticUIData.BaseWidth / 3f));
             size.y = size.x * dynamicUIData.UserReverseAspectRatio;
         }
-
-
-        previewData.ResolutionWidth = Mathf.CeilToInt(size.x);
-        previewData.ResolutionHeight = Mathf.CeilToInt(size.y);
+    
+        previewData.ResolutionWidth = Convert.ToInt32(size.x);
+        previewData.ResolutionHeight = Convert.ToInt32(size.y);
     }
     
     private static void ChangeCursorByType(ResizeType type)
