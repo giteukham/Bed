@@ -68,8 +68,10 @@ public class DynamicUIData
         get
         {
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
-            
-            var size = CalculateSize(Display.main.systemWidth, Display.main.systemHeight);
+
+            Vector2 size = previewData.IsWindowed 
+                ? CalculateSize(previewData.windowedMaxWidth, previewData.windowedMaxHeight) 
+                : CalculateSize(previewData.fullScreenMaxWidth, previewData.fullScreenMaxHeight);
             
             return size;
         }
@@ -91,8 +93,12 @@ public class DynamicUIData
         get
         {
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
+
+            Vector2 size = previewData.IsWindowed 
+                ? CalculateSize(previewData.windowedMinWidth, previewData.windowedMinHeight) 
+                : CalculateSize(previewData.fullScreenMinWidth, previewData.fullScreenMinHeight);
             
-            return CalculateSize(Display.main.systemWidth / 4f, Display.main.systemHeight / 4f);
+            return size;
         }
     }
     

@@ -454,13 +454,21 @@ private void OnResizeStay(PointerEventData eventData)
         // 나의 해상도 비율이 16:9 보다 클 때
         if (dynamicUIData.UserAspectRatio >= StaticUIData.BaseAspectRatio)
         {
-            size.y *= (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
-            size.x = size.y * dynamicUIData.UserAspectRatio;
+            size.y *= previewData.IsWindowed 
+                ? (previewData.windowedMaxHeight / (StaticUIData.BaseHeight / 3f)) 
+                : (previewData.fullScreenMaxHeight / (StaticUIData.BaseHeight / 3f));
+            size.x = previewData.IsWindowed
+                ? size.y * StaticUIData.BaseAspectRatio
+                : size.y * dynamicUIData.UserAspectRatio;
         }
         else
         {
-            size.x *= (Display.main.systemWidth / (StaticUIData.BaseWidth / 3f));
-            size.y = size.x * dynamicUIData.UserReverseAspectRatio;
+            size.x *= previewData.IsWindowed 
+                ? (previewData.windowedMaxWidth / (StaticUIData.BaseWidth / 3f)) 
+                : (previewData.fullScreenMaxWidth / (StaticUIData.BaseWidth / 3f));
+            size.y = previewData.IsWindowed
+                ? size.x * StaticUIData.BaseReverseAspectRatio
+                : size.x * dynamicUIData.UserReverseAspectRatio;
         }
     
         previewData.ResolutionWidth = Convert.ToInt32(size.x);
