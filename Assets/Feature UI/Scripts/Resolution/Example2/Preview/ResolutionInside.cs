@@ -373,7 +373,6 @@ private void OnResizeStay(PointerEventData eventData)
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("¤À¤½³Î");
         if (eventData.button != PointerEventData.InputButton.Left || eventData.dragging) return;
 
         if (eventData.clickTime - lastClickTime <= 0.3f) 

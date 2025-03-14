@@ -11,9 +11,7 @@ public class ResolutionSelectController : FunctionControllerBase
 {
     [SerializeField] private TMP_InputField inputWidth, inputHeight;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
-    private int minWidth, minHeight, maxWidth, maxHeight;
-    //private float ratio;
-    List<Vector2Int> resolutions = new();
+    List<Vector2Int> fullScreenResolutions = new(), windowedResolutions = new();
 
     public Action OnSelectChanged;
 
@@ -22,39 +20,60 @@ public class ResolutionSelectController : FunctionControllerBase
         base.Initialize(previewData, backupData);
         resolutionDropdown.ClearOptions();
 
-        //ratio = (float)Display.main.systemWidth / Display.main.systemHeight;
-        minWidth = Display.main.systemWidth / 4;
-        minHeight = Display.main.systemHeight / 4;
-        maxWidth = Display.main.systemWidth;
-        maxHeight = Display.main.systemHeight;
+        float minusStandardWidth = (Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f;
+        float minusStandardHeight = (Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f;  
 
-        float widthNum = (Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f;
-        float heightNum = (Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f;        
+        if (Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) == Math.Round(16f / 9, 3)) // 16:9일때
+        {
+            for (int i = 9; i >= 0; i--)
+            {
+                Vector2Int item = new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i));
+                fullScreenResolutions.Add(item);
+                windowedResolutions.Add(item);
+            }
+        }
+        else if (Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) > Math.Round(16f / 9, 3)) // 16:9보다 width가 더 넒을때
+        {
+            float conversionWidth = Display.main.systemHeight / 9 * 16;
+            float minusConversionWidth = (conversionWidth - conversionWidth / 4f) / 9f;
+            for (int i = 9; i >= 0; i--)
+            {
+                fullScreenResolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i)));
+                windowedResolutions.Add(new Vector2Int((int)Mathf.Round(conversionWidth - minusConversionWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i)));
+            }
+        }
+        else if (Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) < Math.Round(16f / 9, 3)) // 16:9보다 width가 더 좁을때
+        {
+            float conversionHeight = Display.main.systemWidth / 16 * 9;
+            float minusConversionHeight = (conversionHeight - conversionHeight / 4f) / 9f;
+            for (int i = 9; i >= 0; i--)
+            {
+                fullScreenResolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i)));
+                windowedResolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(conversionHeight - minusConversionHeight * i)));
+            }
+        }
 
-        for (int i = 9; i >= 0; i--)
-            resolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - widthNum * i), (int)Mathf.Round(Display.main.systemHeight - heightNum * i)));
-
-        resolutionDropdown.AddOptions(resolutions.ConvertAll<string>
+        resolutionDropdown.AddOptions
         (
-            value => 
-            value.x < 1000 ? "\u200A\u200A\u200A\u200A\u200A\u200A" + value.x + " X " + value.y 
-            : value.x + " X " + value.y
-        ));
-        // resolutionDropdown.options.Insert(0, new TMP_Dropdown.OptionData("------------------------"));
+            fullScreenResolutions.ConvertAll<string>
+            (
+                value => 
+                value.x < 1000 ? "\u200A\u200A\u200A\u200A\u200A\u200A" + value.x + " X " + value.y 
+                : value.x + " X " + value.y
+            )
+        );
     }
 
     private void OnEnable()
     {
         inputWidth.onEndEdit.AddListener(OnWidthChanged);
         inputHeight.onEndEdit.AddListener(OnHeightChanged);
-        // resolutionDropdown.onValueChanged.AddListener(OnDropdownChanged);
     }
 
     private void OnDisable()
     {
         inputWidth.onEndEdit.RemoveListener(OnWidthChanged);
         inputHeight.onEndEdit.RemoveListener(OnHeightChanged);
-        // resolutionDropdown.onValueChanged.RemoveListener(OnDropdownChanged);
     }
 
     public void OnWidthChanged(string value)
@@ -62,9 +81,8 @@ public class ResolutionSelectController : FunctionControllerBase
         if (int.TryParse(value, out int x))
         {
             previewData.ResolutionWidth = x;
-            // previewData.ResolutionHeight = (int)Mathf.Round(x / ratio);
             
-            foreach (Vector2Int resolution in resolutions)
+            foreach (Vector2Int resolution in fullScreenResolutions)
             {
                 if (resolution.x == previewData.ResolutionWidth)
                 {
@@ -81,9 +99,8 @@ public class ResolutionSelectController : FunctionControllerBase
         if (int.TryParse(value, out int y))
         {
             previewData.ResolutionHeight = y;
-            //previewData.ResolutionWidth = (int)Mathf.Round(y * ratio);
 
-            foreach (Vector2Int resolution in resolutions)
+            foreach (Vector2Int resolution in fullScreenResolutions)
             {
                 if (resolution.y == previewData.ResolutionHeight)
                 {
@@ -114,6 +131,41 @@ public class ResolutionSelectController : FunctionControllerBase
         else if (e.PropertyName == nameof(ResolutionSettingsData.ResolutionHeight))
         {
             inputHeight.text = previewData.ResolutionHeight.ToString();
+        }
+        if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
+        {
+            resolutionDropdown.ClearOptions();
+            if (previewData.IsWindowed)
+            {
+                resolutionDropdown.AddOptions
+                (
+                    windowedResolutions.ConvertAll<string>
+                    (
+                        value => 
+                        value.x < 1000 ? "\u200A\u200A\u200A\u200A\u200A\u200A" + value.x + " X " + value.y 
+                        : value.x + " X " + value.y
+                    )
+                );
+
+                if(previewData.ResolutionWidth > previewData.windowedMaxWidth || previewData.ResolutionHeight > previewData.windowedMaxHeight)
+                {
+                    previewData.ResolutionWidth = previewData.windowedMaxWidth;
+                    previewData.ResolutionHeight = previewData.windowedMaxHeight;
+                }
+            }
+            else
+            {
+                resolutionDropdown.AddOptions
+                (
+                    fullScreenResolutions.ConvertAll<string>
+                    (
+                        value => 
+                        value.x < 1000 ? "\u200A\u200A\u200A\u200A\u200A\u200A" + value.x + " X " + value.y 
+                        : value.x + " X " + value.y
+                    )
+                );
+            }
+            resolutionDropdown.RefreshShownValue();
         }
     }
 }
