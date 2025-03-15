@@ -1,10 +1,17 @@
+using System;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class PlayerBase : MonoBehaviour
 {
+    [SerializeField] protected CinemachineVirtualCamera playerVirtualCamera;
     [HideInInspector] public CinemachinePOV povCamera;
+
+    private void Awake()
+    {
+        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+    }
 
     public void StopPlayer(bool isStop)
     {
@@ -22,7 +29,7 @@ public class PlayerBase : MonoBehaviour
         }
     }
     
-    public void SetActivatePlayer(bool isActivate)
+    public void TogglePlayer(bool isActivate)
     {
         gameObject.SetActive(isActivate);
     }

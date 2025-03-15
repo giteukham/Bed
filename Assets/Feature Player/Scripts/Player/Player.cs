@@ -34,7 +34,6 @@ public class Player : PlayerBase
     
     [Header("Player Camera")]
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private CinemachineVirtualCamera playerVirtualCamera;
     
     [Header("Cone Colider")]
     [SerializeField] private ConeCollider coneCollider;
@@ -80,13 +79,7 @@ public class Player : PlayerBase
     private Vector3 playerPillowSoundInitRotation;
     private float currentFearSFXVolume, currentStressSFXVolume, currentHeadMoveSFXVolume;
     private Coroutine headMoveSFXCoroutine;
-    [SerializeField]private Animator headAnimator;
     #endregion
-
-    private void Awake()
-    {
-        povCamera = playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
-    }
 
     private void Start()
     {
@@ -132,6 +125,10 @@ public class Player : PlayerBase
         UpdateSFX();
         StopPlayer();
         coneCollider.SetColider();
+        
+        #if UNITY_EDITOR
+            coneCollider.SetDebugImage();
+        #endif
     }
     
     public void AnimationEvent_ChangeDirectionState(string toState)
@@ -176,6 +173,7 @@ public class Player : PlayerBase
         if(currentHorizontalMouseMovement == recentHorizontalMouseMovement) deltaHorizontalMouseMovement = 0;
         else deltaHorizontalMouseMovement = Mathf.Abs(currentHorizontalMouseMovement - recentHorizontalMouseMovement);
         
+        PlayerConstant.headMoveSpeed = (deltaHorizontalMouseMovement + deltaVerticalMouseMovement) * isCameraMovement * 10 ;
         PlayerConstant.HeadMovementCAT += (deltaHorizontalMouseMovement + deltaVerticalMouseMovement) * isCameraMovement;
         PlayerConstant.HeadMovementLAT += (deltaHorizontalMouseMovement + deltaVerticalMouseMovement) * isCameraMovement;
         // ----------------- Head Movement -----------------
@@ -305,7 +303,12 @@ public class Player : PlayerBase
         // 위치 조정
 
         // --------머리 움직임 소리
-        if ((deltaHorizontalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
+        if (PlayerConstant.isShock)
+        {
+            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
+        }
+        else if ((deltaHorizontalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
             || (deltaVerticalMouseMovement > 0f && PlayerConstant.isPlayerStop == false) 
             || PlayerConstant.isMovingState)  
         {
@@ -314,16 +317,16 @@ public class Player : PlayerBase
         
             if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f) 
             {
-                if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-                headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
+            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(true));
             }
         }
         else 
         {
             if(AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) > 0.0f) 
             {
-                if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
-                headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
+            if (headMoveSFXCoroutine != null) StopCoroutine(headMoveSFXCoroutine);
+            headMoveSFXCoroutine = StartCoroutine(headMoveSFXSet(false));
             }
         }
         
@@ -397,7 +400,7 @@ public class Player : PlayerBase
     
     private void StopPlayer()
     {
-        StopPlayer(PlayerConstant.isPlayerStop);
+        base.StopPlayer(PlayerConstant.isPlayerStop);
         if (PlayerConstant.isPlayerStop && PlayerConstant.isEyeOpen)
         {
             playerEyeControl.ChangeEyeState(PlayerEyeStateTypes.Close);
@@ -417,11 +420,34 @@ public class Player : PlayerBase
             playerVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = MouseSettings.Instance.MouseMaxSpeed;
         }
     }
+<<<<<<< HEAD
     
     public void AddConeEnterListener(Action<Collider> action) => coneCollider.AddEnterListener(action);
     public void AddConeStayListener(Action<Collider> action) => coneCollider.AddStayListener(action);
     public void AddConeExitListener(Action<Collider> action) => coneCollider.AddExitListener(action);
     public void ResetConeEnterListener() => coneCollider.ResetEnterListener();
     public void ResetConeExitListener() => coneCollider.ResetExitListener();
+=======
+
+    public void EnablePlayerObject(bool isActivate)
+    {
+        gameObject?.SetActive(isActivate);
+    }
+
+    public void EyeControl(PlayerEyeStateTypes types)
+    {
+        playerEyeControl.ChangeEyeState(types);
+    }
+
+    public void DirectionControl(PlayerDirectionStateTypes types)
+    {
+        playerDirectionControl.ChangeDirectionState(types);
+    }
+
+    public void DirectionControlNoSound(PlayerDirectionStateTypes types)
+    {
+        playerDirectionControl.ChangeDirectionStateNoSound(types);
+    }
+>>>>>>> main
 }
 
