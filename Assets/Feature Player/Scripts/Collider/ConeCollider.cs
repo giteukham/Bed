@@ -163,6 +163,7 @@ namespace Bed.Collider
             coneCollider.transform.localScale = currentScale;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         
         public void AddEnterListener(Action<UnityEngine.Collider> action) => _onEnter += action;
         public void AddStayListener(Action<UnityEngine.Collider> action) => _onStay += action;
@@ -174,6 +175,8 @@ namespace Bed.Collider
         public void ResetStayListener() => _onStay = null;
         public void ResetExitListener() => _onExit = null;
 =======
+=======
+>>>>>>> e5d2354fb12d11c5ae45d97b042b318fe6e5171d
 
         #if UNITY_EDITOR
         public void SetDebugImage()
@@ -194,7 +197,10 @@ namespace Bed.Collider
             }
         }
         #endif
+<<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> e5d2354fb12d11c5ae45d97b042b318fe6e5171d
     }
     
 #if UNITY_EDITOR

@@ -421,6 +421,7 @@ public class Player : PlayerBase
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     
     public void AddConeEnterListener(Action<Collider> action) => coneCollider.AddEnterListener(action);
     public void AddConeStayListener(Action<Collider> action) => coneCollider.AddStayListener(action);
@@ -428,6 +429,8 @@ public class Player : PlayerBase
     public void ResetConeEnterListener() => coneCollider.ResetEnterListener();
     public void ResetConeExitListener() => coneCollider.ResetExitListener();
 =======
+=======
+>>>>>>> e5d2354fb12d11c5ae45d97b042b318fe6e5171d
 
     public void EnablePlayerObject(bool isActivate)
     {
@@ -448,6 +451,9 @@ public class Player : PlayerBase
     {
         playerDirectionControl.ChangeDirectionStateNoSound(types);
     }
+<<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> e5d2354fb12d11c5ae45d97b042b318fe6e5171d
 }
 
