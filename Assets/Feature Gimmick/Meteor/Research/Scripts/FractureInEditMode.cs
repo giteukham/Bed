@@ -113,7 +113,12 @@ public class FractureInEditMode : EditorWindow
                 data.breakForce = (int) breakForceField.value;
                 data.density = densityField.value;
                 data.siteCount = siteCountSlider.value;
-            } 
+            }
+            
+            data.fracturableObject.TryGetComponent(out MeshRenderer meshRenderer);
+            data.fracturableObject.TryGetComponent(out Collider collider);
+            meshRenderer.enabled = false;
+            collider.enabled = false;
             
             var meshes = FractureTool.CreateFractureMeshes(data.fracturableObject, data, data.fracturableObject.GetComponent<MeshFilter>().sharedMesh);
             FractureTool.CreateFractureGameObjects(data.fracturableObject, data, meshes);

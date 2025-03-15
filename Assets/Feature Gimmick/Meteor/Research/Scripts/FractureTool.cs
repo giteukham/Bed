@@ -24,8 +24,6 @@ public class FractureData : ScriptableObject
     
     [HideInInspector] 
     public bool         haveIndividualSettings;
-    
-    public bool         isChunksActive = true;
 }
 
 public static class FractureTool
@@ -127,8 +125,6 @@ public static class FractureTool
         var chunks = new GameObject("Chunks");
         var chunkIndex = 0;
         var chunkCount = fractureTool.getChunkCount();
-
-        originObj.GetOrAddComponent<FractureCollisionMonitoring>();
         
         chunks.transform.SetParent(originObj.transform);
         for (var i = 1; i < chunkCount; i++)
@@ -158,8 +154,6 @@ public static class FractureTool
             FixedJoint joint = chunk.AddComponent<FixedJoint>();
             joint.breakForce = data.breakForce;
         }
-        
-        chunks.SetActive(data.isChunksActive);
     }
     
 
