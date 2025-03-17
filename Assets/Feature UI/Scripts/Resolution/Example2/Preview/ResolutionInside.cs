@@ -152,8 +152,6 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     {
         previewData.ChangeData(backupData);
         zoomSavedResolution = new Vector2Int(previewData.ResolutionWidth, previewData.ResolutionHeight);
-        SetResolutionText(Display.main.systemWidth, Display.main.systemHeight, previewData.FrameRate, false);
-        ResizeInsideByOffsets(dynamicUIData.InsideMaxOffsets[0], dynamicUIData.InsideMaxOffsets[1]);
         insideScreenRect.anchoredPosition = Vector2.zero;
         
         ToggleNavigationBar(previewData.IsWindowed);
