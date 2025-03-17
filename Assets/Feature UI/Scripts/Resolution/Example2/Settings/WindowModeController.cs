@@ -39,7 +39,7 @@ public class WindowModeController : FunctionControllerBase
     {
         var posX = backupData.IsWindowed ? 50 : -50;
         var color = backupData.IsWindowed ? onColor : offColor;
-        ChangeWindowModeButtonUI(posX, color);
+        ChangeWindowModeButtonUI(posX, color, 0f);
     }
 
     public void OnWindowModeButtonClick()
@@ -48,10 +48,10 @@ public class WindowModeController : FunctionControllerBase
         
         var posX = previewData.IsWindowed ? 50 : -50;
         var color = previewData.IsWindowed ? onColor : offColor;
-        ChangeWindowModeButtonUI(posX, color);
+        ChangeWindowModeButtonUI(posX, color, speed);
     }
 
-    private void ChangeWindowModeButtonUI(int posX, Color bgColor)
+    private void ChangeWindowModeButtonUI(int posX, Color bgColor, float speed)
     {
         switchDot.transform.DOLocalMoveX(posX, speed);
         switchBgImage.DOColor(bgColor, speed);
