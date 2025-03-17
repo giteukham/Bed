@@ -93,6 +93,7 @@ public class PlayerEyeStates
         {
             if (closeTime <= 0.4f) 
             {
+                PlayerLevelController.Instance.OnNoiseChanged.Invoke(1);
                 PlayerConstant.EyeBlinkCAT++;
                 PlayerConstant.EyeBlinkLAT++;
             }
