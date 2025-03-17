@@ -19,6 +19,7 @@ public class FractureInPlayMode : MonoBehaviour
 
     public void GenerateFracture()
     {
+        fractureMesh = GetComponent<MeshFilter>().mesh;
         var meshes = FractureTool.CreateFractureMeshes(gameObject, fractureData, fractureMesh);
         FractureTool.CreateFractureGameObjects(gameObject, fractureData, meshes);
     }

@@ -24,6 +24,8 @@ public class FractureData : ScriptableObject
     
     [HideInInspector] 
     public bool         haveIndividualSettings;
+    
+    public bool         isChunksActive = true;
 }
 
 public static class FractureTool
@@ -32,18 +34,18 @@ public static class FractureTool
     private static NvVoronoiSitesGenerator sites;
     
     /// <summary>
-    /// fratureData를 기반으로 Mesh를 조각내어 반환
+    /// fratureData?? ??????? Mesh?? ???????? ???
     /// </summary>
     public static List<Mesh> CreateFractureMeshes(GameObject originObj, FractureData data, Mesh mesh)
     {
-        // Seed 값을 현재 시간에 따라 랜덤으로 설정
+        // Seed ???? ???? ?ð??? ???? ???????? ????
         Random.InitState((int)DateTime.Now.Ticks);
         NvBlastExtUnity.setSeed(Random.Range(0, 1000));
         
 #if UNITY_EDITOR
         var worldMesh = CreateWorldMesh(originObj, mesh);
         
-        // sharedMesh는 center가 Vector3.zero에 있는 거 같아서 Pivot 위치 조정
+        // sharedMesh?? center?? Vector3.zero?? ??? ?? ????? Pivot ??? ????
         for (int i = 0; i < worldMesh.vertices.Length; i++)
         {
             worldMesh.vertices[i] += originObj.transform.position;
@@ -84,7 +86,7 @@ public static class FractureTool
             insideMeshes.Add(inside);
         }
         
-        // Outside Mesh에 Inside Mesh도 포함되어 있음.
+        // Outside Mesh?? Inside Mesh?? ?????? ????.
         return outsideMeshes;
     }
     
@@ -125,6 +127,8 @@ public static class FractureTool
         var chunks = new GameObject("Chunks");
         var chunkIndex = 0;
         var chunkCount = fractureTool.getChunkCount();
+
+        originObj.GetOrAddComponent<FractureCollisionMonitoring>();
         
         chunks.transform.SetParent(originObj.transform);
         for (var i = 1; i < chunkCount; i++)
@@ -141,7 +145,7 @@ public static class FractureTool
             Rigidbody rig = chunk.AddComponent<Rigidbody>();
             rig.mass = VolumeOfMesh(meshes[i]) * data.density;
             
-            // 충돌할 때 원래 오브젝트가 받은 힘을 Chunk들이 받도록 설정
+            // ?浹?? ?? ???? ????????? ???? ???? Chunk???? ????? ????
 #if !UNITY_EDITOR
             rig.velocity = actorRig.velocity;
             rig.angularVelocity = actorRig.angularVelocity;
@@ -154,11 +158,13 @@ public static class FractureTool
             FixedJoint joint = chunk.AddComponent<FixedJoint>();
             joint.breakForce = data.breakForce;
         }
+        
+        chunks.SetActive(data.isChunksActive);
     }
     
 
     /// <summary>
-    /// 각 조각의 부피를 계산
+    /// ?? ?????? ????? ???
     /// </summary>
     // https://discussions.unity.com/t/how-would-one-calculate-a-3d-mesh-volume-in-unity/16895
     private static float VolumeOfMesh(Mesh mesh)

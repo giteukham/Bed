@@ -76,7 +76,7 @@ public class MeteorGimmick : Gimmick
             Rigidbody rigid = obj.AddComponent<Rigidbody>();
             rigid.mass = 10f; 
             
-            obj.AddComponent<FixedJoint>();                         // TOOD: 왜 FixedJoint 추가 후 값 수정하면 없어짐?
+            obj.AddComponent<FixedJoint>();                         // TOOD: ?? FixedJoint ??? ?? ?? ??????? ???????
             
             MeshCollider col = obj.AddComponent<MeshCollider>();
             col.convex = true;
