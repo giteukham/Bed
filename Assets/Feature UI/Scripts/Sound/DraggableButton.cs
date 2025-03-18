@@ -55,7 +55,7 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             float randomY = Random.Range(minPosition.y, maxPosition.y);
             rectTransform.anchoredPosition = new Vector2(randomX, randomY);
 
-            VolumeSliderManagement volumeSliderManagement = GameObject.Find("Sound Settings Screen").GetComponent<VolumeSliderManagement>();
+            SoundSettings volumeSliderManagement = GameObject.Find("Sound Settings Screen").GetComponent<SoundSettings>();
             GetComponent<MouseWheelHoverEvent>().onScrollUp.AddListener(volumeSliderManagement.UpGimmickVolume);
             GetComponent<MouseWheelHoverEvent>().onScrollDown.AddListener(volumeSliderManagement.DownGimmickVolume);
         }

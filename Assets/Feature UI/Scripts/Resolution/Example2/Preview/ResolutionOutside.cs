@@ -46,10 +46,10 @@ public class ResolutionOutside : MonoBehaviour
         }
         
         // 전체모드일 땐 Blank가 검은색, 창모드일 땐 회색
-        if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
-        {
-            ChangeBlankColor(previewData.IsWindowed ? windowScreenBlankColor : fullScreenBlankColor);
-        }
+        // if (e.PropertyName == nameof(ResolutionSettingsData.IsWindowed))
+        // {
+        //     ChangeBlankColor(previewData.IsWindowed ? windowScreenBlankColor : fullScreenBlankColor);
+        // }
     }
 
     private void OnEnable()

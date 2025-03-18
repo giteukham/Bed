@@ -291,6 +291,8 @@ public class ResolutionSettings : MonoBehaviour
         }
         cam.rect = rect;
         PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
+        resolutionSettingsPanel.ApplyBrightness(backupData.ScreenBrightness);
+        resolutionPreviewPanel.SetResolutionText(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.FrameRate, false);
     }
 
     public void ApplyResolutionSettings() // ApplyButton 오브젝트에 할당

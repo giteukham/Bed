@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using FMODUnity;
 
-public class VolumeSliderManagement : MonoBehaviour
+public class SoundSettings : MonoBehaviour
 {
     [SerializeField] private Slider masterVolumeSlider;
     [SerializeField] private Slider gimmickVolumeSlider;

@@ -47,20 +47,19 @@ public class SwitchButton_Mouse : MonoBehaviour
     //버튼 클릭시 호출
     public void OnSwitchButtonClicked(bool isReverse)
     {
-        SwitchButtonComponent();
         if (isReverse == true)
         {
             switchDot.transform.DOLocalMoveX(50, switchSpeed);
             backGround.DOColor(switchColor_On, switchSpeed);
             rotationIcon.GetComponent<Image>().DOColor(switchColor_On, switchSpeed);
-            rotationIconRectTransform.DORotate(rotationIconRectTransform.eulerAngles + new Vector3(0, 0, -180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear).OnComplete(() => SwitchButtonComponent());
+            rotationIconRectTransform.DOLocalRotate(new Vector3(0, 0, 180f), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear);
         }
         else
         {
             switchDot.transform.DOLocalMoveX(-50, switchSpeed);
             backGround.DOColor(switchColor_Off, switchSpeed);
             rotationIcon.GetComponent<Image>().DOColor(switchColor_Off, switchSpeed);
-            rotationIconRectTransform.DORotate(rotationIconRectTransform.eulerAngles + new Vector3(0, 0, 180), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear).OnComplete(() => SwitchButtonComponent());
+            rotationIconRectTransform.DOLocalRotate(new Vector3(0, 0, 0f), switchSpeed, RotateMode.FastBeyond360).SetEase(Ease.Linear);
         }
     }
 
@@ -78,20 +77,6 @@ public class SwitchButton_Mouse : MonoBehaviour
             switchDot.transform.DOLocalMoveX(-50, 0);
             backGround.DOColor(switchColor_Off, 0);
             rotationIcon.GetComponent<Image>().DOColor(switchColor_Off, 0);
-        }
-    }
-
-    private void SwitchButtonComponent()
-    {
-        if (transform.GetComponent<Button>().enabled == true)
-        {
-            transform.GetComponent<Button>().enabled = false;
-            rotationIcon.GetComponent<Button>().enabled = false;
-        }
-        else
-        {
-            transform.GetComponent<Button>().enabled = true;
-            rotationIcon.GetComponent<Button>().enabled = true;
         }
     }
 }

@@ -16,6 +16,7 @@ public class WindowModeController : FunctionControllerBase
     private RawImage switchBgImage;
     private RawImage switchDot;
     private Color offColor, onColor;
+    [SerializeField]private Image switchIcon;
     private float speed;
 
     public void Initialize(
@@ -32,6 +33,7 @@ public class WindowModeController : FunctionControllerBase
         this.switchDot = transform.Find("SwitchDot").GetComponent<RawImage>();
         this.offColor = offColor;
         this.onColor = onColor;
+        this.switchIcon = transform.Find("Windowed Mode Icon").GetComponent<Image>();
         this.speed = speed;
     }
 
@@ -55,6 +57,7 @@ public class WindowModeController : FunctionControllerBase
     {
         switchDot.transform.DOLocalMoveX(posX, speed);
         switchBgImage.DOColor(bgColor, speed);
+        switchIcon.DOColor(bgColor, speed);
     }
 
     protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

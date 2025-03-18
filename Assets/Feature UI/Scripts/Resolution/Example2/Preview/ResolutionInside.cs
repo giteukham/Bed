@@ -439,7 +439,7 @@ private void OnResizeStay(PointerEventData eventData)
     
     public void SetResolutionText(int width, int height, int frame, bool isModified = false)
     {
-        resolutionText.text = isModified ? $"{width} X {height} *\n{frame}Hz" : $"{width} X {height}\n{frame}Hz";
+        resolutionText.text = isModified ? $"{width} X {height}*\n{frame}Hz" : $"{width} X {height}\n{frame}Hz";
     }
     
     private void ResizeInsideByOffsets(Vector2 offsetMin, Vector2 offsetMax)

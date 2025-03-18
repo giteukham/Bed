@@ -48,7 +48,7 @@ public class UIManager : MonoSingleton<UIManager>
 
     private void Awake()
     {
-        VolumeSliderManagement SoundSettings = soundSettingsScreen.GetComponent<VolumeSliderManagement>();
+        SoundSettings SoundSettings = soundSettingsScreen.GetComponent<SoundSettings>();
         ResolutionSettings resolutionSettings = resolutionSettingsScreen.GetComponent<ResolutionSettings>();
         SoundSettings.InitSoundSettings();          // 사운드 값 불러오기
         resolutionSettings.InitResolutionSettings();  // 해상도 값 불러오기
