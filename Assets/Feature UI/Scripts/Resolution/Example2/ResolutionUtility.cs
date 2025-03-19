@@ -19,13 +19,21 @@ public static class ResolutionUtility
 
         return new[] { offsetMin, offsetMax };
     }
-
-    public static Vector2 ConvertResolutionToSize(int width, int height, float sizeInDecreaseRate = 3f)
+    
+    public static Vector2 ConvertResolutionToSize(float x, float y, float userAspectRatio)
     {
-        var sizeWidth = width / sizeInDecreaseRate;
-        var sizeHeight = height / sizeInDecreaseRate;
+        if (userAspectRatio >= StaticUIData.BaseAspectRatio)
+        {
+            y /= (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
+            x = y * StaticUIData.BaseAspectRatio;
+        }
+        else
+        {
+            x /= (Display.main.systemWidth / (StaticUIData.BaseWidth / 3f));
+            y = x * StaticUIData.BaseReverseAspectRatio;
+        }
         
-        return new Vector2(sizeWidth, sizeHeight);
+        return new Vector2(x, y);
     }
     
     public static Vector2[] ConvertSizeToOffset(Vector2 size)

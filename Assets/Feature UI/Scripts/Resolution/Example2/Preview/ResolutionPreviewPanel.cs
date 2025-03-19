@@ -36,7 +36,7 @@ public class DynamicUIData
         {
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
             
-            var size = CalculateSize(Display.main.systemWidth, Display.main.systemHeight);
+            var size = ResolutionUtility.ConvertResolutionToSize(Display.main.systemWidth, Display.main.systemHeight, UserAspectRatio);
             
             if (UserAspectRatio >= StaticUIData.BaseAspectRatio)
             {
@@ -70,8 +70,8 @@ public class DynamicUIData
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
 
             Vector2 size = previewData.IsWindowed 
-                ? CalculateSize(previewData.windowedMaxWidth, previewData.windowedMaxHeight) 
-                : CalculateSize(previewData.fullScreenMaxWidth, previewData.fullScreenMaxHeight);
+                ? ResolutionUtility.ConvertResolutionToSize(previewData.windowedMaxWidth, previewData.windowedMaxHeight, UserAspectRatio) 
+                : ResolutionUtility.ConvertResolutionToSize(previewData.fullScreenMaxWidth, previewData.fullScreenMaxHeight, UserAspectRatio);
             
             return size;
         }
@@ -95,8 +95,8 @@ public class DynamicUIData
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
 
             Vector2 size = previewData.IsWindowed 
-                ? CalculateSize(previewData.windowedMinWidth, previewData.windowedMinHeight) 
-                : CalculateSize(previewData.fullScreenMinWidth, previewData.fullScreenMinHeight);
+                ? ResolutionUtility.ConvertResolutionToSize(previewData.windowedMinWidth, previewData.windowedMinHeight, UserAspectRatio)
+                : ResolutionUtility.ConvertResolutionToSize(previewData.fullScreenMinWidth, previewData.fullScreenMinHeight, UserAspectRatio);
             
             return size;
         }
@@ -119,7 +119,7 @@ public class DynamicUIData
         {
             if (Mathf.Approximately(UserAspectRatio, 0f)) Debug.LogWarning("AspectRatio is 0");
             
-            return CalculateSize(previewData.ResolutionWidth, previewData.ResolutionHeight);
+            return ResolutionUtility.ConvertResolutionToSize(previewData.ResolutionWidth, previewData.ResolutionHeight, UserAspectRatio);
         }
     }
     
@@ -132,22 +132,6 @@ public class DynamicUIData
 
             return ResolutionUtility.ConvertSizeToOffset(InsideCurrentSize);
         }
-    }
-
-    private Vector2 CalculateSize(float x, float y)
-    {
-        if (UserAspectRatio >= StaticUIData.BaseAspectRatio)
-        {
-            y /= (Display.main.systemHeight / (StaticUIData.BaseHeight / 3f));
-            x = y * StaticUIData.BaseAspectRatio;
-        }
-        else
-        {
-            x /= (Display.main.systemWidth / (StaticUIData.BaseWidth / 3f));
-            y = x * StaticUIData.BaseReverseAspectRatio;
-        }
-        
-        return new Vector2(x, y);
     }
 }
 

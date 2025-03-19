@@ -150,11 +150,10 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
 
     private void OnEnable()
     {
-        previewData.ChangeData(backupData);
         zoomSavedOffsets = new []{ dynamicUIData.InsideCurrentOffsets[0], dynamicUIData.InsideCurrentOffsets[1] };
         insideScreenRect.anchoredPosition = Vector2.zero;
         
-        var backup = ResolutionUtility.ConvertResolutionToOffset(backupData.ResolutionWidth, backupData.ResolutionHeight);
+        var backup = ResolutionUtility.ConvertResolutionToOffset(previewData.ResolutionWidth, previewData.ResolutionHeight);
         ResizeInsideByOffsets(backup[0], backup[1]);
         
         ToggleNavigationBar(previewData.IsWindowed);
@@ -164,6 +163,7 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     {
         isResizing = false;
         Cursor.SetCursor(CursorType.Normal);
+        previewData.ChangeData(backupData);
     }
     
     private void AddAllResizeEvent()
