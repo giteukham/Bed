@@ -15,8 +15,6 @@ public class DisplayBrightnessController : FunctionControllerBase
     
     private float imageMinAlpha = 0.2f, imageMaxAlpha = 1.0f;
     
-    private readonly string path = "Menu UI/Resolution Settings Screen/Settings Panel/";
-    
     public void Initialize(
         ResolutionSettingsData previewData,
         ResolutionSettingsDTO backupData,

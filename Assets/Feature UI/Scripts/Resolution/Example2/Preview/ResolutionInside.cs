@@ -80,7 +80,6 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     private Vector2[] zoomSavedOffsets;
 
     private float lastClickTime = -1f;
-    private bool isDrag = false;
     
     public void Initialize(ResolutionSettingsData previewData, ResolutionSettingsDTO backupData, DynamicUIData dynamicUIData)
     {
@@ -153,7 +152,7 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
         zoomSavedOffsets = new []{ dynamicUIData.InsideCurrentOffsets[0], dynamicUIData.InsideCurrentOffsets[1] };
         insideScreenRect.anchoredPosition = Vector2.zero;
         
-        var backup = ResolutionUtility.ConvertResolutionToOffset(previewData.ResolutionWidth, previewData.ResolutionHeight);
+        var backup = ResolutionUtility.ConvertResolutionToOffset(previewData.ResolutionWidth, previewData.ResolutionHeight, dynamicUIData.UserAspectRatio);
         ResizeInsideByOffsets(backup[0], backup[1]);
         
         ToggleNavigationBar(previewData.IsWindowed);
@@ -398,7 +397,7 @@ private void OnResizeStay(PointerEventData eventData)
     public void OnDrag(PointerEventData eventData)
     {
         if (!previewData.IsWindowed) return;
-        isDrag = true;
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(blankRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
         Vector2 targetPos = localPoint + insideMoveBaseOffset;
         

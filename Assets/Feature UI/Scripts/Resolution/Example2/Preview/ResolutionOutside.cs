@@ -16,9 +16,6 @@ public class ResolutionOutside : MonoBehaviour
     private ResolutionSettingsDTO backupData;
     private DynamicUIData dynamicUIData;
     
-    private readonly float outsideMaxAspectRatio = 1920f / 1080f;           // 가로 비율 / 세로 비율
-    private readonly float outsideMaxReverseAspectRatio = 1080f / 1920f;    // 세로 비율 / 가로 비율
-    private readonly int blankSizeDecrease = 30;                            // Blank 사이즈를 줄이기 위한 값   
     private readonly string path = "Menu UI/Resolution Settings Screen/Preview Panel/Outside/";
 
     private readonly Color fullScreenBlankColor = Color.black;

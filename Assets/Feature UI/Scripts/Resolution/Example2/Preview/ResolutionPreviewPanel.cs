@@ -165,6 +165,23 @@ public class ResolutionPreviewPanel : MonoBehaviour
         
         resolutionOutside?.Initialize(previewData, backupData, dynamicUIData);
         resolutionInside?.Initialize(previewData, backupData, dynamicUIData);
+        
+        this.GetComponent<RectTransform>().localScale = new Vector3(CalculateScale(), CalculateScale(), 1f);
+    }
+    
+    public float CalculateScale()
+    {
+        float baseWidth = 1920f;
+        float refWidth = 3840f;
+        float refScale = 0.7f;
+        float baseScale = 1.0f;
+
+        if (Display.main.systemWidth <= baseWidth)
+            return baseScale;
+
+        float scale = baseScale - (Display.main.systemWidth - baseWidth) / (refWidth - baseWidth) * (baseScale - refScale);
+
+        return scale;
     }
 
     public void SetResolutionText(int width, int height, int frame, bool isModified)
