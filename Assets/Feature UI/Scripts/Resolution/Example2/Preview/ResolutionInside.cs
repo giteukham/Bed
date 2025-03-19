@@ -151,7 +151,7 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     private void OnEnable()
     {
         previewData.ChangeData(backupData);
-        zoomSavedResolution = new Vector2Int(previewData.ResolutionWidth, previewData.ResolutionHeight);
+        zoomSavedOffsets = new []{ dynamicUIData.InsideCurrentOffsets[0], dynamicUIData.InsideCurrentOffsets[1] };
         insideScreenRect.anchoredPosition = Vector2.zero;
         
         var backup = ResolutionUtility.ConvertResolutionToOffset(backupData.ResolutionWidth, backupData.ResolutionHeight);
