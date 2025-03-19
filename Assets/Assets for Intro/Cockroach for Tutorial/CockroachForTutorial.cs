@@ -21,6 +21,7 @@ public class CockroachForTutorial : MonoBehaviour
     public float minWaitTime;
     public float maxWaitTime ;
     public float minX, maxX, minY, maxY;
+    [SerializeField]private Player player;
 
     [SerializeField]private Transform leftTop, rightTop, leftMid, rightMid, leftBottom, rightBottom;
     private Vector3 initPosition;
@@ -51,6 +52,7 @@ public class CockroachForTutorial : MonoBehaviour
 
     public void OnEnable()
     {
+        PlayerConstant.isParalysis = true;
         Vector3 moveDirection = transform.localRotation * -Vector3.forward;  
         float moveDistance = Random.Range(minMoveDistance, maxMoveDistance);
         float moveDuration = Random.Range(minMoveDuration, maxMoveDuration);
@@ -73,6 +75,8 @@ public class CockroachForTutorial : MonoBehaviour
 
     private IEnumerator MainCode()
     {
+        yield return new WaitForSeconds(1f);
+        PlayerConstant.isParalysis = false;
         randomMoveCoroutine = StartCoroutine(RandomMove());
         prevEyeBlinkCAT = PlayerConstant.EyeBlinkCAT;
         prevEyeBlinkLAT = PlayerConstant.EyeBlinkLAT;

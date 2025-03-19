@@ -24,7 +24,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
     [SerializeField, Tooltip("몸 방향 왼쪽으로 바꾸기 튜토리얼 활성화 시간")]
     private float leftMoveTutorial_ActiveTime;
 
-    [SerializeField, Tooltip("눈 깜빡이기 튜토리얼 활성화 시간간")]
+    [SerializeField, Tooltip("눈 깜빡이기 튜토리얼 활성화 시간")]
     private float blink_ActiveTime;
 
     [SerializeField, Tooltip("튜토리얼 스킵 시간")]

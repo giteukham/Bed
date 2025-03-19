@@ -12,7 +12,7 @@ public static class PlayerConstant
     public static float headMoveSpeed = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
-    public static bool isFainting, isParalysis, isShock = false;
+    public static bool isFainting, isParalysis, isShock = false; // isParalysis == 조작 못하게 할때, isShock == GameOver 했을때 조작 못하게 하고 배게 소리도 안들리게 할때때
     public static bool isPlayerStop = false;
     public static float pixelationFactor = 0.25f;
 

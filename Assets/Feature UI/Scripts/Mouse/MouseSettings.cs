@@ -76,8 +76,8 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         
         if ( PlayerConstant.isParalysis )
         {
-            mouseHorizontalSpeed = player.povCamera.m_HorizontalAxis.m_InputAxisValue * 0.02f * horizontalReverseConstant;
-            mouseVerticalSpeed = player.povCamera.m_VerticalAxis.m_InputAxisValue * 0.02f * verticalReverseConstant;
+            mouseHorizontalSpeed = 0;
+            mouseVerticalSpeed = 0;
         }
         else
         {
