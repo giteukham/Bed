@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class ResolutionDropDownItem : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private ResolutionSelectController resolutionSelectController;
+    [SerializeField] private ResolutionDropDowncontroller resolutionSelectController;
     public void OnPointerClick(PointerEventData eventData)
     {
         resolutionSelectController.OnSelection();

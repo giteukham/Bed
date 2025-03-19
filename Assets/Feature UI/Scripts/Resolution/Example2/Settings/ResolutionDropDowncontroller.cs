@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ResolutionSelectController : FunctionControllerBase
+public class ResolutionDropDowncontroller : FunctionControllerBase
 {
     [SerializeField] private TMP_InputField inputWidth, inputHeight;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
@@ -20,36 +20,34 @@ public class ResolutionSelectController : FunctionControllerBase
         base.Initialize(previewData, backupData);
         resolutionDropdown.ClearOptions();
 
-        float minusStandardWidth = (Display.main.systemWidth - Display.main.systemWidth / 4f) / 9f;
-        float minusStandardHeight = (Display.main.systemHeight - Display.main.systemHeight / 4f) / 9f;  
+        float minusStandardWidth = (previewData.fullScreenMaxWidth - previewData.fullScreenMaxWidth / 4f) / 9f;
+        float minusStandardHeight = (previewData.fullScreenMaxHeight - previewData.fullScreenMaxHeight / 4f) / 9f;  
 
-        if (Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) == Math.Round(16f / 9, 3)) // 16:9일때
+        if (previewData.fullScreenRatio == previewData.windowedRatio) // 16:9일때
         {
             for (int i = 9; i >= 0; i--)
             {
-                Vector2Int item = new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i));
+                Vector2Int item = new Vector2Int((int)Mathf.Round(previewData.fullScreenMaxWidth - minusStandardWidth * i), (int)Mathf.Round(previewData.fullScreenMaxHeight - minusStandardHeight * i));
                 fullScreenResolutions.Add(item);
                 windowedResolutions.Add(item);
             }
         }
-        else if (Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) > Math.Round(16f / 9, 3)) // 16:9보다 width가 더 넒을때
+        else if (previewData.fullScreenRatio > previewData.windowedRatio) // 16:9보다 width가 더 넒을때
         {
-            float conversionWidth = Display.main.systemHeight / 9 * 16;
-            float minusConversionWidth = (conversionWidth - conversionWidth / 4f) / 9f;
+            float minusConversionWidth = (previewData.windowedMaxWidth - previewData.windowedMaxWidth / 4f) / 9f;
             for (int i = 9; i >= 0; i--)
             {
-                fullScreenResolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i)));
-                windowedResolutions.Add(new Vector2Int((int)Mathf.Round(conversionWidth - minusConversionWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i)));
+                fullScreenResolutions.Add(new Vector2Int((int)Mathf.Round(previewData.fullScreenMaxWidth - minusStandardWidth * i), (int)Mathf.Round(previewData.fullScreenMaxHeight - minusStandardHeight * i)));
+                windowedResolutions.Add(new Vector2Int((int)Mathf.Round(previewData.windowedMaxWidth - minusConversionWidth * i), (int)Mathf.Round(previewData.fullScreenMaxHeight - minusStandardHeight * i)));
             }
         }
-        else if (Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) < Math.Round(16f / 9, 3)) // 16:9보다 width가 더 좁을때
+        else if (previewData.fullScreenRatio < previewData.windowedRatio) // 16:9보다 width가 더 좁을때
         {
-            float conversionHeight = Display.main.systemWidth / 16 * 9;
-            float minusConversionHeight = (conversionHeight - conversionHeight / 4f) / 9f;
+            float minusConversionHeight = (previewData.windowedMaxHeight - previewData.windowedMaxHeight / 4f) / 9f;
             for (int i = 9; i >= 0; i--)
             {
-                fullScreenResolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(Display.main.systemHeight - minusStandardHeight * i)));
-                windowedResolutions.Add(new Vector2Int((int)Mathf.Round(Display.main.systemWidth - minusStandardWidth * i), (int)Mathf.Round(conversionHeight - minusConversionHeight * i)));
+                fullScreenResolutions.Add(new Vector2Int((int)Mathf.Round(previewData.fullScreenMaxWidth - minusStandardWidth * i), (int)Mathf.Round(previewData.fullScreenMaxHeight - minusStandardHeight * i)));
+                windowedResolutions.Add(new Vector2Int((int)Mathf.Round(previewData.fullScreenMaxWidth - minusStandardWidth * i), (int)Mathf.Round(previewData.windowedMaxHeight - minusConversionHeight * i)));
             }
         }
 

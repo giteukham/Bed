@@ -20,7 +20,7 @@ public class ResolutionSettingsPanel : MonoBehaviour
     [SerializeField] 
     private TMP_InputField resolutionHeightInput;
     [SerializeField]
-    private ResolutionSelectController resolutionSelectController;    
+    private ResolutionDropDowncontroller resolutionDropDowncontroller;    
     [Header("Frame Rate")]
     
     [SerializeField] 
@@ -75,7 +75,7 @@ public class ResolutionSettingsPanel : MonoBehaviour
         Assert.IsNotNull(brightnessCheckImage, $"{path}Brightness Check Image is null");
         Assert.IsNotNull(brightnessHandleImage, $"{path}Brightness Handle Image is null");
 
-        resolutionSelectController.Initialize(previewData);
+        resolutionDropDowncontroller.Initialize(previewData);
         frameRateController.Initialize(previewData, backupData, frameRateDropdown);
         windowModeController.Initialize(previewData, backupData, ref offColor, ref onColor, speed);
         displayBrightnessController?.Initialize(previewData, backupData, postProcessing, brightnessCheckImage, brightnessHandleImage);

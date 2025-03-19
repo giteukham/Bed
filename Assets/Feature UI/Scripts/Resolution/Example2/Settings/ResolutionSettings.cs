@@ -78,7 +78,7 @@ public class ResolutionSettingsData : INotifyPropertyChanged
     public int fullScreenMaxWidth, fullScreenMaxHeight, fullScreenMinWidth, fullScreenMinHeight, windowedMaxWidth, windowedMaxHeight, windowedMinWidth, windowedMinHeight;
 
     public int maxWidth, maxHeight, minWidth, minHeight;
-    private float fullScreenRatio, windowedRatio; // 창모드 비율은 무조건 16:9
+    public float fullScreenRatio, windowedRatio; // 창모드 비율은 무조건 16:9
     public float ratio;
 
     public ResolutionSettingsData()
@@ -330,5 +330,10 @@ public class ResolutionSettings : MonoBehaviour
         resolutionSettingsPanel.ApplyBrightness(backupData.ScreenBrightness);
         resolutionPreviewPanel.SetResolutionText(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.FrameRate, false);
         SaveManager.Instance.SaveResolutionSettings(backupData); // 해상도 설정 저장
+    }
+
+    private void OnDisable()
+    {
+        previewData.ChangeData(backupData);
     }
 }

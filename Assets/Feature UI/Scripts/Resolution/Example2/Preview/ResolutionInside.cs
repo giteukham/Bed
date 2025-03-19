@@ -65,7 +65,7 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     private InsideNavigationBar insideNavigationBar;
     
     [SerializeField]
-    private ResolutionSelectController resolutionSelectController;
+    private ResolutionDropDowncontroller resolutionSelectController;
     
     private Dictionary<ResizeType, InsideResizer> resizeEvents = new Dictionary<ResizeType, InsideResizer>();
     private ResizeType resizeCurrentType;
@@ -162,7 +162,6 @@ public class ResolutionInside : MonoBehaviour, IDragHandler, IPointerClickHandle
     {
         isResizing = false;
         Cursor.SetCursor(CursorType.Normal);
-        previewData.ChangeData(backupData);
     }
     
     private void AddAllResizeEvent()

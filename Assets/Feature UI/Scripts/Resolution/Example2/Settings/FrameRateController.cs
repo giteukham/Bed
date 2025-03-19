@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.Assertions;
 public class FrameRateController : FunctionControllerBase
 {
     private TMP_Dropdown frameRateDropdown;
+    List<int> frameRates = new();
     
     public void Initialize(
         ResolutionSettingsData previewData, 
@@ -15,8 +17,14 @@ public class FrameRateController : FunctionControllerBase
         TMP_Dropdown frameRateDropdown)
     {
         base.Initialize(previewData, backupData);
-        
         this.frameRateDropdown = frameRateDropdown;
+
+        this.frameRateDropdown.ClearOptions();
+        frameRates.Add(30);
+        frameRates.Add(60);
+        this.frameRateDropdown.AddOptions(frameRates.ConvertAll(x => x.ToString()));
+
+        frameRateDropdown.value = frameRateDropdown.options.FindIndex(option => option.text.Equals(previewData.FrameRate.ToString()));
     }
 
     private void OnEnable()
@@ -39,8 +47,6 @@ public class FrameRateController : FunctionControllerBase
     {
         if (e.PropertyName == nameof(ResolutionSettingsData.FrameRate))
         {
-            frameRateDropdown.value = frameRateDropdown.options.FindIndex(option => option.text.Equals(previewData.FrameRate.ToString()));
-            Application.targetFrameRate = previewData.FrameRate;
         }
     }
 }
