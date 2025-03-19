@@ -220,7 +220,7 @@ public class ResolutionSettingsData : INotifyPropertyChanged
     {
         IsWindowed = data.IsWindowed;
         SetSetting(ResolutionSettingType.ResolutionWidth, data.ResolutionWidth);
-        SetSetting(ResolutionSettingType.ResolutionHeight, data.ResolutionHeight);
+        ResolutionHeight = data.ResolutionHeight;
         SetSetting(ResolutionSettingType.FrameRate, data.FrameRate);
         SetSetting(ResolutionSettingType.ScreenBrightness, data.ScreenBrightness);
     }

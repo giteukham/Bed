@@ -379,6 +379,7 @@ public class GameManager : MonoSingleton<GameManager>
     protected override void OnApplicationQuit()
     {
         if (isBlinkInit) BlinkEffect.Blink = 1f;
+        else BlinkEffect.Blink = 0f;
     }
 
     public void GameEnd()
