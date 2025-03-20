@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 
 public enum ResolutionSettingType
@@ -219,8 +220,18 @@ public class ResolutionSettingsData : INotifyPropertyChanged
     public void ChangeData(ResolutionSettingsDTO data)
     {
         IsWindowed = data.IsWindowed;
-        SetSetting(ResolutionSettingType.ResolutionWidth, data.ResolutionWidth);
-        ResolutionHeight = data.ResolutionHeight;
+        if ((float)Math.Round((float)Display.main.systemWidth / Display.main.systemHeight, 3) == (float)Math.Round((float)data.ResolutionWidth / data.ResolutionHeight, 3))
+        {
+            SetSetting(ResolutionSettingType.ResolutionWidth, data.ResolutionWidth);
+            ResolutionHeight = data.ResolutionHeight;
+            ResolutionWidth = data.ResolutionWidth;
+        }
+        else
+        {
+            SetSetting(ResolutionSettingType.ResolutionWidth, Display.main.systemWidth);
+            ResolutionHeight = Display.main.systemHeight;
+            ResolutionWidth = Display.main.systemWidth;
+        }
         SetSetting(ResolutionSettingType.FrameRate, data.FrameRate);
         SetSetting(ResolutionSettingType.ScreenBrightness, data.ScreenBrightness);
     }
@@ -247,6 +258,7 @@ public class ResolutionSettings : MonoBehaviour
     public ResolutionSettingsData PreviewData => previewData;
     public ResolutionSettingsDTO BackupData => backupData;
     [SerializeField] private Camera cam;
+    [SerializeField]private CanvasScaler canvasScaler;
     private readonly string path = "Menu UI/Resolution Settings Screen/";
 
     public void InitResolutionSettings() // UIManager.Awake()에서 호출
@@ -260,80 +272,67 @@ public class ResolutionSettings : MonoBehaviour
         
         resolutionSettingsPanel?.Initialize(previewData, backupData);
         resolutionPreviewPanel?.Initialize(previewData, backupData);
-        
-        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, !backupData.IsWindowed);
-        Application.targetFrameRate = backupData.FrameRate;
-        if (QualitySettings.vSyncCount != 1) QualitySettings.vSyncCount = 1;
 
-        Rect rect = new Rect(0, 0, 1, 1);
-        float ratio = (float)Math.Round((float)backupData.ResolutionWidth / backupData.ResolutionHeight, 3);
-        float standardRatio = (float)Math.Round(16f / 9, 3);
-        if (ratio == standardRatio)
-        {
-            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
-        }
-        else if (ratio > standardRatio)
-        {
-            float temp1 = 9 / (float)backupData.ResolutionHeight;
-            float temp2 = temp1 * backupData.ResolutionWidth;
-            rect.width = 16 / temp2;
-            rect.x = (1 - rect.width) / 2;
-            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
-        }
-        else if (ratio < standardRatio)
-        {
-            float temp1 = 9 / (float)backupData.ResolutionHeight;
-            float temp2 = temp1 * backupData.ResolutionWidth;
-            rect.height = temp2 / 16;
-            rect.y = (1 - rect.height) / 2;
-            float startPointConversionValue = Mathf.Lerp(BlinkEffect.BLINK_START_POINT_INIT + 0.13f, BlinkEffect.BLINK_START_POINT_INIT, (ratio - 1f) / (1.77f - 1f));
-            BlinkEffect.StartPoint = startPointConversionValue;
-        }
-        cam.rect = rect;
-        PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
-        resolutionSettingsPanel.ApplyBrightness(backupData.ScreenBrightness);
-        resolutionPreviewPanel.SetResolutionText(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.FrameRate, false);
+        if (QualitySettings.vSyncCount != 1) QualitySettings.vSyncCount = 1;
+        Setting();
     }
 
     public void ApplyResolutionSettings() // ApplyButton 오브젝트에 할당
     {
         backupData.ChangeData(previewData);
-        Screen.SetResolution(backupData.ResolutionWidth, backupData.ResolutionHeight, !backupData.IsWindowed);
-        Application.targetFrameRate = backupData.FrameRate;
-
-        Rect rect = new Rect(0, 0, 1, 1);
-        float ratio = (float)Math.Round((float)backupData.ResolutionWidth / backupData.ResolutionHeight, 3);
-        float standardRatio = (float)Math.Round(16f / 9, 3);
-        if (ratio == standardRatio)
-        {
-            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
-        }
-        else if (ratio > standardRatio)
-        {
-            float temp1 = 9 / (float)backupData.ResolutionHeight;
-            float temp2 = temp1 * backupData.ResolutionWidth;
-            rect.width = 16 / temp2;
-            rect.x = (1 - rect.width) / 2;
-            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
-        }
-        else if (ratio < standardRatio)
-        {
-            float temp1 = 9 / (float)backupData.ResolutionHeight;
-            float temp2 = temp1 * backupData.ResolutionWidth;
-            rect.height = temp2 / 16;
-            rect.y = (1 - rect.height) / 2;
-            float startPointConversionValue = Mathf.Lerp(BlinkEffect.BLINK_START_POINT_INIT + 0.13f, BlinkEffect.BLINK_START_POINT_INIT, (ratio - 1f) / (1.77f - 1f));
-            BlinkEffect.StartPoint = startPointConversionValue;
-        }
-        cam.rect = rect;
-        PlayerConstant.pixelationFactor = 0.25f / (backupData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
-        resolutionSettingsPanel.ApplyBrightness(backupData.ScreenBrightness);
-        resolutionPreviewPanel.SetResolutionText(backupData.ResolutionWidth, backupData.ResolutionHeight, backupData.FrameRate, false);
+        Setting();
         SaveManager.Instance.SaveResolutionSettings(backupData); // 해상도 설정 저장
     }
 
     private void OnDisable()
     {
         previewData.ChangeData(backupData);
+    }
+
+    private void Setting()
+    {
+        Screen.SetResolution(previewData.ResolutionWidth, previewData.ResolutionHeight, !previewData.IsWindowed);
+        Application.targetFrameRate = previewData.FrameRate;
+    
+        Rect rect = new Rect(0, 0, 1, 1);
+        float ratio = (float)Math.Round((float)previewData.ResolutionWidth / previewData.ResolutionHeight, 3);
+        float standardRatio = (float)Math.Round(16f / 9, 3);
+        if (ratio == standardRatio)
+        {
+            BlinkEffect.AspectRatio = 0.92f;
+            BlinkEffect.Smoothness =  0.97f;
+            BlinkEffect.StartPoint = BlinkEffect.BLINK_START_POINT_INIT;
+            canvasScaler.matchWidthOrHeight = 0;
+            PlayerConstant.pixelationFactor = 0.25f / (previewData.ResolutionWidth / 1920f);
+        }
+        else if (ratio > standardRatio)
+        {
+            float temp1 = 9 / (float)previewData.ResolutionHeight;
+            float temp2 = temp1 * previewData.ResolutionWidth;
+            rect.width = 16 / temp2;
+            rect.x = (1 - rect.width) / 2;
+            BlinkEffect.AspectRatio = 0.92f * (ratio / previewData.windowedRatio);
+            BlinkEffect.Smoothness = 0.97f - 0.07f * ((ratio - previewData.windowedRatio) / ((32f/9f) - previewData.windowedRatio)) * (1 + 0.5f * (ratio - (32f/9f)));
+            BlinkEffect.StartPoint = 1f - (1f - 0.81f) * Mathf.Pow(BlinkEffect.AspectRatio / 0.92f, 2f);
+            canvasScaler.matchWidthOrHeight = 1;
+            PlayerConstant.pixelationFactor = 0.25f / (previewData.ResolutionHeight / 1080f);
+        }
+        else if (ratio < standardRatio)
+        {
+            float temp1 = 9 / (float)previewData.ResolutionHeight;
+            float temp2 = temp1 * previewData.ResolutionWidth;
+            rect.height = temp2 / 16;
+            rect.y = (1 - rect.height) / 2;
+            float startPointConversionValue = Mathf.Lerp(BlinkEffect.BLINK_START_POINT_INIT + 0.13f, BlinkEffect.BLINK_START_POINT_INIT, (ratio - 1f) / (1.77f - 1f));
+            BlinkEffect.AspectRatio = 0.92f;
+            BlinkEffect.Smoothness =  0.97f;
+            BlinkEffect.StartPoint = startPointConversionValue;
+            canvasScaler.matchWidthOrHeight = 0;
+            PlayerConstant.pixelationFactor = 0.25f / (previewData.ResolutionWidth / 1920f);
+        }
+        cam.rect = rect;
+        //PlayerConstant.pixelationFactor = 0.25f / (previewData.ResolutionWidth / 1920f); //픽셀레이션 값 조절
+        resolutionSettingsPanel.ApplyBrightness(previewData.ScreenBrightness);
+        resolutionPreviewPanel.SetResolutionText(previewData.ResolutionWidth, previewData.ResolutionHeight, previewData.FrameRate, false);
     }
 }

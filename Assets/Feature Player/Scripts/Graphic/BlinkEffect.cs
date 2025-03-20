@@ -36,6 +36,30 @@ public class BlinkEffect : MonoBehaviour
             blinkMaterial.SetFloat("_StartBlink", value);
         }
     }
+
+    public static float Smoothness
+    {
+        get
+        {
+            return blinkMaterial.GetFloat("_Smoothness");
+        }
+        set
+        {
+            blinkMaterial.SetFloat("_Smoothness", value);
+        }
+    }
+    
+    public static float AspectRatio
+    {
+        get
+        {
+            return blinkMaterial.GetFloat("_AspectRatio");
+        }
+        set
+        {
+            blinkMaterial.SetFloat("_AspectRatio", value);
+        }
+    }
     
     /// <summary>
     /// 임시 버퍼를 만들어서 현재 화면을 복사한 뒤 블링크 효과를 적용

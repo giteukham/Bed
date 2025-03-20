@@ -166,7 +166,8 @@ public class ResolutionPreviewPanel : MonoBehaviour
         resolutionOutside?.Initialize(previewData, backupData, dynamicUIData);
         resolutionInside?.Initialize(previewData, backupData, dynamicUIData);
         
-        this.GetComponent<RectTransform>().localScale = new Vector3(CalculateScale(), CalculateScale(), 1f);
+        if(previewData.fullScreenRatio > previewData.windowedRatio)
+            this.GetComponent<RectTransform>().localScale = new Vector3(CalculateScale(), CalculateScale(), 1f);
     }
     
     public float CalculateScale()
@@ -176,10 +177,10 @@ public class ResolutionPreviewPanel : MonoBehaviour
         float refScale = 0.7f;
         float baseScale = 1.0f;
 
-        if (Display.main.systemWidth <= baseWidth)
+        if (previewData.ResolutionWidth <= baseWidth)
             return baseScale;
 
-        float scale = baseScale - (Display.main.systemWidth - baseWidth) / (refWidth - baseWidth) * (baseScale - refScale);
+        float scale = baseScale - (previewData.ResolutionWidth - baseWidth) / (refWidth - baseWidth) * (baseScale - refScale);
 
         return scale;
     }
