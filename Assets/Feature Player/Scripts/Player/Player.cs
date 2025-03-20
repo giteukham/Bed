@@ -94,7 +94,8 @@ public class Player : PlayerBase
         psxPostProcessEffect = playerCamera.GetComponent<PSXPostProcessEffect>();
 
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
-        UpdateCamera();
+        StartCameraEffect();
+        StartPostProcessing();
     }
 
     void Update() 
@@ -212,7 +213,7 @@ public class Player : PlayerBase
         // ----------------- Look Value -----------------
     }
 
-    private void UpdateCamera()
+    private void StartCameraEffect()
     {
         StartCoroutine(StressShake());
     }
@@ -232,7 +233,6 @@ public class Player : PlayerBase
         }
     }
 
-
     private void UpdateGauge() 
     {
         if (PlayerConstant.stressGauge >= PlayerConstant.stressGaugeMax) PlayerConstant.isFainting = true;
@@ -245,19 +245,9 @@ public class Player : PlayerBase
         PlayerConstant.fearGauge = Mathf.Clamp(PlayerConstant.fearGauge, PlayerConstant.fearGaugeMin, PlayerConstant.fearGaugeMax);
     }
 
-    private void UpdatePostProcessing()
+    private void StartPostProcessing()
     {
         StartCoroutine(ChromaticAberrationEffect());
-        grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
-
-        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(PlayerConstant.pixelationFactor, PlayerConstant.pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
-        colorGrading.saturation.value = -PlayerConstant.fearGauge;
-
-        depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
-        if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
-        else if (BlinkEffect.Blink > 0.7f) depthOfField.kernelSize.value = KernelSize.Large;
-        else if (BlinkEffect.Blink > 0.57f) depthOfField.kernelSize.value = KernelSize.Medium;
-        else if (BlinkEffect.Blink > 0.45f) depthOfField.kernelSize.value = KernelSize.Small;
     }
 
     IEnumerator ChromaticAberrationEffect()
@@ -270,6 +260,21 @@ public class Player : PlayerBase
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.03f, 0.1f));
         }
     }
+
+    private void UpdatePostProcessing()
+    {
+        grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
+
+        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(PlayerConstant.pixelationFactor, PlayerConstant.pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
+        colorGrading.saturation.value = -PlayerConstant.fearGauge;
+
+        depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
+        if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
+        else if (BlinkEffect.Blink > 0.7f) depthOfField.kernelSize.value = KernelSize.Large;
+        else if (BlinkEffect.Blink > 0.57f) depthOfField.kernelSize.value = KernelSize.Medium;
+        else if (BlinkEffect.Blink > 0.45f) depthOfField.kernelSize.value = KernelSize.Small;
+    }
+
 
     private void UpdateSFX()
     {
