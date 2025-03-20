@@ -447,7 +447,7 @@ private void OnResizeStay(PointerEventData eventData)
     {
         insideScreenRect.offsetMin = offsetMin;
         insideScreenRect.offsetMax = offsetMax;
-    
+        
         var size = insideScreenRect.sizeDelta;
     
         // 나의 해상도 비율이 16:9 보다 클 때
@@ -472,6 +472,9 @@ private void OnResizeStay(PointerEventData eventData)
     
         previewData.ResolutionWidth = Convert.ToInt32(size.x);
         previewData.ResolutionHeight = Convert.ToInt32(size.y);
+        
+        insideScreenRect.sizeDelta = previewData.IsWindowed ? dynamicUIData.InsideCurrentSize : dynamicUIData.InsideMaxSize;
+        insideScreenRect.anchoredPosition = previewData.IsWindowed ? insideScreenRect.anchoredPosition : Vector2.zero;
     }
     
     private static void ChangeCursorByType(ResizeType type)
