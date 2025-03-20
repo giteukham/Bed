@@ -93,15 +93,8 @@ public class Player : PlayerBase
         postProcessing.m_Profile.TryGetSettings(out depthOfField);
         psxPostProcessEffect = playerCamera.GetComponent<PSXPostProcessEffect>();
 
-        // Camera Noise
-        //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
-        // Sound Play
-        // fearHal 임시로 뺌뺌
-        //AudioManager.Instance.PlaySound(AudioManager.Instance.fearHal, transform.position);
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
-
-        // pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
+        UpdateCamera();
     }
 
     void Update() 
@@ -113,7 +106,6 @@ public class Player : PlayerBase
             UpdateStats();
             timeSinceLastUpdate = 0f;
         }
-        UpdateCamera();
         UpdateGauge();
         SetPlayerState();
         UpdatePostProcessing();
@@ -222,25 +214,18 @@ public class Player : PlayerBase
 
     private void UpdateCamera()
     {
-        // if      (PlayerConstant.fearGauge >= 80) cameraNoise.m_FrequencyGain = 4f;
-        // else if (PlayerConstant.fearGauge >= 60) cameraNoise.m_FrequencyGain = 3f;
-        // else if (PlayerConstant.fearGauge >= 40) cameraNoise.m_FrequencyGain = 2f;
-        // else if (PlayerConstant.fearGauge < 40)  cameraNoise.m_FrequencyGain = 1f;
-
         StartCoroutine(StressShake());
     }
 
     IEnumerator StressShake()
     {
-        while (true)
+        float shakeIntensity;
+        while (PlayerConstant.stressGauge >= 25)
         {
-            float shakeIntensity = 0f;
-
             if      (PlayerConstant.stressGauge >= 80) shakeIntensity = 1.3f;
             else if (PlayerConstant.stressGauge >= 65) shakeIntensity = 0.75f;
             else if (PlayerConstant.stressGauge >= 50) shakeIntensity = 0.35f;
-            else if (PlayerConstant.stressGauge >= 25) shakeIntensity = 0.1f;
-            else if (PlayerConstant.stressGauge < 25)  shakeIntensity = 0f;
+            else shakeIntensity = 0.1f;
 
             playerVirtualCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
             yield return new WaitForSeconds(0.1f);
