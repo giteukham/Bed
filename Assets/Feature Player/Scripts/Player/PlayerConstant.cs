@@ -15,6 +15,7 @@ public static class PlayerConstant
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
     public static bool isShock = false;
     public static bool isPlayerStop = false;
+    public static float pixelationFactor = 0.25f;
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)
     // LAT: Last Action Time (최근 행동 시간, 가장 최근 기믹이 시작때 부터 끝날때 까지 기록)

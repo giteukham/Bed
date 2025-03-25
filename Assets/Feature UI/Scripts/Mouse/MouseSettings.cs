@@ -74,11 +74,19 @@ public class MouseSettings : MonoSingleton<MouseSettings>
         int verticalReverseConstant = isVerticalReverse ? -1 : 1;
         int horizontalReverseConstant = isHorizontalReverse ? -1 : 1;
         
-        mouseHorizontalSpeed = player.povCamera.m_HorizontalAxis.m_InputAxisValue * horizontalReverseConstant;
-        mouseVerticalSpeed = player.povCamera.m_VerticalAxis.m_InputAxisValue * verticalReverseConstant;
+        if ( PlayerConstant.isParalysis )
+        {
+            mouseHorizontalSpeed = 0;
+            mouseVerticalSpeed = 0;
+        }
+        else
+        {
+            mouseHorizontalSpeed = player.povCamera.m_HorizontalAxis.m_InputAxisValue * horizontalReverseConstant;
+            mouseVerticalSpeed = player.povCamera.m_VerticalAxis.m_InputAxisValue * verticalReverseConstant;
+        }
     }
     
-    public void InitMouseSetting()
+    public void InitMouseSettings()
     {
         mouseSensitivity = SaveManager.Instance.LoadMouseSensitivity();
         mouseMaxSpeed = mouseSensitivity * mouseSpeedMultiplier;

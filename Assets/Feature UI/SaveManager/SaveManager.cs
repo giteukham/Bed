@@ -65,24 +65,6 @@ public class SaveManager : MonoSingleton<SaveManager>
         return Convert.ToBoolean(PlayerPrefs.GetInt("MouseHorizontalReverse", 0));
     }
 
-    //화면 해상도 관련
-    public void SaveResolution(int value1, int value2)
-    {
-        //PlayerPrefs.SetString("Resolution", value1 + " " + value2);
-
-        PlayerPrefs.SetInt("ResolutionWidth", value1);
-        PlayerPrefs.SetInt("ResolutionHeight", value2);
-
-        PlayerPrefs.Save();
-    }
-    public void LoadResolution(out int value1, out int value2)
-    {
-        //value1 = PlayerPrefs.GetInt("ResolutionWidth", 1920);
-        //value2 = PlayerPrefs.GetInt("ResolutionHeight", 1080);
-        value1 = PlayerPrefs.GetInt("ResolutionWidth", Display.main.systemWidth);
-        value2 = PlayerPrefs.GetInt("ResolutionHeight", Display.main.systemHeight);
-    }
-
     //화면 풀스크린 여부 관련
     public void SaveIsWindowedScreen(bool value)
     {
@@ -214,5 +196,27 @@ public class SaveManager : MonoSingleton<SaveManager>
     {
         PlayerPrefs.SetFloat("PlayerVolume", value);
         PlayerPrefs.Save();
+    }
+
+    public void SaveResolutionSettings(ResolutionSettingsDTO data)
+    {
+        PlayerPrefs.SetInt("ResolutionWidth", data.ResolutionWidth);
+        PlayerPrefs.SetInt("ResolutionHeight", data.ResolutionHeight);
+        PlayerPrefs.SetInt("FrameRate", data.FrameRate);
+        PlayerPrefs.SetInt("IsWindowed", data.IsWindowed ? 1 : 0);
+        PlayerPrefs.SetFloat("ScreenBrightness", data.ScreenBrightness);
+        PlayerPrefs.Save();
+    }
+
+    public ResolutionSettingsDTO LoadResolutionSettings()
+    {
+        return new ResolutionSettingsDTO
+        {
+            ResolutionWidth = PlayerPrefs.GetInt("ResolutionWidth", Screen.currentResolution.width),
+            ResolutionHeight = PlayerPrefs.GetInt("ResolutionHeight", Screen.currentResolution.height),
+            FrameRate = PlayerPrefs.GetInt("FrameRate", 60),
+            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 1,
+            ScreenBrightness = PlayerPrefs.GetFloat("ScreenBrightness", 0f)
+        };
     }
 }

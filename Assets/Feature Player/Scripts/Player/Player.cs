@@ -51,7 +51,6 @@ public class Player : PlayerBase
     private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
     private CinemachineBasicMultiChannelPerlin cameraNoise;
-    public float pixelationFactor = 0.25f;
     #endregion
 
     #region Player Stats Updtae Variables
@@ -99,8 +98,8 @@ public class Player : PlayerBase
 
         // Sound Play
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
-
-        pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
+        StartCameraEffect();
+        StartPostProcessing();
     }
 
     void Update() 
@@ -217,14 +216,15 @@ public class Player : PlayerBase
         // ----------------- Look Value -----------------
     }
 
-    private void UpdateCamera()
+    private void StartCameraEffect()
     {
         StartCoroutine(StressShake());
     }
 
     IEnumerator StressShake()
     {
-        while (true)
+        float shakeIntensity;
+        while (PlayerConstant.stressGauge >= 25)
         {
             float shakeIntensity = 0f;
 
@@ -264,6 +264,21 @@ public class Player : PlayerBase
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.03f, 0.1f));
         }
     }
+
+    private void UpdatePostProcessing()
+    {
+        grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
+
+        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(PlayerConstant.pixelationFactor, PlayerConstant.pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
+        colorGrading.saturation.value = -PlayerConstant.fearGauge;
+
+        depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
+        if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
+        else if (BlinkEffect.Blink > 0.7f) depthOfField.kernelSize.value = KernelSize.Large;
+        else if (BlinkEffect.Blink > 0.57f) depthOfField.kernelSize.value = KernelSize.Medium;
+        else if (BlinkEffect.Blink > 0.45f) depthOfField.kernelSize.value = KernelSize.Small;
+    }
+
 
     private void UpdateSFX()
     {

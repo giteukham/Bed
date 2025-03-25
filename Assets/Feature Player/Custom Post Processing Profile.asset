@@ -48,32 +48,32 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   gradingMode:
-    overrideState: 0
+    overrideState: 1
     value: 1
   externalLut:
     overrideState: 0
     value: {fileID: 0}
     defaultState: 1
   tonemapper:
-    overrideState: 0
-    value: 1
+    overrideState: 1
+    value: 3
   toneCurveToeStrength:
     overrideState: 0
-    value: 0
+    value: 0.157
   toneCurveToeLength:
     overrideState: 0
-    value: 0.5
+    value: 0.12
   toneCurveShoulderStrength:
     overrideState: 0
-    value: 0
+    value: 0.249
   toneCurveShoulderLength:
     overrideState: 0
-    value: 0.5
+    value: 1.56
   toneCurveShoulderAngle:
     overrideState: 0
-    value: 0
+    value: 0.192
   toneCurveGamma:
-    overrideState: 0
+    overrideState: 1
     value: 1
   ldrLut:
     overrideState: 0
@@ -87,13 +87,13 @@ MonoBehaviour:
     value: -9
   tint:
     overrideState: 0
-    value: -12
+    value: -11
   colorFilter:
     overrideState: 0
-    value: {r: 0.9191374, g: 0.9191374, b: 0.9191374, a: 1}
+    value: {r: 0.64779866, g: 0.64779866, b: 0.64779866, a: 1}
   hueShift:
     overrideState: 0
-    value: -163
+    value: 180
   saturation:
     overrideState: 1
     value: 0
@@ -101,11 +101,11 @@ MonoBehaviour:
     overrideState: 0
     value: 97
   postExposure:
-    overrideState: 0
+    overrideState: 1
     value: 0
   contrast:
     overrideState: 0
-    value: -0
+    value: 100
   mixerRedOutRedIn:
     overrideState: 0
     value: 62
@@ -1364,7 +1364,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.24951392
+    value: 0
   fastMode:
     overrideState: 1
     value: 0
@@ -1402,7 +1402,7 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   focusDistance:
-    overrideState: 1
+    overrideState: 0
     value: 0.1
   aperture:
     overrideState: 0
@@ -1412,7 +1412,7 @@ MonoBehaviour:
     value: 300
   kernelSize:
     overrideState: 1
-    value: 3
+    value: 1
 --- !u!114 &5683370028424917349
 MonoBehaviour:
   m_ObjectHideFlags: 3

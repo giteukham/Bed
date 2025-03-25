@@ -49,13 +49,14 @@ public class PlayerEyeControl : IPlayerControl
     private void OnBlink()
     {
         if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close]) 
-         || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
+         || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])
+         || PlayerConstant.isParalysis) return;
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
 
     private async void OnEyelidMove(int mouseScrollValue)
     {
-        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isShock) return;
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isShock ) return;
 
         if (currentValue == null) currentValue = BlinkEffect.Blink;
 
