@@ -49,8 +49,7 @@ public class PlayerEyeControl : IPlayerControl
     private void OnBlink()
     {
         if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close]) 
-         || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])
-         || PlayerConstant.isParalysis) return;
+            || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink])) return;
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
 

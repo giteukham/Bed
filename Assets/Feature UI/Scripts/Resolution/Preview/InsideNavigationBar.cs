@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class InsideNavigationBar : MonoBehaviour
 {
-    public OnZoomEvent onZoom = new OnZoomEvent();
-    
     private Image navigationBarImage;
 
     public void Initialize()

@@ -51,6 +51,7 @@ public class Player : PlayerBase
     private DepthOfField depthOfField;
     private PSXPostProcessEffect psxPostProcessEffect;
     private CinemachineBasicMultiChannelPerlin cameraNoise;
+    public float pixelationFactor = 0.25f;
     #endregion
 
     #region Player Stats Updtae Variables
@@ -98,8 +99,8 @@ public class Player : PlayerBase
 
         // Sound Play
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
-        StartCameraEffect();
-        StartPostProcessing();
+
+        pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
 
     void Update() 
@@ -111,7 +112,6 @@ public class Player : PlayerBase
             UpdateStats();
             timeSinceLastUpdate = 0f;
         }
-        UpdateCamera();
         UpdatePostProcessing();
         UpdateSFX();
         StopPlayer();
@@ -223,8 +223,7 @@ public class Player : PlayerBase
 
     IEnumerator StressShake()
     {
-        float shakeIntensity;
-        while (PlayerConstant.stressGauge >= 25)
+        while (true)
         {
             float shakeIntensity = 0f;
 
@@ -237,21 +236,6 @@ public class Player : PlayerBase
             playerVirtualCamera.m_Lens.Dutch = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity);
             yield return new WaitForSeconds(0.1f);
         }
-    }
-
-    private void UpdatePostProcessing()
-    {
-        StartCoroutine(ChromaticAberrationEffect());
-        grain.intensity.value = PlayerConstant.stressLevel * 0.01f;
-
-        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(pixelationFactor, pixelationFactor * 0.4f, PlayerConstant.stressLevel / 100f);
-        colorGrading.saturation.value = -PlayerConstant.stressLevel;
-
-        depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
-        if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
-        else if (BlinkEffect.Blink > 0.7f) depthOfField.kernelSize.value = KernelSize.Large;
-        else if (BlinkEffect.Blink > 0.57f) depthOfField.kernelSize.value = KernelSize.Medium;
-        else if (BlinkEffect.Blink > 0.45f) depthOfField.kernelSize.value = KernelSize.Small;
     }
 
     IEnumerator ChromaticAberrationEffect()
@@ -267,10 +251,11 @@ public class Player : PlayerBase
 
     private void UpdatePostProcessing()
     {
-        grain.intensity.value = PlayerConstant.fearGauge * 0.01f;
+        StartCoroutine(ChromaticAberrationEffect());
+        grain.intensity.value = PlayerConstant.stressLevel * 0.01f;
 
-        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(PlayerConstant.pixelationFactor, PlayerConstant.pixelationFactor * 0.4f, PlayerConstant.fearGauge / 100f);
-        colorGrading.saturation.value = -PlayerConstant.fearGauge;
+        psxPostProcessEffect._PixelationFactor = Mathf.Lerp(pixelationFactor, pixelationFactor * 0.4f, PlayerConstant.stressLevel / 100f);
+        colorGrading.saturation.value = -PlayerConstant.stressLevel;
 
         depthOfField.focusDistance.overrideState = BlinkEffect.Blink > 0.3f;
         if      (BlinkEffect.Blink > 0.8f) depthOfField.kernelSize.value = KernelSize.VeryLarge;
