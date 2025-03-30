@@ -6,13 +6,15 @@ using UnityEngine;
 [System.Serializable]
 public class GimmickManager : MonoSingleton<GimmickManager>
 {
-    [SerializeField] private List<Gimmick> AllGimicks;
+    [SerializeField] private List<Gimmick> AllGimicks ;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
 
     private void Awake()
     {
         Gimmick[] foundGimmicks = Resources.FindObjectsOfTypeAll<Gimmick>();
 
+        AllGimicks = new List<Gimmick>();
+        
         foreach (Gimmick gimmick in foundGimmicks)
             if (gimmick.gameObject.scene.IsValid() && gimmick.gameObject.CompareTag("Gimmick")) AllGimicks.Add(gimmick);
     }
@@ -63,6 +65,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
                     foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
                         AllGimicks.Remove(exclusionGimmick);
 
+                gimmick.gameObject.SetActive(true);
                 gimmick.Activate();
                 break;
             }
@@ -75,7 +78,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     {
         foreach (Gimmick gimmick in AllGimicks)
         {
-            gimmick.UpdateProbability();
+            gimmick?.UpdateProbability();
         }
     }
 

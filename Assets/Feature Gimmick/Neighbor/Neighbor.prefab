@@ -73,10 +73,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6171796030521548098}
   - component: {fileID: 8930661893435035876}
-  - component: {fileID: 498099707345968025}
+  - component: {fileID: 2497762284329482256}
   m_Layer: 0
   m_Name: Neighbor
-  m_TagString: Untagged
+  m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -89,7 +89,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 434197584149231104}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.5744525, z: 0, w: 0.818538}
+  m_LocalRotation: {x: 0, y: 0.5744554, z: 0, w: 0.8185359}
   m_LocalPosition: {x: -9.59, y: 1.967, z: -6.09}
   m_LocalScale: {x: 1.0600002, y: 1.06, z: 1.0600002}
   m_ConstrainProportionsScale: 1
@@ -120,7 +120,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &498099707345968025
+--- !u!114 &2497762284329482256
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,13 +129,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 434197584149231104}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc8dfe2d51fbf6d489447adba4cbd175, type: 3}
+  m_Script: {fileID: 11500000, guid: b36ed3a9b344ccd4e948c7d08277cc8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isDetected: 0
-  gimmickManager: {fileID: 0}
+  <type>k__BackingField: 1
+  _probability: 0
+  <ExclusionGimmickList>k__BackingField: []
   hand: {fileID: 0}
-  houseLight: {fileID: 4588338435421902223}
+  houseLight: {fileID: 0}
   zeroPahse: 0
   onePhase: 0
   twoPhase: 0

@@ -24,7 +24,6 @@ namespace AbstractGimmick
 
         public virtual void Activate()
         {
-            gameObject.SetActive(true);
             timeLimit = 0;
             isDetected = false;
             PlayerConstant.ResetLATStats();
