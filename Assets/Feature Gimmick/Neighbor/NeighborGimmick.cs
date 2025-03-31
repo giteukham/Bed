@@ -48,11 +48,13 @@ public class NeighborGimmick : Gimmick
     private MarkovChain chain = new MarkovChain();
     private MarkovState currState;
     
-    private MarkovState wait        = new MarkovState {name = "Wait"};
-    private MarkovState watch       = new MarkovState {name = "Watch"};
-    private MarkovState cautious    = new MarkovState {name = "Cautious"};
-    private MarkovState danger      = new MarkovState {name = "Danger"};
-    private MarkovState near        = new MarkovState {name = "Near"};
+    private MarkovState wait        = new MarkovState {Name = "Wait"};
+    private MarkovState watch       = new MarkovState {Name = "Watch"};
+    private MarkovState cautious    = new MarkovState {Name = "Cautious"};
+    private MarkovState danger      = new MarkovState {Name = "Danger"};
+    private MarkovState near        = new MarkovState {Name = "Near"};
+    
+    private Coroutine markovCoroutine;
     #endregion
 
     private int tmpValue = 0;
@@ -82,39 +84,58 @@ public class NeighborGimmick : Gimmick
         animator = GetComponent<Animator>();
         gameObject.SetActive(true);
         
+        chain.InsertTransition(wait,
+            new List<MarkovTransition>()
+            {
+                new MarkovTransition { Target = watch, Threshold = 30 },
+                new MarkovTransition { Target = cautious, Threshold = 60 },
+                new MarkovTransition { Target = danger, Threshold = 80 },
+                new MarkovTransition { Target = near, Threshold = 95 }
+            }
+        );
+        
+        chain.InsertTransition(watch, 
+            new List<MarkovTransition>()
+            {
+                new MarkovTransition { Target = wait, Threshold = 10 },
+                new MarkovTransition { Target = cautious, Threshold = 45 },
+                new MarkovTransition { Target = danger, Threshold = 70 },
+                new MarkovTransition { Target = near, Threshold = 95 }
+            }
+        );
+        
+        chain.InsertTransition(cautious, 
+            new List<MarkovTransition>()
+            {
+                new MarkovTransition { Target = wait, Threshold = 10 },
+                new MarkovTransition { Target = watch, Threshold = 15 },
+                new MarkovTransition { Target = danger, Threshold = 40 },
+                new MarkovTransition { Target = near, Threshold = 75 }
+            }
+        );
+        
+        chain.InsertTransition(danger, 
+            new List<MarkovTransition>()
+            {
+                new MarkovTransition { Target = wait, Threshold = 5 },
+                new MarkovTransition { Target = watch, Threshold = 10 },
+                new MarkovTransition { Target = cautious, Threshold = 15 },
+                new MarkovTransition { Target = near, Threshold = 50 }
+            }
+        );
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
         wait.OnStateAction += ActiveStateCoroutine;
         watch.OnStateAction += ActiveStateCoroutine;
         cautious.OnStateAction += ActiveStateCoroutine;
         danger.OnStateAction += ActiveStateCoroutine;
         near.OnStateAction += ActiveStateCoroutine;
         
-        chain.InsertTransition(wait,                        // 현 상태
-            new[] { watch, cautious, danger, near },  // 다음 상태
-            new[] { 30, 60, 80, 95 }          // 각 상태의 확률
-        );
-        
-        chain.InsertTransition(watch, 
-            new[] { wait, cautious, danger, near }, 
-            new[] { 10, 45, 70, 95 }
-        );
-        
-        chain.InsertTransition(cautious, 
-            new[] { wait, watch, danger, near }, 
-            new[] { 10, 15, 40, 75 }
-        );
-        
-        chain.InsertTransition(danger, 
-            new[] { wait, watch, cautious, near }, 
-            new[] { 5, 10, 15, 50 }
-        );
-        
         currState = watch;
         currState.Active();
-    }
-
-    public override void Activate()
-    {
-        base.Activate();
     }
 
     public override void Deactivate()
@@ -141,14 +162,16 @@ public class NeighborGimmick : Gimmick
     
     private void ActiveStateCoroutine(MarkovState state)
     {
-        StartCoroutine(ActiveMarkovState(state));
+        if (markovCoroutine != null) StopCoroutine(markovCoroutine);
+        tmpDecision = 0;
+        markovCoroutine = StartCoroutine(ActiveMarkovState(state));
     }
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
         if (!currState.Equals(state))
         {
-            animator.Play(state.name);
+            animator.Play(state.Name);
         }
 
         if (state.Equals(near))
@@ -157,18 +180,20 @@ public class NeighborGimmick : Gimmick
             yield break;
         }
 
-        var stateProbabilities = chain[state];
+        var markovTransitions = chain[state];
 
+        yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].Threshold);
+        
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
-            yield return new WaitUntil(() => tmpDecision >= stateProbabilities[0]);
-            currState = chain.GetNextState(currState, tmpDecision);
+            currState = chain.TransitionNextState(currState, tmpDecision);
         }
         else
         {
-            currState = chain.GetCurrentState(currState);
+            currState = chain.TransitionCurrentState(currState);
         }
-        Debug.Log("Next State: " + currState.name);
+        
+        Debug.Log("Next State: " + currState.Name);
     }
 
     private void RustleSoundPlay()
