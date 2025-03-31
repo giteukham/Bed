@@ -148,16 +148,17 @@ public class NeighborGimmick : Gimmick
         danger.OnStateAction -= ActiveStateCoroutine;
         near.OnStateAction -= ActiveStateCoroutine;
         
+        currState = watch;
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
-        moveChance = Random.Range(1, 100);
+        // moveChance = Random.Range(1, 100);
         moveProbability = PlayerConstant.noiseStage * -10;
         
         // moveChance가 moveProbability보다 작으면 실행 안 하고 크면 실행
-        probability = moveChance <= moveProbability ? 100 : 0;      
+        probability = 0 < moveProbability ? 100 : 0;      
     }
     
     private void ActiveStateCoroutine(MarkovState state)
@@ -174,11 +175,38 @@ public class NeighborGimmick : Gimmick
             animator.Play(state.Name);
         }
 
-        if (state.Equals(near))
+        switch (state)
         {
-            Deactivate();
-            yield break;
+            case var _ when state.Equals(wait):
+                if(houseLight.activeSelf) houseLight.SetActive(false);
+                if(hand.activeSelf)       hand.SetActive(false);
+                break;
+            case var _ when state.Equals(watch):
+                if(!houseLight.activeSelf)houseLight.SetActive(true);
+                if(hand.activeSelf)       hand.SetActive(false);
+                break;
+            case var _ when state.Equals(cautious):
+                if(houseLight.activeSelf) houseLight.SetActive(false);
+                if(hand.activeSelf)       hand.SetActive(false);
+                break;
+            case var _ when state.Equals(danger):
+                if(houseLight.activeSelf) houseLight.SetActive(false);
+                if(hand.activeSelf)       hand.SetActive(false);
+                break;
+            case var _ when state.Equals(near):
+                if(houseLight.activeSelf) houseLight.SetActive(false);
+                if(!hand.activeSelf)      hand.SetActive(true);
+                Deactivate();
+                yield break;
+            default:
+                break;
         }
+
+        // if (state.Equals(near))
+        // {
+        //     Deactivate();
+        //     yield break;
+        // }
 
         var markovTransitions = chain[state];
 
