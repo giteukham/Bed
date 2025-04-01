@@ -71,12 +71,6 @@ public class NeighborGimmick : Gimmick
             tmpValue -= 5;
             Debug.Log(tmpValue);
         }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            tmpDecision = tmpValue;
-            tmpValue = 0;
-        }
     }
 
     private void Awake()
@@ -154,11 +148,12 @@ public class NeighborGimmick : Gimmick
 
     public override void UpdateProbability()
     {
-        // moveChance = Random.Range(1, 100);
         moveProbability = PlayerConstant.noiseStage * -10;
-        
-        // moveChance가 moveProbability보다 작으면 실행 안 하고 크면 실행
         probability = 0 < moveProbability ? 100 : 0;      
+
+        // 임시 값 반영
+        tmpDecision = tmpValue;
+        tmpValue = 0;
     }
     
     private void ActiveStateCoroutine(MarkovState state)
