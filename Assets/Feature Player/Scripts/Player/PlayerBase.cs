@@ -15,14 +15,14 @@ public class PlayerBase : MonoBehaviour
 
     public void StopPlayer(bool isStop)
     {
-        if (isStop)
+        if (isStop || PlayerConstant.isParalysis)
         {
             povCamera.m_VerticalAxis.m_InputAxisName = "";
             povCamera.m_HorizontalAxis.m_InputAxisName = "";
             povCamera.m_VerticalAxis.m_InputAxisValue = 0;
             povCamera.m_HorizontalAxis.m_InputAxisValue = 0;
         }
-        else
+        else if (!isStop && !PlayerConstant.isParalysis)
         {
             povCamera.m_VerticalAxis.m_InputAxisName = "Mouse Y";
             povCamera.m_HorizontalAxis.m_InputAxisName = "Mouse X";

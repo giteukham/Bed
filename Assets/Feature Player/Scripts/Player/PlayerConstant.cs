@@ -13,7 +13,7 @@ public static class PlayerConstant
     public static float headMoveSpeed = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
-    public static bool isShock = false;
+    public static bool isShock, isParalysis = false;
     public static bool isPlayerStop = false;
     public static float pixelationFactor = 0.25f;
 

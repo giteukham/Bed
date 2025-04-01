@@ -347,6 +347,7 @@ public class GameManager : MonoSingleton<GameManager>
                 $"<size=120%><b>Stress Gauge: <color=#80ffff></b>{PlayerConstant.stressLevel} / 100</color></size>\n" +
                 $"<size=120%><b>Noise Stage: <color=#80ffff></b>{PlayerConstant.noiseStage}</color></size>\n" +
                 $"<size=120%><b>Noise Level: <color=#80ffff></b>{PlayerConstant.noiseLevel} / 100</color></size>\n" +
+                $"<size=120%><b>is Paralysis: <color=#80ffff></b>{PlayerConstant.isParalysis}</color></size>\n" +
                 $"haedMoveSpeed: <color=#80ffff>{PlayerConstant.headMoveSpeed}</color>\n" +
                 $"EyeClosedCAT: <color=yellow>{PlayerConstant.EyeClosedCAT}</color>\n" +
                 $"EyeClosedLAT: <color=yellow>{PlayerConstant.EyeClosedLAT}</color>\n" +
