@@ -79,40 +79,40 @@ public class NeighborGimmick : Gimmick
         chain.InsertTransition(wait,
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = watch, Threshold = 30 },
-                new MarkovTransition { Target = cautious, Threshold = 60 },
-                new MarkovTransition { Target = danger, Threshold = 80 },
-                new MarkovTransition { Target = near, Threshold = 95 }
+                new MarkovTransition { Target = watch, ThresholdRange       = new Vector2(0, 30) },
+                new MarkovTransition { Target = cautious, ThresholdRange    = new Vector2 (31, 60) },
+                new MarkovTransition { Target = danger, ThresholdRange      = new Vector2 (61, 80) },
+                new MarkovTransition { Target = near, ThresholdRange        = new Vector2 (81, 100) }
             }
         );
         
         chain.InsertTransition(watch, 
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, Threshold = 10 },
-                new MarkovTransition { Target = cautious, Threshold = 45 },
-                new MarkovTransition { Target = danger, Threshold = 70 },
-                new MarkovTransition { Target = near, Threshold = 95 }
+                new MarkovTransition { Target = wait, ThresholdRange        = new Vector2(0, 10) },
+                new MarkovTransition { Target = cautious, ThresholdRange    = new Vector2(11, 45) },
+                new MarkovTransition { Target = danger, ThresholdRange      = new Vector2(46, 70) },
+                new MarkovTransition { Target = near, ThresholdRange        = new Vector2(71, 100) }
             }
         );
         
         chain.InsertTransition(cautious, 
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, Threshold = 10 },
-                new MarkovTransition { Target = watch, Threshold = 15 },
-                new MarkovTransition { Target = danger, Threshold = 40 },
-                new MarkovTransition { Target = near, Threshold = 75 }
+                new MarkovTransition { Target = wait, ThresholdRange        = new Vector2(0, 10) },
+                new MarkovTransition { Target = watch, ThresholdRange       = new Vector2(11, 15) },
+                new MarkovTransition { Target = danger, ThresholdRange      = new Vector2(16, 40) },
+                new MarkovTransition { Target = near, ThresholdRange        = new Vector2(41, 100) }
             }
         );
         
         chain.InsertTransition(danger, 
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, Threshold = 5 },
-                new MarkovTransition { Target = watch, Threshold = 10 },
-                new MarkovTransition { Target = cautious, Threshold = 15 },
-                new MarkovTransition { Target = near, Threshold = 50 }
+                new MarkovTransition { Target = wait, ThresholdRange        = new Vector2(0, 5) },
+                new MarkovTransition { Target = watch, ThresholdRange       = new Vector2(6, 10) },
+                new MarkovTransition { Target = cautious, ThresholdRange    = new Vector2(11, 15) },
+                new MarkovTransition { Target = near, ThresholdRange        = new Vector2(16, 100) }
             }
         );
     }
@@ -201,7 +201,7 @@ public class NeighborGimmick : Gimmick
 
         var markovTransitions = chain[state];
 
-        yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].Threshold);
+        yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
         
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {

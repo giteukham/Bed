@@ -6,7 +6,7 @@ using UnityEngine;
 
 public delegate void StateActionHandler(MarkovState state);
 
-public class MarkovState : IEquatable<MarkovState>
+public class MarkovState : IEquatable<MarkovState>, IComparable<MarkovState>
 {
     public string Name;
 
@@ -17,9 +17,9 @@ public class MarkovState : IEquatable<MarkovState>
         return Name == other.Name;
     }
 
-    public override bool Equals(object obj)
+    public int CompareTo(MarkovState other)
     {
-        return obj is MarkovState other && Equals(other);
+        return string.Compare(Name, other.Name, StringComparison.Ordinal);
     }
 
     public override int GetHashCode()
@@ -42,8 +42,7 @@ public class MarkovState : IEquatable<MarkovState>
 public class MarkovTransition
 {
     public MarkovState Target;
-    public int Threshold;
-    public Func<bool> Condition;        // true일 때만 상태 전환
+    public Vector2 ThresholdRange;
 }
 
 public class MarkovChain
@@ -88,9 +87,10 @@ public class MarkovChain
         
         foreach (var transition in transitions[curr])
         {
-            if (probability >= transition.Threshold)
+            if (probability >= transition.ThresholdRange.x && probability <= transition.ThresholdRange.y)
             {
                 next = transition.Target;
+                Debug.Log("ThresHold Range : " + transition.ThresholdRange.x + " ~ " + transition.ThresholdRange.y + "\nProbability : " + probability);
             }
         }
         
@@ -118,6 +118,6 @@ public class MarkovChain
             return;
         }
         
-        transitions[sortingState] = transitions[sortingState].OrderBy(x => x.Threshold).ToList();
+        transitions[sortingState] = transitions[sortingState].OrderBy(x => x.ThresholdRange.y).ToList();
     }
 }
