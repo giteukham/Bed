@@ -141,7 +141,7 @@ public class SaveManager : MonoSingleton<SaveManager>
     
     public float LoadDeadZoneValue()
     {
-        return PlayerPrefs.GetFloat("DeadZoneValue", 0.25f);
+        return PlayerPrefs.GetFloat("DeadZoneValue", 0.5f);
     }
 
     public void SavePixelationFactor(float value)
@@ -215,7 +215,7 @@ public class SaveManager : MonoSingleton<SaveManager>
             ResolutionWidth = PlayerPrefs.GetInt("ResolutionWidth", Screen.currentResolution.width),
             ResolutionHeight = PlayerPrefs.GetInt("ResolutionHeight", Screen.currentResolution.height),
             FrameRate = PlayerPrefs.GetInt("FrameRate", 60),
-            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 1,
+            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == -1,
             ScreenBrightness = PlayerPrefs.GetFloat("ScreenBrightness", 0f)
         };
     }
