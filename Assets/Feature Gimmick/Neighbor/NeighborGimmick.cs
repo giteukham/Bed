@@ -40,8 +40,6 @@ public class NeighborGimmick : Gimmick
     [Range(0, 100)]
     private int moveProbability = 0;                // 초기값 0. 최댓값 100. moveChance보다 크면 움직임
     
-    private int initialStateProbability = 0;        // 처음 기믹이 실행될 때 정해지는 값
-    
     [Range(0, 100)]
     private int stateTransitionProbability = 35;    // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
     
@@ -128,8 +126,7 @@ public class NeighborGimmick : Gimmick
         danger.OnStateAction += ActiveStateCoroutine;
         near.OnStateAction += ActiveStateCoroutine;
         
-        currState = watch;
-        currState.Active();
+        ChangeMarkovState(watch);
     }
 
     public override void Deactivate()
@@ -142,18 +139,26 @@ public class NeighborGimmick : Gimmick
         danger.OnStateAction -= ActiveStateCoroutine;
         near.OnStateAction -= ActiveStateCoroutine;
         
-        currState = watch;
+        ChangeMarkovState(watch);
         gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
+        if (Mathf.Approximately(probability, 0f)) ChangeMarkovState(wait);
+        
         moveProbability = PlayerConstant.noiseStage * -10;
-        probability = 0 < moveProbability ? 100 : 0;      
+        probability = 0 < moveProbability ? 100 : 0;
 
         // 임시 값 반영
         tmpDecision = tmpValue;
         tmpValue = 0;
+    }
+
+    private void ChangeMarkovState(MarkovState next)
+    {
+        currState = next;
+        currState.Active();
     }
     
     private void ActiveStateCoroutine(MarkovState state)
@@ -165,11 +170,8 @@ public class NeighborGimmick : Gimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
-        if (!currState.Equals(state))
-        {
-            animator.Play(state.Name);
-        }
-
+        animator.Play(state.Name);
+        
         switch (state)
         {
             case var _ when state.Equals(wait):
@@ -196,12 +198,6 @@ public class NeighborGimmick : Gimmick
             default:
                 break;
         }
-
-        // if (state.Equals(near))
-        // {
-        //     Deactivate();
-        //     yield break;
-        // }
 
         var markovTransitions = chain[state];
 
