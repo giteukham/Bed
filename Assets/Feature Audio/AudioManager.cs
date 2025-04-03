@@ -50,8 +50,8 @@ public class AudioManager : MonoSingleton<AudioManager>
     [field: Header("PantRustle SFX")]
     [field: SerializeField] public EventReference pantRustle {get; private set;}
 
-    [field: Header("Rapist4Phase SFX")]
-    [field: SerializeField] public EventReference rapist4Phase {get; private set;}
+    [field: Header("Gag SFX")]
+    [field: SerializeField] public EventReference gag {get; private set;}
 
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}

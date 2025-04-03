@@ -65,7 +65,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
                     foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
                         AllGimicks.Remove(exclusionGimmick);
 
-                gimmick.gameObject.SetActive(true);
+                if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
                 gimmick.Activate();
                 break;
             }

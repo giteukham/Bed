@@ -74,8 +74,13 @@ public class NeighborGimmick : Gimmick
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        gameObject.SetActive(true);
         
+        wait.OnStateAction += ActiveStateCoroutine;
+        watch.OnStateAction += ActiveStateCoroutine;
+        cautious.OnStateAction += ActiveStateCoroutine;
+        danger.OnStateAction += ActiveStateCoroutine;
+        near.OnStateAction += ActiveStateCoroutine;
+
         chain.InsertTransition(wait,
             new List<MarkovTransition>()
             {
@@ -115,41 +120,26 @@ public class NeighborGimmick : Gimmick
                 new MarkovTransition { Target = near, ThresholdRange        = new Vector2(16, 100) }
             }
         );
+
+        ChangeMarkovState(wait);
     }
 
     public override void Activate()
     {
         base.Activate();
-        wait.OnStateAction += ActiveStateCoroutine;
-        watch.OnStateAction += ActiveStateCoroutine;
-        cautious.OnStateAction += ActiveStateCoroutine;
-        danger.OnStateAction += ActiveStateCoroutine;
-        near.OnStateAction += ActiveStateCoroutine;
-        
         ChangeMarkovState(watch);
     }
 
     public override void Deactivate()
     {
         base.Deactivate();
-
-        wait.OnStateAction -= ActiveStateCoroutine;
-        watch.OnStateAction -= ActiveStateCoroutine;
-        cautious.OnStateAction -= ActiveStateCoroutine;
-        danger.OnStateAction -= ActiveStateCoroutine;
-        near.OnStateAction -= ActiveStateCoroutine;
-        
-        ChangeMarkovState(watch);
-        gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
-        if (Mathf.Approximately(probability, 0f)) ChangeMarkovState(wait);
-        
         moveProbability = PlayerConstant.noiseStage * -10;
         probability = 0 < moveProbability ? 100 : 0;
-
+        if (probability == 0 && !currState.Equals(wait)) ChangeMarkovState(wait);
         // 임시 값 반영
         tmpDecision = tmpValue;
         tmpValue = 0;
@@ -177,6 +167,7 @@ public class NeighborGimmick : Gimmick
             case var _ when state.Equals(wait):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
+                Deactivate();
                 break;
             case var _ when state.Equals(watch):
                 if(!houseLight.activeSelf)houseLight.SetActive(true);
@@ -185,6 +176,8 @@ public class NeighborGimmick : Gimmick
             case var _ when state.Equals(cautious):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
+                yield return new WaitForSeconds(1.2f);
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.hornyBreath, this.transform.position);
                 break;
             case var _ when state.Equals(danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
@@ -193,7 +186,9 @@ public class NeighborGimmick : Gimmick
             case var _ when state.Equals(near):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(!hand.activeSelf)      hand.SetActive(true);
-                Deactivate();
+                yield return new WaitForSeconds(2f);
+                // 게임 오버
+                ChangeMarkovState(watch);
                 yield break;
             default:
                 break;
@@ -215,10 +210,22 @@ public class NeighborGimmick : Gimmick
         Debug.Log("Next State: " + currState.Name);
     }
 
+    private void WindowOpenCloseSoundPlay()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.windowOpenClose, this.transform.position);
+    }
     private void RustleSoundPlay()
     {
-        AudioManager.Instance.PlaySound(AudioManager.Instance.pantRustle, this.transform.position);
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.pantRustle, this.transform.position);
+    }
+    private void GagSoundPlay()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
     }
 
-    public override void Initialize(){}
+    public override void Initialize()
+    {
+        if(houseLight.activeSelf) houseLight.SetActive(false);
+        if(hand.activeSelf)       hand.SetActive(false);
+    }
 }
