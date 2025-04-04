@@ -10,15 +10,6 @@ using Random = UnityEngine.Random;
 
 public class NeighborGimmick : Gimmick
 {
-    enum NeighborState
-    {
-        Wait,
-        Watch,
-        Cautious,
-        Danger,
-        Near
-    }
-    
     #region Override Variables
     [field: SerializeField] public override GimmickType type { get; protected set; }
     [SerializeField] private float _probability;
@@ -46,17 +37,18 @@ public class NeighborGimmick : Gimmick
     private MarkovChain chain = new MarkovChain();
     private MarkovState currState;
     
-    private MarkovState wait        = new MarkovState {Name = "Wait"};
-    private MarkovState watch       = new MarkovState {Name = "Watch"};
-    private MarkovState cautious    = new MarkovState {Name = "Cautious"};
-    private MarkovState danger      = new MarkovState {Name = "Danger"};
-    private MarkovState near        = new MarkovState {Name = "Near"};
+    private MarkovState wait        = new MarkovState("Wait");
+    private MarkovState watch       = new MarkovState("Watch");
+    private MarkovState cautious    = new MarkovState("Cautious");
+    private MarkovState danger      = new MarkovState("Danger");
+    private MarkovState near        = new MarkovState("Near");
     
     private Coroutine markovCoroutine;
     #endregion
 
     private int tmpValue = 0;
     private int tmpDecision = 0;
+    
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Equals))
@@ -139,7 +131,7 @@ public class NeighborGimmick : Gimmick
     {
         moveProbability = PlayerConstant.noiseStage * -10;
         probability = 0 < moveProbability ? 100 : 0;
-        if (probability == 0 && !currState.Equals(wait)) ChangeMarkovState(wait);
+        if (Mathf.Approximately(probability, 0) && !currState.Equals(wait)) ChangeMarkovState(wait);
         // 임시 값 반영
         tmpDecision = tmpValue;
         tmpValue = 0;
@@ -204,7 +196,7 @@ public class NeighborGimmick : Gimmick
         }
         else
         {
-            currState = chain.TransitionCurrentState(currState);
+            currState = chain.TransitionNextState(currState);
         }
         
         Debug.Log("Next State: " + currState.Name);

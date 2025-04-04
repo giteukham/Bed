@@ -6,25 +6,18 @@ using UnityEngine;
 
 public delegate void StateActionHandler(MarkovState state);
 
-public class MarkovState : IEquatable<MarkovState>, IComparable<MarkovState>
+public class MarkovState
 {
-    public string Name;
+    public int ActiveCount { get; set; } = 0;
+    
+    private readonly string name;
+    public string Name => name;
 
     public event StateActionHandler OnStateAction;
     
-    public bool Equals(MarkovState other)
+    public MarkovState(string name)
     {
-        return Name == other.Name;
-    }
-
-    public int CompareTo(MarkovState other)
-    {
-        return string.Compare(Name, other.Name, StringComparison.Ordinal);
-    }
-
-    public override int GetHashCode()
-    {
-        return Name != null ? Name.GetHashCode() : 0;
+        this.name = name;
     }
 
     public void Active()
@@ -36,6 +29,17 @@ public class MarkovState : IEquatable<MarkovState>, IComparable<MarkovState>
         }
         
         OnStateAction(this);
+    }
+
+    public override bool Equals(object obj)
+    {
+        var markovState = obj as MarkovState;
+        return name == markovState.name;
+    }
+
+    public override int GetHashCode()
+    {
+        return name != null ? name.GetHashCode() : 0;
     }
 }
 
@@ -79,7 +83,7 @@ public class MarkovChain
     {
         if (!transitions.ContainsKey(curr))
         {
-            Debug.LogWarning($"상태 {curr.Name}에 대한 전이가 정의되지 않았습니다.");
+            Debug.LogWarning($"상태 {curr}에 대한 전이가 정의되지 않았습니다.");
             return curr;
         }
 
@@ -90,24 +94,27 @@ public class MarkovChain
             if (probability >= transition.ThresholdRange.x && probability <= transition.ThresholdRange.y)
             {
                 next = transition.Target;
-                Debug.Log("ThresHold Range : " + transition.ThresholdRange.x + " ~ " + transition.ThresholdRange.y + "\nProbability : " + probability);
             }
         }
         
         next.Active();
+        next.ActiveCount++;
+        
         return next;
     }
 
-    public MarkovState TransitionCurrentState(MarkovState curr)
+    public MarkovState TransitionNextState(MarkovState next)
     {
-        if (!transitions.ContainsKey(curr))
+        if (!transitions.ContainsKey(next))
         {
-            Debug.LogWarning($"상태 {curr.Name}에 대한 전이가 정의되지 않았습니다.");
-            return curr;
+            Debug.LogWarning($"상태 {next.Name}에 대한 전이가 정의되지 않았습니다.");
+            return next;
         }
         
-        curr.Active();
-        return curr;
+        next.Active();
+        next.ActiveCount++;
+        
+        return next;
     }
 
     public void SortASC(MarkovState sortingState)
