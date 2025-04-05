@@ -148,7 +148,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// </summary>
     public void PlaySound(EventReference _eventRef, Vector3 _pos)
     {
-        //if (eventInstances.ContainsKey(_eventRef)) return;
+        if (eventInstances.ContainsKey(_eventRef)) return;
 
         EventInstance eventInstance = RuntimeManager.CreateInstance(_eventRef);
         eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));

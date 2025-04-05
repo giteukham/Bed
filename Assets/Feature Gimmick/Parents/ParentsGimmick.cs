@@ -129,7 +129,7 @@ public class ParentsGimmick : Gimmick
     public override void UpdateProbability()
     {
         moveProbability = PlayerConstant.noiseStage * 10;
-        //probability = 0 < moveProbability ? 100 : 0;
+        probability = 0 < moveProbability ? 100 : 0;
         probability = 100;
         if (Mathf.Approximately(probability, 0) && !currState.Equals(wait)) ChangeMarkovState(wait);
 

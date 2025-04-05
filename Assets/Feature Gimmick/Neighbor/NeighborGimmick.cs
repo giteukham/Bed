@@ -23,7 +23,6 @@ public class NeighborGimmick : Gimmick
 
     #region Variables
     public GameObject hand, houseLight;
-    [SerializeField] private bool zeroPahse, onePhase, twoPhase, threePhase, fourPhase = false;
     private Animator animator;
     
     private int moveChance = 0;                     // 움직일 확률
@@ -168,8 +167,6 @@ public class NeighborGimmick : Gimmick
             case var _ when state.Equals(cautious):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                yield return new WaitForSeconds(1.2f);
-                AudioManager.Instance.PlayOneShot(AudioManager.Instance.hornyBreath, this.transform.position);
                 break;
             case var _ when state.Equals(danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
@@ -213,6 +210,10 @@ public class NeighborGimmick : Gimmick
     private void GagSoundPlay()
     {
         AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
+    }
+    private void HornyBreathSoundPlay()
+    {
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.hornyBreath, this.transform.position);
     }
 
     public override void Initialize()
