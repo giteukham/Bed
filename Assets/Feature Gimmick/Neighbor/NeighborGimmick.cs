@@ -213,7 +213,7 @@ public class NeighborGimmick : Gimmick
     }
     private void HornyBreathSoundPlay()
     {
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.hornyBreath, this.transform.position);
+        AudioManager.Instance.PlaySound(AudioManager.Instance.hornyBreath, this.transform.position);
     }
 
     public override void Initialize()
