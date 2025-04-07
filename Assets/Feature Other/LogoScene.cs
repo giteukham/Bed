@@ -16,6 +16,9 @@ public class LogoScene : MonoBehaviour
 
     private void Awake()
     {
+        var data = SaveManager.Instance.LoadResolutionSettings();
+        Screen.SetResolution(data.ResolutionWidth, data.ResolutionHeight, !data.IsWindowed);
+        
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }

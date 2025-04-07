@@ -72,7 +72,7 @@ public class PlayerEyeStates
             playerEyeControl.UpdateEyeState();
             playerEyeControl.targetValue = 1;
 
-            if (BlinkEffect.Blink == PlayerEyeControl.BLINK_VALUE_MAX)
+            if (Mathf.Approximately(BlinkEffect.Blink, PlayerEyeControl.BLINK_VALUE_MAX))
             {
                 await UniTask.Delay(100);
                 PlayerConstant.isEyeOpen = false;

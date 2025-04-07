@@ -15,6 +15,7 @@ public class SaveManager : MonoSingleton<SaveManager>
     //게임 시작과 동시에 저장되어 있던 실제값 설정 가져옴
     private void Awake()
     {
+        DontDestroyOnLoad(this);
         //프레임 관련 변수
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = LoadFrameRate();
@@ -215,7 +216,7 @@ public class SaveManager : MonoSingleton<SaveManager>
             ResolutionWidth = PlayerPrefs.GetInt("ResolutionWidth", Screen.currentResolution.width),
             ResolutionHeight = PlayerPrefs.GetInt("ResolutionHeight", Screen.currentResolution.height),
             FrameRate = PlayerPrefs.GetInt("FrameRate", 60),
-            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == -1,
+            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 1,
             ScreenBrightness = PlayerPrefs.GetFloat("ScreenBrightness", 0f)
         };
     }

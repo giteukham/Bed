@@ -1222,7 +1222,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4481900782563223589}
+      - m_Target: {fileID: 6314863436036534992}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: ShowMouseSettingsScreen
         m_Mode: 1
@@ -2419,7 +2419,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4481900782563223589}
+      - m_Target: {fileID: 6314863436036534992}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: ExitButton
         m_Mode: 1
@@ -5236,58 +5236,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 269785920}
   m_CullTransparentMesh: 1
---- !u!1 &290243061
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 290243063}
-  - component: {fileID: 290243064}
-  m_Layer: 0
-  m_Name: Time Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &290243063
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 290243061}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &290243064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 290243061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7db3b0060a756d49beea4307c1739e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeInterval: 3
-  timeText: {fileID: 1990451067}
-  clockRenderer: {fileID: 7909545157062771440}
-  blankTexture: {fileID: 2800000, guid: 3423b04f022e7d843b3ea3776331a10e, type: 3}
-  amTexture: {fileID: 2800000, guid: 122a1514a9eb91a45baf348bdc18e87b, type: 3}
-  pmTexture: {fileID: 2800000, guid: 4648f1c6592189142a327f3ce0ec4a7a, type: 3}
-  moonLight: {fileID: 230726874}
-  sunLight: {fileID: 1266884805}
 --- !u!1 &297257226
 GameObject:
   m_ObjectHideFlags: 0
@@ -11392,7 +11340,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4481900782563223589}
+      - m_Target: {fileID: 6314863436036534992}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: ShowSoundSettingsScreen
         m_Mode: 1
@@ -16296,54 +16244,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1127207927}
   m_CullTransparentMesh: 1
---- !u!1 &1139378657
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1139378658}
-  - component: {fileID: 1139378659}
-  m_Layer: 0
-  m_Name: Gimmick Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1139378658
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139378657}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.0637755, y: -0.46028036, z: -15.022098}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1139378659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139378657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 556a37822e4d579489f8bbb44dfd723a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AllGimicks: []
-  unrealGimmick: {fileID: 0}
-  humanGimmick: {fileID: 0}
-  objectGimmick: {fileID: 0}
 --- !u!1 &1146280175
 GameObject:
   m_ObjectHideFlags: 0
@@ -16855,44 +16755,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1214484245}
   m_Mesh: {fileID: 4300002, guid: abc00000000011159047177124688088, type: 3}
---- !u!1 &1219860290
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1219860291}
-  m_Layer: 0
-  m_Name: Managers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1219860291
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219860290}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1393377742}
-  - {fileID: 1139378658}
-  - {fileID: 2130928565}
-  - {fileID: 290243063}
-  - {fileID: 4291973782320428859}
-  - {fileID: 332399583994491758}
-  - {fileID: 1374396586}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1230513864
 GameObject:
   m_ObjectHideFlags: 0
@@ -19570,61 +19432,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!1 &1374396585
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1374396586}
-  - component: {fileID: 1374396587}
-  m_Layer: 0
-  m_Name: Tutorial Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1374396586
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374396585}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1374396587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374396585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50addb2e5c2a4a6aa3f99bfcd388e161, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eyeOpenTutorial: {fileID: 540631835}
-  leftMoveTutorial: {fileID: 1042503114}
-  openOptionTutorial: {fileID: 1064199002}
-  blinkTutorial: {fileID: 1364119426}
-  eyeOpenTutorial_ActiveTime: 6
-  leftMoveTutorial_ActiveTime: 8
-  blink_ActiveTime: 4
-  ready_CheckTime: 1
-  cockroach: {fileID: 1602998086310827738}
-  isEyeOpenTutorialActivate: 0
-  isBlinkTutorialActivate: 0
 --- !u!1 &1375662030
 GameObject:
   m_ObjectHideFlags: 0
@@ -20050,68 +19857,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1392201384}
   m_Mesh: {fileID: 4300006, guid: abc00000000011008435138137780062, type: 3}
---- !u!1 &1393377741
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1393377742}
-  - component: {fileID: 1393377743}
-  m_Layer: 0
-  m_Name: Game Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1393377742
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1393377741}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1393377743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1393377741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbb794c8ad47de04bb6d2744aa6997cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugStatsText: {fileID: 670431567}
-  debugTimeText: {fileID: 1003692744}
-  debugColiderImage: {fileID: 1385739452}
-  mainCamera: {fileID: 1732393634}
-  player: {fileID: 105610754}
-  dad: {fileID: 4750164002904241433}
-  isBlinkInit: 0
-  timeManager: {fileID: 290243064}
-  ready_CheckTime: 2.5
-  door_Open_BeforeDelayTime: 2
-  mother_Appear_BeforeDelayTime: 0.4
-  mother_Leave_BeforeDelayTime: 0.45
-  door_Close_BeforeDelayTime: 0.2
-  mother_Deactivate_BeforeDelayTime: 0.1
-  game_Start_BeforeDelayTime: 1
-  door: {fileID: 984148487}
-  tutorialTestEnable: 1
-  bothClickToleranceTime: 0.1
 --- !u!1 &1393445006
 GameObject:
   m_ObjectHideFlags: 0
@@ -21566,7 +21311,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4481900782563223589}
+      - m_Target: {fileID: 6314863436036534992}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: ShowResolutionSettingsScreen
         m_Mode: 1
@@ -29053,351 +28798,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113926979}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2130928564
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2130928565}
-  - component: {fileID: 2130928566}
-  m_Layer: 0
-  m_Name: Audio Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2130928565
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2130928564}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2130928566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2130928564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4c9bbfeb7e657943afa70cafacef243, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <catMeow>k__BackingField:
-    Guid:
-      Data1: 1619198893
-      Data2: 1283878485
-      Data3: 816481715
-      Data4: -1974117964
-    Path: event:/Gimmick SFX/CatMeow
-  <radio>k__BackingField:
-    Guid:
-      Data1: -420455738
-      Data2: 1237618179
-      Data3: 1390274721
-      Data4: -732533398
-    Path: event:/Gimmick SFX/Radio
-  <eyeStart>k__BackingField:
-    Guid:
-      Data1: 1430654648
-      Data2: 1182977516
-      Data3: -1338994798
-      Data4: 520563050
-    Path: event:/Gimmick SFX/EyeStart
-  <eyeEnd>k__BackingField:
-    Guid:
-      Data1: -534629553
-      Data2: 1176161340
-      Data3: -1285257826
-      Data4: 1522124167
-    Path: event:/Gimmick SFX/EyeEnd
-  <lag1>k__BackingField:
-    Guid:
-      Data1: 884309015
-      Data2: 1278010186
-      Data3: 309319819
-      Data4: 1417042417
-    Path: event:/Gimmick SFX/Lag1
-  <lag2>k__BackingField:
-    Guid:
-      Data1: 1214729952
-      Data2: 1251174417
-      Data3: -2103848308
-      Data4: 1983284188
-    Path: event:/Gimmick SFX/Lag2
-  <switchOn>k__BackingField:
-    Guid:
-      Data1: 1220503684
-      Data2: 1173879494
-      Data3: -2115559773
-      Data4: 1513127990
-    Path: event:/Gimmick SFX/SwitchOn
-  <switchOff>k__BackingField:
-    Guid:
-      Data1: 902070337
-      Data2: 1223120481
-      Data3: -1726651233
-      Data4: 277808860
-    Path: event:/Gimmick SFX/SwitchOff
-  <handClap>k__BackingField:
-    Guid:
-      Data1: -1832842744
-      Data2: 1125613889
-      Data3: 147655308
-      Data4: 451895025
-    Path: event:/Gimmick SFX/HandClap
-  <handCover>k__BackingField:
-    Guid:
-      Data1: 1531166159
-      Data2: 1253220984
-      Data3: -777748036
-      Data4: -850656741
-    Path: event:/Gimmick SFX/HandCover
-  <roughBreath>k__BackingField:
-    Guid:
-      Data1: 878231570
-      Data2: 1128496217
-      Data3: -1818365783
-      Data4: 355565189
-    Path: event:/Gimmick SFX/RoughBreath
-  <handCoverOff>k__BackingField:
-    Guid:
-      Data1: 1444812688
-      Data2: 1230193531
-      Data3: -1527330912
-      Data4: -572691943
-    Path: event:/Gimmick SFX/HandCoverOff
-  <windowOpenClose>k__BackingField:
-    Guid:
-      Data1: -789086865
-      Data2: 1220498686
-      Data3: -1592890477
-      Data4: -1196550052
-    Path: event:/Gimmick SFX/WindowOpenClose
-  <pantRustle>k__BackingField:
-    Guid:
-      Data1: -34843396
-      Data2: 1247064646
-      Data3: 1503764394
-      Data4: 1044178157
-    Path: event:/Gimmick SFX/PantRustle
-  <gag>k__BackingField:
-    Guid:
-      Data1: 1529977143
-      Data2: 1146640107
-      Data3: -950502233
-      Data4: 357621249
-    Path: event:/Gimmick SFX/Gag
-  <hornyBreath>k__BackingField:
-    Guid:
-      Data1: 1495983981
-      Data2: 1135532163
-      Data3: 1427793310
-      Data4: -591575045
-    Path: event:/Gimmick SFX/HornyBreath
-  <toyWalk>k__BackingField:
-    Guid:
-      Data1: 1716710832
-      Data2: 1161968480
-      Data3: -2122676831
-      Data4: 7819255
-    Path: event:/Gimmick SFX/ToyWalk
-  <knock>k__BackingField:
-    Guid:
-      Data1: 94114403
-      Data2: 1234305680
-      Data3: -97992287
-      Data4: -474034868
-    Path: event:/Gimmick SFX/Knock
-  <cogWheel>k__BackingField:
-    Guid:
-      Data1: 58493760
-      Data2: 1251094380
-      Data3: -1123612748
-      Data4: -1514678654
-    Path: event:/Gimmick SFX/CogWheel
-  <neckSnap>k__BackingField:
-    Guid:
-      Data1: 339419004
-      Data2: 1297773252
-      Data3: -384378987
-      Data4: -2054045761
-    Path: event:/Gimmick SFX/NeckSnap
-  <crows>k__BackingField:
-    Guid:
-      Data1: -1087922090
-      Data2: 1151588525
-      Data3: -1706458706
-      Data4: -450026884
-    Path: event:/Gimmick SFX/Crows
-  <woodDrop1>k__BackingField:
-    Guid:
-      Data1: -102472584
-      Data2: 1262102852
-      Data3: -1734188137
-      Data4: -2137869358
-    Path: event:/Gimmick SFX/WoodDrop1
-  <woodDrop2>k__BackingField:
-    Guid:
-      Data1: 1986114170
-      Data2: 1302942003
-      Data3: 1915882368
-      Data4: -1314295571
-    Path: event:/Gimmick SFX/WoodDrop2
-  <dogBark>k__BackingField:
-    Guid:
-      Data1: 645946337
-      Data2: 1176432296
-      Data3: 877022629
-      Data4: -1558426622
-    Path: event:/Gimmick SFX/DogBark
-  <dogWhine>k__BackingField:
-    Guid:
-      Data1: -526131645
-      Data2: 1174513832
-      Data3: 1115560368
-      Data4: 669395920
-    Path: event:/Gimmick SFX/DogWhine
-  <mosquito>k__BackingField:
-    Guid:
-      Data1: -504564479
-      Data2: 1154349236
-      Data3: -1041184068
-      Data4: -59813935
-    Path: event:/Gimmick SFX/Mosquito
-  <catFight>k__BackingField:
-    Guid:
-      Data1: -1355309937
-      Data2: 1315612704
-      Data3: -1493101412
-      Data4: -401383212
-    Path: event:/Gimmick SFX/CatFight
-  <chair1>k__BackingField:
-    Guid:
-      Data1: -449750192
-      Data2: 1267377994
-      Data3: 1904702870
-      Data4: 1927330796
-    Path: event:/Gimmick SFX/Chair1
-  <chair2>k__BackingField:
-    Guid:
-      Data1: -1098948003
-      Data2: 1202494171
-      Data3: -1860148096
-      Data4: 642188661
-    Path: event:/Gimmick SFX/Chair2
-  <doorKnock>k__BackingField:
-    Guid:
-      Data1: 1858191067
-      Data2: 1176521275
-      Data3: 1287253641
-      Data4: -317888856
-    Path: event:/Gimmick SFX/Door Knock
-  <clockBeep>k__BackingField:
-    Guid:
-      Data1: 2031294160
-      Data2: 1239006592
-      Data3: 1065707155
-      Data4: -53954368
-    Path: event:/Gimmick SFX/Clock Beep
-  <doorOpen>k__BackingField:
-    Guid:
-      Data1: 1857098990
-      Data2: 1262077924
-      Data3: 1088783497
-      Data4: -1109533115
-    Path: event:/Gimmick SFX/DoorOpen
-  <doorClose>k__BackingField:
-    Guid:
-      Data1: -1498826120
-      Data2: 1230034860
-      Data3: -1083159145
-      Data4: -543213869
-    Path: event:/Gimmick SFX/DoorClose
-  <doorSlowOpen>k__BackingField:
-    Guid:
-      Data1: 1877258817
-      Data2: 1171349543
-      Data3: 1709069184
-      Data4: -575355116
-    Path: event:/Gimmick SFX/DoorSlowOpen
-  <doorSlowClose>k__BackingField:
-    Guid:
-      Data1: 2113306733
-      Data2: 1287638458
-      Data3: -497527401
-      Data4: -1757485712
-    Path: event:/Gimmick SFX/DoorSlowClose
-  <doorCreak>k__BackingField:
-    Guid:
-      Data1: 1960481414
-      Data2: 1181892825
-      Data3: -570020474
-      Data4: -224086417
-    Path: event:/Gimmick SFX/DoorCreak
-  <Cockroach>k__BackingField:
-    Guid:
-      Data1: 2147451782
-      Data2: 1197234551
-      Data3: -761314137
-      Data4: -1603615388
-    Path: event:/Gimmick SFX/Cockroach
-  <headMove>k__BackingField:
-    Guid:
-      Data1: -429316941
-      Data2: 1290282412
-      Data3: 1713477310
-      Data4: -1837505310
-    Path: event:/Player SFX/HeadMoveOnPillow
-  <fearHal>k__BackingField:
-    Guid:
-      Data1: -1940432464
-      Data2: 1220174579
-      Data3: 1518286508
-      Data4: -1400683950
-    Path: event:/Player SFX/FearHal
-  <stressHal>k__BackingField:
-    Guid:
-      Data1: -646822876
-      Data2: 1283756069
-      Data3: -1549003869
-      Data4: -1877940388
-    Path: event:/Player SFX/StressHal
-  <inhale>k__BackingField:
-    Guid:
-      Data1: -2085662643
-      Data2: 1091394858
-      Data3: 1377037446
-      Data4: 1112082346
-    Path: event:/Player SFX/Inhale
-  <exhale>k__BackingField:
-    Guid:
-      Data1: -188046541
-      Data2: 1159226807
-      Data3: 1682411153
-      Data4: 1259223687
-    Path: event:/Player SFX/Exhale
-  <blanketMoving>k__BackingField:
-    Guid:
-      Data1: -273215972
-      Data2: 1249766749
-      Data3: -428047218
-      Data4: -1633766913
-    Path: event:/Player SFX/BlanketMoving
 --- !u!1 &2137946380
 GameObject:
   m_ObjectHideFlags: 0
@@ -30002,21 +29402,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &332399583994491758
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8146571040002097198}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &378618392926293404
 Transform:
   m_ObjectHideFlags: 0
@@ -30280,18 +29665,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6046495172606570925}
   m_LocalEulerAnglesHint: {x: -18.415804, y: 176.76207, z: 159.61029}
---- !u!114 &801638826328436139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5622123599101642639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78f71f4c1850a584984c4e756a47bafa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &819510936853682676
 GameObject:
   m_ObjectHideFlags: 0
@@ -30451,6 +29824,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &1314616677573000489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3426144587336329852}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4613888252266780670}
+  - {fileID: 4707529022806547963}
+  - {fileID: 8274241795262491586}
+  - {fileID: 5929232653321885956}
+  - {fileID: 9113281161596868037}
+  - {fileID: 8390764055484237142}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1397006863023112490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30561,6 +29955,23 @@ GameObject:
   - component: {fileID: 6726344129959027717}
   m_Layer: 0
   m_Name: mixamorig:LeftLeg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1517040090055426362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8274241795262491586}
+  - component: {fileID: 2167870715792758158}
+  m_Layer: 0
+  m_Name: Audio Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30783,6 +30194,319 @@ Transform:
   - {fileID: 2869857386361175312}
   m_Father: {fileID: 7864373550139612637}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2167870715792758158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517040090055426362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4c9bbfeb7e657943afa70cafacef243, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <catMeow>k__BackingField:
+    Guid:
+      Data1: 1619198893
+      Data2: 1283878485
+      Data3: 816481715
+      Data4: -1974117964
+    Path: event:/Gimmick SFX/CatMeow
+  <radio>k__BackingField:
+    Guid:
+      Data1: -420455738
+      Data2: 1237618179
+      Data3: 1390274721
+      Data4: -732533398
+    Path: event:/Gimmick SFX/Radio
+  <eyeStart>k__BackingField:
+    Guid:
+      Data1: 1430654648
+      Data2: 1182977516
+      Data3: -1338994798
+      Data4: 520563050
+    Path: event:/Gimmick SFX/EyeStart
+  <eyeEnd>k__BackingField:
+    Guid:
+      Data1: -534629553
+      Data2: 1176161340
+      Data3: -1285257826
+      Data4: 1522124167
+    Path: event:/Gimmick SFX/EyeEnd
+  <lag1>k__BackingField:
+    Guid:
+      Data1: 884309015
+      Data2: 1278010186
+      Data3: 309319819
+      Data4: 1417042417
+    Path: event:/Gimmick SFX/Lag1
+  <lag2>k__BackingField:
+    Guid:
+      Data1: 1214729952
+      Data2: 1251174417
+      Data3: -2103848308
+      Data4: 1983284188
+    Path: event:/Gimmick SFX/Lag2
+  <switchOn>k__BackingField:
+    Guid:
+      Data1: 1220503684
+      Data2: 1173879494
+      Data3: -2115559773
+      Data4: 1513127990
+    Path: event:/Gimmick SFX/SwitchOn
+  <switchOff>k__BackingField:
+    Guid:
+      Data1: 902070337
+      Data2: 1223120481
+      Data3: -1726651233
+      Data4: 277808860
+    Path: event:/Gimmick SFX/SwitchOff
+  <handClap>k__BackingField:
+    Guid:
+      Data1: -1832842744
+      Data2: 1125613889
+      Data3: 147655308
+      Data4: 451895025
+    Path: event:/Gimmick SFX/HandClap
+  <handCover>k__BackingField:
+    Guid:
+      Data1: 1531166159
+      Data2: 1253220984
+      Data3: -777748036
+      Data4: -850656741
+    Path: event:/Gimmick SFX/HandCover
+  <roughBreath>k__BackingField:
+    Guid:
+      Data1: 878231570
+      Data2: 1128496217
+      Data3: -1818365783
+      Data4: 355565189
+    Path: event:/Gimmick SFX/RoughBreath
+  <handCoverOff>k__BackingField:
+    Guid:
+      Data1: 1444812688
+      Data2: 1230193531
+      Data3: -1527330912
+      Data4: -572691943
+    Path: event:/Gimmick SFX/HandCoverOff
+  <windowOpenClose>k__BackingField:
+    Guid:
+      Data1: -789086865
+      Data2: 1220498686
+      Data3: -1592890477
+      Data4: -1196550052
+    Path: event:/Gimmick SFX/WindowOpenClose
+  <pantRustle>k__BackingField:
+    Guid:
+      Data1: -34843396
+      Data2: 1247064646
+      Data3: 1503764394
+      Data4: 1044178157
+    Path: event:/Gimmick SFX/PantRustle
+  <gag>k__BackingField:
+    Guid:
+      Data1: 1529977143
+      Data2: 1146640107
+      Data3: -950502233
+      Data4: 357621249
+    Path: event:/Gimmick SFX/Gag
+  <hornyBreath>k__BackingField:
+    Guid:
+      Data1: 1495983981
+      Data2: 1135532163
+      Data3: 1427793310
+      Data4: -591575045
+    Path: event:/Gimmick SFX/HornyBreath
+  <toyWalk>k__BackingField:
+    Guid:
+      Data1: 1716710832
+      Data2: 1161968480
+      Data3: -2122676831
+      Data4: 7819255
+    Path: event:/Gimmick SFX/ToyWalk
+  <knock>k__BackingField:
+    Guid:
+      Data1: 94114403
+      Data2: 1234305680
+      Data3: -97992287
+      Data4: -474034868
+    Path: event:/Gimmick SFX/Knock
+  <cogWheel>k__BackingField:
+    Guid:
+      Data1: 58493760
+      Data2: 1251094380
+      Data3: -1123612748
+      Data4: -1514678654
+    Path: event:/Gimmick SFX/CogWheel
+  <neckSnap>k__BackingField:
+    Guid:
+      Data1: 339419004
+      Data2: 1297773252
+      Data3: -384378987
+      Data4: -2054045761
+    Path: event:/Gimmick SFX/NeckSnap
+  <crows>k__BackingField:
+    Guid:
+      Data1: -1087922090
+      Data2: 1151588525
+      Data3: -1706458706
+      Data4: -450026884
+    Path: event:/Gimmick SFX/Crows
+  <woodDrop1>k__BackingField:
+    Guid:
+      Data1: -102472584
+      Data2: 1262102852
+      Data3: -1734188137
+      Data4: -2137869358
+    Path: event:/Gimmick SFX/WoodDrop1
+  <woodDrop2>k__BackingField:
+    Guid:
+      Data1: 1986114170
+      Data2: 1302942003
+      Data3: 1915882368
+      Data4: -1314295571
+    Path: event:/Gimmick SFX/WoodDrop2
+  <dogBark>k__BackingField:
+    Guid:
+      Data1: 645946337
+      Data2: 1176432296
+      Data3: 877022629
+      Data4: -1558426622
+    Path: event:/Gimmick SFX/DogBark
+  <dogWhine>k__BackingField:
+    Guid:
+      Data1: -526131645
+      Data2: 1174513832
+      Data3: 1115560368
+      Data4: 669395920
+    Path: event:/Gimmick SFX/DogWhine
+  <mosquito>k__BackingField:
+    Guid:
+      Data1: -504564479
+      Data2: 1154349236
+      Data3: -1041184068
+      Data4: -59813935
+    Path: event:/Gimmick SFX/Mosquito
+  <catFight>k__BackingField:
+    Guid:
+      Data1: -1355309937
+      Data2: 1315612704
+      Data3: -1493101412
+      Data4: -401383212
+    Path: event:/Gimmick SFX/CatFight
+  <chair1>k__BackingField:
+    Guid:
+      Data1: -449750192
+      Data2: 1267377994
+      Data3: 1904702870
+      Data4: 1927330796
+    Path: event:/Gimmick SFX/Chair1
+  <chair2>k__BackingField:
+    Guid:
+      Data1: -1098948003
+      Data2: 1202494171
+      Data3: -1860148096
+      Data4: 642188661
+    Path: event:/Gimmick SFX/Chair2
+  <doorKnock>k__BackingField:
+    Guid:
+      Data1: 1858191067
+      Data2: 1176521275
+      Data3: 1287253641
+      Data4: -317888856
+    Path: event:/Gimmick SFX/Door Knock
+  <clockBeep>k__BackingField:
+    Guid:
+      Data1: 2031294160
+      Data2: 1239006592
+      Data3: 1065707155
+      Data4: -53954368
+    Path: event:/Gimmick SFX/Clock Beep
+  <doorOpen>k__BackingField:
+    Guid:
+      Data1: 1857098990
+      Data2: 1262077924
+      Data3: 1088783497
+      Data4: -1109533115
+    Path: event:/Gimmick SFX/DoorOpen
+  <doorClose>k__BackingField:
+    Guid:
+      Data1: -1498826120
+      Data2: 1230034860
+      Data3: -1083159145
+      Data4: -543213869
+    Path: event:/Gimmick SFX/DoorClose
+  <doorSlowOpen>k__BackingField:
+    Guid:
+      Data1: 1877258817
+      Data2: 1171349543
+      Data3: 1709069184
+      Data4: -575355116
+    Path: event:/Gimmick SFX/DoorSlowOpen
+  <doorSlowClose>k__BackingField:
+    Guid:
+      Data1: 2113306733
+      Data2: 1287638458
+      Data3: -497527401
+      Data4: -1757485712
+    Path: event:/Gimmick SFX/DoorSlowClose
+  <doorCreak>k__BackingField:
+    Guid:
+      Data1: 1960481414
+      Data2: 1181892825
+      Data3: -570020474
+      Data4: -224086417
+    Path: event:/Gimmick SFX/DoorCreak
+  <Cockroach>k__BackingField:
+    Guid:
+      Data1: 2147451782
+      Data2: 1197234551
+      Data3: -761314137
+      Data4: -1603615388
+    Path: event:/Gimmick SFX/Cockroach
+  <headMove>k__BackingField:
+    Guid:
+      Data1: -429316941
+      Data2: 1290282412
+      Data3: 1713477310
+      Data4: -1837505310
+    Path: event:/Player SFX/HeadMoveOnPillow
+  <fearHal>k__BackingField:
+    Guid:
+      Data1: -1940432464
+      Data2: 1220174579
+      Data3: 1518286508
+      Data4: -1400683950
+    Path: event:/Player SFX/FearHal
+  <stressHal>k__BackingField:
+    Guid:
+      Data1: -646822876
+      Data2: 1283756069
+      Data3: -1549003869
+      Data4: -1877940388
+    Path: event:/Player SFX/StressHal
+  <inhale>k__BackingField:
+    Guid:
+      Data1: -2085662643
+      Data2: 1091394858
+      Data3: 1377037446
+      Data4: 1112082346
+    Path: event:/Player SFX/Inhale
+  <exhale>k__BackingField:
+    Guid:
+      Data1: -188046541
+      Data2: 1159226807
+      Data3: 1682411153
+      Data4: 1259223687
+    Path: event:/Player SFX/Exhale
+  <blanketMoving>k__BackingField:
+    Guid:
+      Data1: -273215972
+      Data2: 1249766749
+      Data3: -428047218
+      Data4: -1633766913
+    Path: event:/Player SFX/BlanketMoving
 --- !u!4 &2233492263212883177
 Transform:
   m_ObjectHideFlags: 0
@@ -30832,6 +30556,23 @@ Transform:
   - {fileID: 8975272334327417612}
   m_Father: {fileID: 1732393635}
   m_LocalEulerAnglesHint: {x: 119.832, y: 89.401, z: 90.6}
+--- !u!1 &2685883861167099804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4707529022806547963}
+  - component: {fileID: 7346423396253087907}
+  m_Layer: 0
+  m_Name: Gimmick Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &2715553895010442212
 GameObject:
   m_ObjectHideFlags: 0
@@ -31076,6 +30817,36 @@ MonoBehaviour:
   optionalScrambleMode: 0
   optionalShakeRandomnessMode: 0
   optionalString: 
+--- !u!114 &2943764858628825324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7699483861231488931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbb794c8ad47de04bb6d2744aa6997cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugStatsText: {fileID: 670431567}
+  debugTimeText: {fileID: 1003692744}
+  debugColiderImage: {fileID: 1385739452}
+  mainCamera: {fileID: 1732393634}
+  player: {fileID: 105610754}
+  dad: {fileID: 4750164002904241433}
+  isBlinkInit: 0
+  timeManager: {fileID: 6399384627524625332}
+  ready_CheckTime: 2.5
+  door_Open_BeforeDelayTime: 2
+  mother_Appear_BeforeDelayTime: 0.4
+  mother_Leave_BeforeDelayTime: 0.45
+  door_Close_BeforeDelayTime: 0.2
+  mother_Deactivate_BeforeDelayTime: 0.1
+  game_Start_BeforeDelayTime: 1
+  door: {fileID: 984148487}
+  tutorialTestEnable: 1
+  bothClickToleranceTime: 0.1
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0
@@ -31288,6 +31059,22 @@ Transform:
   - {fileID: 4283643134536127159}
   m_Father: {fileID: 8202311366401603124}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3426144587336329852
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1314616677573000489}
+  m_Layer: 0
+  m_Name: Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &3493667274221835172
 Transform:
   m_ObjectHideFlags: 0
@@ -31348,6 +31135,23 @@ GameObject:
   - component: {fileID: 5202910123919697147}
   m_Layer: 0
   m_Name: limbs_c_03.R
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &3677910813603212646
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9113281161596868037}
+  - component: {fileID: 6314863436036534992}
+  m_Layer: 0
+  m_Name: UI Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31519,21 +31323,6 @@ Transform:
   - {fileID: 5192620069120556888}
   m_Father: {fileID: 5630596136784970118}
   m_LocalEulerAnglesHint: {x: -77.05255, y: 123.156456, z: 11.313019}
---- !u!4 &4291973782320428859
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5622123599101642639}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1219860291}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4357591800213667998
 GameObject:
   m_ObjectHideFlags: 0
@@ -31582,27 +31371,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &4481900782563223589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8146571040002097198}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 023b50fd2ff9a764cbd3cfc99e4a5025, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  menuUI: {fileID: 1251459810}
-  menuScreen: {fileID: 1590140792}
-  soundSettingsScreen: {fileID: 614758153}
-  resolutionSettingsScreen: {fileID: 909200951}
-  mouseSettingsScreen: {fileID: 1082562426}
-  player: {fileID: 105610754}
-  deut: {fileID: 4745529334753641278}
-  neh: {fileID: 4848276883914585495}
-  isRightClikHeld: 0
 --- !u!1 &4487539941519428641
 GameObject:
   m_ObjectHideFlags: 0
@@ -31805,6 +31573,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4557032301025087523}
   m_Mesh: {fileID: 4300002, guid: abc00000000017961734226772764375, type: 3}
+--- !u!4 &4613888252266780670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7699483861231488931}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1314616677573000489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4620342526930514021
 GameObject:
   m_ObjectHideFlags: 0
@@ -31920,6 +31703,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4639986042637230049}
   m_Mesh: {fileID: 4300006, guid: abc00000000016948822308732911745, type: 3}
+--- !u!4 &4707529022806547963
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2685883861167099804}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 6.0637755, y: -0.46028036, z: -15.022098}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1314616677573000489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4745529334753641278
 GameObject:
   m_ObjectHideFlags: 0
@@ -32334,6 +32132,23 @@ Transform:
   - {fileID: 9044710068324282093}
   m_Father: {fileID: 552706853068494578}
   m_LocalEulerAnglesHint: {x: -57.63296, y: -179.11617, z: -153.83029}
+--- !u!1 &5204154962691777451
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8390764055484237142}
+  - component: {fileID: 5799694205831955504}
+  m_Layer: 0
+  m_Name: Tutorial Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &5263253997444317545
 Transform:
   m_ObjectHideFlags: 0
@@ -32481,23 +32296,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &5622123599101642639
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4291973782320428859}
-  - component: {fileID: 801638826328436139}
-  m_Layer: 0
-  m_Name: Save Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &5630596136784970118
 Transform:
   m_ObjectHideFlags: 0
@@ -32578,6 +32376,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8708585032078805402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5799694205831955504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5204154962691777451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50addb2e5c2a4a6aa3f99bfcd388e161, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eyeOpenTutorial: {fileID: 540631835}
+  leftMoveTutorial: {fileID: 1042503114}
+  openOptionTutorial: {fileID: 1064199002}
+  blinkTutorial: {fileID: 1364119426}
+  eyeOpenTutorial_ActiveTime: 6
+  leftMoveTutorial_ActiveTime: 8
+  blink_ActiveTime: 4
+  ready_CheckTime: 1
+  cockroach: {fileID: 1602998086310827738}
+  isEyeOpenTutorialActivate: 0
+  isBlinkTutorialActivate: 0
 --- !u!1 &5851256865199632379
 GameObject:
   m_ObjectHideFlags: 0
@@ -32623,6 +32444,21 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1594231813940597872}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &5929232653321885956
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6351068902491667824}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1314616677573000489}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &6021994434397571648
 Transform:
@@ -32879,6 +32715,44 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &6314863436036534992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3677910813603212646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023b50fd2ff9a764cbd3cfc99e4a5025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuUI: {fileID: 1251459810}
+  menuScreen: {fileID: 1590140792}
+  soundSettingsScreen: {fileID: 614758153}
+  resolutionSettingsScreen: {fileID: 909200951}
+  mouseSettingsScreen: {fileID: 1082562426}
+  player: {fileID: 105610754}
+  deut: {fileID: 4745529334753641278}
+  neh: {fileID: 4848276883914585495}
+  isRightClikHeld: 0
+--- !u!1 &6351068902491667824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5929232653321885956}
+  - component: {fileID: 6399384627524625332}
+  m_Layer: 0
+  m_Name: Time Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!4 &6375259354858462435
 Transform:
   m_ObjectHideFlags: 0
@@ -32927,6 +32801,26 @@ Transform:
   - {fileID: 7231092201279706907}
   m_Father: {fileID: 7943166831204241888}
   m_LocalEulerAnglesHint: {x: -17.925, y: -3.581, z: 24.816}
+--- !u!114 &6399384627524625332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6351068902491667824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7db3b0060a756d49beea4307c1739e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeInterval: 3
+  timeText: {fileID: 1990451067}
+  clockRenderer: {fileID: 7909545157062771440}
+  blankTexture: {fileID: 2800000, guid: 3423b04f022e7d843b3ea3776331a10e, type: 3}
+  amTexture: {fileID: 2800000, guid: 122a1514a9eb91a45baf348bdc18e87b, type: 3}
+  pmTexture: {fileID: 2800000, guid: 4648f1c6592189142a327f3ce0ec4a7a, type: 3}
+  moonLight: {fileID: 230726874}
+  sunLight: {fileID: 1266884805}
 --- !u!1 &6422481889116946876
 GameObject:
   m_ObjectHideFlags: 0
@@ -33541,6 +33435,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7346423396253087907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2685883861167099804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 556a37822e4d579489f8bbb44dfd723a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllGimicks: []
+  unrealGimmick: {fileID: 0}
+  humanGimmick: {fileID: 0}
+  objectGimmick: {fileID: 0}
 --- !u!4 &7488072090472444534
 Transform:
   m_ObjectHideFlags: 0
@@ -33588,6 +33498,23 @@ Transform:
   - {fileID: 1230848994}
   m_Father: {fileID: 1609356257790461634}
   m_LocalEulerAnglesHint: {x: 15.42243, y: 27.126951, z: 16.94034}
+--- !u!1 &7699483861231488931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4613888252266780670}
+  - component: {fileID: 2943764858628825324}
+  m_Layer: 0
+  m_Name: Game Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &7731732901753157203
 GameObject:
   m_ObjectHideFlags: 0
@@ -34143,23 +34070,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &8146571040002097198
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 332399583994491758}
-  - component: {fileID: 4481900782563223589}
-  m_Layer: 0
-  m_Name: UI Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &8202311366401603124
 Transform:
   m_ObjectHideFlags: 0
@@ -34239,6 +34149,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &8274241795262491586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517040090055426362}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1314616677573000489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &8335388121314437187
 Transform:
   m_ObjectHideFlags: 0
@@ -34255,6 +34180,21 @@ Transform:
   - {fileID: 6499148607937150196}
   m_Father: {fileID: 974874756181137388}
   m_LocalEulerAnglesHint: {x: -46.209362, y: -98.23119, z: 60.99358}
+--- !u!4 &8390764055484237142
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5204154962691777451}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1314616677573000489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &8483813500568618407
 Transform:
   m_ObjectHideFlags: 0
@@ -34493,11 +34433,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &9113281161596868037
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3677910813603212646}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1314616677573000489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1219860291}
+  - {fileID: 1314616677573000489}
   - {fileID: 1613421455}
   - {fileID: 3493667274221835172}
   - {fileID: 370423254}

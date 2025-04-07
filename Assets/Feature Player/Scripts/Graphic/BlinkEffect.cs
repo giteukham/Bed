@@ -21,7 +21,7 @@ public class BlinkEffect : MonoBehaviour
         }
         set
         {
-            blinkMaterial.SetFloat("_Blink", value);
+            blinkMaterial.SetFloat("_Blink", Mathf.Clamp01(value));
         } 
     }
 
