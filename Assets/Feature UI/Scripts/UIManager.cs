@@ -197,4 +197,9 @@ public class UIManager : MonoSingleton<UIManager>
     {
         neh.SetActive(isActive);
     }
+
+    public void ExitButton()
+    {
+        Application.Quit();
+    }
 }
