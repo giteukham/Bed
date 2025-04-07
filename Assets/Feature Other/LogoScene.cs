@@ -66,7 +66,7 @@ public class LogoScene : MonoBehaviour
 
     private async UniTask CloseBlink()
     {
-        var blinkSpeed = 1.2f;
+        var blinkSpeed = 2.2f;
         
         while (BlinkEffect.Blink < PlayerEyeControl.BLINK_VALUE_MAX)
         {
