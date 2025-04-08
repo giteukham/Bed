@@ -113,4 +113,12 @@ public class GimmickManager : MonoSingleton<GimmickManager>
                 break;
         } 
     }
+
+    public void InitGimmicks()
+    {
+        for (int i = 0; i < AllGimicks.Count; i++)
+        {
+            ResetDeactivateGimmick(AllGimicks[i]);
+        }
+    }
 }

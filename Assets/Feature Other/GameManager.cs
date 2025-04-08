@@ -189,6 +189,7 @@ public class GameManager : MonoSingleton<GameManager>
         LivingRoomLightSwitch.SwitchAction(true);
         player.EyeControl(PlayerEyeStateTypes.Close);
         timeManager.gameObject.SetActive(false);
+        GimmickManager.Instance.InitGimmicks();
         PlayerLevelController.Instance.Initialize();
         Door.SetNoSound(0, 0);
         PlayerConstant.isShock = false;
@@ -264,6 +265,12 @@ public class GameManager : MonoSingleton<GameManager>
     private void GameOver()
     {
         Debug.Log("GameOver !!");
+        StartCoroutine(GameOverCoroutine());
+    }
+
+    IEnumerator GameOverCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
 
         // 테스트용
         tutorialTestEnable = true;
@@ -271,6 +278,8 @@ public class GameManager : MonoSingleton<GameManager>
         player.EyeControl(PlayerEyeStateTypes.Close);
         PlayerConstant.isShock = true;
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
+        yield return new WaitForSeconds(1f);
+        SetState(GameState.Preparation);
     }
     
     public bool IsBothMouseClicked()
@@ -310,7 +319,6 @@ public class GameManager : MonoSingleton<GameManager>
         {
             if (currentState == GameState.Preparation) SetState(GameState.GamePlay);
             else if (currentState == GameState.GamePlay) SetState(GameState.GameOver);
-            else if (currentState == GameState.GameOver) SetState(GameState.Preparation);
         }
         
         if (Input.GetKeyDown(KeyCode.B)) 

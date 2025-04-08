@@ -175,9 +175,9 @@ public class NeighborGimmick : Gimmick
             case var _ when state.Equals(near):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(!hand.activeSelf)      hand.SetActive(true);
-                yield return new WaitForSeconds(2f);
-                // 게임 오버
-                ChangeMarkovState(watch);
+                GameManager.Instance.SetState(GameState.GameOver);
+                yield return new WaitForSeconds(3.5f);
+                ChangeMarkovState(wait);
                 yield break;
             default:
                 break;
@@ -220,5 +220,6 @@ public class NeighborGimmick : Gimmick
     {
         if(houseLight.activeSelf) houseLight.SetActive(false);
         if(hand.activeSelf)       hand.SetActive(false);
+        if (!currState.Equals(wait)) ChangeMarkovState(wait);
     }
 }
