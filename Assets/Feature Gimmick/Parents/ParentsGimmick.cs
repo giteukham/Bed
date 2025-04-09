@@ -20,6 +20,7 @@ public class ParentsGimmick : Gimmick
     #endregion
     
     #region Variables
+    public GameObject hand;
     private Animator animator;
     
     private int moveChance = 0;                     // 움직일 확률
@@ -48,12 +49,12 @@ public class ParentsGimmick : Gimmick
     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Equals))
+        if (Input.GetKeyDown(KeyCode.G))
         {
             tmpValue += 5;
             Debug.Log(tmpValue);
         }
-        else if (Input.GetKeyDown(KeyCode.Minus))
+        else if (Input.GetKeyDown(KeyCode.H))
         {
             tmpValue -= 5;
             Debug.Log(tmpValue);
@@ -123,14 +124,12 @@ public class ParentsGimmick : Gimmick
     public override void Deactivate()
     {
         base.Deactivate();
-        gameObject.SetActive(false);
     }
 
     public override void UpdateProbability()
     {
         moveProbability = PlayerConstant.noiseStage * 10;
         probability = 0 < moveProbability ? 100 : 0;
-        probability = 100;
         if (Mathf.Approximately(probability, 0) && !currState.Equals(wait)) ChangeMarkovState(wait);
 
         //if (currState.Equals(watch) && 특정 행동) ChangeMarkovState(near); 
@@ -142,6 +141,8 @@ public class ParentsGimmick : Gimmick
 
     public override void Initialize()
     {
+        if (hand.activeSelf) hand.SetActive(false);
+        if (!currState.Equals(wait)) ChangeMarkovState(wait);
     }
     
     private void ChangeMarkovState(MarkovState next)
@@ -160,40 +161,34 @@ public class ParentsGimmick : Gimmick
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
         animator.Play(state.Name);
-
-        if (ProcessState(state)) yield break;
+        
+        switch (state)
+        {
+            case var _ when state.Equals(wait):
+                if(hand.activeSelf)       hand.SetActive(false);
+                Deactivate();
+                break;
+            case var _ when state.Equals(watch):
+                if(hand.activeSelf)       hand.SetActive(false);
+                PlayRandomChildAnimation(watch.Name, 4);
+                break;
+            case var _ when state.Equals(danger):
+                if(hand.activeSelf)       hand.SetActive(false);
+                break;
+            case var _ when state.Equals(near):
+                if(!hand.activeSelf)      hand.SetActive(true);
+                GameManager.Instance.SetState(GameState.GameOver);
+                yield return new WaitForSeconds(3.5f);
+                ChangeMarkovState(wait);
+                yield break;
+            default:
+                break;
+        }
 
         var markovTransitions = chain[state];
 
         yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
         
-        TransitionNextState();
-    }
-
-    private bool ProcessState(MarkovState state)
-    {
-        if (state.Equals(wait))
-        {
-            Deactivate();
-        }
-        else if (state.Equals(watch))
-        {
-            PlayRandomChildAnimation(watch.Name, 4);
-        }
-        else if (state.Equals(danger))
-        {
-            if (danger.ActiveCount >= 3) ChangeMarkovState(near);
-        }
-        else if (state.Equals(near))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void TransitionNextState()
-    {
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
             currState = chain.TransitionNextState(currState, tmpDecision);
