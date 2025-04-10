@@ -6,6 +6,7 @@ using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
+using DG.Tweening;
 
 public enum PlayerDirectionStateTypes
 {
@@ -322,6 +323,54 @@ public class Player : PlayerBase
     public void DirectionControlNoSound(PlayerDirectionStateTypes types)
     {
         playerDirectionControl.ChangeDirectionStateNoSound(types);
+    }
+    
+    public IEnumerator LookAt(Vector3 targetPos)
+    {
+        var verticalAngle = Mathf.Atan2(targetPos.y - transform.localPosition.y, targetPos.x - transform.localPosition.x) * Mathf.Rad2Deg - 180;
+        var horizontalAngle = Mathf.Atan2(targetPos.x - transform.localPosition.x, targetPos.z - transform.localPosition.z) * Mathf.Rad2Deg + 180;
+        verticalAngle = Mathf.Clamp(verticalAngle, povCamera.m_VerticalAxis.m_MinValue, povCamera.m_VerticalAxis.m_MaxValue);
+        horizontalAngle = Mathf.Clamp(horizontalAngle, povCamera.m_HorizontalAxis.m_MinValue, povCamera.m_HorizontalAxis.m_MaxValue);
+        
+        var baseSpeed = 10f;
+        var horizontalDistance = Mathf.Abs(horizontalAngle - povCamera.m_HorizontalAxis.Value);
+        var verticalDistance = Mathf.Abs(verticalAngle - povCamera.m_VerticalAxis.Value);
+        var maxDistance = Mathf.Max(horizontalDistance, verticalDistance);
+        
+        // 동일한 시간에 도달하도록 속도 계산
+        var horizontalSpeed = baseSpeed * (horizontalDistance / maxDistance) * Mathf.Sign(horizontalAngle - povCamera.m_HorizontalAxis.Value);
+        var verticalSpeed = baseSpeed * (verticalDistance / maxDistance) * Mathf.Sign(verticalAngle - povCamera.m_VerticalAxis.Value);
+        
+        var isComplete = new[] { false, false };
+        
+        while (!(isComplete[0] && isComplete[1]))
+        {
+            ProcessAxis(0, ref povCamera.m_HorizontalAxis, horizontalAngle, horizontalSpeed);
+            ProcessAxis(1, ref povCamera.m_VerticalAxis, verticalAngle, verticalSpeed);
+            
+            yield return null;
+        }
+
+        void ProcessAxis(int index, ref AxisState axis, float targetValue, float speed)
+        {
+            if (isComplete[index]) return;
+            
+            var currentValue = axis.Value;
+            var nextValue = currentValue + Time.deltaTime * speed;
+            
+            // 목표값 초과 여부 확인
+            var overshot = (speed > 0 && nextValue > targetValue) || (speed < 0 && nextValue < targetValue);
+            
+            if (overshot)
+            {
+                axis.Value = targetValue;
+                isComplete[index] = true;
+            }
+            else
+            {
+                axis.Value = nextValue;
+            }
+        }
     }
 }
 

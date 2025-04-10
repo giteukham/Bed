@@ -84,6 +84,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     [Tooltip("동시 클릭 허용 시간")]
     public float bothClickToleranceTime;
+
+    public GameObject _testObj;
     
     private void OnValidate()
     // 값이 0이면 기본 값으로 설정
@@ -136,6 +138,8 @@ public class GameManager : MonoSingleton<GameManager>
             if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
             if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
         #endif
+        
+        StartCoroutine(player.LookAt(_testObj.transform.position));
     }
 
     
