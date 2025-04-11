@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 public class ParentsGimmick : Gimmick
 {
     #region Override Variables
+    public string GimmickName { get; protected set; } = "Parents";
     [field: SerializeField] public override GimmickType type { get; protected set; }
     [SerializeField] private float _probability;
     public override float probability 
@@ -21,6 +22,7 @@ public class ParentsGimmick : Gimmick
     
     #region Variables
     public GameObject hand;
+    public GameObject dad;
     private Animator animator;
     
     private int moveChance = 0;                     // 움직일 확률
@@ -81,6 +83,8 @@ public class ParentsGimmick : Gimmick
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        
+        GameManager.Instance.OnGameOverEvent += ReachedGameOver;
 
         wait.OnStateAction += StartMarkovStateCoroutine;
         watch.OnStateAction += StartMarkovStateCoroutine;
@@ -114,7 +118,7 @@ public class ParentsGimmick : Gimmick
         
         ChangeMarkovState(wait);
     }
-    
+
     public override void Activate()
     {
         base.Activate();
@@ -204,5 +208,14 @@ public class ParentsGimmick : Gimmick
     private void PlayRandomChildAnimation(string stateName, int ranCount)
     {
         animator.SetTrigger($"{stateName}{Random.Range(1, ranCount)}");
+    }
+    
+    /// <summary>
+    /// 게임 오버 시 Dad 쳐다 보기
+    /// </summary>
+    /// <param name="player"></param>
+    private void ReachedGameOver(Player player)
+    {
+        StartCoroutine(player.LookAt(dad.transform.position));
     }
 }

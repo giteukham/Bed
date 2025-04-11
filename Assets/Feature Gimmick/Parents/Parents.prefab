@@ -1014,7 +1014,7 @@ GameObject:
   - component: {fileID: 318292529665668466}
   m_Layer: 0
   m_Name: Parents
-  m_TagString: Untagged
+  m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1027,7 +1027,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3789245577109436201}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.2235327, z: 0, w: 0.9746964}
+  m_LocalRotation: {x: 0, y: -0.2235308, z: 0, w: 0.9746969}
   m_LocalPosition: {x: 3.451, y: 0.7978, z: 6.037}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1073,6 +1073,8 @@ MonoBehaviour:
   <type>k__BackingField: 1
   _probability: 0
   <ExclusionGimmickList>k__BackingField: []
+  hand: {fileID: 0}
+  dad: {fileID: 2541380769790803788}
 --- !u!1 &3825303237734717941
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ using Random = UnityEngine.Random;
 public class NeighborGimmick : Gimmick
 {
     #region Override Variables
+    public string GimmickName { get; protected set; } = "Neighbor";
     [field: SerializeField] public override GimmickType type { get; protected set; }
     [SerializeField] private float _probability;
     public override float probability 
@@ -23,6 +24,7 @@ public class NeighborGimmick : Gimmick
 
     #region Variables
     public GameObject hand, houseLight;
+    public GameObject neighbor;
     private Animator animator;
     
     private int moveChance = 0;                     // 움직일 확률
@@ -60,11 +62,30 @@ public class NeighborGimmick : Gimmick
             tmpValue -= 5;
             Debug.Log(tmpValue);
         }
+        
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            ChangeMarkovState(wait);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            ChangeMarkovState(watch);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ChangeMarkovState(danger);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            ChangeMarkovState(near);
+        }
     }
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+
+        GameManager.Instance.OnGameOverEvent += ReachedGameOver;
         
         wait.OnStateAction += ActiveStateCoroutine;
         watch.OnStateAction += ActiveStateCoroutine;
@@ -214,6 +235,15 @@ public class NeighborGimmick : Gimmick
     private void HornyBreathSoundPlay()
     {
         AudioManager.Instance.PlaySound(AudioManager.Instance.hornyBreath, this.transform.position);
+    }
+
+    /// <summary>
+    /// 게임 오버 시 이웃 쳐다보기
+    /// </summary>
+    /// <param name="player"></param>
+    private void ReachedGameOver(Player player)
+    {
+        // StartCoroutine(player.LookAt(neighbor.transform.position));
     }
 
     public override void Initialize()

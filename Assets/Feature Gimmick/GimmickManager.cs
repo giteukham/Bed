@@ -9,6 +9,8 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     [SerializeField] private List<Gimmick> AllGimicks ;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
 
+    public Gimmick CurrentGimmick { get; private set; } = null;
+
     private void Awake()
     {
         Gimmick[] foundGimmicks = Resources.FindObjectsOfTypeAll<Gimmick>();

@@ -16,6 +16,9 @@ public class UIManager : MonoSingleton<UIManager>
         MouseSettings
     }
     
+    [SerializeField] GameOverScreen gameOverScreen;
+    private Coroutine gameOverCoroutine;
+    
     [SerializeField] GameObject menuUI;   
     //public bool isMenuScreenActive = false;
     #region Menu
@@ -30,6 +33,7 @@ public class UIManager : MonoSingleton<UIManager>
     [Header("Player")]
     [SerializeField] private Player player;
     #endregion
+    
 
     private SettingScreenType currentScreenType = SettingScreenType.Off;
     
@@ -201,5 +205,26 @@ public class UIManager : MonoSingleton<UIManager>
     public void ExitButton()
     {
         Application.Quit();
+    }
+
+    private void Start()
+    {
+        ActivateGameOverScreen("Neighbor");
+    }
+
+    /// <summary>
+    /// ParentsGimmick하고 NeighborGimmick 안에 GimmickName 있는데 하드 코딩 안하고 이걸로 넣어도 됨
+    /// </summary>
+    /// <param name="gimmickName">Neighbor 또는 Parents</param>
+    public void ActivateGameOverScreen(string gimmickName)
+    {
+        gameOverScreen.gameObject.SetActive(true);
+        gameOverCoroutine = StartCoroutine(gameOverScreen.ActiveGameOverScreen(gimmickName));
+    }
+    
+    public void DeactivateGameOverScreen()
+    {
+        if (gameOverCoroutine != null) StopCoroutine(gameOverCoroutine);
+        gameOverScreen.gameObject.SetActive(false);
     }
 }
