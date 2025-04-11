@@ -332,7 +332,7 @@ public class Player : PlayerBase
         verticalAngle = Mathf.Clamp(verticalAngle, povCamera.m_VerticalAxis.m_MinValue, povCamera.m_VerticalAxis.m_MaxValue);
         horizontalAngle = Mathf.Clamp(horizontalAngle, povCamera.m_HorizontalAxis.m_MinValue, povCamera.m_HorizontalAxis.m_MaxValue);
         
-        var baseSpeed = 10f;
+        var baseSpeed = 150f;
         var horizontalDistance = Mathf.Abs(horizontalAngle - povCamera.m_HorizontalAxis.Value);
         var verticalDistance = Mathf.Abs(verticalAngle - povCamera.m_VerticalAxis.Value);
         var maxDistance = Mathf.Max(horizontalDistance, verticalDistance);

@@ -139,7 +139,7 @@ public class GameManager : MonoSingleton<GameManager>
             if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
         #endif
         
-        StartCoroutine(player.LookAt(_testObj.transform.position));
+        // StartCoroutine(player.LookAt(_testObj.transform.position));
     }
 
     
@@ -263,7 +263,6 @@ public class GameManager : MonoSingleton<GameManager>
         timeManager.gameObject.SetActive(true);
         PlayerLevelController.Instance.OnGameStart();
         PlayerConstant.ResetAllStats();
-
     }
     
     private void GameOver()
