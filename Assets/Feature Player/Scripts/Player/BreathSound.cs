@@ -28,6 +28,11 @@ public class BreathSound : MonoBehaviour
 
         AudioManager.Instance.SetPosition(AudioManager.Instance.inhale, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.exhale, transform.position);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ToggleBreathSound(!breathAnimator.enabled);
+        }
     }
 
     public void InhaleSound()
@@ -53,5 +58,11 @@ public class BreathSound : MonoBehaviour
         await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
         breathAnimator.SetTrigger("toExhale");
         playerHeadAnimator.SetTrigger("toExhale");
+    }
+    
+    public void ToggleBreathSound(bool isActive)
+    {
+        breathAnimator.enabled = isActive;
+        playerHeadAnimator.enabled = isActive;
     }
 }

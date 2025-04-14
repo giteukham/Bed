@@ -209,7 +209,7 @@ public class UIManager : MonoSingleton<UIManager>
 
     private void Start()
     {
-        ActivateGameOverScreen("Neighbor");
+        // ActivateGameOverScreen("Neighbor");
     }
 
     /// <summary>

@@ -24,6 +24,10 @@ public class ParentsGimmick : Gimmick
     public GameObject hand;
     public GameObject dad;
     private Animator animator;
+
+    [Tooltip("다음 상태로 전환하는데 걸리는 시간")]
+    [SerializeField]
+    private float nextStateDelay = 2f;
     
     private int moveChance = 0;                     // 움직일 확률
     
@@ -192,6 +196,7 @@ public class ParentsGimmick : Gimmick
         var markovTransitions = chain[state];
 
         yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
+        yield return new WaitForSeconds(nextStateDelay);
         
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
