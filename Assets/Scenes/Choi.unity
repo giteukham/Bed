@@ -10268,7 +10268,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 635529638}
-  - component: {fileID: 635529641}
   - component: {fileID: 635529640}
   m_Layer: 0
   m_Name: Breath Sound Position
@@ -10307,27 +10306,8 @@ MonoBehaviour:
   playerHeadAnimator: {fileID: 398507008}
   sourcePosition: {fileID: 105610751}
   sourceRotation: {fileID: 1732393635}
---- !u!95 &635529641
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 635529637}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d171151419fb78544898c1688463174c, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  breathTime: 2
+  timeToStop: 0.2
 --- !u!1 &638792219
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,23 +1,61 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using FMODUnity;
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.Serialization;
+using STOP_MODE = FMOD.Studio.STOP_MODE;
 
 public class BreathSound : MonoBehaviour
 {
     [SerializeField] private Animator playerHeadAnimator;
-    private Animator breathAnimator;
     
     [SerializeField] private Transform sourcePosition, sourceRotation;
     private Vector3 intervalTrnasform, breathSoundPosition;
 
+    [Header("Breath Settings")]
+    [SerializeField] private float breathTime = 2f;
+    [SerializeField] private float timeToStop = 0.2f;
+    
+    private float breathProgress = 0f, stopProgress = 0f;
+    private bool isBreathing = true;
+    
+    private Sequence breathSequence;
+
     private void Awake()
     {
-        breathAnimator = GetComponent<Animator>();
         intervalTrnasform = transform.position - sourcePosition.position;
+    }
+
+    private void Start()
+    {
+        breathProgress = 0f;
+        stopProgress = 0f;
+        TakeBreath();
+    }
+
+    private void TakeBreath()
+    {
+        breathSequence = DOTween.Sequence();
+        breathSequence.Append(DOTween.To(() => breathProgress, x => breathProgress = x, 1f, breathTime));
+        breathSequence.InsertCallback(0, InhaleSound);
+        breathSequence.Append(DOTween.To(() => breathProgress, x => breathProgress = x, 0f, breathTime));
+        breathSequence.InsertCallback(breathTime, ExhaleSound);
+        breathSequence.OnUpdate(async () =>
+        {
+            // Player 움직이는 상태였다가 안 움직이는 상태되면 다시 breathSequence 재생
+            if (PlayerConstant.isMovingState || PlayerConstant.isPlayerStop)
+            {
+                breathSequence.Pause();
+                await UniTask.WaitUntil(() => !PlayerConstant.isMovingState && !PlayerConstant.isPlayerStop);
+                breathSequence.Play();
+            }
+        })
+        .SetLoops(-1);
     }
 
     private void Update()
@@ -28,10 +66,13 @@ public class BreathSound : MonoBehaviour
 
         AudioManager.Instance.SetPosition(AudioManager.Instance.inhale, transform.position);
         AudioManager.Instance.SetPosition(AudioManager.Instance.exhale, transform.position);
-
+        
+        playerHeadAnimator.SetFloat("Breath Progress", breathProgress);
+        playerHeadAnimator.SetFloat("Is Not Breathing", stopProgress);
+        
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ToggleBreathSound(!breathAnimator.enabled);
+            ToggleBreath();
         }
     }
 
@@ -44,25 +85,28 @@ public class BreathSound : MonoBehaviour
     {
         AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
     }
-    
-    // Moving 상태가 아니여야 숨소리가 나고, 옵션 창이 켜질 때 moving 상태가 아니여야 숨소리가 계속 됨.
-    public async UniTaskVoid ToInhale()
+
+    private void ToggleBreath()
     {
-        await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
-        breathAnimator.SetTrigger("toInhale");
-        playerHeadAnimator.SetTrigger("toInhale");
-    }
-    
-    public async UniTaskVoid ToExhale()
-    {
-        await UniTask.WaitUntil(() => !PlayerConstant.isMovingState || (!PlayerConstant.isMovingState && PlayerConstant.isPlayerStop));
-        breathAnimator.SetTrigger("toExhale");
-        playerHeadAnimator.SetTrigger("toExhale");
-    }
-    
-    public void ToggleBreathSound(bool isActive)
-    {
-        breathAnimator.enabled = isActive;
-        playerHeadAnimator.enabled = isActive;
+        if (PlayerConstant.isMovingState || PlayerConstant.isPlayerStop) return;
+        
+        if (breathSequence.IsPlaying())
+        {
+            AudioManager.Instance.StopSound(AudioManager.Instance.inhale, STOP_MODE.IMMEDIATE);
+            AudioManager.Instance.StopSound(AudioManager.Instance.exhale, STOP_MODE.IMMEDIATE);
+            breathSequence.Pause();
+            DOTween.To(() => stopProgress, x => stopProgress = x, 1f, timeToStop);
+            //.OnPlay(() => ); // TOOD: 숨 참는 소리 추가해야 함
+        }
+        else
+        {
+            DOTween.To(() => stopProgress, x =>
+                {
+                    stopProgress = x;
+                    breathProgress = x;
+                }, 0f, breathTime)
+                .OnPlay(ExhaleSound)
+                .OnComplete(() => breathSequence.Restart());
+        }
     }
 }
