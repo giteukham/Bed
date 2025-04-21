@@ -66,19 +66,19 @@ public class ParentsGimmick : Gimmick
             Debug.Log(tmpValue);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
         {
             ChangeMarkovState(wait);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
         {
             ChangeMarkovState(watch);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
         {
             ChangeMarkovState(danger);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
         {
             ChangeMarkovState(near);
         }
@@ -87,8 +87,6 @@ public class ParentsGimmick : Gimmick
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        
-        GameManager.Instance.OnGameOverEvent += ReachedGameOver;
 
         wait.OnStateAction += StartMarkovStateCoroutine;
         watch.OnStateAction += StartMarkovStateCoroutine;

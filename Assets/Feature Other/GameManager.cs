@@ -30,7 +30,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     #region Reference Components
     [Header("Reference Components")]
-    [SerializeField] private Player player;
+    public Player player;
     #endregion
     
     #region Objects related Components
@@ -84,8 +84,6 @@ public class GameManager : MonoSingleton<GameManager>
 
     [Tooltip("동시 클릭 허용 시간")]
     public float bothClickToleranceTime;
-
-    public event Action<Player> OnGameOverEvent;
     
     private void OnValidate()
     // 값이 0이면 기본 값으로 설정
@@ -266,14 +264,11 @@ public class GameManager : MonoSingleton<GameManager>
     private void GameOver()
     {
         Debug.Log("GameOver !!");
-        OnGameOverEvent(player);
         StartCoroutine(GameOverCoroutine());
     }
 
     IEnumerator GameOverCoroutine()
     {
-        yield return new WaitForSeconds(3f);
-
         // 테스트용
         tutorialTestEnable = true;
 

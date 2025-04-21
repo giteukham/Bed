@@ -123,4 +123,26 @@ public class GimmickManager : MonoSingleton<GimmickManager>
             ResetDeactivateGimmick(AllGimicks[i]);
         }
     }
+
+    public void DeactivateGimmicks(Gimmick gimmick)
+    {
+        for (int i = 0; i < AllGimicks.Count; i++)
+        {
+            if(AllGimicks[i] == gimmick) return;
+            AllGimicks[i].probability = 0;
+        
+            switch (AllGimicks[i].type)      // 타입변수에서 제거
+            {
+                case GimmickType.Unreal:
+                    unrealGimmick = null;
+                    break;
+                case GimmickType.Human:
+                    humanGimmick = null;
+                    break;
+                case GimmickType.Object:
+                    objectGimmick = null;
+                    break;
+            } 
+        }
+    }
 }

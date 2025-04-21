@@ -41,10 +41,11 @@ public class GameOverScreen : MonoBehaviour
     {
         Assert.IsNotNull(dTextObject, "GameOverScreen의 dTextObject가 없습니다.");
         Assert.IsNotNull(nTextObject, "GameOverScreen의 nTextObject가 없습니다.");
-        
+
         if (dTextObject.activeSelf) dTextObject.SetActive(false);
         if (nTextObject.activeSelf) nTextObject.SetActive(false);
-        
+
+        if (textPositions.Count > 0) textPositions.Clear(); 
         textPositions.Add(dTextObject, new TMP_Text[]
         {
             dTextObject.transform.GetChild(0).GetComponent<TMP_Text>(),       // parents position
@@ -80,7 +81,7 @@ public class GameOverScreen : MonoBehaviour
         }
     }
 
-    public IEnumerator ActiveGameOverScreen(string gimmickName)
+    public void Setting(string gimmickName)
     {
         Initialize();
         
@@ -105,15 +106,12 @@ public class GameOverScreen : MonoBehaviour
         }
         
         if (!dTextChild || !nTextChild)
-        {
             Debug.LogError($"GameOverScreen의 {gimmickName}의 자식이 없습니다.");
-            yield break;
-        }
 
         // 테스트
-        yield return gameOverCoroutine = StartCoroutine(ActiveOrDeActiveDText(true));
-        yield return new WaitForSeconds(2f);                                    // TODO: n초 뒤에
-        yield return gameOverCoroutine = StartCoroutine(ActiveOrDeActiveNText(true));
+        // yield return gameOverCoroutine = StartCoroutine(ActiveOrDeActiveDText(true));
+        // yield return new WaitForSeconds(2f);                                    // TODO: n초 뒤에
+        // yield return gameOverCoroutine = StartCoroutine(ActiveOrDeActiveNText(true));
     }
 
     public IEnumerator ActiveOrDeActiveDText(bool isActive)
@@ -126,7 +124,7 @@ public class GameOverScreen : MonoBehaviour
             var isComplete = false;
             
             dTextObject.SetActive(true);                                            // dTextObject 활성화
-            yield return new WaitForSeconds(2f);                                    // 2초 뒤에
+            yield return new WaitForSeconds(1f);                                    // 2초 뒤에
             dTextChild.gameObject.SetActive(true);                                  // dText position 활성화
             dTextChild.DOText(splitTexts[0], parentsTextSpeed).onComplete += () =>
             {
@@ -152,7 +150,7 @@ public class GameOverScreen : MonoBehaviour
             var isComplete = false;
             
             nTextObject.SetActive(true);                                            // nTextObject 활성화
-            yield return new WaitForSeconds(2f);                                    // 2초 뒤에
+            yield return new WaitForSeconds(1f);                                    // 2초 뒤에
             nTextChild.gameObject.SetActive(true);                                  // nText position 활성화
             nTextChild.DOText(splitTexts[1], neighborTextSpeed).onComplete += () =>
             {

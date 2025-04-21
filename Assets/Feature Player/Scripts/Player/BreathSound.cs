@@ -70,10 +70,10 @@ public class BreathSound : MonoBehaviour
         playerHeadAnimator.SetFloat("Breath Progress", breathProgress);
         playerHeadAnimator.SetFloat("Is Not Breathing", stopProgress);
         
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ToggleBreath();
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     ToggleBreath();
+        // }
     }
 
     public void InhaleSound()
@@ -86,7 +86,7 @@ public class BreathSound : MonoBehaviour
         AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
     }
 
-    private void ToggleBreath()
+    public void ToggleBreath()
     {
         if (PlayerConstant.isMovingState || PlayerConstant.isPlayerStop) return;
         

@@ -3,7 +3,7 @@ using TMPro;
 using System.Collections;
 using System;
 
-public class TimeManager : MonoBehaviour
+public class TimeManager : MonoSingleton<TimeManager>
 {
      // 23 시 ~ 07 시
 
@@ -15,6 +15,7 @@ public class TimeManager : MonoBehaviour
     public static int playTimeToMin = 0;  // 게임 시간 기준 누적 분
     private float realTimeCounter; // 실제로 흐르는 시간
     private float gimmickPickTimeCounter; // 기믹 선택 시간
+    public bool isGameOver = false; // 게임 오버 상태태
     #endregion
 
     #region AlarmClock Related Variables
@@ -81,6 +82,8 @@ public class TimeManager : MonoBehaviour
 
     private void UpdateTime() // 시간 갱신, 시간 관련 기능들
     {
+        if (isGameOver) return; // 게임 오버 상태면 시간 갱신 안함
+
         realTimeCounter += Time.deltaTime;
         gimmickPickTimeCounter +=  Time.deltaTime;
 

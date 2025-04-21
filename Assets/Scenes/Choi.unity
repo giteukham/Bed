@@ -8330,6 +8330,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 489791257}
   m_CullTransparentMesh: 1
+--- !u!1 &497273165 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4559530901210499551, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
+  m_PrefabInstance: {fileID: 640230416}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &500874016
 Transform:
   m_ObjectHideFlags: 0
@@ -10307,7 +10312,7 @@ MonoBehaviour:
   sourcePosition: {fileID: 105610751}
   sourceRotation: {fileID: 1732393635}
   breathTime: 2
-  timeToStop: 0.2
+  timeToStop: 0.15
 --- !u!1 &638792219
 GameObject:
   m_ObjectHideFlags: 0
@@ -10439,6 +10444,14 @@ PrefabInstance:
       propertyPath: hand
       value: 
       objectReference: {fileID: 689725174}
+    - target: {fileID: 2497762284329482256, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
+      propertyPath: breathSound
+      value: 
+      objectReference: {fileID: 635529640}
+    - target: {fileID: 2497762284329482256, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
+      propertyPath: neighborHead
+      value: 
+      objectReference: {fileID: 497273165}
     - target: {fileID: 6171796030521548098, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.59
@@ -34506,6 +34519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeInterval: 3
+  isGameOver: 0
   timeText: {fileID: 1990451067}
   clockRenderer: {fileID: 7909545157062771440}
   blankTexture: {fileID: 2800000, guid: 3423b04f022e7d843b3ea3776331a10e, type: 3}

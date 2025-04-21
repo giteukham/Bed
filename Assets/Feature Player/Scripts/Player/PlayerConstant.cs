@@ -13,7 +13,11 @@ public static class PlayerConstant
     public static float headMoveSpeed = 0;
     public static bool isEyeOpen = false; 
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
-    public static bool isShock, isParalysis = false;
+
+    // isShock : 움직임 관련 조작이 모두 안되고 배게 소리가 안들림림 (게임 오버후 초기화때 사용)
+    // isParalysis : 움직임 관련 조작이 모두 안됨 (튜토리얼때 사용, 게임 오버 연출때 사용)
+    // isRedemption : 몸 움직임만 안됨 (게임 오버 연출때 사용)
+    public static bool isShock, isParalysis, isRedemption = false;  
     public static bool isPlayerStop = false;
     public static float pixelationFactor = 0.25f;
 

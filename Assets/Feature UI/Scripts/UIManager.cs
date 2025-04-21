@@ -216,15 +216,20 @@ public class UIManager : MonoSingleton<UIManager>
     /// ParentsGimmick하고 NeighborGimmick 안에 GimmickName 있는데 하드 코딩 안하고 이걸로 넣어도 됨
     /// </summary>
     /// <param name="gimmickName">Neighbor 또는 Parents</param>
-    public void ActivateGameOverScreen(string gimmickName)
+    public void SetGameOverScreen(string gimmickName)
     {
-        gameOverScreen.gameObject.SetActive(true);
-        gameOverCoroutine = StartCoroutine(gameOverScreen.ActiveGameOverScreen(gimmickName));
+        gameOverScreen.Setting(gimmickName);
     }
     
-    public void DeactivateGameOverScreen()
+    public void ActiveOrDeActiveDText(bool isActive)
     {
-        if (gameOverCoroutine != null) StopCoroutine(gameOverCoroutine);
-        gameOverScreen.gameObject.SetActive(false);
+        gameOverScreen.gameObject.SetActive(isActive);
+        StartCoroutine(gameOverScreen.ActiveOrDeActiveDText(isActive));
+    }
+
+    public void ActiveOrDeActiveNText(bool isActive)
+    {
+        gameOverScreen.gameObject.SetActive(isActive);
+        StartCoroutine(gameOverScreen.ActiveOrDeActiveNText(isActive));
     }
 }
