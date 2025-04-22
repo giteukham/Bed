@@ -118,6 +118,18 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     [field: Header("Cockroach SFX")]
     [field: SerializeField] public EventReference Cockroach {get; private set;}
+
+    [field: Header("parents D SFX")]
+    [field: SerializeField] public EventReference parentsD {get; private set;}
+
+    [field: Header("parents N SFX")]
+    [field: SerializeField] public EventReference parentsN {get; private set;}
+
+    [field: Header("neighbor D SFX")]
+    [field: SerializeField] public EventReference neighborD {get; private set;}
+
+    [field: Header("neighbor N SFX")]
+    [field: SerializeField] public EventReference neighborN {get; private set;}
     #endregion
 
     #region Player FMOD Events
