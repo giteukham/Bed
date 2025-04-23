@@ -177,57 +177,56 @@ public class NeighborGimmick : Gimmick
             case var _ when state.Equals(wait):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.Play(wait.Name);
+                animator.SetTrigger(wait.Name);
                 Deactivate();
                 break;
 
             case var _ when state.Equals(watch):
                 if(!houseLight.activeSelf)houseLight.SetActive(true);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.Play(watch.Name);
+                animator.SetTrigger(watch.Name);
                 break;
 
             case var _ when state.Equals(cautious):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.Play(cautious.Name);
+                animator.SetTrigger(cautious.Name);
                 break;
 
             case var _ when state.Equals(danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.Play(danger.Name);
+                animator.SetTrigger(danger.Name);
                 break;
 
             case var _ when state.Equals(near):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(!hand.activeSelf)      hand.SetActive(false);
-                // 시간 멈춤
-                GimmickManager.Instance.DeactivateGimmicks(this);
-                animator.Play(danger.Name);     // danger 애니메이션 재생
 
+                GimmickManager.Instance.DeactivateGimmicks(this);
+                animator.SetTrigger(danger.Name);     // danger 애니메이션 재생
+                
                 if(!PlayerConstant.isLeftState)
                 {
                     PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
-                    StartCoroutine(GameManager.Instance.player.LookAt(neighborHead.transform.position)); // 쳐다봄
                     yield return new WaitForSeconds(0.5f);  // 대기
                     breathSound.ToggleBreath(); // 숨 참음
                     yield return new WaitForSeconds(2.5f); // 대기
                     UIManager.Instance.SetGameOverScreen(name); 
-                    UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화 (이때 화면 까만색 됨)
-                    AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position);
-                    // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
+                    UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                    AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                     yield return new WaitForSeconds(2.5f); // 대기
                     UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                     PlayerConstant.isParalysis = false; // 조작 가능하게 변경경
                     PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
-                    animator.Play(near.Name); // near 애니메이션 재생
+                    animator.SetTrigger(near.Name); // near 애니메이션 재생
                     if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                     yield return new WaitForSeconds(3f); // 대기 
                     UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
                     AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborN, this.transform.position);
                     yield return new WaitForSeconds(1.5f); // 대기
                     GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
+                    breathSound.ToggleBreath(); // 숨 참음 해제
                     yield return new WaitForSeconds(1f); // 대기
                     breathSound.ToggleBreath(); // 숨 참음 해제
                     PlayerConstant.isRedemption = false; // 몸을 돌릴수 있게
@@ -256,6 +255,11 @@ public class NeighborGimmick : Gimmick
         }
         
         Debug.Log("Next State: " + currState.Name);
+    }
+    
+    private void LookAtNeighbor()
+    {
+        StartCoroutine(GameManager.Instance.player.LookAt(neighborHead));
     }
 
     private void WindowOpenCloseSoundPlay()

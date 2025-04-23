@@ -23,6 +23,7 @@ public class ParentsGimmick : Gimmick
     #region Variables
     public GameObject hand;
     public GameObject dad;
+    public GameObject dadHead;
     private Animator animator;
 
     [Tooltip("다음 상태로 전환하는데 걸리는 시간")]
@@ -46,6 +47,7 @@ public class ParentsGimmick : Gimmick
     private MarkovState near        = new MarkovState("Near");
 
     private int conditionCountToNear = 3;
+    [SerializeField] private BreathSound breathSound;
     
     private Coroutine markovCoroutine;
     #endregion
@@ -167,27 +169,52 @@ public class ParentsGimmick : Gimmick
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
         animator.Play(state.Name);
-        
+
         switch (state)
         {
             case var _ when state.Equals(wait):
-                if(hand.activeSelf)       hand.SetActive(false);
+                if (hand.activeSelf) hand.SetActive(false);
                 Deactivate();
                 break;
             case var _ when state.Equals(watch):
-                if(hand.activeSelf)       hand.SetActive(false);
+                if (hand.activeSelf) hand.SetActive(false);
                 PlayRandomChildAnimation(watch.Name, 4);
                 break;
             case var _ when state.Equals(danger):
-                if(hand.activeSelf)       hand.SetActive(false);
+                if (hand.activeSelf) hand.SetActive(false);
                 break;
             case var _ when state.Equals(near):
-                if(!hand.activeSelf)      hand.SetActive(true);
-                GameManager.Instance.SetState(GameState.GameOver);
-                yield return new WaitForSeconds(3.5f);
-                ChangeMarkovState(wait);
-                yield break;
-            default:
+                if (!hand.activeSelf) hand.SetActive(true);
+                
+                GimmickManager.Instance.DeactivateGimmicks(this);
+                animator.SetTrigger(danger.Name);
+
+                if (!PlayerConstant.isLeftState)
+                {
+                    PlayerConstant.isParalysis = true;
+                    yield return new WaitForSeconds(0.5f); // 대기
+                    breathSound.ToggleBreath(); // 숨 참음
+                    yield return new WaitForSeconds(2.5f); // 대기
+                    UIManager.Instance.SetGameOverScreen(name);
+                    UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                    yield return new WaitForSeconds(2.5f); // 대기
+                    UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
+                    PlayerConstant.isParalysis = false;
+                    PlayerConstant.isRedemption = true;
+                    animator.SetTrigger(near.Name); // near 애니메이션 재생
+                    if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
+                    yield return new WaitForSeconds(3f); // 대기 
+                    UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
+                    yield return new WaitForSeconds(2.5f); // 대기
+                    GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
+                    breathSound.ToggleBreath(); // 숨 참음 해제
+                    yield return new WaitForSeconds(1f); // 대기
+                    PlayerConstant.isRedemption = false;
+                    UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
+                    ChangeMarkovState(wait); // 기믹은 대기 상태로 변경경
+                    yield break;
+                }
+
                 break;
         }
 
@@ -207,18 +234,14 @@ public class ParentsGimmick : Gimmick
         
         Debug.Log("Next State: " + currState.Name + " Active Count : " + currState.ActiveCount);
     }
+    
+    private void LookAtDad()
+    {
+        StartCoroutine(GameManager.Instance.player.LookAt(dadHead));
+    }
 
     private void PlayRandomChildAnimation(string stateName, int ranCount)
     {
         animator.SetTrigger($"{stateName}{Random.Range(1, ranCount)}");
-    }
-    
-    /// <summary>
-    /// 게임 오버 시 Dad 쳐다 보기
-    /// </summary>
-    /// <param name="player"></param>
-    private void ReachedGameOver(Player player)
-    {
-        StartCoroutine(player.LookAt(dad.transform.position));
     }
 }
