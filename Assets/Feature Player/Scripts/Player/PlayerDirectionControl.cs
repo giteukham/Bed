@@ -41,6 +41,8 @@ public class PlayerDirectionControl : IPlayerControl
 
     public void ChangeDirectionState(PlayerDirectionStateTypes stateType) 
     {
+        if (playerDirectionStateMachine.IsCurrentState(directionStates[stateType])) return;
+        
         switch (stateType)
         {
             case PlayerDirectionStateTypes.Left:
@@ -56,7 +58,6 @@ public class PlayerDirectionControl : IPlayerControl
             case PlayerDirectionStateTypes.Switching:
                 return;
         }
-        playerDirectionStateMachine.ChangeState(directionStates[stateType]);
     }
 
     public void ChangeDirectionStateNoSound(PlayerDirectionStateTypes stateType) 
@@ -76,6 +77,5 @@ public class PlayerDirectionControl : IPlayerControl
             case PlayerDirectionStateTypes.Switching:
                 return;
         }
-        playerDirectionStateMachine.ChangeState(directionStates[stateType]);
     }
 }

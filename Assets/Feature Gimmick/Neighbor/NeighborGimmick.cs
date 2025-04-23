@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using UnityEngine;
 using AbstractGimmick;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Random = UnityEngine.Random;
 
 public class NeighborGimmick : Gimmick
@@ -206,39 +207,58 @@ public class NeighborGimmick : Gimmick
                 GimmickManager.Instance.DeactivateGimmicks(this);
                 animator.SetTrigger(danger.Name);     // danger 애니메이션 재생
                 
-                if(!PlayerConstant.isLeftState)
-                {
-                    PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
-                    yield return new WaitForSeconds(0.5f);  // 대기
-                    breathSound.ToggleBreath(); // 숨 참음
-                    yield return new WaitForSeconds(2.5f); // 대기
-                    UIManager.Instance.SetGameOverScreen(name); 
-                    UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
-                    AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
-                    yield return new WaitForSeconds(2.5f); // 대기
-                    UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
-                    PlayerConstant.isParalysis = false; // 조작 가능하게 변경경
-                    PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
-                    animator.SetTrigger(near.Name); // near 애니메이션 재생
-                    if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                    yield return new WaitForSeconds(3f); // 대기 
-                    UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
-                    AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborN, this.transform.position);
-                    yield return new WaitForSeconds(1.5f); // 대기
-                    GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
-                    breathSound.ToggleBreath(); // 숨 참음 해제
-                    yield return new WaitForSeconds(1f); // 대기
-                    breathSound.ToggleBreath(); // 숨 참음 해제
-                    PlayerConstant.isRedemption = false; // 몸을 돌릴수 있게
-                    UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
-                    ChangeMarkovState(wait); // 기믹은 대기 상태로 변경경
-                    yield break;
-                }
-                // else if(PlayerConstant.isLeftState) 정면을 보는 상태가 되기 전까지 무한 대기
-                break;
+                // PauseTime();
+                var timer = 0f;
+                var sequence = DOTween.Sequence();
+                sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
+                    .OnUpdate(() =>
+                    {
+                        if (!PlayerConstant.isLeftState) sequence.Kill();
+                    })
+                    .OnComplete(() =>
+                    {
+                        GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
+                    });
                 
-            default:
-                break;
+                yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
+
+                yield return new WaitUntil(() => PlayerConstant.isMiddleState == true);
+                LookAtNeighbor(neighborHead, 0.5f); // TODO: 특정 오브젝트 대상
+
+                PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
+                yield return new WaitForSeconds(0.5f);  // 대기
+                
+                breathSound.ToggleBreath(); // 숨 참음
+                yield return new WaitForSeconds(2.5f); // 대기
+                
+                UIManager.Instance.SetGameOverScreen(name); 
+                UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
+                GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
+                yield return new WaitForSeconds(2.5f); // 대기
+                
+                UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
+                PlayerConstant.isParalysis = false; // 조작 가능하게 변경경
+                PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
+                animator.SetTrigger(near.Name); // near 애니메이션 재생
+                if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
+                LookAtNeighbor(neighborHead, 0.5f); // TODO: 특정 오브젝트 대상
+                yield return new WaitForSeconds(3f); // 대기 
+                
+                UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborN, this.transform.position);
+                yield return new WaitForSeconds(1.5f); // 대기
+                
+                GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
+                breathSound.ToggleBreath(); // 숨 참음 해제
+                yield return new WaitForSeconds(1f); // 대기
+                
+                breathSound.ToggleBreath(); // 숨 참음 해제
+                PlayerConstant.isRedemption = false; // 몸을 돌릴수 있게
+                UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
+                // ResumeTime();
+                ChangeMarkovState(wait); // 기믹은 대기 상태로 변경경
+                yield break;
         }
 
         var markovTransitions = chain[state];
@@ -257,9 +277,9 @@ public class NeighborGimmick : Gimmick
         Debug.Log("Next State: " + currState.Name);
     }
     
-    private void LookAtNeighbor()
+    private void LookAtNeighbor(GameObject lookAt, float duration)
     {
-        StartCoroutine(GameManager.Instance.player.LookAt(neighborHead));
+        StartCoroutine(GameManager.Instance.player.LookAt(lookAt, duration));
     }
 
     private void WindowOpenCloseSoundPlay()

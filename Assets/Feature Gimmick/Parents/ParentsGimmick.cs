@@ -237,7 +237,7 @@ public class ParentsGimmick : Gimmick
     
     private void LookAtDad()
     {
-        StartCoroutine(GameManager.Instance.player.LookAt(dadHead));
+        StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f));
     }
 
     private void PlayRandomChildAnimation(string stateName, int ranCount)

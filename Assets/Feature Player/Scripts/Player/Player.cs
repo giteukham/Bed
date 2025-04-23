@@ -325,7 +325,7 @@ public class Player : PlayerBase
         playerDirectionControl.ChangeDirectionStateNoSound(types);
     }
 
-    public IEnumerator LookAt(GameObject target, float duration = 1.0f)
+    public IEnumerator LookAt(GameObject target, float duration)
     {
         var direction = (target.transform.position - transform.position).normalized;
         var targetRotation = Quaternion.LookRotation(direction);
@@ -336,10 +336,12 @@ public class Player : PlayerBase
         horizontal = Mathf.Clamp(horizontal, povCamera.m_HorizontalAxis.m_MinValue, povCamera.m_HorizontalAxis.m_MaxValue);
         vertical = Mathf.Clamp(vertical, povCamera.m_VerticalAxis.m_MinValue, povCamera.m_VerticalAxis.m_MaxValue);
         
+        var fixedDuration = Mathf.Max(Mathf.Abs(horizontal) / duration, Mathf.Abs(vertical) / duration);
+        
         yield return new DOTweenCYInstruction.WaitForCompletion(
             DOTween.Sequence()
-                .Append(DOTween.To(() => povCamera.m_VerticalAxis.Value, x => povCamera.m_VerticalAxis.Value = x, vertical, Mathf.Abs(vertical) / duration * Time.deltaTime))
-                .Join(DOTween.To(() => povCamera.m_HorizontalAxis.Value, x => povCamera.m_HorizontalAxis.Value = x, horizontal, Mathf.Abs(horizontal) / duration * Time.deltaTime))
+                .Append(DOTween.To(() => povCamera.m_VerticalAxis.Value, x => povCamera.m_VerticalAxis.Value = x, vertical, fixedDuration * Time.deltaTime))
+                .Join(DOTween.To(() => povCamera.m_HorizontalAxis.Value, x => povCamera.m_HorizontalAxis.Value = x, horizontal, fixedDuration * Time.deltaTime))
         );
     }
 }
