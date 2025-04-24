@@ -48,10 +48,10 @@ public class BreathSound : MonoBehaviour
         breathSequence.OnUpdate(async () =>
         {
             // Player 움직이는 상태였다가 안 움직이는 상태되면 다시 breathSequence 재생
-            if (PlayerConstant.isMovingState || PlayerConstant.isPlayerStop)
+            if (PlayerConstant.isMovingState)
             {
                 breathSequence.Pause();
-                await UniTask.WaitUntil(() => !PlayerConstant.isMovingState && !PlayerConstant.isPlayerStop);
+                await UniTask.WaitUntil(() => !PlayerConstant.isMovingState);
                 breathSequence.Play();
             }
         })
@@ -69,11 +69,6 @@ public class BreathSound : MonoBehaviour
         
         playerHeadAnimator.SetFloat("Breath Progress", breathProgress);
         playerHeadAnimator.SetFloat("Is Not Breathing", stopProgress);
-        
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     ToggleBreath();
-        // }
     }
 
     public void InhaleSound()
@@ -88,7 +83,7 @@ public class BreathSound : MonoBehaviour
 
     public void ToggleBreath()
     {
-        if (PlayerConstant.isMovingState || PlayerConstant.isPlayerStop) return;
+        if (PlayerConstant.isMovingState) return;
         
         if (breathSequence.IsPlaying())
         {
