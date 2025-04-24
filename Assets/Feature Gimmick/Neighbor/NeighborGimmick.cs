@@ -213,7 +213,7 @@ public class NeighborGimmick : Gimmick
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (!PlayerConstant.isLeftState) sequence.Kill();
+                        if (PlayerConstant.isMiddleState) sequence.Kill();
                     })
                     .OnComplete(() =>
                     {
@@ -222,8 +222,8 @@ public class NeighborGimmick : Gimmick
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => PlayerConstant.isMiddleState == true);
-                LookAtNeighbor(neighborHead, 0.5f); // TODO: 특정 오브젝트 대상
+                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.5f)); // TODO: 특정 오브젝트 대상
 
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
                 yield return new WaitForSeconds(0.5f);  // 대기
@@ -242,7 +242,7 @@ public class NeighborGimmick : Gimmick
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
                 animator.SetTrigger(near.Name); // near 애니메이션 재생
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                LookAtNeighbor(neighborHead, 0.5f); // TODO: 특정 오브젝트 대상
+                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.5f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
                 
                 UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
@@ -275,11 +275,6 @@ public class NeighborGimmick : Gimmick
         }
         
         Debug.Log("Next State: " + currState.Name);
-    }
-    
-    private void LookAtNeighbor(GameObject lookAt, float duration)
-    {
-        StartCoroutine(GameManager.Instance.player.LookAt(lookAt, duration));
     }
 
     private void WindowOpenCloseSoundPlay()
