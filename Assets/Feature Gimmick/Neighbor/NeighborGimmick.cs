@@ -177,31 +177,28 @@ public class NeighborGimmick : Gimmick
         switch (state)
         {
             case var _ when state.Equals(wait):
-            case var _ when state.Equals(watch):
-            case var _ when state.Equals(cautious):
-            case var _ when state.Equals(danger):
-                PlayAnimationWithoutStateDuplication(state);
-                break;
-                
-            case var _ when state.Equals(wait):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
+                PlayAnimationWithoutDuplication(state.Name);
                 Deactivate();
                 break;
 
             case var _ when state.Equals(watch):
                 if(!houseLight.activeSelf)houseLight.SetActive(true);
                 if(hand.activeSelf)       hand.SetActive(false);
+                PlayAnimationWithoutDuplication(state.Name);
                 break;
 
             case var _ when state.Equals(cautious):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
+                PlayAnimationWithoutDuplication(state.Name);
                 break;
 
             case var _ when state.Equals(danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
+                PlayAnimationWithoutDuplication(state.Name);
                 break;
 
             case var _ when state.Equals(near):
@@ -209,7 +206,7 @@ public class NeighborGimmick : Gimmick
                 if(!hand.activeSelf)      hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                PlayAnimationWithoutStateDuplication(danger);
+                PlayAnimationWithoutDuplication(danger.Name);
                 
                 TimeManager.Instance.isGameOver = true;
                 var timer = 0f;
@@ -244,7 +241,7 @@ public class NeighborGimmick : Gimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
-                PlayAnimationWithoutStateDuplication(near);
+                PlayAnimationWithoutDuplication(near.Name);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 
@@ -281,12 +278,12 @@ public class NeighborGimmick : Gimmick
         }
     }
 
-    private void PlayAnimationWithoutStateDuplication(MarkovState state)
+    private void PlayAnimationWithoutDuplication(string animName)
     {
-        // 현 상태가 전 상태랑 같지 않을 때만 애니메이션 재생
-        if (!currState.Equals(state))
+        // 현 애니메이션이 전 애니메이션이랑 같지 않을 때만 애니메이션 재생
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(animName))
         {
-            animator.SetTrigger(state.Name);
+            animator.SetTrigger(animName);
         }
     }
 

@@ -169,7 +169,7 @@ public class ParentsGimmick : Gimmick
         {
             case var _ when state.Equals(wait):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutStateDuplication(wait);
+                PlayAnimationWithoutDuplication(wait.Name);
                 Deactivate();
                 break;
             case var _ when state.Equals(watch):
@@ -178,13 +178,13 @@ public class ParentsGimmick : Gimmick
                 break;
             case var _ when state.Equals(danger):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutStateDuplication(danger);
+                PlayAnimationWithoutDuplication(danger.Name);
                 break;
             case var _ when state.Equals(near):
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                PlayAnimationWithoutStateDuplication(danger);
+                PlayAnimationWithoutDuplication(danger.Name);
                 
                 // PauseTime();
                 var timer = 0f;
@@ -219,7 +219,7 @@ public class ParentsGimmick : Gimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
-                PlayAnimationWithoutStateDuplication(near);
+                PlayAnimationWithoutDuplication(near.Name);
                 if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
@@ -255,12 +255,12 @@ public class ParentsGimmick : Gimmick
         Debug.Log("Next State: " + currState.Name + " Active Count : " + currState.ActiveCount);
     }
     
-    private void PlayAnimationWithoutStateDuplication(MarkovState state)
+    private void PlayAnimationWithoutDuplication(string animName)
     {
-        // 현 상태가 전 상태랑 같지 않을 때만 애니메이션 재생
-        if (!currState.Equals(state))
+        // 현 애니메이션이 전 애니메이션이랑 같지 않을 때만 애니메이션 재생
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(animName))
         {
-            animator.SetTrigger(state.Name);
+            animator.SetTrigger(animName);
         }
     }
 
