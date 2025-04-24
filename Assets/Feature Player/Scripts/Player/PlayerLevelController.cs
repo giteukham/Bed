@@ -134,7 +134,7 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
         yield return new WaitForSeconds(headMove_MonitorLatency);
         while(true)
         {
-            if (PlayerConstant.headMoveSpeed > 8) 
+            if (PlayerConstant.headMoveSpeed > 7) 
             { 
                 OnNoiseChanged.Invoke(5);
                 yield return new WaitForSeconds(headMove_MonitorLatency);
