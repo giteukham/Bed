@@ -165,12 +165,11 @@ public class ParentsGimmick : Gimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
-        animator.Play(state.Name);
-
         switch (state)
         {
             case var _ when state.Equals(wait):
                 if (hand.activeSelf) hand.SetActive(false);
+                PlayAnimationWithoutStateDuplication(wait);
                 Deactivate();
                 break;
             case var _ when state.Equals(watch):
@@ -179,12 +178,13 @@ public class ParentsGimmick : Gimmick
                 break;
             case var _ when state.Equals(danger):
                 if (hand.activeSelf) hand.SetActive(false);
+                PlayAnimationWithoutStateDuplication(danger);
                 break;
             case var _ when state.Equals(near):
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                animator.SetTrigger(danger.Name);
+                PlayAnimationWithoutStateDuplication(danger);
                 
                 // PauseTime();
                 var timer = 0f;
@@ -201,7 +201,7 @@ public class ParentsGimmick : Gimmick
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => !PlayerConstant.isRightState);
+                yield return new WaitUntil(() => (PlayerConstant.isMiddleState));
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
                 
                 PlayerConstant.isParalysis = true;
@@ -219,7 +219,7 @@ public class ParentsGimmick : Gimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
-                animator.SetTrigger(near.Name); // near 애니메이션 재생
+                PlayAnimationWithoutStateDuplication(near);
                 if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
@@ -253,6 +253,15 @@ public class ParentsGimmick : Gimmick
         }
         
         Debug.Log("Next State: " + currState.Name + " Active Count : " + currState.ActiveCount);
+    }
+    
+    private void PlayAnimationWithoutStateDuplication(MarkovState state)
+    {
+        // 현 상태가 전 상태랑 같지 않을 때만 애니메이션 재생
+        if (!currState.Equals(state))
+        {
+            animator.SetTrigger(state.Name);
+        }
     }
 
     private void PlayRandomChildAnimation(string stateName, int ranCount)

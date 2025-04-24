@@ -336,12 +336,11 @@ public class Player : PlayerBase
         horizontal = Mathf.Clamp(horizontal, povCamera.m_HorizontalAxis.m_MinValue, povCamera.m_HorizontalAxis.m_MaxValue);
         vertical = Mathf.Clamp(vertical, povCamera.m_VerticalAxis.m_MinValue, povCamera.m_VerticalAxis.m_MaxValue);
         
-        var fixedDuration = Mathf.Max(Mathf.Abs(horizontal) / duration, Mathf.Abs(vertical) / duration);
         
         yield return new DOTweenCYInstruction.WaitForCompletion(
             DOTween.Sequence()
-                .Append(DOTween.To(() => povCamera.m_VerticalAxis.Value, x => povCamera.m_VerticalAxis.Value = x, vertical, fixedDuration * Time.deltaTime))
-                .Join(DOTween.To(() => povCamera.m_HorizontalAxis.Value, x => povCamera.m_HorizontalAxis.Value = x, horizontal, fixedDuration * Time.deltaTime))
+                .Append(DOTween.To(() => povCamera.m_VerticalAxis.Value, x => povCamera.m_VerticalAxis.Value = x, vertical, duration))
+                .Join(DOTween.To(() => povCamera.m_HorizontalAxis.Value, x => povCamera.m_HorizontalAxis.Value = x, horizontal, duration))
         );
     }
 }

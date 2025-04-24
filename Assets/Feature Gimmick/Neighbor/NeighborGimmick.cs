@@ -7,6 +7,7 @@ using UnityEngine;
 using AbstractGimmick;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using UnityEngine.Playables;
 using Random = UnityEngine.Random;
 
 public class NeighborGimmick : Gimmick
@@ -176,28 +177,31 @@ public class NeighborGimmick : Gimmick
         switch (state)
         {
             case var _ when state.Equals(wait):
+            case var _ when state.Equals(watch):
+            case var _ when state.Equals(cautious):
+            case var _ when state.Equals(danger):
+                PlayAnimationWithoutStateDuplication(state);
+                break;
+                
+            case var _ when state.Equals(wait):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.SetTrigger(wait.Name);
                 Deactivate();
                 break;
 
             case var _ when state.Equals(watch):
                 if(!houseLight.activeSelf)houseLight.SetActive(true);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.SetTrigger(watch.Name);
                 break;
 
             case var _ when state.Equals(cautious):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.SetTrigger(cautious.Name);
                 break;
 
             case var _ when state.Equals(danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
-                animator.SetTrigger(danger.Name);
                 break;
 
             case var _ when state.Equals(near):
@@ -205,7 +209,7 @@ public class NeighborGimmick : Gimmick
                 if(!hand.activeSelf)      hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                animator.SetTrigger(danger.Name);     // danger 애니메이션 재생
+                PlayAnimationWithoutStateDuplication(danger);
                 
                 TimeManager.Instance.isGameOver = true;
                 var timer = 0f;
@@ -213,7 +217,7 @@ public class NeighborGimmick : Gimmick
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (!PlayerConstant.isLeftState) sequence.Kill();
+                        if (PlayerConstant.isMiddleState) sequence.Kill();
                     })
                     .OnComplete(() =>
                     {
@@ -222,7 +226,7 @@ public class NeighborGimmick : Gimmick
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => !PlayerConstant.isLeftState);
+                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
 
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
@@ -240,7 +244,7 @@ public class NeighborGimmick : Gimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
-                animator.SetTrigger(near.Name); // near 애니메이션 재생
+                PlayAnimationWithoutStateDuplication(near);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 
@@ -275,8 +279,15 @@ public class NeighborGimmick : Gimmick
             currState = chain.TransitionNextState(currState);
             Debug.Log("Next State: X");
         }
-        
-        
+    }
+
+    private void PlayAnimationWithoutStateDuplication(MarkovState state)
+    {
+        // 현 상태가 전 상태랑 같지 않을 때만 애니메이션 재생
+        if (!currState.Equals(state))
+        {
+            animator.SetTrigger(state.Name);
+        }
     }
 
     private void WindowOpenCloseSoundPlay()
