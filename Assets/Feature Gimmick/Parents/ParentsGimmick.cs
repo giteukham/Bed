@@ -26,10 +26,6 @@ public class ParentsGimmick : Gimmick
     public GameObject dad;
     public GameObject dadHead;
     private Animator animator;
-
-    [Tooltip("다음 상태로 전환하는데 걸리는 시간")]
-    [SerializeField]
-    private float nextStateDelay = 2f;
     
     private int moveChance = 0;                     // 움직일 확률
     
@@ -185,7 +181,7 @@ public class ParentsGimmick : Gimmick
                 if (hand.activeSelf) hand.SetActive(false);
                 break;
             case var _ when state.Equals(near):
-                if (!hand.activeSelf) hand.SetActive(true);
+                if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
                 animator.SetTrigger(danger.Name);
@@ -205,7 +201,7 @@ public class ParentsGimmick : Gimmick
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
                 
                 PlayerConstant.isParalysis = true;
@@ -216,7 +212,7 @@ public class ParentsGimmick : Gimmick
                 
                 UIManager.Instance.SetGameOverScreen(name);
                 UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
-                AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 yield return new WaitForSeconds(2.5f); // 대기
                 
@@ -229,7 +225,7 @@ public class ParentsGimmick : Gimmick
                 yield return new WaitForSeconds(3f); // 대기 
                 
                 UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
-                AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborN, this.transform.position);
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsN, this.transform.position);
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
@@ -246,7 +242,6 @@ public class ParentsGimmick : Gimmick
         var markovTransitions = chain[state];
 
         yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
-        yield return new WaitForSeconds(nextStateDelay);
         
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {

@@ -15,7 +15,7 @@ public class TimeManager : MonoSingleton<TimeManager>
     public static int playTimeToMin = 0;  // 게임 시간 기준 누적 분
     private float realTimeCounter; // 실제로 흐르는 시간
     private float gimmickPickTimeCounter; // 기믹 선택 시간
-    public bool isGameOver = false; // 게임 오버 상태태
+    public bool isGameOver = false; // 게임 오버 상태
     #endregion
 
     #region AlarmClock Related Variables
@@ -125,6 +125,11 @@ public class TimeManager : MonoSingleton<TimeManager>
 
     private void UpdateClock() // 시계 갱신
     {
+        if (isGameOver) 
+        {
+            timeText.text = $"{31:00}:{6: 0}";
+            return;
+        }
         minutes = playTimeToMin % 60;
         isAM = playTimeToMin >= 60;
         if(isAM)
