@@ -90,7 +90,7 @@ public class TimeManager : MonoSingleton<TimeManager>
         if (realTimeCounter >= timeInterval)
         {
             playTimeToMin ++; // 게임 시간 1분 증가
-            GimmickManager.Instance.RedefineProbability(); // 기믹 확률 재정의
+            if (!GameManager.Instance.isDemo) GimmickManager.Instance.RedefineProbability(); // 기믹 확률 재정의
             realTimeCounter = 0;
             SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmm"));
         }
@@ -115,6 +115,8 @@ public class TimeManager : MonoSingleton<TimeManager>
             cycleInterval = timeInterval * 6f;
         }
 
+        if (GameManager.Instance.isDemo) return;
+        
         // 사이클 간격마다 기믹 뽑기
         if (gimmickPickTimeCounter >= cycleInterval)  
         {

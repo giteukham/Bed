@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using AbstractGimmick;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -79,6 +81,9 @@ public class GameManager : MonoSingleton<GameManager>
     private bool isTutorialEnable;
     public bool tutorialTestEnable;
 
+    // 데모 씬 전용. 데모 씬은 반드시 이름이 Demo여야 함.
+    public bool isDemo = false;
+
     private float lastLeftClickTime = -1f;
     private float lastRightClickTime = -1f;
 
@@ -102,6 +107,8 @@ public class GameManager : MonoSingleton<GameManager>
     {
         motherAnimator = dad.GetComponent<Animator>();
         //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
+
+        if (SceneManager.GetActiveScene().name.Equals("Demo")) isDemo = true;
 
         //예전 마지막 플레이 시간 가져옴
         DateTime ago = DateTime.ParseExact(SaveManager.Instance.LoadLastPlayedTime(), "yyyyMMddHHmm", CultureInfo.InvariantCulture);
@@ -137,8 +144,6 @@ public class GameManager : MonoSingleton<GameManager>
             if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
         #endif
     }
-
-    
 
     private void Update()
     {
@@ -259,6 +264,7 @@ public class GameManager : MonoSingleton<GameManager>
         timeManager.gameObject.SetActive(true);
         PlayerLevelController.Instance.OnGameStart();
         PlayerConstant.ResetAllStats();
+        if (isDemo) StartCoroutine(DemoCoroutine());
     }
     
     private void GameOver()
@@ -277,6 +283,45 @@ public class GameManager : MonoSingleton<GameManager>
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
         yield return new WaitForSeconds(1f);
         SetState(GameState.Preparation);
+    }
+
+    IEnumerator DemoCoroutine()
+    {
+        float parentsGimmickScore = 0f, neighborGimmickScore = 0f;
+        Vector2 noiseLevelScore = Vector2.zero, // x는 60미만, y는 60이상
+            noiseStageScore = Vector2.zero;     // x는 3미만, y는 3이상
+        var timer = 0f;
+
+        yield return new WaitWhile(() =>
+        {
+            if (timer >= 20f) return false;
+            
+            timer += Time.deltaTime;
+            
+            if (PlayerConstant.noiseLevel < 60f) noiseLevelScore.x += Time.deltaTime;
+            else if (PlayerConstant.noiseLevel >= 60f) noiseLevelScore.y += Time.deltaTime;
+                
+            
+            if (PlayerConstant.noiseStage < 3f) noiseStageScore.x += Time.deltaTime;
+            else if (PlayerConstant.noiseStage >= 3f) noiseStageScore.y += Time.deltaTime;
+            
+            return true;
+        });
+        
+        neighborGimmickScore = noiseLevelScore.x + noiseStageScore.x + PlayerConstant.LeftStateCAT;
+        parentsGimmickScore = noiseLevelScore.y + noiseStageScore.y + PlayerConstant.RightStateCAT;
+        
+         var currGimmick = GimmickManager.Instance.ForceActivateGimmick(parentsGimmickScore > neighborGimmickScore ? "Parents" : "Neighbor");
+
+        if (currGimmick is not IMarkovGimmick releaseGimmick) yield break;
+        
+        for (int i = 0; i < 6; i++)
+        {
+            releaseGimmick.ChangeRandomMarkovState();
+            Debug.Log($"Markov State: {releaseGimmick.CurrState.Name}");
+            yield return new WaitForSeconds(5f);    // TODO: 30초로
+        }
+        releaseGimmick.ChangeMarkovState(releaseGimmick.Near);
     }
     
     public bool IsBothMouseClicked()

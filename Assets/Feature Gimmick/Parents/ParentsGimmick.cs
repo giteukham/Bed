@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ParentsGimmick : Gimmick
+public class ParentsGimmick : Gimmick, IMarkovGimmick
 {
     #region Override Variables
     public string GimmickName { get; protected set; } = "Parents";
@@ -36,12 +36,14 @@ public class ParentsGimmick : Gimmick
     private int stateTransitionProbability = 35;    // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
     
     private MarkovChain chain = new MarkovChain();
-    private MarkovState currState;
+    public MarkovState CurrState { get; set; } = null;
     
-    private MarkovState wait        = new MarkovState("Wait");
-    private MarkovState watch       = new MarkovState("Watch");
-    private MarkovState danger      = new MarkovState("Danger");
-    private MarkovState near        = new MarkovState("Near");
+    private List<MarkovState> statesWithoutNear = new List<MarkovState>();
+    public MarkovState Wait { get; set; }       = new MarkovState("Wait");
+    public MarkovState Watch { get; set; }      = new MarkovState("Watch");
+    public MarkovState Cautious { get; set; }   = null;
+    public MarkovState Danger { get; set; }     = new MarkovState("Danger");
+    public MarkovState Near { get; set; }       = new MarkovState("Near");
 
     private int conditionCountToNear = 3;
     [SerializeField] private BreathSound breathSound;
@@ -67,63 +69,67 @@ public class ParentsGimmick : Gimmick
 
         if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
         {
-            ChangeMarkovState(wait);
+            ChangeMarkovState(Wait);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
         {
-            ChangeMarkovState(watch);
+            ChangeMarkovState(Watch);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
         {
-            ChangeMarkovState(danger);
+            ChangeMarkovState(Danger);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
         {
-            ChangeMarkovState(near);
+            ChangeMarkovState(Near);
         }
     }
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-
-        wait.OnStateAction += StartMarkovStateCoroutine;
-        watch.OnStateAction += StartMarkovStateCoroutine;
-        danger.OnStateAction += StartMarkovStateCoroutine;
-        near.OnStateAction += StartMarkovStateCoroutine;
         
-        chain.InsertTransition(wait,
+        statesWithoutNear.Add(Wait);
+        statesWithoutNear.Add(Watch);
+        statesWithoutNear.Add(Danger);
+
+        Wait.OnStateAction += StartMarkovStateCoroutine;
+        Watch.OnStateAction += StartMarkovStateCoroutine;
+        Danger.OnStateAction += StartMarkovStateCoroutine;
+        Near.OnStateAction += StartMarkovStateCoroutine;
+        
+        chain.InsertTransition(Wait,
             new List<MarkovTransition>()
             {
                 // TODO: 확률 조정
-                new MarkovTransition { Target = watch, ThresholdRange   = new Vector2(0, 10)},
-                new MarkovTransition { Target = danger, ThresholdRange  = new Vector2(11, 20)},
-                new MarkovTransition { Target = near, ThresholdRange    = new Vector2(21, 30)},
+                new MarkovTransition { Target = Watch, ThresholdRange   = new Vector2(0, 10)},
+                new MarkovTransition { Target = Danger, ThresholdRange  = new Vector2(11, 20)},
+                new MarkovTransition { Target = Near, ThresholdRange    = new Vector2(21, 30)},
             });
         
-        chain.InsertTransition(watch,
+        chain.InsertTransition(Watch,
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, ThresholdRange    = new Vector2(0, 10)},
-                new MarkovTransition { Target = danger, ThresholdRange  = new Vector2(11, 20)},
-                new MarkovTransition { Target = near, ThresholdRange    = new Vector2(21, 30)},
+                new MarkovTransition { Target = Wait, ThresholdRange    = new Vector2(0, 10)},
+                new MarkovTransition { Target = Danger, ThresholdRange  = new Vector2(11, 20)},
+                new MarkovTransition { Target = Near, ThresholdRange    = new Vector2(21, 30)},
             });
         
-        chain.InsertTransition(danger,
+        chain.InsertTransition(Danger,
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, ThresholdRange    = new Vector2(0, 10)},
-                new MarkovTransition { Target = watch, ThresholdRange   = new Vector2(11, 20)},
-                new MarkovTransition { Target = near, ThresholdRange    = new Vector2(21, 30)},
+                new MarkovTransition { Target = Wait, ThresholdRange    = new Vector2(0, 10)},
+                new MarkovTransition { Target = Watch, ThresholdRange   = new Vector2(11, 20)},
+                new MarkovTransition { Target = Near, ThresholdRange    = new Vector2(21, 30)},
             });
         
-        ChangeMarkovState(wait);
+        ChangeMarkovState(Wait);
     }
 
     public override void Activate()
     {
         base.Activate();
-        ChangeMarkovState(watch);
+        ChangeMarkovState(Watch);
     }
 
     public override void Deactivate()
@@ -135,7 +141,7 @@ public class ParentsGimmick : Gimmick
     {
         moveProbability = PlayerConstant.noiseStage * 10;
         probability = 0 < moveProbability ? 100 : 0;
-        if (Mathf.Approximately(probability, 0) && !currState.Equals(wait)) ChangeMarkovState(wait);
+        if (Mathf.Approximately(probability, 0) && !CurrState.Equals(Wait)) ChangeMarkovState(Wait);
 
         //if (currState.Equals(watch) && 특정 행동) ChangeMarkovState(near); 
         
@@ -147,13 +153,19 @@ public class ParentsGimmick : Gimmick
     public override void Initialize()
     {
         if (hand.activeSelf) hand.SetActive(false);
-        if (!currState.Equals(wait)) ChangeMarkovState(wait);
+        if (!CurrState.Equals(Wait)) ChangeMarkovState(Wait);
+    }
+
+    public void ChangeRandomMarkovState()
+    {
+        var randomState = statesWithoutNear[Random.Range(0, statesWithoutNear.Count)];
+        ChangeMarkovState(randomState);
     }
     
-    private void ChangeMarkovState(MarkovState next)
+    public void ChangeMarkovState(MarkovState next)
     {
-        currState = next;
-        currState.Active();
+        CurrState = next;
+        CurrState.Active();
     }
     
     private void StartMarkovStateCoroutine(MarkovState state)
@@ -167,24 +179,24 @@ public class ParentsGimmick : Gimmick
     {
         switch (state)
         {
-            case var _ when state.Equals(wait):
+            case var _ when state.Equals(Wait):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutDuplication(wait.Name);
+                PlayAnimationWithoutDuplication(Wait.Name);
                 Deactivate();
                 break;
-            case var _ when state.Equals(watch):
+            case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayRandomChildAnimation(watch.Name, 4);
+                PlayRandomChildAnimation(Watch.Name, 4);
                 break;
-            case var _ when state.Equals(danger):
+            case var _ when state.Equals(Danger):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutDuplication(danger.Name);
+                PlayAnimationWithoutDuplication(Danger.Name);
                 break;
-            case var _ when state.Equals(near):
+            case var _ when state.Equals(Near):
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                PlayAnimationWithoutDuplication(danger.Name);
+                PlayAnimationWithoutDuplication(Danger.Name);
                 
                 // PauseTime();
                 var timer = 0f;
@@ -219,7 +231,7 @@ public class ParentsGimmick : Gimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
-                PlayAnimationWithoutDuplication(near.Name);
+                PlayAnimationWithoutDuplication(Near.Name);
                 if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
@@ -235,7 +247,7 @@ public class ParentsGimmick : Gimmick
                 PlayerConstant.isRedemption = false;
                 UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
                 
-                ChangeMarkovState(wait); // 기믹은 대기 상태로 변경경
+                ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경경
                 yield break;
         }
 
@@ -245,14 +257,14 @@ public class ParentsGimmick : Gimmick
         
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
-            currState = chain.TransitionNextState(currState, tmpDecision);
+            CurrState = chain.TransitionNextState(CurrState, tmpDecision);
         }
         else
         {
-            currState = chain.TransitionNextState(currState);
+            CurrState = chain.TransitionNextState(CurrState);
         }
         
-        Debug.Log("Next State: " + currState.Name + " Active Count : " + currState.ActiveCount);
+        Debug.Log("Next State: " + CurrState.Name + " Active Count : " + CurrState.ActiveCount);
     }
     
     private void PlayAnimationWithoutDuplication(string animName)

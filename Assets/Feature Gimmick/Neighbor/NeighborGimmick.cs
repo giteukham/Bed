@@ -10,7 +10,7 @@ using DG.Tweening;
 using UnityEngine.Playables;
 using Random = UnityEngine.Random;
 
-public class NeighborGimmick : Gimmick
+public class NeighborGimmick : Gimmick, IMarkovGimmick
 {
     #region Override Variables
     public string GimmickName { get; protected set; } = "Neighbor";
@@ -39,13 +39,14 @@ public class NeighborGimmick : Gimmick
     private int stateTransitionProbability = 35;    // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
     
     private MarkovChain chain = new MarkovChain();
-    private MarkovState currState;
-    
-    private MarkovState wait        = new MarkovState("Wait");
-    private MarkovState watch       = new MarkovState("Watch");
-    private MarkovState cautious    = new MarkovState("Cautious");
-    private MarkovState danger      = new MarkovState("Danger");
-    private MarkovState near        = new MarkovState("Near");
+    public MarkovState CurrState { get; set; } = null;
+
+    private List<MarkovState> statesWithoutNear = new List<MarkovState>();
+    public MarkovState Wait { get; set; }       = new MarkovState("Wait");
+    public MarkovState Watch { get; set; }      = new MarkovState("Watch");
+    public MarkovState Cautious { get; set; }   = new MarkovState("Cautious");
+    public MarkovState Danger { get; set; }     = new MarkovState("Danger");
+    public MarkovState Near { get; set; }       = new MarkovState("Near");
     
     private Coroutine markovCoroutine;
     [SerializeField] private BreathSound breathSound;
@@ -69,19 +70,19 @@ public class NeighborGimmick : Gimmick
         
         if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
         {
-            ChangeMarkovState(wait);
+            ChangeMarkovState(Wait);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
         {
-            ChangeMarkovState(watch);
+            ChangeMarkovState(Watch);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
         {
-            ChangeMarkovState(danger);
+            ChangeMarkovState(Danger);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
         {
-            ChangeMarkovState(near);
+            ChangeMarkovState(Near);
         }
     }
 
@@ -89,59 +90,64 @@ public class NeighborGimmick : Gimmick
     {
         animator = GetComponent<Animator>();
 
-        wait.OnStateAction += ActiveStateCoroutine;
-        watch.OnStateAction += ActiveStateCoroutine;
-        cautious.OnStateAction += ActiveStateCoroutine;
-        danger.OnStateAction += ActiveStateCoroutine;
-        near.OnStateAction += ActiveStateCoroutine;
+        statesWithoutNear.Add(Wait);
+        statesWithoutNear.Add(Watch);
+        statesWithoutNear.Add(Cautious);
+        statesWithoutNear.Add(Danger);
+        
+        Wait.OnStateAction += ActiveStateCoroutine;
+        Watch.OnStateAction += ActiveStateCoroutine;
+        Cautious.OnStateAction += ActiveStateCoroutine;
+        Danger.OnStateAction += ActiveStateCoroutine;
+        Near.OnStateAction += ActiveStateCoroutine;
 
-        chain.InsertTransition(wait,
+        chain.InsertTransition(Wait,
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = watch, ThresholdRange       = new Vector2(0, 30) },
-                new MarkovTransition { Target = cautious, ThresholdRange    = new Vector2 (31, 60) },
-                new MarkovTransition { Target = danger, ThresholdRange      = new Vector2 (61, 80) },
-                new MarkovTransition { Target = near, ThresholdRange        = new Vector2 (81, 100) }
+                new MarkovTransition { Target = Watch, ThresholdRange       = new Vector2(0, 30) },
+                new MarkovTransition { Target = Cautious, ThresholdRange    = new Vector2 (31, 60) },
+                new MarkovTransition { Target = Danger, ThresholdRange      = new Vector2 (61, 80) },
+                new MarkovTransition { Target = Near, ThresholdRange        = new Vector2 (81, 100) }
             }
         );
         
-        chain.InsertTransition(watch, 
+        chain.InsertTransition(Watch, 
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, ThresholdRange        = new Vector2(0, 10) },
-                new MarkovTransition { Target = cautious, ThresholdRange    = new Vector2(11, 45) },
-                new MarkovTransition { Target = danger, ThresholdRange      = new Vector2(46, 70) },
-                new MarkovTransition { Target = near, ThresholdRange        = new Vector2(71, 100) }
+                new MarkovTransition { Target = Wait, ThresholdRange        = new Vector2(0, 10) },
+                new MarkovTransition { Target = Cautious, ThresholdRange    = new Vector2(11, 45) },
+                new MarkovTransition { Target = Danger, ThresholdRange      = new Vector2(46, 70) },
+                new MarkovTransition { Target = Near, ThresholdRange        = new Vector2(71, 100) }
             }
         );
         
-        chain.InsertTransition(cautious, 
+        chain.InsertTransition(Cautious, 
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, ThresholdRange        = new Vector2(0, 10) },
-                new MarkovTransition { Target = watch, ThresholdRange       = new Vector2(11, 15) },
-                new MarkovTransition { Target = danger, ThresholdRange      = new Vector2(16, 40) },
-                new MarkovTransition { Target = near, ThresholdRange        = new Vector2(41, 100) }
+                new MarkovTransition { Target = Wait, ThresholdRange        = new Vector2(0, 10) },
+                new MarkovTransition { Target = Watch, ThresholdRange       = new Vector2(11, 15) },
+                new MarkovTransition { Target = Danger, ThresholdRange      = new Vector2(16, 40) },
+                new MarkovTransition { Target = Near, ThresholdRange        = new Vector2(41, 100) }
             }
         );
         
-        chain.InsertTransition(danger, 
+        chain.InsertTransition(Danger, 
             new List<MarkovTransition>()
             {
-                new MarkovTransition { Target = wait, ThresholdRange        = new Vector2(0, 5) },
-                new MarkovTransition { Target = watch, ThresholdRange       = new Vector2(6, 10) },
-                new MarkovTransition { Target = cautious, ThresholdRange    = new Vector2(11, 15) },
-                new MarkovTransition { Target = near, ThresholdRange        = new Vector2(16, 100) }
+                new MarkovTransition { Target = Wait, ThresholdRange        = new Vector2(0, 5) },
+                new MarkovTransition { Target = Watch, ThresholdRange       = new Vector2(6, 10) },
+                new MarkovTransition { Target = Cautious, ThresholdRange    = new Vector2(11, 15) },
+                new MarkovTransition { Target = Near, ThresholdRange        = new Vector2(16, 100) }
             }
         );
 
-        ChangeMarkovState(wait);
+        ChangeMarkovState(Wait);
     }
 
     public override void Activate()
     {
         base.Activate();
-        ChangeMarkovState(watch);
+        ChangeMarkovState(Watch);
     }
 
     public override void Deactivate()
@@ -153,16 +159,21 @@ public class NeighborGimmick : Gimmick
     {
         moveProbability = PlayerConstant.noiseStage * -10;
         probability = 0 < moveProbability ? 100 : 0;
-        if (Mathf.Approximately(probability, 0) && !currState.Equals(wait)) ChangeMarkovState(wait);
+        if (Mathf.Approximately(probability, 0) && !CurrState.Equals(Wait)) ChangeMarkovState(Wait);
         // 임시 값 반영
         tmpDecision = tmpValue;
         tmpValue = 0;
     }
 
-    private void ChangeMarkovState(MarkovState next)
+    public void ChangeRandomMarkovState()
     {
-        currState = next;
-        currState.Active();
+        ChangeMarkovState(statesWithoutNear[Random.Range(0, statesWithoutNear.Count)]);
+    }
+
+    public void ChangeMarkovState(MarkovState next)
+    {
+        CurrState = next;
+        CurrState.Active();
     }
     
     private void ActiveStateCoroutine(MarkovState state)
@@ -176,37 +187,37 @@ public class NeighborGimmick : Gimmick
     {
         switch (state)
         {
-            case var _ when state.Equals(wait):
+            case var _ when state.Equals(Wait):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
                 Deactivate();
                 break;
 
-            case var _ when state.Equals(watch):
+            case var _ when state.Equals(Watch):
                 if(!houseLight.activeSelf)houseLight.SetActive(true);
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
                 break;
 
-            case var _ when state.Equals(cautious):
+            case var _ when state.Equals(Cautious):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
                 break;
 
-            case var _ when state.Equals(danger):
+            case var _ when state.Equals(Danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
                 break;
 
-            case var _ when state.Equals(near):
+            case var _ when state.Equals(Near):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(!hand.activeSelf)      hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                PlayAnimationWithoutDuplication(danger.Name);
+                PlayAnimationWithoutDuplication(Danger.Name);
                 
                 TimeManager.Instance.isGameOver = true;
                 var timer = 0f;
@@ -241,7 +252,7 @@ public class NeighborGimmick : Gimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
-                PlayAnimationWithoutDuplication(near.Name);
+                PlayAnimationWithoutDuplication(Near.Name);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 
@@ -255,7 +266,7 @@ public class NeighborGimmick : Gimmick
 
                 yield return new WaitForSeconds(1f); // 대기
                 breathSound.ToggleBreath(); // 숨 참음 해제
-                ChangeMarkovState(wait); // 기믹은 대기 상태로 변경
+                ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경
                 PlayerConstant.isRedemption = false; // 몸 돌릴수 있게
                 TimeManager.Instance.isGameOver = false;
                 UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
@@ -268,12 +279,12 @@ public class NeighborGimmick : Gimmick
         
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
-            currState = chain.TransitionNextState(currState, tmpDecision);
-            Debug.Log("Next State: " + currState.Name);
+            CurrState = chain.TransitionNextState(CurrState, tmpDecision);
+            Debug.Log("Next State: " + CurrState.Name);
         }
         else
         {
-            currState = chain.TransitionNextState(currState);
+            CurrState = chain.TransitionNextState(CurrState);
             Debug.Log("Next State: X");
         }
     }
@@ -308,6 +319,6 @@ public class NeighborGimmick : Gimmick
     {
         if(houseLight.activeSelf) houseLight.SetActive(false);
         if(hand.activeSelf)       hand.SetActive(false);
-        if (!currState.Equals(wait)) ChangeMarkovState(wait);
+        if (!CurrState.Equals(Wait)) ChangeMarkovState(Wait);
     }
 }
