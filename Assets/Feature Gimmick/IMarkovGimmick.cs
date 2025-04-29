@@ -1,4 +1,22 @@
 
+using System;
+
+[Serializable]
+public struct MarkovGimmickData
+{
+    public enum MarkovGimmickType
+    {
+        Wait,
+        Watch,
+        Cautious,
+        Danger,
+        Near
+    }
+
+    public MarkovGimmickType type;
+    public float activeSecTime;
+}
+
 public interface IMarkovGimmick
 {
     public MarkovState CurrState { get; set; }
@@ -11,4 +29,6 @@ public interface IMarkovGimmick
     
     void ChangeRandomMarkovState();
     void ChangeMarkovState(MarkovState next);
+
+    void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type);
 }

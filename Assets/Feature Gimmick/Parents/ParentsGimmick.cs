@@ -168,6 +168,25 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         CurrState.Active();
     }
     
+    public void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
+    {
+        switch (type)
+        {
+            case MarkovGimmickData.MarkovGimmickType.Wait:
+                ChangeMarkovState(Wait);
+                break;
+            case MarkovGimmickData.MarkovGimmickType.Watch:
+                ChangeMarkovState(Watch);
+                break;
+            case MarkovGimmickData.MarkovGimmickType.Danger:
+                ChangeMarkovState(Danger);
+                break;
+            default:
+                Debug.Log("Invalid MarkovGimmickData.MarkovGimmickType type");
+                break;
+        }
+    }
+    
     private void StartMarkovStateCoroutine(MarkovState state)
     {
         if (markovCoroutine != null) StopCoroutine(markovCoroutine);

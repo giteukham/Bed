@@ -32295,6 +32295,14 @@ MonoBehaviour:
   door: {fileID: 984148487}
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
+  isDemo: 1
+  demoGimmicks:
+  - type: 2
+    activeSecTime: 10
+  - type: 3
+    activeSecTime: 20
+  - type: 1
+    activeSecTime: 30
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0

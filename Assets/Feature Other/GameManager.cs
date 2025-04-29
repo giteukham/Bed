@@ -5,8 +5,10 @@ using System.Globalization;
 using AbstractGimmick;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using VFolders.Libs;
 using Random = UnityEngine.Random;
 
 public enum GameState
@@ -80,15 +82,20 @@ public class GameManager : MonoSingleton<GameManager>
     private GameState currentState;
     private bool isTutorialEnable;
     public bool tutorialTestEnable;
-
-    // 데모 씬 전용. 데모 씬은 반드시 이름이 Demo여야 함.
-    public bool isDemo = false;
-
+    
     private float lastLeftClickTime = -1f;
     private float lastRightClickTime = -1f;
 
     [Tooltip("동시 클릭 허용 시간")]
     public float bothClickToleranceTime;
+    
+    [Header("데모")]
+    // 데모 씬 전용. 데모 씬은 반드시 이름이 Demo여야 함.
+    public bool isDemo = false;
+    
+    [SerializeField]
+    [Tooltip("2~5분 사이니까 180초가 최대. \n시간은 더해지는 게 아니라 따로")]
+    private List<MarkovGimmickData> demoGimmicks = new();
     
     private void OnValidate()
     // 값이 0이면 기본 값으로 설정
@@ -294,7 +301,7 @@ public class GameManager : MonoSingleton<GameManager>
 
         yield return new WaitWhile(() =>
         {
-            if (timer >= 20f) return false;
+            if (timer >= 10f) return false;         // 맨 처음 기믹 활성화 시간
             
             timer += Time.deltaTime;
             
@@ -314,12 +321,14 @@ public class GameManager : MonoSingleton<GameManager>
          var currGimmick = GimmickManager.Instance.ForceActivateGimmick(parentsGimmickScore > neighborGimmickScore ? "Parents" : "Neighbor");
 
         if (currGimmick is not IMarkovGimmick releaseGimmick) yield break;
-        
-        for (int i = 0; i < 6; i++)
+
+        var prevActiveTime = 0f;                               // 이전에 활성화된 상태 시간
+        for (int i = 0; i < demoGimmicks.Count; i++)
         {
-            releaseGimmick.ChangeRandomMarkovState();
+            releaseGimmick.ChangeMarkovState(demoGimmicks[i].type);
             Debug.Log($"Markov State: {releaseGimmick.CurrState.Name}");
-            yield return new WaitForSeconds(5f);    // TODO: 30초로
+            yield return new WaitForSeconds(demoGimmicks[i].activeSecTime - prevActiveTime);
+            prevActiveTime = demoGimmicks[i].activeSecTime;
         }
         releaseGimmick.ChangeMarkovState(releaseGimmick.Near);
     }
