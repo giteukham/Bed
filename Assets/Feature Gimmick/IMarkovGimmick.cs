@@ -14,12 +14,13 @@ public struct MarkovGimmickData
     }
 
     public MarkovGimmickType type;
-    public float activeSecTime;
+    public int activeSecTime;
 }
 
 public interface IMarkovGimmick
 {
     public MarkovState CurrState { get; set; }
+    public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
     
     public MarkovState Wait { get; set; }
     public MarkovState Watch { get; set; }

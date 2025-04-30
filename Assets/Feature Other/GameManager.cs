@@ -294,43 +294,102 @@ public class GameManager : MonoSingleton<GameManager>
 
     IEnumerator DemoCoroutine()
     {
-        float parentsGimmickScore = 0f, neighborGimmickScore = 0f;
-        Vector2 noiseLevelScore = Vector2.zero, // x는 60미만, y는 60이상
-            noiseStageScore = Vector2.zero;     // x는 3미만, y는 3이상
         var timer = 0f;
 
+        // foreach (var demoGimmick in demoGimmicks)
+        // {
+        //     if (demoGimmick.activeSecTime < 120)
+        //     {
+        //         Debug.LogWarning("최소 시간이 120초 보다 작음");
+        //         yield break;
+        //     }
+        // }
+
+        // 0분 부터 1분까지 TODO: 60으로
+        yield return new WaitForSeconds(5f);       
+
+        var idx = 0;
+        IMarkovGimmick markovGimmick = null;
+        Gimmick currGimmick = null;
+        
         yield return new WaitWhile(() =>
         {
-            if (timer >= 10f) return false;         // 맨 처음 기믹 활성화 시간
+            // 총 5분되면 Near TODO: 300으로
+            if (timer >= 30) return false;        
             
             timer += Time.deltaTime;
             
-            if (PlayerConstant.noiseLevel < 60f) noiseLevelScore.x += Time.deltaTime;
-            else if (PlayerConstant.noiseLevel >= 60f) noiseLevelScore.y += Time.deltaTime;
+            // 1분 ~ 4분 50초 사이 랜덤 기믹
+            // if (timer >= 60 && timer < 230)
+            // {
+            //     StartCoroutine(ActiveRandomGimmickWithInterval(60, 230));   
+            // }
+
+            // 2분이 되면 부모 또는 이웃 기믹 활성화 TODO: 120으로
+            if (timer >= 10 && !currGimmick)                    
+            {
+                if (PlayerConstant.isLeftState)
+                {
+                    currGimmick = GimmickManager.Instance.ForceActivateGimmick("Neighbor");
+                }
+                else if (PlayerConstant.isRightState || PlayerConstant.isEyeOpen == false)
+                {
+                    currGimmick = GimmickManager.Instance.ForceActivateGimmick("Parents");
+                }
+                else
+                {
+                    var ran = Random.Range(0, 1);
+                    var randomGimmick = ran == 0 ? "Neighbor" : "Parents";
+                    currGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick);
+                }
                 
-            
-            if (PlayerConstant.noiseStage < 3f) noiseStageScore.x += Time.deltaTime;
-            else if (PlayerConstant.noiseStage >= 3f) noiseStageScore.y += Time.deltaTime;
+                Debug.Log(currGimmick.name);
+            }
+
+            // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
+            if (markovGimmick?.CurrGimmickType != demoGimmicks[idx].type && demoGimmicks[idx].activeSecTime == (int) timer)
+            {
+                markovGimmick = currGimmick as IMarkovGimmick;
+
+                if (PlayerConstant.isLeftState || PlayerConstant.isRightState || !PlayerConstant.isEyeOpen)
+                {
+                    markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
+                }
+                else
+                {
+                    markovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
+                }
+                
+                Debug.Log("active : " + markovGimmick?.CurrGimmickType);
+                idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;
+            }
             
             return true;
         });
+        //StopCoroutine(ActiveRandomGimmickWithInterval(60, 230));
         
-        neighborGimmickScore = noiseLevelScore.x + noiseStageScore.x + PlayerConstant.LeftStateCAT;
-        parentsGimmickScore = noiseLevelScore.y + noiseStageScore.y + PlayerConstant.RightStateCAT;
-        
-         var currGimmick = GimmickManager.Instance.ForceActivateGimmick(parentsGimmickScore > neighborGimmickScore ? "Parents" : "Neighbor");
+        markovGimmick.ChangeMarkovState(markovGimmick.Near);
+        yield break;
 
-        if (currGimmick is not IMarkovGimmick releaseGimmick) yield break;
-
-        var prevActiveTime = 0f;                               // 이전에 활성화된 상태 시간
-        for (int i = 0; i < demoGimmicks.Count; i++)
+        IEnumerator ActiveRandomGimmickWithInterval(int startTime, int endTime)
         {
-            releaseGimmick.ChangeMarkovState(demoGimmicks[i].type);
-            Debug.Log($"Markov State: {releaseGimmick.CurrState.Name}");
-            yield return new WaitForSeconds(demoGimmicks[i].activeSecTime - prevActiveTime);
-            prevActiveTime = demoGimmicks[i].activeSecTime;
+            var timer = 0f;
+            var interval = endTime - startTime;
+            var activeRandomTime = Random.Range(0f, interval);
+
+            yield return new WaitWhile(() =>
+            {
+                if (timer >= interval) return false;
+                timer += Time.deltaTime;
+
+                if (timer >= activeRandomTime)
+                {
+                    GimmickManager.Instance.ActiveRandomGimmick();
+                    activeRandomTime = Random.Range(activeRandomTime, interval);
+                }
+                return true;
+            });
         }
-        releaseGimmick.ChangeMarkovState(releaseGimmick.Near);
     }
     
     public bool IsBothMouseClicked()

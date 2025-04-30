@@ -40,6 +40,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     
     private MarkovChain chain = new MarkovChain();
     public MarkovState CurrState { get; set; } = null;
+    public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
 
     private List<MarkovState> statesWithoutNear = new List<MarkovState>();
     public MarkovState Wait { get; set; }       = new MarkovState("Wait");
@@ -193,9 +194,10 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 ChangeMarkovState(Danger);
                 break;
             default:
-                Debug.Log("Invalid MarkovGimmickData.MarkovGimmickType type");
                 break;
         }
+
+        CurrGimmickType = type;
     }
     
     private void ActiveStateCoroutine(MarkovState state)
