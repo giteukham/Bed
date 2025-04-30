@@ -209,6 +209,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
+        Debug.Log(state.Name + " " + CurrState.Name);
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -296,11 +297,10 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
                 yield break;
         }
-
         var markovTransitions = chain[state];
-
+        Debug.Log(state.Name + " " + CurrState.Name);
         yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
-        
+        Debug.Log(state.Name + " " + CurrState.Name);
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
             CurrState = chain.TransitionNextState(CurrState, tmpDecision);
@@ -311,6 +311,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
             CurrState = chain.TransitionNextState(CurrState);
             Debug.Log("Next State: X");
         }
+        Debug.Log(state.Name + " " + CurrState.Name);
     }
 
     private void PlayAnimationWithoutDuplication(string animName)

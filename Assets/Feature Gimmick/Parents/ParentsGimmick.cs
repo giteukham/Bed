@@ -25,6 +25,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     public GameObject hand;
     public GameObject dad;
     public GameObject dadHead;
+    public GameObject momHead;
     private Animator animator;
     
     private int moveChance = 0;                     // 움직일 확률
@@ -196,7 +197,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     }
 
     private IEnumerator ActiveMarkovState(MarkovState state)
-    {
+    {   
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -206,6 +207,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 break;
             case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
+                yield return new WaitForSeconds(0.5f);
                 PlayRandomChildAnimation(Watch.Name, 4);
                 break;
             case var _ when state.Equals(Danger):
@@ -270,7 +272,6 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경경
                 yield break;
         }
-
         var markovTransitions = chain[state];
 
         yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);

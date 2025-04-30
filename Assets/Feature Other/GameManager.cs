@@ -25,6 +25,7 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField] private GameObject debugStatsText;
     [SerializeField] private GameObject debugTimeText;
     [SerializeField] private GameObject debugColiderImage;
+    [SerializeField] private GameObject debugGimmickText;
     #endregion
 
     #region Main Camera
@@ -35,6 +36,14 @@ public class GameManager : MonoSingleton<GameManager>
     #region Reference Components
     [Header("Reference Components")]
     public Player player;
+    #endregion
+
+    #region Reference Components for Debug
+    [Header("Reference Components for Debug")]
+    public GameObject parentsGimmick;
+    public GameObject neighborGimmick;
+    private IMarkovGimmick parentsGimmickScript;
+    private IMarkovGimmick neighborGimmickScript;
     #endregion
     
     #region Objects related Components
@@ -146,9 +155,15 @@ public class GameManager : MonoSingleton<GameManager>
         Cursor.lockState = CursorLockMode.Locked;
         
         #if UNITY_EDITOR
-            if (debugStatsText.activeSelf) debugStatsText.SetActive(false);
+            if (debugStatsText.activeSelf) 
+            {
+                debugStatsText.SetActive(false);
+                debugGimmickText.SetActive(true);
+            }
             if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
             if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
+            parentsGimmickScript = parentsGimmick.GetComponent<IMarkovGimmick>();
+            neighborGimmickScript = neighborGimmick.GetComponent<IMarkovGimmick>();
         #endif
     }
 
@@ -440,6 +455,7 @@ public class GameManager : MonoSingleton<GameManager>
         if (Input.GetKeyDown(KeyCode.BackQuote) && !Input.GetKey(KeyCode.LeftShift))
         {
             debugStatsText.SetActive(!debugStatsText.activeSelf);
+            debugGimmickText.SetActive(!debugGimmickText.activeSelf);
             debugTimeText.SetActive(!debugTimeText.activeSelf);
         } 
 
@@ -495,7 +511,9 @@ public class GameManager : MonoSingleton<GameManager>
                 $"UpLookLAT: <color=yellow>{PlayerConstant.UpLookLAT}</color>\n" +
                 $"DownLookCAT: <color=yellow>{PlayerConstant.DownLookCAT}</color>\n" +
                 $"DownLookLAT: <color=yellow>{PlayerConstant.DownLookLAT}</color>\n";
-
+        debugGimmickText.GetComponent<TMP_Text>().text = 
+                $"<size=130%><b>Neigbor State<color=#ff808f>\n{neighborGimmickScript.CurrState.Name}</color></size>\n\n" +
+                $"<size=130%><b>Parents State<color=#ff808f>\n{parentsGimmickScript.CurrState.Name}</color></size>";
         #endif
     }
     
