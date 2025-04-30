@@ -73,18 +73,21 @@ public class GimmickManager : MonoSingleton<GimmickManager>
             }
         }
     }
-
-    /// <summary>
-    /// TODO: 임의로 만든거라 수정
-    /// </summary>
-    /// <returns></returns>
-    public void ActiveRandomGimmick()
+    
+    public void PickDemoGimmick()
     {
-        if (unrealGimmick != null && humanGimmick != null && objectGimmick != null) return;
-        
-        var gimmick = AllGimicks[Random.Range(0, AllGimicks.Count)];
-        if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
-        gimmick?.Activate();
+        foreach (Gimmick gimmick in AllGimicks)
+        {
+            {
+                if(gimmick.ExclusionGimmickList != null) 
+                    foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
+                        AllGimicks.Remove(exclusionGimmick);
+
+                if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
+                gimmick.Activate();
+                break;
+            }
+        }
     }
 
     public Gimmick ForceActivateGimmick(string gimmickName)

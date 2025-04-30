@@ -103,7 +103,29 @@ public class GameManager : MonoSingleton<GameManager>
     public bool isDemo = false;
     
     [SerializeField]
-    [Tooltip("2~5분 사이니까 180초가 최대. \n시간은 더해지는 게 아니라 따로")]
+    [Tooltip("데모 씬에서 총 기믹 시간. 기본값 300")]
+    private int totalTime = 300;
+    
+    [Space]
+    [SerializeField]
+    [Tooltip("맨 처음에 기믹이 활성화 되는 시간. 기본값 60")]
+    private int nonMarkovGimmickActiveTime = 60;
+    
+    [SerializeField]
+    [Tooltip("이웃, 부모 기믹이 아닌 기믹들이 출현할 때 \n5, 4, 3초씩 출현하는데 각 초 유지 시간 간격")]
+    private Vector2Int[] nonMarkovGimmickInterval = new Vector2Int[3]
+    {
+        new Vector2Int(60, 150),
+        new Vector2Int(150, 240),
+        new Vector2Int(240, 290)
+    };
+    
+    [Space]
+    [SerializeField]
+    [Tooltip("이웃, 부모 기믹이 출현하는 시간. 기본값 120")]
+    private int markovGimmickActiveTime = 120;
+    
+    [SerializeField]
     private List<MarkovGimmickData> demoGimmicks = new();
     
     private void OnValidate()
@@ -309,39 +331,50 @@ public class GameManager : MonoSingleton<GameManager>
 
     IEnumerator DemoCoroutine()
     {
-        var timer = 0f;
+        var gimmickTimer = 0f;
+        var gimmickActive = false;
 
-        // foreach (var demoGimmick in demoGimmicks)
-        // {
-        //     if (demoGimmick.activeSecTime < 120)
-        //     {
-        //         Debug.LogWarning("최소 시간이 120초 보다 작음");
-        //         yield break;
-        //     }
-        // }
-
-        // 0분 부터 1분까지 TODO: 60으로
-        yield return new WaitForSeconds(5f);       
+        foreach (var demoGimmick in demoGimmicks)
+        {
+            if (demoGimmick.activeSecTime < markovGimmickActiveTime)
+            {
+                Debug.LogWarning("부모, 이웃 상태 활성화 최소 시간이 120초 보다 작음");
+                yield break;
+            }
+        }
+        
+        // 1분 되면 일반 기믹 활성화
+        yield return new WaitForSeconds(nonMarkovGimmickActiveTime);
 
         var idx = 0;
         IMarkovGimmick markovGimmick = null;
         Gimmick currGimmick = null;
+        Coroutine randomGimmickCoroutine = null;
         
         yield return new WaitWhile(() =>
         {
-            // 총 5분되면 Near TODO: 300으로
-            if (timer >= 30) return false;        
+            if (gimmickTimer >= totalTime) return false;        
             
-            timer += Time.deltaTime;
+            gimmickTimer += Time.deltaTime;
             
-            // 1분 ~ 4분 50초 사이 랜덤 기믹
-            // if (timer >= 60 && timer < 230)
-            // {
-            //     StartCoroutine(ActiveRandomGimmickWithInterval(60, 230));   
-            // }
+            if (gimmickTimer >= nonMarkovGimmickInterval[0].x && gimmickTimer < nonMarkovGimmickInterval[0].y && gimmickActive == false)
+            {
+                StartRandomGimmick(5);
+                gimmickActive = true;
+            }
+            else if (gimmickTimer >= nonMarkovGimmickInterval[1].x && gimmickTimer < nonMarkovGimmickInterval[1].y && gimmickActive == true)
+            {
+                StartRandomGimmick(4);
+                gimmickActive = false;
+            }
+            else if (gimmickTimer >= nonMarkovGimmickInterval[2].x && gimmickTimer < nonMarkovGimmickInterval[2].y && gimmickActive == false)
+            {
+                StartRandomGimmick(3);
+                gimmickActive = true;
+            }
 
-            // 2분이 되면 부모 또는 이웃 기믹 활성화 TODO: 120으로
-            if (timer >= 10 && !currGimmick)                    
+            // 2분이 되면 부모 또는 이웃 기믹 활성화
+            if (gimmickTimer >= markovGimmickActiveTime && !currGimmick)                    
             {
                 if (PlayerConstant.isLeftState)
                 {
@@ -362,7 +395,7 @@ public class GameManager : MonoSingleton<GameManager>
             }
 
             // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
-            if (markovGimmick?.CurrGimmickType != demoGimmicks[idx].type && demoGimmicks[idx].activeSecTime == (int) timer)
+            if (demoGimmicks[idx].activeSecTime == (int) gimmickTimer)
             {
                 markovGimmick = currGimmick as IMarkovGimmick;
 
@@ -376,31 +409,38 @@ public class GameManager : MonoSingleton<GameManager>
                 }
                 
                 Debug.Log("active : " + markovGimmick?.CurrGimmickType);
+                demoGimmicks[idx].activeSecTime = 0;
                 idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;
             }
             
             return true;
         });
-        //StopCoroutine(ActiveRandomGimmickWithInterval(60, 230));
-        
+        StopCoroutine(randomGimmickCoroutine);
         markovGimmick.ChangeMarkovState(markovGimmick.Near);
         yield break;
 
-        IEnumerator ActiveRandomGimmickWithInterval(int startTime, int endTime)
+        void StartRandomGimmick(int interval)
+        {
+            if (randomGimmickCoroutine != null)
+            {
+                StopCoroutine(randomGimmickCoroutine);
+            }
+            randomGimmickCoroutine = StartCoroutine(ActiveRandomGimmickWithInterval(interval));
+        }
+        
+        IEnumerator ActiveRandomGimmickWithInterval(int interval)
         {
             var timer = 0f;
-            var interval = endTime - startTime;
-            var activeRandomTime = Random.Range(0f, interval);
-
             yield return new WaitWhile(() =>
             {
-                if (timer >= interval) return false;
+                if (gimmickTimer >= totalTime) return false;
                 timer += Time.deltaTime;
 
-                if (timer >= activeRandomTime)
+                if (timer >= interval)
                 {
-                    GimmickManager.Instance.ActiveRandomGimmick();
-                    activeRandomTime = Random.Range(activeRandomTime, interval);
+                    //GimmickManager.Instance.PickDemoGimmick();
+                    Debug.Log("Interval : " + interval + "Gimmick Timer : " + gimmickTimer);
+                    timer = 0f;
                 }
                 return true;
             });

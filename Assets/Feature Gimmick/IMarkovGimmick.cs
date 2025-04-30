@@ -2,7 +2,7 @@
 using System;
 
 [Serializable]
-public struct MarkovGimmickData
+public class MarkovGimmickData
 {
     public enum MarkovGimmickType
     {
