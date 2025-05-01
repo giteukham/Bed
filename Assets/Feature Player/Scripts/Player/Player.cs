@@ -365,6 +365,8 @@ public class Player : PlayerBase
         var targetRotation = Quaternion.LookRotation(direction);
     
         var horizontal = targetRotation.eulerAngles.y - 180f;
+        if (PlayerConstant.isRightState || PlayerConstant.isLeftState) horizontal = -horizontal;
+        
         var vertical = targetRotation.eulerAngles.x - 360f;
         
         horizontal = Mathf.Clamp(horizontal, povCamera.m_HorizontalAxis.m_MinValue, povCamera.m_HorizontalAxis.m_MaxValue);

@@ -333,6 +333,7 @@ public class GameManager : MonoSingleton<GameManager>
     {   
         var gimmickTimer = 0f;
         var gimmickActive = false;
+        var activeSecTimesTmp = new List<int>();
 
         foreach (var demoGimmick in demoGimmicks)
         {
@@ -403,6 +404,7 @@ public class GameManager : MonoSingleton<GameManager>
                 exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
                 
                 Debug.Log("active : " + markovGimmick?.CurrGimmickType);
+                activeSecTimesTmp.Add(demoGimmicks[idx].activeSecTime);
                 demoGimmicks[idx].activeSecTime = 0;
                 idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;
             }
@@ -431,6 +433,12 @@ public class GameManager : MonoSingleton<GameManager>
 
         markovGimmick = currGimmick as IMarkovGimmick;
         markovGimmick.ChangeMarkovState(markovGimmick.Near);
+
+        // 기믹 활성화 시간 초기화
+        for (int i = 0; i < demoGimmicks.Count; i++)
+        {
+            demoGimmicks[i].activeSecTime = activeSecTimesTmp[i];
+        }
         yield break;
 
         void StartRandomGimmick(int interval)

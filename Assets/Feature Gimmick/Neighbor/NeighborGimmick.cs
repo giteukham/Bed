@@ -209,8 +209,6 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
-        CurrState = state;
-        
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -251,18 +249,18 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (!PlayerConstant.isLeftState) sequence.Kill();
-                    })
-                    .OnComplete(() =>
-                    {
-                        GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
+                        if (PlayerConstant.isMiddleState) sequence.Complete();
                     });
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
-
-                yield return new WaitUntil(() => !PlayerConstant.isLeftState);
+                
+                if (PlayerConstant.isLeftState)
+                {
+                    GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
+                    yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                }
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
-
+                
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
                 yield return new WaitForSeconds(0.2f);  // 대기
                 

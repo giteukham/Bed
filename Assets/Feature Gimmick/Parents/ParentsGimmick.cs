@@ -25,7 +25,6 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     public GameObject hand;
     public GameObject dad;
     public GameObject dadHead;
-    public GameObject momHead;
     private Animator animator;
     
     private int moveChance = 0;                     // 움직일 확률
@@ -198,8 +197,6 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {   
-        CurrState = state;
-
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -227,18 +224,18 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (!PlayerConstant.isRightState) sequence.Kill();
-                    })
-                    .OnComplete(() =>
-                    {
-                        GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
+                        if (PlayerConstant.isMiddleState) sequence.Complete();
                     });
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => !PlayerConstant.isRightState);
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
-                
+                if (PlayerConstant.isRightState)
+                {
+                    GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
+                    yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                }
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
+
                 PlayerConstant.isParalysis = true;
                 yield return new WaitForSeconds(0.5f); // 대기
                 
