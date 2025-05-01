@@ -181,37 +181,71 @@ public class Player : PlayerBase
             {
                 PlayerConstant.LeftLookCAT += timeSinceLastUpdate;
                 PlayerConstant.LeftLookLAT += timeSinceLastUpdate;
+
+                if(!PlayerConstant.isLeftLook) PlayerConstant.isLeftLook = true;
+                if(PlayerConstant.isLeftFrontLook) PlayerConstant.isLeftFrontLook = false;
+                if(PlayerConstant.isFrontLook) PlayerConstant.isFrontLook = false;
+                if(PlayerConstant.isRightFrontLook) PlayerConstant.isRightFrontLook = false;
+                if(PlayerConstant.isRightLook) PlayerConstant.isRightLook = false;
             }
             else if (eulerY < 175f)
             {
                 PlayerConstant.LeftFrontLookCAT += timeSinceLastUpdate;
                 PlayerConstant.LeftFrontLookLAT += timeSinceLastUpdate;
+
+                if(PlayerConstant.isLeftLook) PlayerConstant.isLeftLook = false;
+                if(!PlayerConstant.isLeftFrontLook) PlayerConstant.isLeftFrontLook = true;
+                if(PlayerConstant.isFrontLook) PlayerConstant.isFrontLook = false;
+                if(PlayerConstant.isRightFrontLook) PlayerConstant.isRightFrontLook = false;
+                if(PlayerConstant.isRightLook) PlayerConstant.isRightLook = false;
             }
             else if (eulerY <= 185f)
             {
                 PlayerConstant.FrontLookCAT += timeSinceLastUpdate;
                 PlayerConstant.FrontLookLAT += timeSinceLastUpdate;
+
+                if(PlayerConstant.isLeftLook) PlayerConstant.isLeftLook = false;
+                if(PlayerConstant.isLeftFrontLook) PlayerConstant.isLeftFrontLook = false;
+                if(!PlayerConstant.isFrontLook) PlayerConstant.isFrontLook = true;
+                if(PlayerConstant.isRightFrontLook) PlayerConstant.isRightFrontLook = false;
+                if(PlayerConstant.isRightLook) PlayerConstant.isRightLook = false;
             }
             else if (eulerY <= 250f)
             {
                 PlayerConstant.RightFrontLookCAT += timeSinceLastUpdate;
                 PlayerConstant.RightFrontLookLAT += timeSinceLastUpdate;
+                if(PlayerConstant.isLeftLook) PlayerConstant.isLeftLook = false;
+                if(PlayerConstant.isLeftFrontLook) PlayerConstant.isLeftFrontLook = false;
+                if(PlayerConstant.isFrontLook) PlayerConstant.isFrontLook = false;
+                if(!PlayerConstant.isRightFrontLook) PlayerConstant.isRightFrontLook = true;
+                if(PlayerConstant.isRightLook) PlayerConstant.isRightLook = false;
             }
             else
             {
                 PlayerConstant.RightLookCAT += timeSinceLastUpdate;
                 PlayerConstant.RightLookLAT += timeSinceLastUpdate;
+                if(PlayerConstant.isLeftLook) PlayerConstant.isLeftLook = false;
+                if(PlayerConstant.isLeftFrontLook) PlayerConstant.isLeftFrontLook = false;
+                if(PlayerConstant.isFrontLook) PlayerConstant.isFrontLook = false;
+                if(PlayerConstant.isRightFrontLook) PlayerConstant.isRightFrontLook = false;
+                if(!PlayerConstant.isRightLook) PlayerConstant.isRightLook = true;
             }
 
             if (eulerX > 330f)
             {
                 PlayerConstant.UpLookCAT += timeSinceLastUpdate;
                 PlayerConstant.UpLookLAT += timeSinceLastUpdate;
+
+                if(!PlayerConstant.isUpLook) PlayerConstant.isUpLook = true;
+                if(PlayerConstant.isDownLook) PlayerConstant.isDownLook = false;
             }
             else
             {
                 PlayerConstant.DownLookCAT += timeSinceLastUpdate;
                 PlayerConstant.DownLookLAT += timeSinceLastUpdate;
+
+                if(PlayerConstant.isUpLook) PlayerConstant.isUpLook = false;
+                if(!PlayerConstant.isDownLook) PlayerConstant.isDownLook = true;
             }
         }
         // ----------------- Look Value -----------------
