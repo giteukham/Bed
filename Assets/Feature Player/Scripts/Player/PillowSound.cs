@@ -26,12 +26,11 @@ public class PillowSound : MonoBehaviour
         if (PlayerConstant.headMoveSpeed > 7) HeadMoveCompressorSet(false);
         else HeadMoveCompressorSet(true);
 
-        if (PlayerConstant.isShock || PlayerConstant.isPlayerStop) HeadMoveVolume(false);
+        if (PlayerConstant.isShock || PlayerConstant.isPlayerStop || !PlayerConstant.isPillowSound) HeadMoveVolume(false);
     }
 
     public void PlaySound()
     {
-        // --------�Ӹ� ������ �Ҹ�
         if ((PlayerConstant.headMoveSpeed > 0f || PlayerConstant.isMovingState) &&
             AudioManager.Instance.GetVolume(AudioManager.Instance.headMove) < 1.0f)
         {

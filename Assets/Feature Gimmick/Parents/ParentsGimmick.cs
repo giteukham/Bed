@@ -198,21 +198,22 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {   
+        CurrState = state;
+
         switch (state)
         {
             case var _ when state.Equals(Wait):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutDuplication(Wait.Name);
+                PlayAnimationWithoutDuplication(state.Name);
                 Deactivate();
                 break;
             case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
-                yield return new WaitForSeconds(0.5f);
-                PlayRandomChildAnimation(Watch.Name, 4);
+                PlayRandomChildAnimation(state.Name, 4);
                 break;
             case var _ when state.Equals(Danger):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutDuplication(Danger.Name);
+                PlayAnimationWithoutDuplication(state.Name);
                 break;
             case var _ when state.Equals(Near):
                 if (hand.activeSelf) hand.SetActive(false);
@@ -220,13 +221,13 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 GimmickManager.Instance.DeactivateGimmicks(this);
                 PlayAnimationWithoutDuplication(Danger.Name);
                 
-                // PauseTime();
+                TimeManager.Instance.isGameOver = true;
                 var timer = 0f;
                 var sequence = DOTween.Sequence();
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (PlayerConstant.isMiddleState) sequence.Kill();
+                        if (!PlayerConstant.isRightState) sequence.Kill();
                     })
                     .OnComplete(() =>
                     {
@@ -235,8 +236,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => (PlayerConstant.isMiddleState));
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
+                yield return new WaitUntil(() => !PlayerConstant.isRightState);
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 
                 PlayerConstant.isParalysis = true;
                 yield return new WaitForSeconds(0.5f); // 대기
@@ -246,6 +247,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 
                 UIManager.Instance.SetGameOverScreen(name);
                 UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                PlayerConstant.isPillowSound = false;
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 yield return new WaitForSeconds(2.5f); // 대기
@@ -253,23 +255,27 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
+                PlayerConstant.isPillowSound = true;
                 PlayAnimationWithoutDuplication(Near.Name);
                 if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
+
                 yield return new WaitForSeconds(3f); // 대기 
                 
+                PlayerConstant.isPillowSound = false;
                 UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsN, this.transform.position);
-                yield return new WaitForSeconds(2.5f); // 대기
+                yield return new WaitForSeconds(1.5f); // 대기
                 
                 GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
-                breathSound.ToggleBreath(); // 숨 참음 해제
+                
                 yield return new WaitForSeconds(1f); // 대기
-                
+                PlayerConstant.isPillowSound = true;
+                breathSound.ToggleBreath(); // 숨 참음 해제
+                ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경
                 PlayerConstant.isRedemption = false;
+                TimeManager.Instance.isGameOver = false;
                 UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
-                
-                ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경경
                 yield break;
         }
         var markovTransitions = chain[state];

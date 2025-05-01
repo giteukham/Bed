@@ -209,6 +209,8 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
+        CurrState = state;
+        
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -249,7 +251,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (PlayerConstant.isMiddleState) sequence.Kill();
+                        if (!PlayerConstant.isLeftState) sequence.Kill();
                     })
                     .OnComplete(() =>
                     {
@@ -258,7 +260,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
 
-                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                yield return new WaitUntil(() => !PlayerConstant.isLeftState);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
 
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
@@ -269,6 +271,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 
                 UIManager.Instance.SetGameOverScreen(name); 
                 UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                PlayerConstant.isPillowSound = false;
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position);
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 yield return new WaitForSeconds(2.5f); // 대기
@@ -276,12 +279,14 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
+                PlayerConstant.isPillowSound = true;
                 PlayAnimationWithoutDuplication(Near.Name);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 
                 yield return new WaitForSeconds(3f); // 대기 
                 
+                PlayerConstant.isPillowSound = false;
                 UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborN, this.transform.position);
                 yield return new WaitForSeconds(1.5f); // 대기
@@ -289,6 +294,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
 
                 yield return new WaitForSeconds(1f); // 대기
+                PlayerConstant.isPillowSound = true;
                 breathSound.ToggleBreath(); // 숨 참음 해제
                 ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경
                 PlayerConstant.isRedemption = false; // 몸 돌릴수 있게

@@ -372,7 +372,7 @@ public class GameManager : MonoSingleton<GameManager>
                 StartRandomGimmick(3);
                 gimmickActive = true;
             }
-            
+
             // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
             if (demoGimmicks[idx].activeSecTime == (int) gimmickTimer)
             {
