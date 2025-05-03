@@ -141,6 +141,74 @@ public class AudioManager : MonoSingleton<AudioManager>
     [field: SerializeField] public EventReference momBreath {get; private set;}
     #endregion
 
+    #region Gimmick FMOD Events
+    [field: Header("In Room")]
+    [field: Space]
+    
+    [field: Header("Breathing SFX")]
+    [field: SerializeField] public EventReference breathingInRoom {get; private set;}
+    
+    [field: Header("Footsteps SFX")]
+    [field: SerializeField] public EventReference footstepsInRoom {get; private set;}
+    
+    [field: Header("Mosquito SFX")]
+    [field: SerializeField] public EventReference mosquitoInRoom {get; private set;}
+    
+    [field: Header("Rat SFX")]
+    [field: SerializeField] public EventReference ratInRoom {get; private set;}
+    
+    [field: Header("Whisper SFX")]
+    [field: SerializeField] public EventReference whisperInRoom {get; private set;}
+    
+    [field: Header("In House")]
+    [field: Space]
+    
+    [field: Header("Bottle Breaking SFX")]
+    [field: SerializeField] public EventReference bottleBreakingInHouse {get; private set;}
+    
+    [field: Header("Female Laughing SFX")]
+    [field: SerializeField] public EventReference femaleLaughingInHouse {get; private set;}
+    
+    [field: Header("Radio SFX")]
+    [field: SerializeField] public EventReference radioInHouse {get; private set;}
+    
+    [field: Header("Ring Tone SFX")]
+    [field: SerializeField] public EventReference ringToneInHouse {get; private set;}
+    
+    [field: Header("Sobbing SFX")]
+    [field: SerializeField] public EventReference sobbingInHouse {get; private set;}
+    
+    [field: Header("Wall Scratching SFX")]
+    [field: SerializeField] public EventReference wallScratchingInHouse {get; private set;}
+    
+    [field: Header("Water Drop SFX")]
+    [field: SerializeField] public EventReference waterDropInHouse {get; private set;}
+    
+    [field: Header("Outside")]
+    [field: Space]
+    
+    [field: Header("Ambulance SFX")]
+    [field: SerializeField] public EventReference ambulanceOutside {get; private set;}
+    
+    [field: Header("Baby Crying SFX")]
+    [field: SerializeField] public EventReference babyCryingOutside {get; private set;}
+    
+    [field: Header("Cat SFX")]
+    [field: SerializeField] public EventReference catOutside {get; private set;}
+    
+    [field: Header("Clap SFX")]
+    [field: SerializeField] public EventReference clapOutside {get; private set;}
+    
+    [field: Header("Dog Barking SFX")]
+    [field: SerializeField] public EventReference dogBarkingOutside {get; private set;}
+    
+    [field: Header("Outside Laughing SFX")]
+    [field: SerializeField] public EventReference outsideLaughingOutside {get; private set;}
+    
+    [field: Header("Scream SFX")]
+    [field: SerializeField] public EventReference screamOutside {get; private set;}
+    #endregion
+    
     #region Player FMOD Events
     [field: Header("Head Move On Pillow SFX")]
     [field: SerializeField] public EventReference headMove {get; private set;}
