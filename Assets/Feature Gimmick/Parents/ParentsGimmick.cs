@@ -197,34 +197,38 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {   
+        CurrState = state;
         switch (state)
         {
             case var _ when state.Equals(Wait):
                 if (hand.activeSelf) hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
+                if (Door.GetAngle() > 0) Door.Close(0, 0.5f);
                 Deactivate();
                 break;
             case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayRandomChildAnimation(state.Name, 4);
+                PlayRandomChildAnimation(state.Name, 3);
+                Door.Open(20, 0.6f);
                 break;
             case var _ when state.Equals(Danger):
                 if (hand.activeSelf) hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
+                Door.Set(80, 0.3f);
                 break;
             case var _ when state.Equals(Near):
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
                 PlayAnimationWithoutDuplication(Danger.Name);
-                
+                Door.Set(110, 0.2f);
                 TimeManager.Instance.isGameOver = true;
                 var timer = 0f;
                 var sequence = DOTween.Sequence();
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (PlayerConstant.isMiddleState) sequence.Complete();
+                        if (!PlayerConstant.isRightState) sequence.Complete();
                     });
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
@@ -232,12 +236,12 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 if (PlayerConstant.isRightState)
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
-                    yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                    yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 }
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.5f)); // TODO: 특정 오브젝트 대상
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: 특정 오브젝트 대상
 
                 PlayerConstant.isParalysis = true;
-                yield return new WaitForSeconds(0.5f); // 대기
+                yield return new WaitForSeconds(0.2f); // 대기
                 
                 breathSound.ToggleBreath(); // 숨 참음
                 yield return new WaitForSeconds(2.5f); // 대기
@@ -247,15 +251,15 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 PlayerConstant.isPillowSound = false;
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
+                PlayAnimationWithoutDuplication(Near.Name);
+                if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
                 PlayerConstant.isPillowSound = true;
-                PlayAnimationWithoutDuplication(Near.Name);
-                if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
 
                 yield return new WaitForSeconds(3f); // 대기 
                 
@@ -302,6 +306,6 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
 
     private void PlayRandomChildAnimation(string stateName, int ranCount)
     {
-        animator.SetTrigger($"{stateName}{Random.Range(1, ranCount)}");
+        animator.SetTrigger($"{stateName}{Random.Range(0, ranCount) + 1}");
     }
 }

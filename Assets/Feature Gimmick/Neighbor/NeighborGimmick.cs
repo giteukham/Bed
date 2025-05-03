@@ -209,6 +209,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {
+        CurrState = state;
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -249,7 +250,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
-                        if (PlayerConstant.isMiddleState) sequence.Complete();
+                        if (!PlayerConstant.isLeftState) sequence.Complete();
                     });
                 
                 yield return new DOTweenCYInstruction.WaitForCompletion(sequence);
@@ -257,9 +258,9 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 if (PlayerConstant.isLeftState)
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
-                    yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                    yield return new WaitUntil(() => !PlayerConstant.isLeftState);
                 }
-                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
+                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.2f)); // TODO: 특정 오브젝트 대상
                 
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
                 yield return new WaitForSeconds(0.2f);  // 대기
@@ -272,15 +273,15 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 PlayerConstant.isPillowSound = false;
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position);
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
+                PlayAnimationWithoutDuplication(Near.Name);
+                if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
+                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
                 PlayerConstant.isPillowSound = true;
-                PlayAnimationWithoutDuplication(Near.Name);
-                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
-                if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 
                 yield return new WaitForSeconds(3f); // 대기 
                 

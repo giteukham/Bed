@@ -129,7 +129,7 @@ public class TimeManager : MonoSingleton<TimeManager>
     {
         if (isGameOver) 
         {
-            timeText.text = $"{31:00}:{6: 0}";
+            timeText.text = "31:6";
             return;
         }
         minutes = playTimeToMin % 60;

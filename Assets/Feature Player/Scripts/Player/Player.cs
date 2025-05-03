@@ -100,7 +100,7 @@ public class Player : PlayerBase
 
         // Sound Play
         AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
-
+        StartCameraEffect();
         pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
 

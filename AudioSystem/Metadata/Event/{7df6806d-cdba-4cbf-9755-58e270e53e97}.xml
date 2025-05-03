@@ -110,7 +110,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{b0c12615-20e2-46b9-a738-d23d53072d1a}">
 		<property name="volume">
-			<value>-13.5</value>
+			<value>-15</value>
 		</property>
 		<property name="name">
 			<value>Audio 1</value>
@@ -175,7 +175,7 @@
 			<value>0</value>
 		</property>
 		<property name="curveShape">
-			<value>0.322945774</value>
+			<value>-0.0722839907</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{7c13c676-cbf7-41f4-aa5d-3c5a0fdd4014}">
@@ -208,7 +208,10 @@
 	<object class="MixerBusFader" id="{439464ea-82c5-4d6b-9651-76cfe1966522}" />
 	<object class="LowpassEffect" id="{ece22597-9a90-44df-9214-210781a6613b}">
 		<property name="cutoff">
-			<value>65</value>
+			<value>80</value>
+		</property>
+		<property name="resonance">
+			<value>1.24000001</value>
 		</property>
 	</object>
 	<object class="SFXReverbEffect" id="{f99525bd-014b-40e6-a8cb-23bb975d3fd0}">
