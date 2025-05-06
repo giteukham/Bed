@@ -21,12 +21,15 @@ namespace Bed.Collider
         
         private Vector3 currentScale; // 콜라이더 스케일일
 
+        private static GameObject triggeredObject = null;
+        public static GameObject TriggeredObject => triggeredObject;
+
         //TODO: Trigger Enter, Exit 구현
         private void OnTriggerEnter(UnityEngine.Collider other)
-        {  
+        {
             if (other.gameObject.CompareTag("Gimmick"))
             {
-                Debug.Log("Enter");
+                triggeredObject = other.gameObject;
                 if (other.gameObject.TryGetComponent(out Gimmick gimmick))
                 {
                     Debug.Log("isDetected = true");
@@ -35,11 +38,11 @@ namespace Bed.Collider
             } 
         }
         
+        
         private void OnTriggerExit(UnityEngine.Collider other)
         {
             if (other.gameObject.CompareTag("Gimmick"))
             {
-                Debug.Log("Exit");
                 if (other.gameObject.TryGetComponent(out Gimmick gimmick))
                 {
                     Debug.Log("isDetected = false");

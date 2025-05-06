@@ -359,6 +359,11 @@ public class Player : PlayerBase
         playerDirectionControl.ChangeDirectionStateNoSound(types);
     }
 
+    public void ForceOpenEye()
+    {
+        playerEyeControl.ForceOpenEye();
+    }
+
     public IEnumerator LookAt(GameObject target, float duration)
     {
         var direction = (target.transform.position - transform.position).normalized;
