@@ -236,8 +236,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 if (PlayerConstant.isRightState)
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
-                    yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 }
+                yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: 특정 오브젝트 대상
 
                 PlayerConstant.isParalysis = true;
@@ -253,7 +253,6 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
                 if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
@@ -261,6 +260,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 PlayerConstant.isRedemption = true;
                 PlayerConstant.isPillowSound = true;
 
+                StartCoroutine(GameManager.Instance.player.StayLookAt(dadHead, 3f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
                 
                 PlayerConstant.isPillowSound = false;

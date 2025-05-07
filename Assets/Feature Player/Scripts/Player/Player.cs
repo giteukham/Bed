@@ -364,7 +364,7 @@ public class Player : PlayerBase
         playerEyeControl.ForceOpenEye();
     }
 
-    public IEnumerator LookAt(GameObject target, float duration)
+    private float[] GetLookAtValue(GameObject target)
     {
         var direction = (target.transform.position - transform.position).normalized;
         var targetRotation = Quaternion.LookRotation(direction);
@@ -377,12 +377,46 @@ public class Player : PlayerBase
         horizontal = Mathf.Clamp(horizontal, povCamera.m_HorizontalAxis.m_MinValue, povCamera.m_HorizontalAxis.m_MaxValue);
         vertical = Mathf.Clamp(vertical, povCamera.m_VerticalAxis.m_MinValue, povCamera.m_VerticalAxis.m_MaxValue);
         
+        return new float[] { horizontal, vertical };
+    }
+    
+    public IEnumerator LookAt(GameObject target, float arrivalTime)
+    {
+        var lookAtValue = GetLookAtValue(target);
+        var horizontal = lookAtValue[0];
+        var vertical = lookAtValue[1];
         
         yield return new DOTweenCYInstruction.WaitForCompletion(
             DOTween.Sequence()
-                .Append(DOTween.To(() => povCamera.m_VerticalAxis.Value, x => povCamera.m_VerticalAxis.Value = x, vertical, duration))
-                .Join(DOTween.To(() => povCamera.m_HorizontalAxis.Value, x => povCamera.m_HorizontalAxis.Value = x, horizontal, duration))
+                .Append(DOTween.To(() => povCamera.m_VerticalAxis.Value, x => povCamera.m_VerticalAxis.Value = x, vertical, arrivalTime))
+                .Join(DOTween.To(() => povCamera.m_HorizontalAxis.Value, x => povCamera.m_HorizontalAxis.Value = x, horizontal, arrivalTime))
         );
+    }
+
+    private float recenteringHorizontalVelocity, recenteringVerticalVelocity;
+    
+    public IEnumerator StayLookAt(GameObject target, float duration)
+    {
+        var lookAtValue = GetLookAtValue(target);
+        var horizontal = lookAtValue[0];
+        var vertical = lookAtValue[1];
+
+        var timer = 0f;
+
+        var horizontalRecentering = new AxisState.Recentering(true, 0f, float.MinValue);
+        var verticalRecentering = new AxisState.Recentering(true, 0f, float.MinValue);
+        
+        while (true)
+        {
+            if (timer > duration) yield break;
+            
+            timer += Time.deltaTime;
+            
+            horizontalRecentering.DoRecentering(ref povCamera.m_HorizontalAxis, Time.deltaTime * int.MaxValue, horizontal);
+            verticalRecentering.DoRecentering(ref povCamera.m_VerticalAxis, Time.deltaTime * int.MaxValue, vertical);
+            
+            yield return null;
+        }
     }
 }
 

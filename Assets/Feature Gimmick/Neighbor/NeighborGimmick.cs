@@ -280,8 +280,8 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 if (PlayerConstant.isLeftState)
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
-                    yield return new WaitUntil(() => PlayerConstant.isMiddleState);
                 }
+                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.2f)); // TODO: 특정 오브젝트 대상
                 
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
@@ -297,7 +297,6 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
@@ -305,6 +304,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
                 PlayerConstant.isPillowSound = true;
                 
+                StartCoroutine(GameManager.Instance.player.StayLookAt(neighborHead, 3f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
                 
                 PlayerConstant.isPillowSound = false;
