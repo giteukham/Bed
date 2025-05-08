@@ -7492,8 +7492,8 @@ MonoBehaviour:
       m_LegacyVelocityFilterStrength: -1
   m_VerticalRecentering:
     m_enabled: 0
-    m_WaitTime: 1
-    m_RecenteringTime: 2
+    m_WaitTime: 0.1
+    m_RecenteringTime: 1
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_HorizontalAxis:
@@ -7516,8 +7516,8 @@ MonoBehaviour:
       m_LegacyVelocityFilterStrength: -1
   m_HorizontalRecentering:
     m_enabled: 0
-    m_WaitTime: 1
-    m_RecenteringTime: 2
+    m_WaitTime: 0
+    m_RecenteringTime: 0.01
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_ApplyBeforeBody: 0
@@ -10593,10 +10593,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8930661893435035876, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12040,7 +12036,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   horizontal: 9
   vertical: 4.65
-  distance: 9
+  distance: 10
   epllipseSegments: 100
   debugImage: {fileID: 1385739452}
 --- !u!54 &801348872
@@ -32603,7 +32599,6 @@ MonoBehaviour:
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
   isDemo: 1
-  totalTime: 30
   nonMarkovGimmickActiveTime: 5
   nonMarkovGimmickInterval:
   - {x: 5, y: 10}
@@ -32612,11 +32607,11 @@ MonoBehaviour:
   markovGimmickActiveTime: 10
   demoGimmicks:
   - type: 2
-    activeSecTime: 10
-  - type: 3
     activeSecTime: 15
-  - type: 1
+  - type: 3
     activeSecTime: 25
+  - type: 1
+    activeSecTime: 35
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0

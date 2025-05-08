@@ -101,10 +101,11 @@ public class GameManager : MonoSingleton<GameManager>
     [Header("데모")]
     // 데모 씬 전용. 데모 씬은 반드시 이름이 Demo여야 함.
     public bool isDemo = false;
+    private Coroutine demoCoroutine = null;
+    private Coroutine randomGimmickCoroutine = null;
     
-    [SerializeField]
     [Tooltip("데모 씬에서 총 기믹 시간. 기본값 300")]
-    private int totalTime = 300;
+    private int totalTime = 0;
     
     [Space]
     [SerializeField]
@@ -308,7 +309,7 @@ public class GameManager : MonoSingleton<GameManager>
         timeManager.gameObject.SetActive(true);
         PlayerLevelController.Instance.OnGameStart();
         PlayerConstant.ResetAllStats();
-        if (isDemo) StartCoroutine(DemoCoroutine());
+        if (isDemo) demoCoroutine = StartCoroutine(DemoCoroutine());
     }
     
     private void GameOver()
@@ -328,29 +329,43 @@ public class GameManager : MonoSingleton<GameManager>
         yield return new WaitForSeconds(1f);
         SetState(GameState.Preparation);
     }
+    
+    public void StopDemoCoroutine()
+    {
+        if (isDemo == false) return;
+        
+        if (demoCoroutine != null)
+        {
+            StopCoroutine(demoCoroutine);
+            StopCoroutine(randomGimmickCoroutine);
+            demoCoroutine = null;
+            randomGimmickCoroutine = null;
+        }
+    }
 
     IEnumerator DemoCoroutine()
     {   
         var gimmickTimer = 0f;
         var gimmickActive = false;
         var activeSecTimesTmp = new List<int>();
-
+        
         foreach (var demoGimmick in demoGimmicks)
         {
             if (demoGimmick.activeSecTime < markovGimmickActiveTime)
             {
-                Debug.LogWarning("부모, 이웃 상태 활성화 최소 시간이 120초 보다 작음");
+                Debug.LogWarning("Markov Gimmick Active Time이 Demo Gimmick의 첫 번째 활성화 시간보다 작습니다.");
                 yield break;
             }
         }
-        
+
+        totalTime = demoGimmicks[demoGimmicks.Count - 1].activeSecTime;
+
         // 1분 되면 일반 기믹 활성화
         yield return new WaitForSeconds(nonMarkovGimmickActiveTime);
 
         var idx = 0;
         IMarkovGimmick markovGimmick = null, exMarkovGimmick = null;
         Gimmick currGimmick = null, exGimmick = null;
-        Coroutine randomGimmickCoroutine = null;
         
         yield return new WaitWhile(() =>
         {
@@ -403,7 +418,6 @@ public class GameManager : MonoSingleton<GameManager>
                 markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
                 exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
                 
-                Debug.Log("active : " + markovGimmick?.CurrGimmickType);
                 activeSecTimesTmp.Add(demoGimmicks[idx].activeSecTime);
                 demoGimmicks[idx].activeSecTime = 0;
                 idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;

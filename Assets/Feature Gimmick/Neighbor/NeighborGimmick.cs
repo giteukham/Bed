@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using UnityEngine;
 using AbstractGimmick;
+using Bed.Collider;
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using UnityEngine.Playables;
 using Random = UnityEngine.Random;
@@ -51,6 +53,9 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     
     private Coroutine markovCoroutine;
     [SerializeField] private BreathSound breathSound;
+    
+    private Coroutine eyeCloseCheckCoroutine = null;
+    private Coroutine cautiousCheckCoroutine = null;
     #endregion
 
     private int tmpValue = 0;
@@ -174,6 +179,19 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     public void ChangeMarkovState(MarkovState next)
     {
         CurrState = next;
+        
+        if(eyeCloseCheckCoroutine != null && !next.Equals(Danger))
+        {
+            StopCoroutine(eyeCloseCheckCoroutine);
+            eyeCloseCheckCoroutine = null;
+        }
+        
+        if(cautiousCheckCoroutine != null && !next.Equals(Cautious))
+        {
+            StopCoroutine(cautiousCheckCoroutine);
+            cautiousCheckCoroutine = null;
+        }
+        Debug.Log("Next : " + next.Name);
         CurrState.Active();
     }
 
@@ -229,12 +247,16 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
+
+                cautiousCheckCoroutine ??= StartCoroutine(CheckNeighborHeadCollision());
                 break;
 
             case var _ when state.Equals(Danger):
                 if(houseLight.activeSelf) houseLight.SetActive(false);
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
+
+                eyeCloseCheckCoroutine ??= StartCoroutine(ChangeNearWhenEyeClose());
                 break;
 
             case var _ when state.Equals(Near):
@@ -245,9 +267,9 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 PlayAnimationWithoutDuplication(Danger.Name);
                 
                 TimeManager.Instance.isGameOver = true;
-                var timer = 0f;
+                var nearTimer = 0f;
                 var sequence = DOTween.Sequence();
-                sequence.Append(DOTween.To(() => timer, x => timer = x, 10f, 10f))
+                sequence.Append(DOTween.To(() => nearTimer, x => nearTimer = x, 10f, 10f))
                     .OnUpdate(() =>
                     {
                         if (!PlayerConstant.isLeftState) sequence.Complete();
@@ -258,8 +280,8 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 if (PlayerConstant.isLeftState)
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
-                    yield return new WaitUntil(() => !PlayerConstant.isLeftState);
                 }
+                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.2f)); // TODO: 특정 오브젝트 대상
                 
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
@@ -275,7 +297,6 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.1f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
@@ -284,6 +305,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
                 PlayerConstant.isPillowSound = true;
                 
+                StartCoroutine(GameManager.Instance.player.StayLookAt(neighborHead, 3f)); // TODO: 특정 오브젝트 대상
                 yield return new WaitForSeconds(3f); // 대기 
                 
                 PlayerConstant.isPillowSound = false;
@@ -311,6 +333,53 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         else
         {
             CurrState = chain.TransitionNextState(CurrState);
+        }
+        yield break;
+        
+        IEnumerator ChangeNearWhenEyeClose()
+        {
+            var timer = 0f;
+            
+            while (true)
+            {
+                if (PlayerConstant.isEyeOpen == false)
+                {
+                    timer += Time.deltaTime;
+                    
+                    if (timer >= 0.5f)
+                    {
+                        GameManager.Instance.player.ForceOpenEye();
+                        GameManager.Instance.StopDemoCoroutine();
+                        ChangeMarkovState(Near);
+                        eyeCloseCheckCoroutine = null;
+                        yield break;
+                    }
+                }
+                else
+                {
+                    timer = 0f;
+                }
+                
+                yield return null;
+            }
+        }
+        
+        IEnumerator CheckNeighborHeadCollision()
+        {
+            while (true)
+            {
+                if (BlinkEffect.Blink <= 0.85f && 
+                    ConeCollider.TriggeredObject != null &&
+                    ConeCollider.TriggeredObject.Equals(neighborHead))
+                {
+                    GameManager.Instance.StopDemoCoroutine();
+                    GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickData.MarkovGimmickType.Wait);
+
+                    yield break;
+                }
+        
+                yield return null;
+            }
         }
     }
 

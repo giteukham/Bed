@@ -48,6 +48,7 @@ public class PlayerEyeControl : IPlayerControl
     
     private void OnBlink()
     {
+        Debug.Log(playerEyeStateMachine + " " + PlayerConstant.isParalysis);
         if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close]) 
             || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isParalysis) return;
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
@@ -125,6 +126,20 @@ public class PlayerEyeControl : IPlayerControl
         }
         //Debug.Log("현재 상태 : " + playerEyeStateMachine.ToString());
         prevBlinkValue = BlinkEffect.Blink;
+    }
+
+    public async UniTaskVoid ForceOpenEye()
+    {
+        if (!playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close])) return;
+
+        while (BlinkEffect.Blink > BLINK_VALUE_MIN)
+        {
+            BlinkEffect.Blink -= Time.deltaTime * 5f;
+            await UniTask.Yield();
+        }
+        
+        ChangeEyeState(PlayerEyeStateTypes.Open);
+        currentValue = null;
     }
     
     public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);

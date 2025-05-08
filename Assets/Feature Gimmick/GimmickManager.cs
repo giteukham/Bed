@@ -1,6 +1,7 @@
 using AbstractGimmick;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -96,6 +97,17 @@ public class GimmickManager : MonoSingleton<GimmickManager>
         gimmick?.Activate();
 
         return gimmick;
+    }
+
+    public void ChangeAllMarkovGimmickState(MarkovGimmickData.MarkovGimmickType type)
+    {
+        foreach (var gimmick in AllGimicks.ToList())
+        {
+            if (gimmick is IMarkovGimmick markovGimmick)
+            {
+                markovGimmick.ChangeMarkovState(type);
+            }
+        }
     }
 
     // TimeManager에서 호출

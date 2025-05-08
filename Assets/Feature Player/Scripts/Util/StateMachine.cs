@@ -6,11 +6,7 @@ public class StateMachine : MonoBehaviour
     
     public void ChangeState(IState toState, bool canStateOverlap = false)
     {
-        if (currentState == toState && !canStateOverlap)
-        {
-            Debug.LogWarning($"이미 {currentState?.GetType().Name} 상태입니다.");
-            return;            
-        }
+        if (currentState == toState && !canStateOverlap) return;
 
         prevState = currentState ?? null;
         currentState?.Exit();

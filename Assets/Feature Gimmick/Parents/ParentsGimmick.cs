@@ -306,9 +306,9 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 if (PlayerConstant.isRightState)
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
-                    yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 }
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: 특정 오브젝트 대상
+                yield return new WaitUntil(() => !PlayerConstant.isRightState);
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: Ư�� ������Ʈ ���
 
                 PlayerConstant.isParalysis = true;
                 yield return new WaitForSeconds(0.2f); // 대기
@@ -323,9 +323,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
-                if (!hand.activeSelf) hand.SetActive(true); // 손 활성화
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: 특정 오브젝트 대상
-                yield return new WaitForSeconds(2.5f); // 대기
+                if (!hand.activeSelf) hand.SetActive(true); // �� Ȱ��ȭ
+                yield return new WaitForSeconds(2.5f); // ���
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.dadStrangle, this.transform.position);
@@ -333,7 +332,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 PlayerConstant.isRedemption = true;
                 PlayerConstant.isPillowSound = true;
 
-                yield return new WaitForSeconds(3f); // 대기 
+                StartCoroutine(GameManager.Instance.player.StayLookAt(dadHead, 3f)); // TODO: Ư�� ������Ʈ ���
+                yield return new WaitForSeconds(3f); // ��� 
                 
                 PlayerConstant.isPillowSound = false;
                 UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
