@@ -127,4 +127,12 @@ public class MarkovChain
         
         transitions[sortingState] = transitions[sortingState].OrderBy(x => x.ThresholdRange.y).ToList();
     }
+
+    public void InitStateCount()
+    {
+        foreach (var state in transitions.Keys)
+        {
+            state.ActiveCount = 0;
+        }
+    }
 }

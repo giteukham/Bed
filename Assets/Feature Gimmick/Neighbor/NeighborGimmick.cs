@@ -279,6 +279,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
                 PlayerConstant.isPillowSound = true;
@@ -330,10 +331,10 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     {
         AudioManager.Instance.PlayOneShot(AudioManager.Instance.pantRustle, this.transform.position);
     }
-    private void GagSoundPlay()
-    {
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
-    }
+    // private void GagSoundPlay()
+    // {
+    //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
+    // }
     private void HornyBreathSoundPlay()
     {
         AudioManager.Instance.PlaySound(AudioManager.Instance.hornyBreath, this.transform.position);

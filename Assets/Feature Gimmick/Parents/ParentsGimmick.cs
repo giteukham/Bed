@@ -22,18 +22,18 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     #endregion
     
     #region Variables
-    public GameObject hand;
-    public GameObject dad;
-    public GameObject dadHead;
+    public GameObject hand, dadHead;
+    public Transform dadPosition, momHeadPosition, dadWalkSoundPosition, dadWalkStartPosition, dadWalkEndPosition;
+    private bool isDadAngry = false;
     private Animator animator;
     
-    private int moveChance = 0;                     // ¿òÁ÷ÀÏ È®·ü
+    private int moveChance = 0;                     // ì›€ì§ì¼ í™•ë¥ 
     
     [Range(0, 100)]
-    private int moveProbability = 0;                // ÃÊ±â°ª 0. ÃÖ´ñ°ª 100. moveChanceº¸´Ù Å©¸é ¿òÁ÷ÀÓ
+    private int moveProbability = 0;                // ì´ˆê¸°ê°’ 0. ìµœëŒ“ê°’ 100. moveChanceë³´ë‹¤ í¬ë©´ ì›€ì§ì„
     
     [Range(0, 100)]
-    private int stateTransitionProbability = 35;    // ÃÊ±â°ª 35. ´«À» °¨°Å³ª ¿À¸¥Á·À» ¾È º¸°í ÀÕÀ¸¸é -5.
+    private int stateTransitionProbability = 35;    // ì´ˆê¸°ê°’ 35. ëˆˆì„ ê°ê±°ë‚˜ ì˜¤ë¥¸ì¡±ì„ ì•ˆ ë³´ê³  ì‡ìœ¼ë©´ -5.
     
     private MarkovChain chain = new MarkovChain();
     public MarkovState CurrState { get; set; } = null;
@@ -49,7 +49,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     private int conditionCountToNear = 3;
     [SerializeField] private BreathSound breathSound;
     
-    private Coroutine markovCoroutine;
+    private Coroutine markovCoroutine, dadWalkSoundSetPositionCoroutine;
+    private Tween moveTween;
     #endregion
     
     private int tmpValue = 0;
@@ -102,7 +103,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         chain.InsertTransition(Wait,
             new List<MarkovTransition>()
             {
-                // TODO: È®·ü Á¶Á¤
+                // TODO: í™•ë¥  ì¡°ì •
                 new MarkovTransition { Target = Watch, ThresholdRange   = new Vector2(0, 10)},
                 new MarkovTransition { Target = Danger, ThresholdRange  = new Vector2(11, 20)},
                 new MarkovTransition { Target = Near, ThresholdRange    = new Vector2(21, 30)},
@@ -144,9 +145,9 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         probability = 0 < moveProbability ? 100 : 0;
         if (Mathf.Approximately(probability, 0) && !CurrState.Equals(Wait)) ChangeMarkovState(Wait);
 
-        //if (currState.Equals(watch) && Æ¯Á¤ Çàµ¿) ChangeMarkovState(near); 
+        //if (currState.Equals(watch) && íŠ¹ì • í–‰ë™) ChangeMarkovState(near); 
         
-        // ÀÓ½Ã °ª ¹İ¿µ
+        // ì„ì‹œ ê°’ ë°˜ì˜
         tmpDecision = tmpValue;
         tmpValue = 0;
     }
@@ -166,6 +167,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     public void ChangeMarkovState(MarkovState next)
     {
         CurrState = next;
+        CurrState.ActiveCount++;
         CurrState.Active();
     }
     
@@ -201,27 +203,95 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         switch (state)
         {
             case var _ when state.Equals(Wait):
+                AudioManager.Instance.StopSound(AudioManager.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
                 if (Door.GetAngle() > 0) Door.Close(0, 0.5f);
                 Deactivate();
                 break;
+                
             case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
+                AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
                 PlayRandomChildAnimation(state.Name, 3);
                 Door.Open(20, 0.6f);
                 break;
+
             case var _ when state.Equals(Danger):
+                AudioManager.Instance.StopSound(AudioManager.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
-                PlayAnimationWithoutDuplication(state.Name);
-                Door.Set(80, 0.3f);
+                
+                PlayAnimationWithoutDuplication(Wait.Name);
+                if (Door.GetAngle() > 0) Door.Close(0, 0.4f);
+                yield return new WaitForSeconds(0.6f); 
+
+                dadWalkSoundPosition.position = dadWalkStartPosition.position;
+
+                float duration = 5f / (isDadAngry ? 1.5f : 1f);
+                AudioManager.Instance.PlaySound(AudioManager.Instance.dadWalk, dadWalkSoundPosition.position);
+
+                if(Danger.ActiveCount >= 3) 
+                { 
+                    isDadAngry = true; 
+                    AudioManager.Instance.SetParameter(AudioManager.Instance.dadWalk, "DadAnger", 1f); 
+                }
+                else 
+                { 
+                    isDadAngry = false; 
+                    AudioManager.Instance.SetParameter(AudioManager.Instance.dadWalk, "DadAnger", 0f); 
+                }
+                if (moveTween != null && moveTween.IsActive()) moveTween.Kill();
+
+                dadWalkSoundSetPositionCoroutine = StartCoroutine(dadWalkSoundSetPosition());
+                moveTween = dadWalkSoundPosition.DOMove(dadWalkEndPosition.position, duration)
+                                        .SetEase(Ease.InOutSine)
+                                        .OnComplete(() =>
+                                        {
+                                            if(dadWalkSoundSetPositionCoroutine != null) StopCoroutine(dadWalkSoundSetPositionCoroutine);
+                                            AudioManager.Instance.StopSound(AudioManager.Instance.dadWalk, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                                            dadWalkSoundPosition.position = dadWalkStartPosition.position;
+                                            Door.Set(80, 0.3f);
+                                        });
+                yield return new DOTweenCYInstruction.WaitForCompletion(moveTween);
+                yield return new WaitForSeconds(0.4f);
+                PlayAnimationWithoutDuplication(Danger.Name);
                 break;
+
             case var _ when state.Equals(Near):
+                AudioManager.Instance.StopSound(AudioManager.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
-                PlayAnimationWithoutDuplication(Danger.Name);
-                Door.Set(110, 0.2f);
+                if(GetPlayAnimationName() != "Danger")
+                {
+                    PlayAnimationWithoutDuplication(Wait.Name);
+                    if (Door.GetAngle() > 0) Door.Close(0, 0.4f);
+                    yield return new WaitForSeconds(0.6f); 
+                    isDadAngry = true; 
+                    dadWalkSoundPosition.position = dadWalkStartPosition.position;
+                    AudioManager.Instance.PlaySound(AudioManager.Instance.dadWalk, dadWalkSoundPosition.position);
+                    AudioManager.Instance.SetParameter(AudioManager.Instance.dadWalk, "DadAnger", 1f); 
+                    if (moveTween != null && moveTween.IsActive()) moveTween.Kill();
+
+                    dadWalkSoundSetPositionCoroutine = StartCoroutine(dadWalkSoundSetPosition());
+                    moveTween = dadWalkSoundPosition.DOMove(dadWalkEndPosition.position, 3f)
+                                            .SetEase(Ease.InOutSine)
+                                            .OnComplete(() =>
+                                            {
+                                                if(dadWalkSoundSetPositionCoroutine != null) StopCoroutine(dadWalkSoundSetPositionCoroutine);
+                                                AudioManager.Instance.StopSound(AudioManager.Instance.dadWalk, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                                                dadWalkSoundPosition.position = dadWalkStartPosition.position;
+                                                Door.Set(110f, 0.3f);
+                                            });
+                    yield return new DOTweenCYInstruction.WaitForCompletion(moveTween);
+                    yield return new WaitForSeconds(0.4f);
+                    PlayAnimationWithoutDuplication(Danger.Name);
+                }
+                
                 TimeManager.Instance.isGameOver = true;
                 var timer = 0f;
                 var sequence = DOTween.Sequence();
@@ -238,52 +308,56 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
                     yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 }
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: Æ¯Á¤ ¿ÀºêÁ§Æ® ´ë»ó
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: íŠ¹ì • ì˜¤ë¸Œì íŠ¸ ëŒ€ìƒ
 
                 PlayerConstant.isParalysis = true;
-                yield return new WaitForSeconds(0.2f); // ´ë±â
+                yield return new WaitForSeconds(0.2f); // ëŒ€ê¸°
                 
-                breathSound.ToggleBreath(); // ¼û ÂüÀ½
-                yield return new WaitForSeconds(2.5f); // ´ë±â
-                
+                breathSound.ToggleBreath(); // ìˆ¨ ì°¸ìŒ
+                yield return new WaitForSeconds(2.5f); // ëŒ€ê¸°
+                AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
                 UIManager.Instance.SetGameOverScreen(name);
-                UIManager.Instance.ActiveOrDeActiveDText(true); // D text È°¼ºÈ­
+                UIManager.Instance.ActiveOrDeActiveDText(true); // D text í™œì„±í™”
                 PlayerConstant.isPillowSound = false;
-                AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // ÇÃ·¹ÀÌ¾î ¸öÀÌ Á¤¸éÀ» º¸´Â »óÅÂ°¡ ¾Æ´Ï¶ó¸é Á¤¸éÀ» º¸°Ô µ¹¸² (¼Ò¸® ¾Èµé¸®°Ô)
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // í”Œë ˆì´ì–´ ëª¸ì´ ì •ë©´ì„ ë³´ëŠ” ìƒíƒœê°€ ì•„ë‹ˆë¼ë©´ ì •ë©´ì„ ë³´ê²Œ ëŒë¦¼ (ì†Œë¦¬ ì•ˆë“¤ë¦¬ê²Œ)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
-                if (!hand.activeSelf) hand.SetActive(true); // ¼Õ È°¼ºÈ­
-                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: Æ¯Á¤ ¿ÀºêÁ§Æ® ´ë»ó
-                yield return new WaitForSeconds(2.5f); // ´ë±â
+                if (!hand.activeSelf) hand.SetActive(true); // ì† í™œì„±í™”
+                StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.1f)); // TODO: íŠ¹ì • ì˜¤ë¸Œì íŠ¸ ëŒ€ìƒ
+                yield return new WaitForSeconds(2.5f); // ëŒ€ê¸°
                 
-                UIManager.Instance.ActiveOrDeActiveDText(false); // D text ºñÈ°¼ºÈ­
+                UIManager.Instance.ActiveOrDeActiveDText(false); // D text ë¹„í™œì„±í™”
+                AudioManager.Instance.PlayOneShot(AudioManager.Instance.dadStrangle, this.transform.position);
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
                 PlayerConstant.isPillowSound = true;
 
-                yield return new WaitForSeconds(3f); // ´ë±â 
+                yield return new WaitForSeconds(3f); // ëŒ€ê¸° 
                 
                 PlayerConstant.isPillowSound = false;
-                UIManager.Instance.ActiveOrDeActiveNText(true); // n text È°¼ºÈ­
+                UIManager.Instance.ActiveOrDeActiveNText(true); // n text í™œì„±í™”
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsN, this.transform.position);
-                yield return new WaitForSeconds(1.5f); // ´ë±â
+                yield return new WaitForSeconds(1.5f); // ëŒ€ê¸°
                 
-                GameManager.Instance.SetState(GameState.GameOver); // °ÔÀÓ ¿À¹ö »óÅÂ·Î º¯°æ (ÁØºñ »óÅÂ·Î ÃÊ±âÈ­)
+                GameManager.Instance.SetState(GameState.GameOver); // ê²Œì„ ì˜¤ë²„ ìƒíƒœë¡œ ë³€ê²½ (ì¤€ë¹„ ìƒíƒœë¡œ ì´ˆê¸°í™”)
                 
-                yield return new WaitForSeconds(1f); // ´ë±â
+                yield return new WaitForSeconds(1f); // ëŒ€ê¸°
                 PlayerConstant.isPillowSound = true;
-                breathSound.ToggleBreath(); // ¼û ÂüÀ½ ÇØÁ¦
-                ChangeMarkovState(Wait); // ±â¹ÍÀº ´ë±â »óÅÂ·Î º¯°æ
+                breathSound.ToggleBreath(); // ìˆ¨ ì°¸ìŒ í•´ì œ
+                ChangeMarkovState(Wait); // ê¸°ë¯¹ì€ ëŒ€ê¸° ìƒíƒœë¡œ ë³€ê²½
+                isDadAngry = false; 
+                chain.InitStateCount();
                 PlayerConstant.isRedemption = false;
                 TimeManager.Instance.isGameOver = false;
-                UIManager.Instance.ActiveOrDeActiveNText(false); // n text ºñÈ°¼ºÈ­
+                UIManager.Instance.ActiveOrDeActiveNText(false); // n text ë¹„í™œì„±í™”
                 yield break;
         }
         var markovTransitions = chain[state];
 
         yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
         
-        if (stateTransitionProbability <= Random.Range(0, 50))                      // true¸é ´ÙÀ½ »óÅÂ false¸é Çö »óÅÂ À¯Áö
+        if (stateTransitionProbability <= Random.Range(0, 50))                      // trueë©´ ë‹¤ìŒ ìƒíƒœ falseë©´ í˜„ ìƒíƒœ ìœ ì§€
         {
             CurrState = chain.TransitionNextState(CurrState, tmpDecision);
         }
@@ -297,15 +371,52 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     
     private void PlayAnimationWithoutDuplication(string animName)
     {
-        // Çö ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ Àü ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ¶û °°Áö ¾ÊÀ» ¶§¸¸ ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+        // í˜„ ì• ë‹ˆë©”ì´ì…˜ì´ ì „ ì• ë‹ˆë©”ì´ì…˜ì´ë‘ ê°™ì§€ ì•Šì„ ë•Œë§Œ ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
         if (!animator.GetCurrentAnimatorStateInfo(0).IsName(animName))
         {
             animator.SetTrigger(animName);
         }
     }
 
+    private string GetPlayAnimationName()
+    {
+        var currentState = animator.GetCurrentAnimatorStateInfo(0);
+        return currentState.IsName("Wait") ? "Wait" : currentState.IsName("Watch") ? "Watch" : currentState.IsName("Danger") ? "Danger" : "Near";
+    }
+
     private void PlayRandomChildAnimation(string stateName, int ranCount)
     {
         animator.SetTrigger($"{stateName}{Random.Range(0, ranCount) + 1}");
+    }
+
+    private void MomBreathSoundPlay()
+    {
+        if (!AudioManager.Instance.DuplicateCheck(AudioManager.Instance.momBreath)) 
+            AudioManager.Instance.PlaySound(AudioManager.Instance.momBreath, momHeadPosition.position);
+        AudioManager.Instance.SetPosition(AudioManager.Instance.momBreath, momHeadPosition.position);
+    }
+
+    private void DadBreathSoundPlay()
+    {
+        if (isDadAngry)
+        {
+            if (!AudioManager.Instance.DuplicateCheck(AudioManager.Instance.dadBreath)) 
+            AudioManager.Instance.PlaySound(AudioManager.Instance.dadBreath, dadHead.transform.position);
+            AudioManager.Instance.SetPosition(AudioManager.Instance.dadBreath, dadHead.transform.position);
+        }
+    }
+
+    // private void StrangleSoundPlay()
+    // {
+    //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.dadStrangle, this.transform.position);
+    // }
+
+    private IEnumerator dadWalkSoundSetPosition()
+    {
+        while (true)
+        {
+            AudioManager.Instance.SetPosition(AudioManager.Instance.dadWalk, dadWalkSoundPosition.position);
+            yield return null;
+        }
     }
 }

@@ -134,11 +134,14 @@ public class AudioManager : MonoSingleton<AudioManager>
     [field: Header("Dad Walk SFX")]
     [field: SerializeField] public EventReference dadWalk {get; private set;}
 
-    [field: Header("Dad Sigh SFX")]
-    [field: SerializeField] public EventReference dadSigh {get; private set;}
+    [field: Header("Dad Breath SFX")]
+    [field: SerializeField] public EventReference dadBreath {get; private set;}
 
     [field: Header("Mom Breath SFX")]
     [field: SerializeField] public EventReference momBreath {get; private set;}
+
+    [field: Header("Dad Strangle SFX")]
+    [field: SerializeField] public EventReference dadStrangle {get; private set;}
     #endregion
 
     #region Gimmick FMOD Events
