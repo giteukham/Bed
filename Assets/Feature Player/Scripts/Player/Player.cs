@@ -412,8 +412,8 @@ public class Player : PlayerBase
             
             timer += Time.deltaTime;
             
-            horizontalRecentering.DoRecentering(ref povCamera.m_HorizontalAxis, Time.deltaTime * int.MaxValue, horizontal);
-            verticalRecentering.DoRecentering(ref povCamera.m_VerticalAxis, Time.deltaTime * int.MaxValue, vertical);
+            horizontalRecentering.DoRecentering(ref povCamera.m_HorizontalAxis, 0f, horizontal);
+            verticalRecentering.DoRecentering(ref povCamera.m_VerticalAxis, 0f, vertical);
             
             yield return null;
         }
