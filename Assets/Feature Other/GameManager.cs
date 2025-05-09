@@ -372,25 +372,8 @@ public class GameManager : MonoSingleton<GameManager>
             if (gimmickTimer >= totalTime) return false;        
             
             gimmickTimer += Time.deltaTime;
-            
-            if (gimmickTimer >= nonMarkovGimmickInterval[0].x && gimmickTimer < nonMarkovGimmickInterval[0].y && gimmickActive == false)
-            {
-                StartRandomGimmick(5);
-                gimmickActive = true;
-            }
-            else if (gimmickTimer >= nonMarkovGimmickInterval[1].x && gimmickTimer < nonMarkovGimmickInterval[1].y && gimmickActive == true)
-            {
-                StartRandomGimmick(4);
-                gimmickActive = false;
-            }
-            else if (gimmickTimer >= nonMarkovGimmickInterval[2].x && gimmickTimer < nonMarkovGimmickInterval[2].y && gimmickActive == false)
-            {
-                StartRandomGimmick(3);
-                gimmickActive = true;
-            }
 
-            // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
-            if (demoGimmicks[idx].activeSecTime == (int) gimmickTimer)
+            if (Mathf.Approximately(gimmickTimer, markovGimmickActiveTime))
             {
                 if (PlayerConstant.isLeftState || PlayerConstant.isLeftFrontLook)
                 {
@@ -412,7 +395,27 @@ public class GameManager : MonoSingleton<GameManager>
                     exGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick == "Neighbor" ? "Parents" : "Neighbor");
                     Debug.Log("Random - " + currGimmick.name );
                 }
+            }
+            
+            if (gimmickTimer >= nonMarkovGimmickInterval[0].x && gimmickTimer < nonMarkovGimmickInterval[0].y && gimmickActive == false)
+            {
+                StartRandomGimmick(5);
+                gimmickActive = true;
+            }
+            else if (gimmickTimer >= nonMarkovGimmickInterval[1].x && gimmickTimer < nonMarkovGimmickInterval[1].y && gimmickActive == true)
+            {
+                StartRandomGimmick(4);
+                gimmickActive = false;
+            }
+            else if (gimmickTimer >= nonMarkovGimmickInterval[2].x && gimmickTimer < nonMarkovGimmickInterval[2].y && gimmickActive == false)
+            {
+                StartRandomGimmick(3);
+                gimmickActive = true;
+            }
 
+            // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
+            if (demoGimmicks[idx].activeSecTime == (int) gimmickTimer)
+            {
                 markovGimmick = currGimmick as IMarkovGimmick;
                 exMarkovGimmick = exGimmick as IMarkovGimmick;
                 markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
@@ -474,7 +477,7 @@ public class GameManager : MonoSingleton<GameManager>
 
                 if (timer >= interval)
                 {
-                    //GimmickManager.Instance.PickDemoGimmick();
+                    GimmickManager.Instance.PickDemoGimmick();
                     Debug.Log("Interval : " + interval + "Gimmick Timer : " + gimmickTimer);
                     timer = 0f;
                 }

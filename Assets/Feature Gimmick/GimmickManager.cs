@@ -7,7 +7,8 @@ using UnityEngine;
 [System.Serializable]
 public class GimmickManager : MonoSingleton<GimmickManager>
 {
-    [SerializeField] private List<Gimmick> AllGimicks ;
+    [SerializeField] private List<Gimmick> AllGimicks;
+    [SerializeField] private List<IMarkovGimmick> AllMarkovGimmicks;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
 
     public Gimmick CurrentGimmick { get; private set; } = null;
@@ -77,18 +78,16 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     
     public void PickDemoGimmick()
     {
-        foreach (Gimmick gimmick in AllGimicks)
+        var gimmick = AllGimicks[0];
+        if (typeof(NeighborGimmick) == gimmick.GetType() || typeof(ParentsGimmick) == gimmick.GetType())
         {
-            {
-                if(gimmick.ExclusionGimmickList != null) 
-                    foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList) 
-                        AllGimicks.Remove(exclusionGimmick);
-
-                if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
-                gimmick.Activate();
-                break;
-            }
+            AllGimicks.Remove(gimmick);
+            PickDemoGimmick();
         }
+        
+        if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
+        gimmick.Activate();
+        AllGimicks.Remove(gimmick);
     }
 
     public Gimmick ForceActivateGimmick(string gimmickName)

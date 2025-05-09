@@ -11,21 +11,17 @@ public class Breathing : Gimmick
     public override List<Gimmick> ExclusionGimmickList { get; set; }
     public override void UpdateProbability()
     {
-        
+        if (GameManager.Instance.isDemo) probability = 100f;
     }
 
     public override void Initialize()
     {
     }
 
-    private void Start()
-    {
-    }
-
     public override void Activate()
     {
         base.Activate();
-        // AudioManager.Instance.PlayOneShot(AudioManager.Instance.breathingInRoom, transform.position);
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.breathingInRoom, transform.position);
     }
 
     public override void Deactivate()

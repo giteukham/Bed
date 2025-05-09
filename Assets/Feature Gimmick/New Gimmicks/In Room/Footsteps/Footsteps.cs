@@ -12,14 +12,10 @@ public class Footsteps : Gimmick
     
     public override void UpdateProbability()
     {
-        
+        if (GameManager.Instance.isDemo) probability = 100f;
     }
 
     public override void Initialize()
-    {
-    }
-
-    private void Start()
     {
     }
 

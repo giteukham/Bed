@@ -10,21 +10,17 @@ public class RingTone : Gimmick
     public override List<Gimmick> ExclusionGimmickList { get; set; }
     public override void UpdateProbability()
     {
+        if (GameManager.Instance.isDemo) probability = 100f;
     }
 
     public override void Initialize()
     {
     }
     
-    private void Start()
-    {
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.ringToneInHouse, transform.position);
-    }
-    
     public override void Activate()
     {
         base.Activate();
-        // AudioManager.Instance.PlayOneShot(AudioManager.Instance.ringToneInHouse, transform.position);
+        AudioManager.Instance.PlayOneShot(AudioManager.Instance.ringToneInHouse, transform.position);
     }
     
     public override void Deactivate()
