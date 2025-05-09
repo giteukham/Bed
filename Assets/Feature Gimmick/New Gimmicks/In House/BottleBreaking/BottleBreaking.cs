@@ -2,30 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AbstractGimmick;
+using FMODUnity;
 using UnityEngine;
 
-public class BottleBreaking : Gimmick
+public class BottleBreaking : SoundOnlyGimmick
 {
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
+    protected override EventReference soundEvent { get; set; }
+
     public override void UpdateProbability()
     {
         if (GameManager.Instance.isDemo) probability = 100f;
     }
 
-    public override void Initialize()
+    private void Start()
     {
-    }
-    
-    public override void Activate()
-    {
-        base.Activate();
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.bottleBreakingInHouse, transform.position);
+        soundEvent = AudioManager.Instance.bottleBreakingInHouse;
     }
 
-    public override void Deactivate()
-    {
-        base.Deactivate();
-    }
+    public override void Initialize() { }
 }

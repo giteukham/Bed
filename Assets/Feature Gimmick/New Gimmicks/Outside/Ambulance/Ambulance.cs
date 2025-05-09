@@ -1,30 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using AbstractGimmick;
+using FMODUnity;
 using UnityEngine;
 
-public class Ambulance : Gimmick
+public class Ambulance : SoundOnlyGimmick
 {
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
+    protected override EventReference soundEvent { get; set; }
+
     public override void UpdateProbability()
     {
         if (GameManager.Instance.isDemo) probability = 100f;
     }
 
-    public override void Initialize()
-    {
-    }
+    public override void Initialize() { }
     
-    public override void Activate()
+    private void Start()
     {
-        base.Activate();
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.ambulanceOutside, transform.position);
-    }
-    
-    public override void Deactivate()
-    {
-        base.Deactivate();
+        soundEvent = AudioManager.Instance.ambulanceOutside;
     }
 }

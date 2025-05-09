@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 using Unity.VisualScripting;
 using FMOD.Studio;
+using UnityEngine.Assertions;
 
 public class AudioManager : MonoSingleton<AudioManager>
 {
@@ -233,7 +235,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     #endregion
 
     // Key 이벤트 참조 값, Value 이벤트 인스턴스
-    private Dictionary<EventReference, EventInstance> eventInstances = new(); 
+    private Dictionary<EventReference, EventInstance> eventInstances = new();
 
     /// <summary>
     /// 소리 꺼지기 전까지 실행
@@ -389,6 +391,20 @@ public class AudioManager : MonoSingleton<AudioManager>
             eventInstance.getParameterByName(_paramName, out value);
             return value;
         }
+        return 0;
+    }
+    
+    public float GetSoundLength(EventReference _eventRef)
+    {
+        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        {
+            if (!eventInstance.isValid()) Debug.LogException(new Exception("EventInstance is not valid"));
+            
+            eventInstance.getDescription(out EventDescription eventDescription);
+            eventDescription.getLength(out int length);
+            return length / 1000f;
+        }
+        
         return 0;
     }
 }
