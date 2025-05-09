@@ -82,12 +82,14 @@ public class GimmickManager : MonoSingleton<GimmickManager>
         if (typeof(NeighborGimmick) == gimmick.GetType() || typeof(ParentsGimmick) == gimmick.GetType())
         {
             AllGimicks.Remove(gimmick);
+            AllGimicks.Add(gimmick);
             PickDemoGimmick();
         }
         
         if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
         gimmick.Activate();
         AllGimicks.Remove(gimmick);
+        AllGimicks.Add(gimmick);
     }
 
     public Gimmick ForceActivateGimmick(string gimmickName)
