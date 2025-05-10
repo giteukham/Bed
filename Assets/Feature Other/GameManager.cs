@@ -128,6 +128,8 @@ public class GameManager : MonoSingleton<GameManager>
     
     [SerializeField]
     private List<MarkovGimmickData> demoGimmicks = new();
+
+    public Gimmick testGimmick;
     
     private void OnValidate()
     // 값이 0이면 기본 값으로 설정
@@ -205,9 +207,17 @@ public class GameManager : MonoSingleton<GameManager>
                 //UIManager.Instance.ActivateUICanvas(true);
             }
         }
-
         #if UNITY_EDITOR
             DebugFunctions();
+
+            if (Input.GetKeyDown(KeyCode.Q) && !Input.GetKey(KeyCode.LeftShift))
+            {
+                testGimmick.Activate();
+            }
+            if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftShift))
+            {
+                testGimmick.Deactivate();
+            }
         #endif
     }
 
@@ -370,7 +380,6 @@ public class GameManager : MonoSingleton<GameManager>
         yield return new WaitWhile(() =>
         {
             if (gimmickTimer >= totalTime) return false;        
-            
             gimmickTimer += Time.deltaTime;
 
             if (Mathf.Approximately(gimmickTimer, markovGimmickActiveTime))
