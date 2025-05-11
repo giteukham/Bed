@@ -21,6 +21,7 @@ public interface IMarkovGimmick
 {
     public MarkovState CurrState { get; set; }
     public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
+    public bool IsOn { get; set; }
     
     public MarkovState Wait { get; set; }
     public MarkovState Watch { get; set; }

@@ -38,7 +38,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     private MarkovChain chain = new MarkovChain();
     public MarkovState CurrState { get; set; } = null;
     public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
-    
+    public bool IsOn { get; set; } = false;
+
     private List<MarkovState> statesWithoutNear = new List<MarkovState>();
     public MarkovState Wait { get; set; }       = new MarkovState("Wait");
     public MarkovState Watch { get; set; }      = new MarkovState("Watch");
@@ -131,12 +132,14 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     public override void Activate()
     {
         base.Activate();
+        IsOn = true;
         ChangeMarkovState(Watch);
     }
 
     public override void Deactivate()
     {
         base.Deactivate();
+        IsOn = false;
     }
 
     public override void UpdateProbability()

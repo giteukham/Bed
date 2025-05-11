@@ -1,22 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using UnityEngine;
 using AbstractGimmick;
+using AYellowpaper.SerializedCollections;
 using Bed.Collider;
-using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
-using UnityEngine.Playables;
+using Unity.VisualScripting;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 public class NeighborGimmick : Gimmick, IMarkovGimmick
 {
+    [Serializable]
+    struct StateProbabilityData
+    {
+        public MarkovGimmickData.MarkovGimmickType type;
+        
+        /// <summary>
+        /// 잡음 임계값
+        /// </summary>
+        public int noiseThreshold;
+        
+        /// <summary>
+        /// 확률 증감치
+        /// </summary>
+        public int probabilityChangeValue;
+    }
+    
     #region Override Variables
     public string GimmickName { get; protected set; } = "Neighbor";
     [field: SerializeField] public override GimmickType type { get; protected set; }
@@ -39,7 +50,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     private int moveProbability = 0;                // 초기값 0. 최댓값 100. moveChance보다 크면 움직임
     
     [Range(0, 100)]
-    private int statePassByNextValue = 35;    // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
+    private int statePassByNextValue = 35;          // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
     
     private int stateTransitionProbability = 0;     // 상태가 변화할 확률 변화 값
     public int StateTransitionProbability
@@ -62,6 +73,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     
     public MarkovState CurrState { get; set; } = null;
     public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
+    public bool IsOn { get; set; } = false;
 
     private List<MarkovState> statesWithoutNear = new List<MarkovState>();
     public MarkovState Wait { get; set; }       = new MarkovState("Wait");
@@ -72,10 +84,19 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     
     [SerializeField] private BreathSound breathSound;
     
+    [Header("설정")]
+    
+    [SerializeField]
+    [Tooltip("특정 상황에 변화하는 상태 확률값")]
+    private List<StateProbabilityData> stateProbabilities = new();
+
+    [SerializeField]
+    [Tooltip("눈 쳐다볼 때 감소하는 상태 확률. Threshold는 안 씀.")]
+    private List<StateProbabilityData> stateProbabilitiesLookEye = new();
+    
     private Coroutine eyeCloseCheckCoroutine = null;
     private Coroutine cautiousCheckCoroutine = null;
     #endregion
-
     
     private void Update()
     {
@@ -169,12 +190,14 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     public override void Activate()
     {
         base.Activate();
+        IsOn = true;
         ChangeMarkovState(Watch);
     }
 
     public override void Deactivate()
     {
         base.Deactivate();
+        IsOn = false;
     }
 
     public override void UpdateProbability()
@@ -185,6 +208,13 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         
         // 특정 상황에 상태 확률을 decision으로 지정
         stateTransitionDecisionValue = stateTransitionProbability;
+
+        if (GameManager.Instance.isDemo == false && IsOn == true)
+        {
+            ChangeStateProbability();
+            ChangeStateProbabilitySeeingNeighbor(Watch);
+            Debug.Log("State Probability " + stateTransitionProbability);
+        }
     }
 
     public void ChangeRandomMarkovState()
@@ -249,11 +279,6 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         {
             StopCoroutine(stateProbabilityChangeCoroutine);
             stateProbabilityChangeCoroutine = null;
-        }
-
-        if (!GameManager.Instance.isDemo)
-        {
-            stateProbabilityChangeCoroutine = StartCoroutine(ChangeNeighborStateProbability());
         }
         
         switch (state)
@@ -352,9 +377,9 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
                 yield break;
         }
-        
-        var markovTransitions = chain[state];
-        yield return new WaitUntil(() => stateTransitionDecisionValue >= markovTransitions[0].ThresholdRange.y);
+
+        yield return new WaitUntil(() => IsOn == true);
+        yield return new WaitForSeconds(TimeManager.Instance.CycleInterval);
         if (statePassByNextValue <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
             CurrState = chain.TransitionNextState(CurrState, stateTransitionDecisionValue);
@@ -413,41 +438,57 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 yield return null;
             }
         }
+    }
+    
+    /// <summary>
+    /// 현재 상태에 따라 특정 상황이 되면 다음 상태로 갈 확률이 증가하거나 감소하는 코루틴
+    /// </summary>
+    private void ChangeStateProbability()
+    {
+        if (CurrState.Equals(Wait) || CurrState.Equals(Near)) return;
         
-        IEnumerator ChangeNeighborStateProbability()
+        foreach (var data in stateProbabilities)
         {
-            if (state.Equals(Wait) || state.Equals(Near)) yield break;
-            
-            var stateParams = new Dictionary<MarkovState, (int noiseThreshold, int probabilityChangeValue)>
+            if (data.type != CurrState.Type) continue;
+                
+            // NoiseLevel이 특정 값 이상일 경우 상태 확률 증가
+            if (IsLoud(data.noiseThreshold))
             {
-                { Watch, (30, 2) },
-                { Cautious, (40, 3) },
-                { Danger, (50, 4) }
-            };
-
-            while (true)
+                StateTransitionProbability -= data.probabilityChangeValue;
+            }
+            // NoiseLevel이 특정 값 이하이거나 눈을 감고 있으면 상태 확률 증가
+            else if (!IsLoud(data.noiseThreshold) || !PlayerConstant.isEyeOpen)
             {
-                if (stateParams.TryGetValue(state, out var param))
-                {
-                    if (IsLoud(param.noiseThreshold) ||
-                        (ConeCollider.TriggeredObject != null && ConeCollider.TriggeredObject.Equals(neighborHead)))
-                    {
-                        StateTransitionProbability -= param.probabilityChangeValue;
-                    }
-                    else if (!IsLoud(param.noiseThreshold) || !ConeCollider.TriggeredObject.Equals(neighborHead) ||
-                             !PlayerConstant.isEyeOpen)
-                    {
-                        StateTransitionProbability += param.probabilityChangeValue;
-                    }
-                }
-                Debug.Log("State Probability " + stateTransitionProbability);
-
-                // 확률 값이 증가하는 시간
-                yield return new WaitForSeconds(TimeManager.Instance.CycleInterval);
+                StateTransitionProbability += data.probabilityChangeValue;
             }
         }
+    }
 
-        bool IsLoud(int noise) => PlayerConstant.noiseLevel >= noise;
+    bool IsLoud(int noise) => PlayerConstant.noiseLevel >= noise;
+    
+    /// <summary>
+    /// 이웃을 보고 있으면 매개변수 상태 별로 값이 다르게 다음 상태 확률을 증감하는 코루틴
+    /// </summary>
+    /// <param name="state"></param>
+    private void ChangeStateProbabilitySeeingNeighbor(MarkovState state)
+    {
+        if (!CurrState.Equals(state)) return;
+        
+        foreach (var data in stateProbabilitiesLookEye)
+        {
+            if (data.type != state.Type) continue;
+
+            // 이웃을 보고 있으면 상태 확률 감소
+            if (ConeCollider.TriggeredObject&& ConeCollider.TriggeredObject.Equals(neighborHead))
+            {
+                StateTransitionProbability -= data.probabilityChangeValue;
+            }
+            // 이웃을 안 보고 있으면 상태 확률 증가
+            else if ((ConeCollider.TriggeredObject&& !ConeCollider.TriggeredObject.Equals(neighborHead)) || !ConeCollider.TriggeredObject)
+            {
+                StateTransitionProbability += data.probabilityChangeValue;
+            }
+        }
     }
 
     private void PlayAnimationWithoutDuplication(string animName)

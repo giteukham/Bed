@@ -115,7 +115,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     // 기믹별 등장확률 재정의(UpdateProbability는 각 기믹 스크립트마다 다름)
     public void RedefineProbability()
     {
-        foreach (Gimmick gimmick in AllGimicks)
+        foreach (Gimmick gimmick in AllGimicks.ToList())
         {
             gimmick?.UpdateProbability();
         }
