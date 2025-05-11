@@ -11,6 +11,7 @@ public class TimeManager : MonoSingleton<TimeManager>
     [Header("Game Time Variables")]
     [SerializeField, Tooltip("기본 3초")]private float timeInterval; // 시간 흐름 간격 값
     private float cycleInterval; // 사이클 간격
+    public float CycleInterval => cycleInterval;
     private const int TARGET_TIME_TO_MIN = 480; // 게임 시간 480분(현실 시간1440초)이 흐르면 끝
     public static int playTimeToMin = 0;  // 게임 시간 기준 누적 분
     private float realTimeCounter; // 실제로 흐르는 시간

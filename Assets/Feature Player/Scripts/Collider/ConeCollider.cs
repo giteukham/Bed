@@ -43,6 +43,7 @@ namespace Bed.Collider
         {
             if (other.gameObject.CompareTag("Gimmick"))
             {
+                triggeredObject = null;
                 if (other.gameObject.TryGetComponent(out Gimmick gimmick))
                 {
                     Debug.Log("isDetected = false");

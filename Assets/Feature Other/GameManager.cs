@@ -100,21 +100,26 @@ public class GameManager : MonoSingleton<GameManager>
     
     [Header("데모")]
     // 데모 씬 전용. 데모 씬은 반드시 이름이 Demo여야 함.
+    
+    [SerializeField]
     public bool isDemo = false;
+
+    private bool isDemoActive = false;
     private Coroutine demoCoroutine = null;
-    private Coroutine randomGimmickCoroutine = null;
     
     [Tooltip("데모 씬에서 총 기믹 시간. 기본값 300")]
     private int totalTime = 0;
     
+    [FormerlySerializedAs("nonMarkovGimmickActiveTime")]
     [Space]
     [SerializeField]
     [Tooltip("맨 처음에 기믹이 활성화 되는 시간. 기본값 60")]
-    private int nonMarkovGimmickActiveTime = 60;
+    private int randomGimmickActiveTime = 60;
     
+    [FormerlySerializedAs("nonMarkovGimmickInterval")]
     [SerializeField]
     [Tooltip("이웃, 부모 기믹이 아닌 기믹들이 출현할 때 \n5, 4, 3초씩 출현하는데 각 초 유지 시간 간격")]
-    private Vector2Int[] nonMarkovGimmickInterval = new Vector2Int[3]
+    private Vector2Int[] randomGimmickInterval = new Vector2Int[3]
     {
         new Vector2Int(60, 150),
         new Vector2Int(150, 240),
@@ -149,7 +154,7 @@ public class GameManager : MonoSingleton<GameManager>
         motherAnimator = dad.GetComponent<Animator>();
         //InputSystem.Instance.OnMouseClickEvent += () => PlayerConstant.isPlayerStop = false;
 
-        if (SceneManager.GetActiveScene().name.Equals("Demo")) isDemo = true;
+        // if (SceneManager.GetActiveScene().name.Equals("Demo")) isDemo = true;
 
         //예전 마지막 플레이 시간 가져옴
         DateTime ago = DateTime.ParseExact(SaveManager.Instance.LoadLastPlayedTime(), "yyyyMMddHHmm", CultureInfo.InvariantCulture);
@@ -346,17 +351,14 @@ public class GameManager : MonoSingleton<GameManager>
         
         if (demoCoroutine != null)
         {
+            isDemoActive = false;
             StopCoroutine(demoCoroutine);
-            StopCoroutine(randomGimmickCoroutine);
             demoCoroutine = null;
-            randomGimmickCoroutine = null;
         }
     }
 
     IEnumerator DemoCoroutine()
-    {   
-        var gimmickTimer = 0f;
-        var gimmickActive = false;
+    {
         var activeSecTimesTmp = new List<int>();
         
         foreach (var demoGimmick in demoGimmicks)
@@ -368,98 +370,29 @@ public class GameManager : MonoSingleton<GameManager>
             }
         }
 
-        totalTime = demoGimmicks[demoGimmicks.Count - 1].activeSecTime;
-
-        // 1분 되면 일반 기믹 활성화
-        yield return new WaitForSeconds(nonMarkovGimmickActiveTime);
-
-        var idx = 0;
+        totalTime = demoGimmicks[demoGimmicks.Count - 1].activeSecTime + markovGimmickActiveTime;
+        
         IMarkovGimmick markovGimmick = null, exMarkovGimmick = null;
         Gimmick currGimmick = null, exGimmick = null;
+
+        var demoTimer = 0f;
+        
+        isDemoActive = true;
+        StartCoroutine(StartMarkovGimmicks());
+        StartCoroutine(StartRandomGimmicks());
         
         yield return new WaitWhile(() =>
         {
-            if (gimmickTimer >= totalTime) return false;        
-            gimmickTimer += Time.deltaTime;
-
-            if (Mathf.Approximately(gimmickTimer, markovGimmickActiveTime))
-            {
-                if (PlayerConstant.isLeftState || PlayerConstant.isLeftFrontLook)
-                {
-                    currGimmick = GimmickManager.Instance.ForceActivateGimmick("Neighbor");
-                    exGimmick = GimmickManager.Instance.ForceActivateGimmick("Parents");
-                    Debug.Log("PlayerConstant.isLeftState - " + currGimmick.name );
-                }
-                else if (PlayerConstant.isRightState || PlayerConstant.isRightFrontLook|| PlayerConstant.isEyeOpen == false)
-                {
-                    currGimmick = GimmickManager.Instance.ForceActivateGimmick("Parents");
-                    exGimmick = GimmickManager.Instance.ForceActivateGimmick("Neighbor");
-                    Debug.Log("PlayerConstant.isRightState || PlayerConstant.isEyeOpen == false - " + currGimmick.name );
-                }
-                else
-                {
-                    var ran = Random.Range(0, 1);
-                    var randomGimmick = ran == 0 ? "Neighbor" : "Parents";
-                    currGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick);
-                    exGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick == "Neighbor" ? "Parents" : "Neighbor");
-                    Debug.Log("Random - " + currGimmick.name );
-                }
-            }
-            
-            if (gimmickTimer >= nonMarkovGimmickInterval[0].x && gimmickTimer < nonMarkovGimmickInterval[0].y && gimmickActive == false)
-            {
-                StartRandomGimmick(5);
-                gimmickActive = true;
-            }
-            else if (gimmickTimer >= nonMarkovGimmickInterval[1].x && gimmickTimer < nonMarkovGimmickInterval[1].y && gimmickActive == true)
-            {
-                StartRandomGimmick(4);
-                gimmickActive = false;
-            }
-            else if (gimmickTimer >= nonMarkovGimmickInterval[2].x && gimmickTimer < nonMarkovGimmickInterval[2].y && gimmickActive == false)
-            {
-                StartRandomGimmick(3);
-                gimmickActive = true;
-            }
-
-            // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
-            if (demoGimmicks[idx].activeSecTime == (int) gimmickTimer)
-            {
-                markovGimmick = currGimmick as IMarkovGimmick;
-                exMarkovGimmick = exGimmick as IMarkovGimmick;
-                markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
-                exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
-                
-                activeSecTimesTmp.Add(demoGimmicks[idx].activeSecTime);
-                demoGimmicks[idx].activeSecTime = 0;
-                idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;
-            }
+            if (demoTimer >= totalTime) return false;        
+            demoTimer += Time.deltaTime;
             
             return true;
         });
-        StopCoroutine(randomGimmickCoroutine);
-
-        if (PlayerConstant.isLeftState || PlayerConstant.isLeftFrontLook)
-        {
-            currGimmick = GimmickManager.Instance.ForceActivateGimmick("Neighbor");
-            Debug.Log("PlayerConstant.isLeftState - " + currGimmick.name );
-        }
-        else if (PlayerConstant.isRightState || PlayerConstant.isRightFrontLook|| PlayerConstant.isEyeOpen == false)
-        {
-            currGimmick = GimmickManager.Instance.ForceActivateGimmick("Parents");
-            Debug.Log("PlayerConstant.isRightState || PlayerConstant.isEyeOpen == false - " + currGimmick.name );
-        }
-        else
-        {
-            var ran = Random.Range(0, 1);
-            var randomGimmick = ran == 0 ? "Neighbor" : "Parents";
-            currGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick);
-            Debug.Log("Random - " + currGimmick.name );
-        }
-
+        
+        isDemoActive = false;
         markovGimmick = currGimmick as IMarkovGimmick;
-        markovGimmick.ChangeMarkovState(markovGimmick.Near);
-
+        markovGimmick?.ChangeMarkovState(markovGimmick?.Near);
+        
         // 기믹 활성화 시간 초기화
         for (int i = 0; i < demoGimmicks.Count; i++)
         {
@@ -467,31 +400,84 @@ public class GameManager : MonoSingleton<GameManager>
         }
         yield break;
 
-        void StartRandomGimmick(int interval)
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        IEnumerator StartMarkovGimmicks()
         {
-            if (randomGimmickCoroutine != null)
+            yield return new WaitForSeconds(markovGimmickActiveTime);
+            
+            var markovGimmickTimer = 0f;
+            var idx = 0;
+            
+            if (PlayerConstant.isLeftState || PlayerConstant.isLeftFrontLook)
             {
-                StopCoroutine(randomGimmickCoroutine);
+                currGimmick = GimmickManager.Instance.ForceActivateGimmick("Neighbor");
+                exGimmick = GimmickManager.Instance.ForceActivateGimmick("Parents");
+                Debug.Log("PlayerConstant.isLeftState - " + currGimmick.name );
             }
-            randomGimmickCoroutine = StartCoroutine(ActiveRandomGimmickWithInterval(interval));
-        }
-        
-        IEnumerator ActiveRandomGimmickWithInterval(int interval)
-        {
-            var timer = 0f;
-            yield return new WaitWhile(() =>
+            else if (PlayerConstant.isRightState || PlayerConstant.isRightFrontLook|| PlayerConstant.isEyeOpen == false)
             {
-                if (gimmickTimer >= totalTime) return false;
-                timer += Time.deltaTime;
+                currGimmick = GimmickManager.Instance.ForceActivateGimmick("Parents");
+                exGimmick = GimmickManager.Instance.ForceActivateGimmick("Neighbor");
+                Debug.Log("PlayerConstant.isRightState || PlayerConstant.isEyeOpen == false - " + currGimmick.name );
+            }
+            else
+            {
+                var ran = Random.Range(0, 1);
+                var randomGimmick = ran == 0 ? "Neighbor" : "Parents";
+                currGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick);
+                exGimmick = GimmickManager.Instance.ForceActivateGimmick(randomGimmick == "Neighbor" ? "Parents" : "Neighbor");
+                Debug.Log("Random - " + currGimmick.name );
+            }
 
-                if (timer >= interval)
+            while (true)
+            {
+                // 인스펙터에서 정한 시간이 되면 정해진 상태로 변환
+                if (demoGimmicks[idx].activeSecTime == (int) demoTimer)
                 {
-                    GimmickManager.Instance.PickDemoGimmick();
-                    Debug.Log("Interval : " + interval + "Gimmick Timer : " + gimmickTimer);
-                    timer = 0f;
+                    markovGimmick = currGimmick as IMarkovGimmick;
+                    exMarkovGimmick = exGimmick as IMarkovGimmick;
+                    markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
+                    exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
+                
+                    activeSecTimesTmp.Add(demoGimmicks[idx].activeSecTime);
+                    demoGimmicks[idx].activeSecTime = 0;
+                    idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;
                 }
-                return true;
-            });
+                if (demoTimer >= totalTime || isDemoActive == false) yield break;
+
+                yield return null;
+            }
+        }
+
+        IEnumerator StartRandomGimmicks()
+        {
+            // 1분 되면 랜덤 기믹 활성화
+            yield return new WaitForSeconds(randomGimmickActiveTime);
+
+            var randomGimmickIntervalIdx = 0;
+            var initInterval = 5;
+            while (true)
+            {
+                if (demoTimer >= randomGimmickInterval[randomGimmickIntervalIdx].y)
+                {
+                    randomGimmickIntervalIdx = 
+                        randomGimmickIntervalIdx < randomGimmickInterval.Length - 1 ? 
+                            randomGimmickIntervalIdx + 1 : randomGimmickIntervalIdx;
+                    initInterval--;
+                }
+                
+                if (demoTimer >= randomGimmickInterval[randomGimmickIntervalIdx].x 
+                    && demoTimer < randomGimmickInterval[randomGimmickIntervalIdx].y)
+                {
+                    yield return new WaitForSeconds(initInterval);
+                    GimmickManager.Instance.PickDemoGimmick();
+                    Debug.Log("Interval : " + initInterval);
+                }
+                
+                if (demoTimer >= totalTime || isDemoActive == false) yield break;
+
+                yield return null;
+            }
         }
     }
     
@@ -527,7 +513,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void DebugFunctions()
     {
-        #if UNITY_EDITOR   
+        #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.U))
         {
             if (currentState == GameState.Preparation) SetState(GameState.GamePlay);

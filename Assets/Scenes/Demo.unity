@@ -12725,9 +12725,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5150df12bc324111aafcebe3796f22b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontal: 9
-  vertical: 4.65
-  distance: 10
+  horizontal: 10
+  vertical: 5
+  distance: 16
   epllipseSegments: 100
   debugImage: {fileID: 1385739452}
 --- !u!54 &801348872
@@ -33865,9 +33865,9 @@ MonoBehaviour:
   door: {fileID: 984148487}
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
-  isDemo: 1
-  nonMarkovGimmickActiveTime: 5
-  nonMarkovGimmickInterval:
+  isDemo: 0
+  randomGimmickActiveTime: 5
+  randomGimmickInterval:
   - {x: 5, y: 10}
   - {x: 10, y: 15}
   - {x: 15, y: 30}

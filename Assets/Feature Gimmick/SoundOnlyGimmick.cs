@@ -9,10 +9,6 @@ using STOP_MODE = FMOD.Studio.STOP_MODE;
 
 public abstract class SoundOnlyGimmick : Gimmick
 {
-    public override GimmickType type { get; protected set; }
-    public override float probability { get; set; }
-    public override List<Gimmick> ExclusionGimmickList { get; set; }
-    
     protected abstract EventReference soundEvent { get; set; }
     
     private Coroutine deactivateCoroutine;
