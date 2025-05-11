@@ -11892,12 +11892,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 791651172}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.49863315, y: -0.18397789, z: -0.15723732, w: 0.83234227}
-  m_LocalPosition: {x: 13.709969, y: -8.567911, z: 1.8421206}
-  m_LocalScale: {x: 0.95238066, y: 0.9523811, z: 0.9523808}
+  m_LocalRotation: {x: -0.00000000786406, y: -0.00000005960463, z: 0.000000010565453, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1554498596276130033}
+  m_Father: {fileID: 855007166}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &791651174
 MeshRenderer:
@@ -12736,6 +12736,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1515282319}
+  - {fileID: 791651173}
   - {fileID: 1908902886}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -23939,6 +23940,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1623851644}
   m_CullTransparentMesh: 1
+--- !u!65 &1638391161
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554498596276130029}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09965641, y: 0.13919614, z: 0.17468041}
+  m_Center: {x: -0.0077529917, y: 0.056347832, z: -0.050453458}
 --- !u!1 &1641359432
 GameObject:
   m_ObjectHideFlags: 0
@@ -25724,6 +25746,27 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
   m_PrefabInstance: {fileID: 1554498596276130028}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &1734810451
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734810449}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.12427768, y: 0.16614394, z: 0.20887345}
+  m_Center: {x: -0.003202059, y: 0.090586536, z: -0.029436165}
 --- !u!1 &1737608015
 GameObject:
   m_ObjectHideFlags: 0
@@ -31788,6 +31831,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: m_TagString
+      value: Gimmick
+      objectReference: {fileID: 0}
     - target: {fileID: 1995664804686017191, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -31900,6 +31947,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5655737833979438045, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: m_TagString
+      value: Gimmick
+      objectReference: {fileID: 0}
     - target: {fileID: 5969552217973519137, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -31994,10 +32045,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8136753389283918749, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1099738031}
-    - targetCorrespondingSourceObject: {fileID: 4356082195052858418, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 791651173}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1734810451}
+    - targetCorrespondingSourceObject: {fileID: 5655737833979438045, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1638391161}
   m_SourcePrefab: {fileID: 100100000, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
 --- !u!1 &1554498596276130029 stripped
 GameObject:
@@ -32017,11 +32071,6 @@ Transform:
 --- !u!4 &1554498596276130032 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8136753389283918749, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
-  m_PrefabInstance: {fileID: 1554498596276130028}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1554498596276130033 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4356082195052858418, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
   m_PrefabInstance: {fileID: 1554498596276130028}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1555065011768552860
@@ -33214,13 +33263,15 @@ MonoBehaviour:
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
   isDemo: 0
-  nonMarkovGimmickActiveTime: 60
-  nonMarkovGimmickInterval:
+  isDemoActive: 0
+  randomGimmickActiveTime: 60
+  randomGimmickInterval:
   - {x: 60, y: 150}
   - {x: 150, y: 240}
   - {x: 240, y: 290}
   markovGimmickActiveTime: 120
   demoGimmicks: []
+  testGimmick: {fileID: 0}
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0

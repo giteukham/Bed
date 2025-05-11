@@ -71,6 +71,14 @@ public class GimmickManager : MonoSingleton<GimmickManager>
 
                 if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
                 gimmick.Activate();
+
+                for ( int i = AllGimicks.Count - 1; i > 0; i--) // 리스트 섞기 Fisher-Yates Shuffle
+                {
+                    int shuffleIndex = Random.Range(0, i + 1);
+                    Gimmick temp = AllGimicks[i];
+                    AllGimicks[i] = AllGimicks[shuffleIndex];
+                    AllGimicks[shuffleIndex] = temp;
+                }
                 break;
             }
         }
@@ -78,24 +86,40 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     
     public void PickDemoGimmick()
     {
-        var gimmick = AllGimicks[0];
-        if (typeof(NeighborGimmick) == gimmick.GetType() || typeof(ParentsGimmick) == gimmick.GetType())
+        for(int j = 0; j < AllGimicks.Count; j++)
         {
-            AllGimicks.Remove(gimmick);
-            AllGimicks.Add(gimmick);
-            PickDemoGimmick();
+            if(AllGimicks[j].type == GimmickType.Human) continue;
+
+            if(!AllGimicks[j].gameObject.activeSelf) AllGimicks[j].gameObject.SetActive(true);
+            Debug.Log(AllGimicks[j].name + " Activated");
+            AllGimicks[j].Activate();
+
+            for(int i = AllGimicks.Count - 1; i > 0; i--) // 리스트 섞기 Fisher-Yates Shuffle
+            {
+                int shuffleIndex = Random.Range(0, i + 1);
+                Gimmick temp = AllGimicks[i];
+                AllGimicks[i] = AllGimicks[shuffleIndex];
+                AllGimicks[shuffleIndex] = temp;
+            }
+            break;
         }
+        // var gimmick = AllGimicks[0];
+        // if (typeof(NeighborGimmick) == gimmick.GetType() || typeof(ParentsGimmick) == gimmick.GetType())
+        // {
+        //     AllGimicks.Remove(gimmick);
+        //     AllGimicks.Add(gimmick);
+        //     PickDemoGimmick();
+        // }
         
-        if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
-        gimmick.Activate();
-        AllGimicks.Remove(gimmick);
-        AllGimicks.Add(gimmick);
+        // if(!gimmick.gameObject.activeSelf) gimmick.gameObject.SetActive(true);
+        // gimmick.Activate();
+        // AllGimicks.Remove(gimmick);
+        // AllGimicks.Add(gimmick);
     }
 
-    public Gimmick ForceActivateGimmick(string gimmickName)
+    public Gimmick GetGimmick(string gimmickName)
     {
         var gimmick = AllGimicks.Find(g => g.name.Equals(gimmickName));
-        gimmick?.Activate();
 
         return gimmick;
     }
@@ -128,13 +152,13 @@ public class GimmickManager : MonoSingleton<GimmickManager>
                 AllGimicks.Add(exclusionGimmick);
         AllGimicks.Remove(gimmick);
         
-        for ( int i = AllGimicks.Count - 1; i > 0; i--) // 리스트 섞기 Fisher-Yates Shuffle
-        {
-            int randomInt = Random.Range(0, i + 1);
-            Gimmick temp = AllGimicks[i];
-            AllGimicks[i] = AllGimicks[randomInt];
-            AllGimicks[randomInt] = temp;
-        }
+        // for ( int i = AllGimicks.Count - 1; i > 0; i--) // 리스트 섞기 Fisher-Yates Shuffle
+        // {
+        //     int randomInt = Random.Range(0, i + 1);
+        //     Gimmick temp = AllGimicks[i];
+        //     AllGimicks[i] = AllGimicks[randomInt];
+        //     AllGimicks[randomInt] = temp;
+        // }
 
         AllGimicks.Add(gimmick); // 위치, 확률 초기화
         gimmick.probability = 0;

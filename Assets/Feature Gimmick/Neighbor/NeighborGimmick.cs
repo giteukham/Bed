@@ -336,7 +336,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 }
                 yield return new WaitUntil(() => PlayerConstant.isMiddleState);
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.2f)); // TODO: 특정 오브젝트 대상
-                
+                GameManager.Instance.player.ForceOpenEye();
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
                 yield return new WaitForSeconds(0.2f);  // 대기
                 
@@ -406,7 +406,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                     if (timer >= 0.5f)
                     {
                         GameManager.Instance.player.ForceOpenEye();
-                        GameManager.Instance.StopDemoCoroutine();
+                        //GameManager.Instance.StopDemoCoroutine();
                         ChangeMarkovState(Near);
                         eyeCloseCheckCoroutine = null;
                         yield break;
@@ -429,7 +429,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                     ConeCollider.TriggeredObject != null &&
                     ConeCollider.TriggeredObject.Equals(neighborHead))
                 {
-                    GameManager.Instance.StopDemoCoroutine();
+                    //GameManager.Instance.StopDemoCoroutine();
                     GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickData.MarkovGimmickType.Wait);
 
                     yield break;

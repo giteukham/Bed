@@ -31,6 +31,5 @@ public interface IMarkovGimmick
     
     void ChangeRandomMarkovState();
     void ChangeMarkovState(MarkovState next);
-
     void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type);
 }

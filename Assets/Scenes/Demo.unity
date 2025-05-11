@@ -7056,6 +7056,11 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &393480629 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5655737833979438045, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+  m_PrefabInstance: {fileID: 1554498596276130028}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &393674164
 GameObject:
   m_ObjectHideFlags: 0
@@ -26620,6 +26625,27 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
   m_PrefabInstance: {fileID: 1554498596276130028}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &1734810451
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734810449}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.13040037, y: 0.14370507, z: 0.20770638}
+  m_Center: {x: 0.0033905916, y: 0.083334744, z: -0.0372485}
 --- !u!1 &1737608015
 GameObject:
   m_ObjectHideFlags: 0
@@ -32682,6 +32708,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1734810449}
     - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: momHead
+      value: 
+      objectReference: {fileID: 393480629}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
       propertyPath: breathSound
       value: 
       objectReference: {fileID: 635529640}
@@ -32705,6 +32735,14 @@ PrefabInstance:
       propertyPath: dadWalkStartPosition
       value: 
       objectReference: {fileID: 749618651}
+    - target: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: m_TagString
+      value: Gimmick
+      objectReference: {fileID: 0}
+    - target: {fileID: 2541380769790803788, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3332841360252363291, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -32749,10 +32787,24 @@ PrefabInstance:
       propertyPath: m_Name
       value: Parents
       objectReference: {fileID: 0}
+    - target: {fileID: 5655737833979438045, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: m_TagString
+      value: Gimmick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7029133959826038951, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1734810451}
+    - targetCorrespondingSourceObject: {fileID: 5655737833979438045, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1554498596276130031}
   m_SourcePrefab: {fileID: 100100000, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
 --- !u!4 &1554498596276130029 stripped
 Transform:
@@ -32764,6 +32816,27 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3760944272501188466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
   m_PrefabInstance: {fileID: 1554498596276130028}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &1554498596276130031
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393480629}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.121623166, y: 0.12086595, z: 0.20451702}
+  m_Center: {x: -0.006246363, y: 0.06517478, z: -0.033788983}
 --- !u!1 &1555065011768552860
 GameObject:
   m_ObjectHideFlags: 0
@@ -33128,7 +33201,7 @@ MonoBehaviour:
       Data2: 1146640107
       Data3: -950502233
       Data4: 357621249
-    Path: event:/Gimmick SFX/Gag
+    Path: event:/Gimmick SFX/NeigbhorGag
   <hornyBreath>k__BackingField:
     Guid:
       Data1: 1495983981
@@ -33953,7 +34026,8 @@ MonoBehaviour:
   door: {fileID: 984148487}
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
-  isDemo: 0
+  isDemo: 1
+  isDemoActive: 0
   randomGimmickActiveTime: 5
   randomGimmickInterval:
   - {x: 5, y: 10}

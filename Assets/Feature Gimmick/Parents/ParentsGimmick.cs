@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AbstractGimmick;
+using Bed.Collider;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     #endregion
     
     #region Variables
-    public GameObject hand, dadHead;
+    public GameObject hand, dadHead, momHead;
     public Transform dadPosition, momHeadPosition, dadWalkSoundPosition, dadWalkStartPosition, dadWalkEndPosition;
     private bool isDadAngry = false;
     private Animator animator;
@@ -50,7 +51,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     private int conditionCountToNear = 3;
     [SerializeField] private BreathSound breathSound;
     
-    private Coroutine markovCoroutine, dadWalkSoundSetPositionCoroutine;
+    private Coroutine markovCoroutine, dadWalkSoundSetPositionCoroutine, checkHeadCollisionCoroutine;
     private Tween moveTween;
     #endregion
     
@@ -170,6 +171,11 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     public void ChangeMarkovState(MarkovState next)
     {
         CurrState = next;
+        if (checkHeadCollisionCoroutine != null) 
+        {
+            StopCoroutine(checkHeadCollisionCoroutine);
+            checkHeadCollisionCoroutine = null;
+        }
         CurrState.ActiveCount++;
         CurrState.Active();
     }
@@ -217,12 +223,17 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
             case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
                 AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-
                 PlayRandomChildAnimation(state.Name, 3);
                 Door.Open(20, 0.6f);
+                checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(momHead, (isCollided) =>
+                {
+                    ChangeMarkovState(Danger);
+                }));
                 break;
 
             case var _ when state.Equals(Danger):
+                if(Danger.ActiveCount >= 4) ChangeMarkovState(Near);
+
                 AudioManager.Instance.StopSound(AudioManager.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
@@ -261,9 +272,14 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 yield return new DOTweenCYInstruction.WaitForCompletion(moveTween);
                 yield return new WaitForSeconds(0.4f);
                 PlayAnimationWithoutDuplication(Danger.Name);
+                checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(dadHead, (isCollided) =>
+                {
+                    ChangeMarkovState(Near);
+                }));
                 break;
 
             case var _ when state.Equals(Near):
+                GameManager.Instance.StopDemoCoroutine();
                 AudioManager.Instance.StopSound(AudioManager.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
@@ -312,7 +328,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 }
                 yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: Ư�� ������Ʈ ���
-
+                GameManager.Instance.player.ForceOpenEye();
                 PlayerConstant.isParalysis = true;
                 yield return new WaitForSeconds(0.2f); // 대기
                 
@@ -370,6 +386,25 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         }
         
         Debug.Log("Next State: " + CurrState.Name + " Active Count : " + CurrState.ActiveCount);
+
+        IEnumerator CheckHeadCollision(GameObject targetObject, Action<bool> callback)
+        {
+            bool isCollided = false;
+            while (!isCollided)
+            {
+                if (BlinkEffect.Blink <= 0.85f && 
+                    ConeCollider.TriggeredObject != null &&
+                    ConeCollider.TriggeredObject.Equals(targetObject))
+                {
+                    callback(!isCollided);
+                    Debug.Log("Collision Detected with " + targetObject.name);
+                    isCollided = true;
+                    yield break;
+                }
+        
+                yield return null;
+            }
+        }
     }
     
     private void PlayAnimationWithoutDuplication(string animName)
