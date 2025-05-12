@@ -130,8 +130,6 @@ public class PlayerEyeControl : IPlayerControl
 
     public async UniTaskVoid ForceOpenEye()
     {
-        if (!playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close])) return;
-
         while (BlinkEffect.Blink > BLINK_VALUE_MIN)
         {
             BlinkEffect.Blink -= Time.deltaTime * 5f;
