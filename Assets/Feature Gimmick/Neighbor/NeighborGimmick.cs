@@ -12,22 +12,6 @@ using Random = UnityEngine.Random;
 
 public class NeighborGimmick : Gimmick, IMarkovGimmick
 {
-    [Serializable]
-    struct StateProbabilityData
-    {
-        public MarkovGimmickData.MarkovGimmickType type;
-        
-        /// <summary>
-        /// 잡음 임계값
-        /// </summary>
-        public int noiseThreshold;
-        
-        /// <summary>
-        /// 확률 증감치
-        /// </summary>
-        public int probabilityChangeValue;
-    }
-    
     #region Override Variables
     public string GimmickName { get; protected set; } = "Neighbor";
     [field: SerializeField] public override GimmickType type { get; protected set; }
@@ -52,16 +36,16 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     [Range(0, 100)]
     private int statePassByNextValue = 35;          // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
     
-    private int stateTransitionProbability = 0;     // 상태가 변화할 확률 변화 값
-    public int StateTransitionProbability
+    private float stateTransitionProbability = 0;     // 상태가 변화할 확률 변화 값
+    public float StateTransitionProbability
     {
         get => stateTransitionProbability;
         set => stateTransitionProbability = Mathf.Clamp(value, 0, 100);
     }
     
-    private int stateTransitionDecisionValue = 0;   // 상태 변화 확률 최종 값
+    private float stateTransitionDecisionValue = 0;   // 상태 변화 확률 최종 값
 
-    public int StateTransitionDecisionValue
+    public float StateTransitionDecisionValue
     {
         get => stateTransitionDecisionValue;
         set => stateTransitionDecisionValue = Mathf.Clamp(value, 0, 100);
@@ -213,7 +197,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         {
             ChangeStateProbability();
             ChangeStateProbabilitySeeingNeighbor(Watch);
-            Debug.Log("State Probability " + stateTransitionProbability);
+            Debug.Log("Neighbor State Probability " + stateTransitionProbability);
         }
     }
 
@@ -381,7 +365,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         yield return new WaitForSeconds(TimeManager.Instance.CycleInterval);
         if (statePassByNextValue <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
-            CurrState = chain.TransitionNextState(CurrState, stateTransitionDecisionValue);
+            CurrState = chain.TransitionNextState(CurrState, Mathf.RoundToInt(stateTransitionDecisionValue));
         }
         else
         {
@@ -449,16 +433,33 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         foreach (var data in stateProbabilities)
         {
             if (data.type != CurrState.Type) continue;
-                
-            // NoiseLevel이 특정 값 이상일 경우 상태 확률 증가
+
+            var probabilityValue = (float) data.probabilityChangeValue;
+            
+            // 눈을 감고 있으면서 몸이 왼쪽으로 돌아가 있거나 왼쪽이나 왼쪽 앞을 쳐다보고 있으면 확률 2배 증가
+            if (!PlayerConstant.isEyeOpen &&
+                (PlayerConstant.isLeftState || PlayerConstant.isLeftLook || PlayerConstant.isLeftFrontLook))
+            {
+                probabilityValue *= 2f;
+            }
+            // 몸이 왼쪽으로 돌아가 있거나 왼쪽이나 왼쪽 앞을 쳐다보거나 눈을 감고 있으면 확률 1.5배 증가
+            else if (PlayerConstant.isLeftState ||
+                PlayerConstant.isLeftLook ||
+                PlayerConstant.isLeftFrontLook ||
+                !PlayerConstant.isEyeOpen)
+            {
+                probabilityValue *= 1.5f;
+            }
+            
+            // Noise Level이 높으면 상태 확률 감소
             if (IsLoud(data.noiseThreshold))
             {
-                StateTransitionProbability -= data.probabilityChangeValue;
+                StateTransitionProbability -= probabilityValue;
             }
-            // NoiseLevel이 특정 값 이하이거나 눈을 감고 있으면 상태 확률 증가
-            else if (!IsLoud(data.noiseThreshold) || !PlayerConstant.isEyeOpen)
+            // Noise Level이 낮으면 상태 확률 증가
+            else if (!IsLoud(data.noiseThreshold))
             {
-                StateTransitionProbability += data.probabilityChangeValue;
+                StateTransitionProbability += probabilityValue;
             }
         }
     }

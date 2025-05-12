@@ -17,6 +17,22 @@ public class MarkovGimmickData
     public int activeSecTime;
 }
 
+[Serializable]
+struct StateProbabilityData
+{
+    public MarkovGimmickData.MarkovGimmickType type;
+        
+    /// <summary>
+    /// 잡음 임계값
+    /// </summary>
+    public int noiseThreshold;
+        
+    /// <summary>
+    /// 확률 증감치
+    /// </summary>
+    public int probabilityChangeValue;
+}
+
 public interface IMarkovGimmick
 {
     public MarkovState CurrState { get; set; }

@@ -32735,6 +32735,54 @@ PrefabInstance:
       propertyPath: dadWalkStartPosition
       value: 
       objectReference: {fileID: 749618651}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilitiesLookEye.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.data[0].type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.data[1].type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilitiesLookEye.Array.data[0].type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilitiesLookEye.Array.data[1].type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.data[0].noiseThreshold
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.data[1].noiseThreshold
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.data[0].probabilityChangeValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilities.Array.data[1].probabilityChangeValue
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilitiesLookEye.Array.data[0].probabilityChangeValue
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 318292529665668466, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+      propertyPath: stateProbabilitiesLookEye.Array.data[1].probabilityChangeValue
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 1970258264043058909, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
       propertyPath: m_TagString
       value: Gimmick

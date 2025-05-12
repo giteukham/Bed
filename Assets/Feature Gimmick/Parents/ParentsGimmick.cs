@@ -28,15 +28,31 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     private bool isDadAngry = false;
     private Animator animator;
     
-    private int moveChance = 0;                     // 움직일 확률
-    
     [Range(0, 100)]
     private int moveProbability = 0;                // 초기값 0. 최댓값 100. moveChance보다 크면 움직임
     
     [Range(0, 100)]
-    private int stateTransitionProbability = 35;    // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
+    private int statePassByNextValue = 35;          // 초기값 35. 눈을 감거나 오른족을 안 보고 잇으면 -5.
+    
+    private float stateTransitionProbability = 0;     // 상태가 변화할 확률 변화 값
+    public float StateTransitionProbability
+    {
+        get => stateTransitionProbability;
+        set => stateTransitionProbability = Mathf.Clamp(value, 0, 100);
+    }
+    
+    private float stateTransitionDecisionValue = 0;   // 상태 변화 확률 최종 값
+
+    public float StateTransitionDecisionValue
+    {
+        get => stateTransitionDecisionValue;
+        set => stateTransitionDecisionValue = Mathf.Clamp(value, 0, 100);
+    }
+    private Coroutine stateProbabilityChangeCoroutine = null;
     
     private MarkovChain chain = new MarkovChain();
+    private Coroutine markovCoroutine = null;
+    
     public MarkovState CurrState { get; set; } = null;
     public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
     public bool IsOn { get; set; } = false;
@@ -51,26 +67,22 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     private int conditionCountToNear = 3;
     [SerializeField] private BreathSound breathSound;
     
-    private Coroutine markovCoroutine, dadWalkSoundSetPositionCoroutine, checkHeadCollisionCoroutine;
+    [Header("설정")]
+    
+    [SerializeField]
+    [Tooltip("특정 상황에 변화하는 상태 확률값")]
+    private List<StateProbabilityData> stateProbabilities = new();
+
+    [SerializeField]
+    [Tooltip("눈 쳐다볼 때 감소하는 상태 확률. Threshold는 안 씀.")]
+    private List<StateProbabilityData> stateProbabilitiesLookEye = new();
+    
+    private Coroutine dadWalkSoundSetPositionCoroutine = null, checkHeadCollisionCoroutine = null;
     private Tween moveTween;
     #endregion
     
-    private int tmpValue = 0;
-    private int tmpDecision = 0;
-    
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            tmpValue += 5;
-            Debug.Log(tmpValue);
-        }
-        else if (Input.GetKeyDown(KeyCode.H))
-        {
-            tmpValue -= 5;
-            Debug.Log(tmpValue);
-        }
-
         if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
         {
             ChangeMarkovState(Wait);
@@ -97,10 +109,10 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         statesWithoutNear.Add(Watch);
         statesWithoutNear.Add(Danger);
 
-        Wait.OnStateAction += StartMarkovStateCoroutine;
-        Watch.OnStateAction += StartMarkovStateCoroutine;
-        Danger.OnStateAction += StartMarkovStateCoroutine;
-        Near.OnStateAction += StartMarkovStateCoroutine;
+        Wait.OnStateAction += ActiveStateCoroutine;
+        Watch.OnStateAction += ActiveStateCoroutine;
+        Danger.OnStateAction += ActiveStateCoroutine;
+        Near.OnStateAction += ActiveStateCoroutine;
         
         chain.InsertTransition(Wait,
             new List<MarkovTransition>()
@@ -149,17 +161,15 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         probability = 0 < moveProbability ? 100 : 0;
         if (Mathf.Approximately(probability, 0) && !CurrState.Equals(Wait)) ChangeMarkovState(Wait);
 
-        //if (currState.Equals(watch) && 특정 행동) ChangeMarkovState(near); 
-        
-        // 임시 값 반영
-        tmpDecision = tmpValue;
-        tmpValue = 0;
-    }
+        // 특정 상황에 상태 확률을 decision으로 지정
+        stateTransitionDecisionValue = stateTransitionProbability;
 
-    public override void Initialize()
-    {
-        if (hand.activeSelf) hand.SetActive(false);
-        if (!CurrState.Equals(Wait)) ChangeMarkovState(Wait);
+        if (GameManager.Instance.isDemo == false && IsOn == true)
+        {
+            ChangeStateProbability();
+            ChangeStateProbabilitySeeingParents(Watch);
+            Debug.Log("Parents State Probability " + stateTransitionProbability);
+        }
     }
 
     public void ChangeRandomMarkovState()
@@ -199,16 +209,24 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         CurrGimmickType = type;
     }
     
-    private void StartMarkovStateCoroutine(MarkovState state)
+    private void ActiveStateCoroutine(MarkovState state)
     {
         if (markovCoroutine != null) StopCoroutine(markovCoroutine);
-        tmpDecision = 0;
+        stateTransitionProbability = 0;
+        stateTransitionDecisionValue = 0;
         markovCoroutine = StartCoroutine(ActiveMarkovState(state));
     }
 
     private IEnumerator ActiveMarkovState(MarkovState state)
     {   
         CurrState = state;
+        
+        if (stateProbabilityChangeCoroutine != null)
+        {
+            StopCoroutine(stateProbabilityChangeCoroutine);
+            stateProbabilityChangeCoroutine = null;
+        }
+        
         switch (state)
         {
             case var _ when state.Equals(Wait):
@@ -326,7 +344,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
                 }
-                yield return new WaitUntil(() => !PlayerConstant.isRightState);
+                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: Ư�� ������Ʈ ���
                 GameManager.Instance.player.ForceOpenEye();
                 PlayerConstant.isParalysis = true;
@@ -371,13 +389,12 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 UIManager.Instance.ControlNText(false, "Parents"); // n text 비활성화
                 yield break;
         }
-        var markovTransitions = chain[state];
 
-        yield return new WaitUntil(() => tmpDecision >= markovTransitions[0].ThresholdRange.y);
-        
+        yield return new WaitUntil(() => IsOn == true);
+        yield return new WaitForSeconds(TimeManager.Instance.CycleInterval);
         if (stateTransitionProbability <= Random.Range(0, 50))                      // true면 다음 상태 false면 현 상태 유지
         {
-            CurrState = chain.TransitionNextState(CurrState, tmpDecision);
+            CurrState = chain.TransitionNextState(CurrState, Mathf.RoundToInt(stateTransitionDecisionValue));
         }
         else
         {
@@ -385,7 +402,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         }
         
         Debug.Log("Next State: " + CurrState.Name + " Active Count : " + CurrState.ActiveCount);
-
+        yield break;
+        
         IEnumerator CheckHeadCollision(GameObject targetObject, Action<bool> callback)
         {
             bool isCollided = false;
@@ -402,6 +420,75 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 }
         
                 yield return null;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// 현재 상태에 따라 특정 상황이 되면 다음 상태로 갈 확률이 증가하거나 감소하는 코루틴
+    /// </summary>
+    private void ChangeStateProbability()
+    {
+        if (CurrState.Equals(Wait) || CurrState.Equals(Near)) return;
+        
+        foreach (var data in stateProbabilities)
+        {
+            if (data.type != CurrState.Type) continue;
+
+            var probabilityValue = (float) data.probabilityChangeValue;
+            
+            if (BlinkEffect.Blink <= 0.65f && 
+                (PlayerConstant.isRightState || PlayerConstant.isRightLook || PlayerConstant.isRightFrontLook))
+            {
+                probabilityValue *= 2f;
+            }
+            else if (PlayerConstant.isRightState ||
+                PlayerConstant.isRightLook ||
+                PlayerConstant.isRightFrontLook ||
+                BlinkEffect.Blink <= 0.65f)
+            {
+                probabilityValue *= 1.5f;
+            }
+            
+            // Noise Level이 높으면 상태 확률 증가
+            if (IsLoud(data.noiseThreshold))
+            {
+                StateTransitionProbability += probabilityValue;
+            }
+            // Noise Level이 낮으면 상태 확률 감소
+            else if (!IsLoud(data.noiseThreshold))
+            {
+                StateTransitionProbability -= probabilityValue;
+            }
+        }
+    }
+
+    bool IsLoud(int noise) => PlayerConstant.noiseLevel >= noise;
+    
+    /// <summary>
+    /// 이웃을 보고 있으면 매개변수 상태 별로 값이 다르게 다음 상태 확률을 증감하는 코루틴
+    /// </summary>
+    /// <param name="state"></param>
+    private void ChangeStateProbabilitySeeingParents(MarkovState state)
+    {
+        if (!CurrState.Equals(state)) return;
+        
+        foreach (var data in stateProbabilitiesLookEye)
+        {
+            if (data.type != state.Type) continue;
+
+            // 부모를 보고 있으면 상태 확률 감소
+            if (ConeCollider.TriggeredObject
+                && (ConeCollider.TriggeredObject.Equals(dadHead) || ConeCollider.TriggeredObject.Equals(momHead)))
+            {
+                StateTransitionProbability -= data.probabilityChangeValue;
+            }
+            // 부모를 안 보고 있으면 상태 확률 증가
+            else if ((ConeCollider.TriggeredObject 
+                      && (!ConeCollider.TriggeredObject.Equals(dadHead) || !ConeCollider.TriggeredObject.Equals(momHead))) 
+                     || !ConeCollider.TriggeredObject)
+            {
+                StateTransitionProbability += data.probabilityChangeValue;
             }
         }
     }
@@ -455,5 +542,11 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
             AudioManager.Instance.SetPosition(AudioManager.Instance.dadWalk, dadWalkSoundPosition.position);
             yield return null;
         }
+    }
+    
+    public override void Initialize()
+    {
+        if (hand.activeSelf) hand.SetActive(false);
+        if (!CurrState.Equals(Wait)) ChangeMarkovState(Wait);
     }
 }
