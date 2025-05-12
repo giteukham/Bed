@@ -370,13 +370,23 @@ public class AudioManager : MonoSingleton<AudioManager>
     }
 
     /// <summary>
-    /// 파라미터 값 설정
+    /// 이벤트 파라미터 값 설정
     /// </summary>
     /// <param name="_paramName">파라미터 이름</param>
     /// <param name="_value">파라미터 값</param>
     public void SetParameter(EventReference _eventRef, string _paramName, float _value)
     {
         if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setParameterByName(_paramName, _value);
+    }
+
+    /// <summary>
+    /// 시스템 파라미터 값 설정
+    /// </summary>
+    /// <param name="_paramName"></param>
+    /// <param name="_value"></param>
+    public void SetParameter(string _paramName, float _value)
+    {
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName(_paramName, _value);
     }
 
     /// <summary>

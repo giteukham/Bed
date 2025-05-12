@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{daaf6fa4-56f0-4a86-90b4-12506224679b}">
+		<property name="name">
+			<value>isLeftState</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c59521ab-cb31-4346-b7a4-de908b83f1ff}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{b4399414-2317-4beb-ac26-e980fd52db9f}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{b4399414-2317-4beb-ac26-e980fd52db9f}">
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

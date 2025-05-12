@@ -192,7 +192,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
             if(AllGimicks[i] != gimmick) 
             {
                 AllGimicks[i].Deactivate();
-                Debug.Log(AllGimicks[i].name + " Deactivated");
+                //Debug.Log(AllGimicks[i].name + " Deactivated");
             }
         }
     }

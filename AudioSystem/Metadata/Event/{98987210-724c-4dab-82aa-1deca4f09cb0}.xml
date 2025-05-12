@@ -53,7 +53,7 @@
 			<destination>{ab794a1f-8ad6-4b54-b8a6-6887390160e4}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{56265647-5b06-4115-8021-17c68e0163d1}</destination>
+			<destination>{3bda73bb-45f0-4bbd-b2a6-f315dd06e533}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{c51dec05-a52c-4427-810a-20bcf44143bb}" />
@@ -90,13 +90,16 @@
 	<object class="MixerBusPanner" id="{ab794a1f-8ad6-4b54-b8a6-6887390160e4}" />
 	<object class="SingleSound" id="{cd18417c-0e24-4cc5-baef-27390634d697}">
 		<property name="length">
-			<value>11.881145833333333</value>
+			<value>9.2000000000000011</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{a13478cc-116f-4d09-911b-7e459d08e0cb}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{e24f4980-6b7f-4c99-a6b8-b5467934e65c}">
+		<property name="volume">
+			<value>5.5</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
@@ -121,10 +124,64 @@
 	<object class="MixerBusEffectChain" id="{c109cdb6-4fe1-4634-90d0-218a1a40f1ac}">
 		<relationship name="effects">
 			<destination>{7d1c01fd-43b9-498e-922c-b405cdbdc7fb}</destination>
+			<destination>{01c60569-3049-432e-8f57-2b2023ae1e85}</destination>
+			<destination>{368ce5ee-71c6-4f94-bee7-07a2300fcbd8}</destination>
+			<destination>{d79138bd-49cf-4b16-8a17-36db9d91fcc9}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{0f751439-298e-4fdf-8c44-c445b0a1a234}" />
 	<object class="MixerBusFader" id="{4577ed4e-fd1e-4ecf-8c07-7a81716e814a}" />
 	<object class="SpatialiserEffect" id="{408da073-fcbb-495a-9b8f-cba115dee274}" />
 	<object class="MixerBusFader" id="{7d1c01fd-43b9-498e-922c-b405cdbdc7fb}" />
+	<object class="LowpassEffect" id="{01c60569-3049-432e-8f57-2b2023ae1e85}">
+		<property name="cutoff">
+			<value>580</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{368ce5ee-71c6-4f94-bee7-07a2300fcbd8}">
+		<property name="decayTime">
+			<value>500</value>
+		</property>
+		<property name="earlyDelay">
+			<value>7</value>
+		</property>
+		<property name="lateDelay">
+			<value>11</value>
+		</property>
+		<property name="HFDecayRatio">
+			<value>54</value>
+		</property>
+		<property name="density">
+			<value>60</value>
+		</property>
+		<property name="lowShelfFrequency">
+			<value>180</value>
+		</property>
+		<property name="highCut">
+			<value>2900</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>83</value>
+		</property>
+		<property name="wetLevel">
+			<value>-37</value>
+		</property>
+		<property name="dryLevel">
+			<value>8.5</value>
+		</property>
+	</object>
+	<object class="ThreeEQEffect" id="{d79138bd-49cf-4b16-8a17-36db9d91fcc9}">
+		<property name="midGain">
+			<value>-18</value>
+		</property>
+		<property name="highGain">
+			<value>-11.5</value>
+		</property>
+		<property name="lowCrossover">
+			<value>1250</value>
+		</property>
+		<property name="highCrossover">
+			<value>16500</value>
+		</property>
+	</object>
 </objects>

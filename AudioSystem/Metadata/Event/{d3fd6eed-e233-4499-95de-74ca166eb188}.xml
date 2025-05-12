@@ -53,7 +53,7 @@
 			<destination>{44fdaee5-2950-4cde-8800-dca017366e2c}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{56265647-5b06-4115-8021-17c68e0163d1}</destination>
+			<destination>{3bda73bb-45f0-4bbd-b2a6-f315dd06e533}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{6fbc15bf-6afd-4d97-9389-9134293a2788}" />
@@ -90,13 +90,16 @@
 	<object class="MixerBusPanner" id="{44fdaee5-2950-4cde-8800-dca017366e2c}" />
 	<object class="SingleSound" id="{bb5cefa5-914c-4dbf-9664-bbbbf4f805f5}">
 		<property name="length">
-			<value>13.035102040816327</value>
+			<value>9.4000000000000004</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{7e710754-ed97-4d45-8e88-5b44d0aa79f3}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{43f4014b-5c39-4ec6-8c1f-6e5c08fbb51c}">
+		<property name="volume">
+			<value>-16.5</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
@@ -121,10 +124,46 @@
 	<object class="MixerBusEffectChain" id="{1c5bd3d0-d77a-40d4-8dee-506828302da2}">
 		<relationship name="effects">
 			<destination>{f1890439-7dde-404d-a66d-a471b6e3ca44}</destination>
+			<destination>{cbd7baf1-2f39-44f9-81e5-f809ae390616}</destination>
+			<destination>{656fbc17-2b0e-42fc-941b-6a4f6a0fb480}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{656a8230-b139-4eca-bea9-42dd8647bfbd}" />
 	<object class="MixerBusFader" id="{31076003-9db1-448b-9a6d-675a51d0c4bb}" />
 	<object class="SpatialiserEffect" id="{8bda5148-c72a-4023-98e1-68d12a9f991d}" />
 	<object class="MixerBusFader" id="{f1890439-7dde-404d-a66d-a471b6e3ca44}" />
+	<object class="LowpassEffect" id="{cbd7baf1-2f39-44f9-81e5-f809ae390616}">
+		<property name="cutoff">
+			<value>640</value>
+		</property>
+		<property name="resonance">
+			<value>1.10000002</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{656fbc17-2b0e-42fc-941b-6a4f6a0fb480}">
+		<property name="decayTime">
+			<value>600</value>
+		</property>
+		<property name="earlyDelay">
+			<value>7</value>
+		</property>
+		<property name="lateDelay">
+			<value>11</value>
+		</property>
+		<property name="HFDecayRatio">
+			<value>67</value>
+		</property>
+		<property name="diffusion">
+			<value>50</value>
+		</property>
+		<property name="highCut">
+			<value>4050</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>66</value>
+		</property>
+		<property name="wetLevel">
+			<value>-26</value>
+		</property>
+	</object>
 </objects>

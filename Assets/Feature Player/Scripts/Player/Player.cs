@@ -327,6 +327,7 @@ public class Player : PlayerBase
         }
 
         AudioManager.Instance.VolumeControl(AudioManager.Instance.stressHal, currentStressSFXVolume);
+        AudioManager.Instance.SetParameter("StressLevel", PlayerConstant.stressLevel);
         // -------------------------------------게이지 효과음
     }
     

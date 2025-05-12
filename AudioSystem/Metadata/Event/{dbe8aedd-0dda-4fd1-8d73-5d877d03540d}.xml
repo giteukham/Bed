@@ -53,7 +53,7 @@
 			<destination>{9f86ceec-6afa-48f1-b3a6-2c574263bb87}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{56265647-5b06-4115-8021-17c68e0163d1}</destination>
+			<destination>{3bda73bb-45f0-4bbd-b2a6-f315dd06e533}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{7c383d4f-f981-4b40-9f05-e9da4beb7a8b}" />
@@ -97,6 +97,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{5239bf87-3bb3-4ea8-9a0d-b3b4e76f6899}">
+		<property name="volume">
+			<value>-5</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
@@ -121,10 +124,40 @@
 	<object class="MixerBusEffectChain" id="{a1c819dd-e629-4d9c-8166-293ce08cf7d2}">
 		<relationship name="effects">
 			<destination>{0bc7bfdc-4fdf-4abc-89d3-599b6793ae3d}</destination>
+			<destination>{03a85ec2-f49d-4947-8062-41ea80ea4dac}</destination>
+			<destination>{1ca825fd-1466-410d-b442-90aabe89237c}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{20a2ac84-c83c-461b-b464-7cc7ea4d2ca0}" />
 	<object class="MixerBusFader" id="{b56c7a42-451d-40a4-b0b4-f98be45fd938}" />
 	<object class="SpatialiserEffect" id="{4b541be0-6ad0-4e92-b6dc-94f72e4e874b}" />
 	<object class="MixerBusFader" id="{0bc7bfdc-4fdf-4abc-89d3-599b6793ae3d}" />
+	<object class="LowpassEffect" id="{03a85ec2-f49d-4947-8062-41ea80ea4dac}">
+		<property name="cutoff">
+			<value>800</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{1ca825fd-1466-410d-b442-90aabe89237c}">
+		<property name="decayTime">
+			<value>260</value>
+		</property>
+		<property name="earlyDelay">
+			<value>2</value>
+		</property>
+		<property name="lateDelay">
+			<value>3</value>
+		</property>
+		<property name="HFDecayRatio">
+			<value>83</value>
+		</property>
+		<property name="highCut">
+			<value>6050</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>88</value>
+		</property>
+		<property name="wetLevel">
+			<value>-9.39999962</value>
+		</property>
+	</object>
 </objects>
