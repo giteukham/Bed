@@ -187,9 +187,9 @@ public class GimmickManager : MonoSingleton<GimmickManager>
 
     public void DeactivateGimmicks(Gimmick gimmick)
     {
-        for(int i = AllGimicks.Count - 1; i >= 0; i--)
+        for(int i = 0; i < AllGimicks.Count; i++)
         {
-            if(!AllGimicks[i].name.Equals(gimmick.name)) 
+            if(AllGimicks[i] != gimmick) 
             {
                 AllGimicks[i].Deactivate();
                 Debug.Log(AllGimicks[i].name + " Deactivated");

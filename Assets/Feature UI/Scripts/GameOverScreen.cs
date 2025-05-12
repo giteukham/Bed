@@ -16,7 +16,6 @@ public class GameOverScreen : MonoBehaviour
     private GameObject nTextObject;
     
     private TMP_Text dTextChild = null, nTextChild = null;
-    private Coroutine gameOverCoroutine = null;
 
     [Space]
     [SerializeField]
@@ -36,7 +35,12 @@ public class GameOverScreen : MonoBehaviour
 
     private Dictionary<GameObject, TMP_Text[]> textPositions = new();
     private string[] splitTexts = new [] { string.Empty };                                                  // 일단 공백을 기준으로 텍스트를 나눔
-    
+
+    private void Awake()
+    {
+        Initialize();
+    }
+
     private void Initialize()
     {
         Assert.IsNotNull(dTextObject, "GameOverScreen의 dTextObject가 없습니다.");
@@ -67,39 +71,107 @@ public class GameOverScreen : MonoBehaviour
             }
         }
     }
-
-    private void Update()
+    
+    /// <summary>
+    /// gimmickName을 통해 텍스트가 랜덤으로 바뀜 
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <param name="gimmickName">기본 null</param>
+    /// <returns></returns>
+    public IEnumerator ControlDText(bool isActive, string gimmickName)
     {
-        if (Input.GetKeyDown(KeyCode.Alpha8))
+        if (isActive)
         {
-            StartCoroutine(ActiveOrDeActiveDText(false));
+            if (nTextObject.activeSelf) nTextObject.SetActive(false);                   // nTextObject 살아있으면 비활성화
+
+            ChangeGameOverTextAtRandom(gimmickName);
+            
+            dTextObject.SetActive(true);
+            yield return new WaitForSeconds(1f);
+            dTextChild.gameObject.SetActive(true);
+            
+            StartCoroutine(TypingDText());
         }
-        
-        if (Input.GetKeyDown(KeyCode.Alpha9))
+        else
         {
-            StartCoroutine(ActiveOrDeActiveNText(false));
+            dTextObject.SetActive(false);
+            dTextChild.gameObject.SetActive(false);
+            StopCoroutine(TypingDText());
         }
     }
 
-    public void Setting(string gimmickName)
+    /// <summary>
+    /// 엔딩 스크린에서 D 자식 텍스트를 랜덤으로 변경
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator TypingDText()
     {
-        Initialize();
-        
+        if (!string.IsNullOrEmpty(dTextChild.text))
+        {
+            dTextChild.text = "";
+            yield return new WaitForSeconds(1f);
+        }
+        yield return new DOTweenCYInstruction.WaitForCompletion(dTextChild.DOText(splitTexts[0], parentsTextSpeed));
+    }
+    
+    /// <summary>
+    /// gimmickName을 통해 텍스트가 랜덤으로 바뀜 
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <param name="gimmickName">기본 null</param>
+    /// <returns></returns>
+    public IEnumerator ControlNText(bool isActive, string gimmickName)
+    {
+        if (isActive)
+        {
+            if (dTextObject.activeSelf) dTextObject.SetActive(false);                   // dTextObject 살아있으면 비활성화
+            
+            ChangeGameOverTextAtRandom(gimmickName);
+
+            nTextObject.SetActive(true);
+            yield return new WaitForSeconds(1f);
+            nTextChild.gameObject.SetActive(true);
+            
+            StartCoroutine(TypingNText());
+        }
+        else
+        {
+            nTextObject.SetActive(false);
+            nTextChild.gameObject.SetActive(false);
+            StopCoroutine(TypingNText());
+        }
+    }
+    
+    private IEnumerator TypingNText()
+    {
+        if (!string.IsNullOrEmpty(nTextChild.text))
+        {
+            nTextChild.text = "";
+            yield return new WaitForSeconds(1f);
+        }
+        yield return new DOTweenCYInstruction.WaitForCompletion(nTextChild.DOText(splitTexts[0], parentsTextSpeed));
+    }
+    
+    /// <summary>
+    /// 기믹 이름에 따라 엔딩 텍스트를 랜덤으로 변화시키는 함수
+    /// </summary>
+    private void ChangeGameOverTextAtRandom(string gimmickName)
+    {
         switch (gimmickName)
         {
             case "Parents":
             {
                 var parentsText = parentsTexts[UnityEngine.Random.Range(0, parentsTexts.Count)];
                 splitTexts = parentsText.Split(' ');
-                dTextChild = textPositions[dTextObject][0];                                 // parents position
-                nTextChild = textPositions[nTextObject][0];                                 
+                dTextChild = textPositions[dTextObject][0];
+                nTextChild = textPositions[nTextObject][0];
                 break;
             }
             case "Neighbor":
             {
                 var neighborText = neighborTexts[UnityEngine.Random.Range(0, neighborTexts.Count)];
                 splitTexts = neighborText.Split(' ');
-                dTextChild = textPositions[dTextObject][1];                                 // parents position
+                dTextChild = textPositions[dTextObject][1];
                 nTextChild = textPositions[nTextObject][1];                                 
                 break;
             }
@@ -107,61 +179,5 @@ public class GameOverScreen : MonoBehaviour
         
         if (!dTextChild || !nTextChild)
             Debug.LogError($"GameOverScreen의 {gimmickName}의 자식이 없습니다.");
-
-        // 테스트
-        // yield return gameOverCoroutine = StartCoroutine(ActiveOrDeActiveDText(true));
-        // yield return new WaitForSeconds(2f);                                    // TODO: n초 뒤에
-        // yield return gameOverCoroutine = StartCoroutine(ActiveOrDeActiveNText(true));
-    }
-
-    public IEnumerator ActiveOrDeActiveDText(bool isActive)
-    {
-        if (gameOverCoroutine != null) StopCoroutine(gameOverCoroutine);
-        if (nTextObject.activeSelf) nTextObject.SetActive(false);                   // nTextObject 살아있으면 비활성화
-        
-        if (isActive)
-        {
-            var isComplete = false;
-            
-            dTextObject.SetActive(true);                                            // dTextObject 활성화
-            yield return new WaitForSeconds(1f);                                    // 2초 뒤에
-            dTextChild.gameObject.SetActive(true);                                  // dText position 활성화
-            dTextChild.DOText(splitTexts[0], parentsTextSpeed).onComplete += () =>
-            {
-                isComplete = true;
-            };
-            
-            yield return new WaitUntil(() => isComplete);
-        }
-        else
-        {
-            dTextObject.SetActive(false);
-            dTextChild.gameObject.SetActive(false);                                 // dText position 비활성화
-        }
-    }
-    
-    public IEnumerator ActiveOrDeActiveNText(bool isActive)
-    {
-        if (gameOverCoroutine != null) StopCoroutine(gameOverCoroutine);
-        if (dTextObject.activeSelf) dTextObject.SetActive(false);                   // dTextObject 살아있으면 비활성화
-        
-        if (isActive)
-        {
-            var isComplete = false;
-            
-            nTextObject.SetActive(true);                                            // nTextObject 활성화
-            yield return new WaitForSeconds(1f);                                    // 2초 뒤에
-            nTextChild.gameObject.SetActive(true);                                  // nText position 활성화
-            nTextChild.DOText(splitTexts[1], neighborTextSpeed).onComplete += () =>
-            {
-                isComplete = true;
-            };
-            yield return new WaitUntil(() => isComplete);
-        }
-        else
-        {
-            nTextObject.SetActive(false);
-            nTextChild.gameObject.SetActive(false);                                 // nText position 비활성화
-        }
     }
 }

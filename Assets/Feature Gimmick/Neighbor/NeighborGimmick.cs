@@ -343,8 +343,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 breathSound.ToggleBreath(); // 숨 참음
                 yield return new WaitForSeconds(2.5f); // 대기
                 
-                UIManager.Instance.SetGameOverScreen(name); 
-                UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                UIManager.Instance.ControlDText(true, "Neighbor"); // D text 활성화
                 PlayerConstant.isPillowSound = false;
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborD, this.transform.position);
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
@@ -352,7 +351,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 yield return new WaitForSeconds(2.5f); // 대기
                 
-                UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
+                UIManager.Instance.ControlDText(false, "Neighbor"); // D text 비활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
@@ -362,7 +361,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 yield return new WaitForSeconds(3f); // 대기 
                 
                 PlayerConstant.isPillowSound = false;
-                UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
+                UIManager.Instance.ControlNText(true, "Neighbor"); // n text 활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.neighborN, this.transform.position);
                 yield return new WaitForSeconds(1.5f); // 대기
                 
@@ -374,7 +373,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                 ChangeMarkovState(Wait); // 기믹은 대기 상태로 변경
                 PlayerConstant.isRedemption = false; // 몸 돌릴수 있게
                 TimeManager.Instance.isGameOver = false;
-                UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
+                UIManager.Instance.ControlNText(false, "Neighbor"); // n text 비활성화
                 yield break;
         }
 
@@ -406,7 +405,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                     if (timer >= 0.5f)
                     {
                         GameManager.Instance.player.ForceOpenEye();
-                        //GameManager.Instance.StopDemoCoroutine();
+                        // GameManager.Instance.StopDemoCoroutine();
                         ChangeMarkovState(Near);
                         eyeCloseCheckCoroutine = null;
                         yield break;
@@ -429,7 +428,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
                     ConeCollider.TriggeredObject != null &&
                     ConeCollider.TriggeredObject.Equals(neighborHead))
                 {
-                    //GameManager.Instance.StopDemoCoroutine();
+                    // GameManager.Instance.StopDemoCoroutine();
                     GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickData.MarkovGimmickType.Wait);
 
                     yield break;

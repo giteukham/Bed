@@ -206,30 +206,26 @@ public class UIManager : MonoSingleton<UIManager>
     {
         Application.Quit();
     }
-
-    private void Start()
+    
+    /// <summary>
+    /// GimmickName에 따라 글자가 랜덤으로 바뀜
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <param name="gimmickName">Neighbor 아니면 Parents</param>
+    public void ControlDText(bool isActive, string gimmickName)
     {
-        // ActivateGameOverScreen("Neighbor");
+        gameOverScreen.gameObject.SetActive(isActive);
+        StartCoroutine(gameOverScreen.ControlDText(isActive, gimmickName));
     }
 
     /// <summary>
-    /// ParentsGimmick하고 NeighborGimmick 안에 GimmickName 있는데 하드 코딩 안하고 이걸로 넣어도 됨
+    /// GimmickName에 따라 글자가 랜덤으로 바뀜
     /// </summary>
-    /// <param name="gimmickName">Neighbor 또는 Parents</param>
-    public void SetGameOverScreen(string gimmickName)
-    {
-        gameOverScreen.Setting(gimmickName);
-    }
-    
-    public void ActiveOrDeActiveDText(bool isActive)
+    /// <param name="isActive"></param>
+    /// <param name="gimmickName">Neighbor 아니면 Parents</param>
+    public void ControlNText(bool isActive, string gimmickName)
     {
         gameOverScreen.gameObject.SetActive(isActive);
-        StartCoroutine(gameOverScreen.ActiveOrDeActiveDText(isActive));
-    }
-
-    public void ActiveOrDeActiveNText(bool isActive)
-    {
-        gameOverScreen.gameObject.SetActive(isActive);
-        StartCoroutine(gameOverScreen.ActiveOrDeActiveNText(isActive));
+        StartCoroutine(gameOverScreen.ControlNText(isActive, gimmickName));
     }
 }

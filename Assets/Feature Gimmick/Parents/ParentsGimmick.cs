@@ -335,9 +335,8 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 breathSound.ToggleBreath(); // 숨 참음
                 yield return new WaitForSeconds(2.5f); // 대기
                 AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-
-                UIManager.Instance.SetGameOverScreen(name);
-                UIManager.Instance.ActiveOrDeActiveDText(true); // D text 활성화
+                
+                UIManager.Instance.ControlDText(true, "Parents"); // D text 활성화
                 PlayerConstant.isPillowSound = false;
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
@@ -345,7 +344,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 if (!hand.activeSelf) hand.SetActive(true); // �� Ȱ��ȭ
                 yield return new WaitForSeconds(2.5f); // ���
                 
-                UIManager.Instance.ActiveOrDeActiveDText(false); // D text 비활성화
+                UIManager.Instance.ControlDText(false, "Parents"); // D text 비활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.dadStrangle, this.transform.position);
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
@@ -355,7 +354,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 yield return new WaitForSeconds(3f); // ��� 
                 
                 PlayerConstant.isPillowSound = false;
-                UIManager.Instance.ActiveOrDeActiveNText(true); // n text 활성화
+                UIManager.Instance.ControlNText(true, "Parents"); // n text 활성화
                 AudioManager.Instance.PlayOneShot(AudioManager.Instance.parentsN, this.transform.position);
                 yield return new WaitForSeconds(1.5f); // 대기
                 
@@ -369,7 +368,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 chain.InitStateCount();
                 PlayerConstant.isRedemption = false;
                 TimeManager.Instance.isGameOver = false;
-                UIManager.Instance.ActiveOrDeActiveNText(false); // n text 비활성화
+                UIManager.Instance.ControlNText(false, "Parents"); // n text 비활성화
                 yield break;
         }
         var markovTransitions = chain[state];
