@@ -477,6 +477,7 @@ public class GameManager : MonoSingleton<GameManager>
 
                     markovGimmick = currGimmick as IMarkovGimmick;
                     exMarkovGimmick = exGimmick as IMarkovGimmick;
+                    GimmickManager.Instance.ExclusionGimmick(currGimmick);
                     markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
                     exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
                     Debug.Log(currGimmick.name + " - " + demoGimmicks[idx].type);
@@ -494,6 +495,36 @@ public class GameManager : MonoSingleton<GameManager>
         {
             // 1ºÐ µÇ¸é ·£´ý ±â¹Í È°¼ºÈ­
             yield return new WaitForSeconds(randomGimmickActiveTime);
+
+            var randomGimmickIntervalIdx = 0;
+            var initInterval = 5;
+            while (true)
+            {
+                if (demoTimer >= randomGimmickInterval[randomGimmickIntervalIdx].y)
+                {
+                    randomGimmickIntervalIdx = 
+                        randomGimmickIntervalIdx < randomGimmickInterval.Length - 1 ? 
+                            randomGimmickIntervalIdx + 1 : randomGimmickIntervalIdx;
+                    initInterval--;
+                }
+                
+                if (demoTimer >= randomGimmickInterval[randomGimmickIntervalIdx].x 
+                    && demoTimer < randomGimmickInterval[randomGimmickIntervalIdx].y)
+                {
+                    yield return new WaitForSeconds(initInterval);
+                    GimmickManager.Instance.PickDemoGimmick();
+                    Debug.Log("Interval : " + initInterval);
+                }
+                
+                if (demoTimer >= totalTime || isDemoActive == false) yield break;
+
+                yield return null;
+            }
+        }
+
+        IEnumerator StartStressLevelAdd()
+        {
+            yield return new WaitForSeconds(randomGimmickActiveTime + 5f);
 
             var randomGimmickIntervalIdx = 0;
             var initInterval = 5;

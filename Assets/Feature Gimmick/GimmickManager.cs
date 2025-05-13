@@ -86,21 +86,26 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     
     public void PickDemoGimmick()
     {
+        for(int i = AllGimicks.Count - 1; i > 0; i--) // 府胶飘 集扁 Fisher-Yates Shuffle
+        {
+            int shuffleIndex = Random.Range(0, i + 1);
+            Gimmick temp = AllGimicks[i];
+            AllGimicks[i] = AllGimicks[shuffleIndex];
+            AllGimicks[shuffleIndex] = temp;
+        }
+
         for(int j = 0; j < AllGimicks.Count; j++)
         {
             if(AllGimicks[j].type == GimmickType.Human) continue;
+
+            if(AllGimicks[j].ExclusionGimmickList != null) 
+                    foreach (Gimmick exclusionGimmick in AllGimicks[j].ExclusionGimmickList) 
+                        AllGimicks.Remove(exclusionGimmick);
 
             if(!AllGimicks[j].gameObject.activeSelf) AllGimicks[j].gameObject.SetActive(true);
             Debug.Log(AllGimicks[j].name + " Activated");
             AllGimicks[j].Activate();
 
-            for(int i = AllGimicks.Count - 1; i > 0; i--) // 府胶飘 集扁 Fisher-Yates Shuffle
-            {
-                int shuffleIndex = Random.Range(0, i + 1);
-                Gimmick temp = AllGimicks[i];
-                AllGimicks[i] = AllGimicks[shuffleIndex];
-                AllGimicks[shuffleIndex] = temp;
-            }
             break;
         }
         // var gimmick = AllGimicks[0];
@@ -193,6 +198,17 @@ public class GimmickManager : MonoSingleton<GimmickManager>
             {
                 AllGimicks[i].Deactivate();
                 //Debug.Log(AllGimicks[i].name + " Deactivated");
+            }
+        }
+    }
+
+    public void ExclusionGimmick(Gimmick gimmick)
+    {
+        if (gimmick.ExclusionGimmickList != null)
+        {
+            foreach (Gimmick exclusionGimmick in gimmick.ExclusionGimmickList)
+            {
+                AllGimicks.Remove(exclusionGimmick);
             }
         }
     }

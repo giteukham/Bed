@@ -344,7 +344,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
                 {
                     GameManager.Instance.player.DirectionControl(PlayerDirectionStateTypes.Middle);
                 }
-                yield return new WaitUntil(() => PlayerConstant.isMiddleState);
+                yield return new WaitUntil(() => !PlayerConstant.isRightState);
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: Ư�� ������Ʈ ���
                 GameManager.Instance.player.ForceOpenEye();
                 PlayerConstant.isParalysis = true;

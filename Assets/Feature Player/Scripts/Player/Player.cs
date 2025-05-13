@@ -316,13 +316,13 @@ public class Player : PlayerBase
 
         if (currentStressSFXVolume > targetStressSFXVolume)
         {
-            currentStressSFXVolume -= 0.1f * Time.deltaTime;
+            currentStressSFXVolume -= 1f * Time.deltaTime;
             currentStressSFXVolume = Mathf.Max(currentStressSFXVolume, targetStressSFXVolume);
         }
 
         if (currentStressSFXVolume < targetStressSFXVolume)
         {
-            currentStressSFXVolume += 0.1f * Time.deltaTime;
+            currentStressSFXVolume += 0.2f * Time.deltaTime;
             currentStressSFXVolume = Mathf.Min(currentStressSFXVolume, targetStressSFXVolume);
         }
 
