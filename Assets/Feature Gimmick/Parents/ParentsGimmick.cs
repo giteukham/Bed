@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ParentsGimmick : Gimmick, IMarkovGimmick
+public class ParentsGimmick : MarkovGimmick
 {
     #region Override Variables
     public string GimmickName { get; protected set; } = "Parents";
@@ -53,16 +53,14 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
     private MarkovChain chain = new MarkovChain();
     private Coroutine markovCoroutine = null;
     
-    public MarkovState CurrState { get; set; } = null;
-    public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
-    public bool IsOn { get; set; } = false;
-
+    protected override bool IsOn { get; set; } = false;
+    
     private List<MarkovState> statesWithoutNear = new List<MarkovState>();
-    public MarkovState Wait { get; set; }       = new MarkovState("Wait");
-    public MarkovState Watch { get; set; }      = new MarkovState("Watch");
-    public MarkovState Cautious { get; set; }   = null;
-    public MarkovState Danger { get; set; }     = new MarkovState("Danger");
-    public MarkovState Near { get; set; }       = new MarkovState("Near");
+    public override MarkovState Wait { get; set; }       = new MarkovState("Wait");
+    public override MarkovState Watch { get; set; }      = new MarkovState("Watch");
+    public override MarkovState Cautious { get; set; }   = null;
+    public override MarkovState Danger { get; set; }     = new MarkovState("Danger");
+    public override MarkovState Near { get; set; }       = new MarkovState("Near");
 
     private int conditionCountToNear = 3;
     [SerializeField] private BreathSound breathSound;
@@ -172,13 +170,13 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         }
     }
 
-    public void ChangeRandomMarkovState()
+    public override void ChangeRandomMarkovState()
     {
         var randomState = statesWithoutNear[Random.Range(0, statesWithoutNear.Count)];
         ChangeMarkovState(randomState);
     }
     
-    public void ChangeMarkovState(MarkovState next)
+    public override void ChangeMarkovState(MarkovState next)
     {
         CurrState = next;
         if (checkHeadCollisionCoroutine != null) 
@@ -190,7 +188,7 @@ public class ParentsGimmick : Gimmick, IMarkovGimmick
         CurrState.Active();
     }
     
-    public void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
+    public override void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
     {
         switch (type)
         {
