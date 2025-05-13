@@ -52,6 +52,7 @@ public class CockroachForTutorial : MonoBehaviour
 
     public void OnEnable()
     {
+        PlayerConstant.isParalysis = true;
         GameManager.Instance.player.ForceOpenEye();
         Vector3 moveDirection = transform.localRotation * -Vector3.forward;  
         float moveDistance = Random.Range(minMoveDistance, maxMoveDistance);

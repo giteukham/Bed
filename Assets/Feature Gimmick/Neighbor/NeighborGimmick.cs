@@ -82,33 +82,35 @@ public class NeighborGimmick : MarkovGimmick
     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Equals))
-        {
-            stateTransitionProbability += 15;
-            Debug.Log(stateTransitionProbability);
-        }
-        else if (Input.GetKeyDown(KeyCode.Minus))
-        {
-            stateTransitionProbability -= 15;
-            Debug.Log(stateTransitionProbability);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
-        {
-            ChangeMarkovState(Wait);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
-        {
-            ChangeMarkovState(Watch);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
-        {
-            ChangeMarkovState(Danger);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
-        {
-            ChangeMarkovState(Near);
-        }
+        #if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.Equals))
+            {
+                stateTransitionProbability += 15;
+                Debug.Log(stateTransitionProbability);
+            }
+            else if (Input.GetKeyDown(KeyCode.Minus))
+            {
+                stateTransitionProbability -= 15;
+                Debug.Log(stateTransitionProbability);
+            }
+            
+            if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
+            {
+                ChangeMarkovState(Wait);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
+            {
+                ChangeMarkovState(Watch);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
+            {
+                ChangeMarkovState(Danger);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
+            {
+                ChangeMarkovState(Near);
+            }
+        #endif
     }
 
     private void Awake()
@@ -238,6 +240,9 @@ public class NeighborGimmick : MarkovGimmick
             case MarkovGimmickData.MarkovGimmickType.Danger:
                 ChangeMarkovState(Danger);
                 break;
+            case MarkovGimmickData.MarkovGimmickType.Near:
+                ChangeMarkovState(Near);
+                break;
             default:
                 break;
         }
@@ -320,6 +325,7 @@ public class NeighborGimmick : MarkovGimmick
                 StartCoroutine(GameManager.Instance.player.LookAt(neighborHead, 0.2f)); // TODO: 특정 오브젝트 대상
                 GameManager.Instance.player.ForceOpenEye();
                 PlayerConstant.isParalysis = true; // 조작이 불가능한 상태로 변경
+                PlayerConstant.stressLevel = 0;
                 yield return new WaitForSeconds(0.2f);  // 대기
                 
                 breathSound.ToggleBreath(); // 숨 참음

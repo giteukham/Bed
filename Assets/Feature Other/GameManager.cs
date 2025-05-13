@@ -114,23 +114,24 @@ public class GameManager : MonoSingleton<GameManager>
     [FormerlySerializedAs("nonMarkovGimmickActiveTime")]
     [Space]
     [SerializeField]
-    [Tooltip("맨 처음에 기믹이 활성화 되는 시간. 기본값 60")]
-    private int randomGimmickActiveTime = 60;
+    [Tooltip("맨 처음에 기믹이 활성화 되는 시간. 기본값 20")]
+    private int randomGimmickActiveTime = 20;
     
     [FormerlySerializedAs("nonMarkovGimmickInterval")]
     [SerializeField]
-    [Tooltip("이웃, 부모 기믹이 아닌 기믹들이 출현할 때 \n5, 4, 3초씩 출현하는데 각 초 유지 시간 간격")]
-    private Vector2Int[] randomGimmickInterval = new Vector2Int[3]
+    [Tooltip("이웃, 부모 기믹이 아닌 기믹들이 출현할 때 \n5, 4, 3, 2초씩 출현하는데 각 초 유지 시간 간격")]
+    private Vector2Int[] randomGimmickInterval = new Vector2Int[4]
     {
-        new Vector2Int(60, 150),
-        new Vector2Int(150, 240),
-        new Vector2Int(240, 290)
+        new Vector2Int(20, 40),
+        new Vector2Int(40, 50),
+        new Vector2Int(50, 58),
+        new Vector2Int(58, 65)
     };
     
     [Space]
     [SerializeField]
-    [Tooltip("이웃, 부모 기믹이 출현하는 시간. 기본값 120")]
-    private int markovGimmickActiveTime = 120;
+    [Tooltip("이웃, 부모 기믹이 출현하는 시간. 기본값 30")]
+    private int markovGimmickActiveTime = 30;
     
     [SerializeField]
     private List<MarkovGimmickData> demoGimmicks = new();
@@ -218,6 +219,7 @@ public class GameManager : MonoSingleton<GameManager>
 
             if (Input.GetKeyDown(KeyCode.Q) && !Input.GetKey(KeyCode.LeftShift))
             {
+                testGimmick.gameObject.SetActive(true);
                 testGimmick.Activate();
             }
             if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftShift))
@@ -371,7 +373,7 @@ public class GameManager : MonoSingleton<GameManager>
             }
         }
 
-        totalTime = demoGimmicks[demoGimmicks.Count - 1].activeSecTime + markovGimmickActiveTime;
+        totalTime = demoGimmicks[demoGimmicks.Count - 1].activeSecTime + 5;
         
         MarkovGimmick markovGimmick = null, exMarkovGimmick = null;
         Gimmick currGimmick = null, exGimmick = null;
@@ -381,6 +383,7 @@ public class GameManager : MonoSingleton<GameManager>
         isDemoActive = true;
         StartCoroutine(StartMarkovGimmicks());
         StartCoroutine(StartRandomGimmicks());
+        StartCoroutine(StartStressLevelAdd());
         
         yield return new WaitWhile(() =>
         {
@@ -475,12 +478,11 @@ public class GameManager : MonoSingleton<GameManager>
                         // Debug.Log("Random - " + currGimmick.name );
                     }
 
-                    markovGimmick = currGimmick as IMarkovGimmick;
-                    exMarkovGimmick = exGimmick as IMarkovGimmick;
+                    markovGimmick = currGimmick as MarkovGimmick;
+                    exMarkovGimmick = exGimmick as MarkovGimmick;
                     GimmickManager.Instance.ExclusionGimmick(currGimmick);
                     markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
                     exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
-                    Debug.Log(currGimmick.name + " - " + demoGimmicks[idx].type);
                     activeSecTimesTmp.Add(demoGimmicks[idx].activeSecTime);
                     demoGimmicks[idx].activeSecTime = 0;
                     idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;
@@ -513,7 +515,6 @@ public class GameManager : MonoSingleton<GameManager>
                 {
                     yield return new WaitForSeconds(initInterval);
                     GimmickManager.Instance.PickDemoGimmick();
-                    Debug.Log("Interval : " + initInterval);
                 }
                 
                 if (demoTimer >= totalTime || isDemoActive == false) yield break;
@@ -524,28 +525,28 @@ public class GameManager : MonoSingleton<GameManager>
 
         IEnumerator StartStressLevelAdd()
         {
-            yield return new WaitForSeconds(randomGimmickActiveTime + 5f);
+            int startTime = randomGimmickActiveTime + 30;
+            float increasingDuration = totalTime - startTime;
+            float accumulated = 0f;
+            int previousLevel = 0;
 
-            var randomGimmickIntervalIdx = 0;
-            var initInterval = 5;
-            while (true)
+            yield return new WaitForSeconds(startTime);
+            float timer = 0f;
+            while (timer < increasingDuration)
             {
-                if (demoTimer >= randomGimmickInterval[randomGimmickIntervalIdx].y)
+                float delta = Time.deltaTime;
+                timer += delta;
+
+                accumulated += 100f / increasingDuration * delta;
+                int level = Mathf.FloorToInt(accumulated);
+
+                if (level > previousLevel)
                 {
-                    randomGimmickIntervalIdx = 
-                        randomGimmickIntervalIdx < randomGimmickInterval.Length - 1 ? 
-                            randomGimmickIntervalIdx + 1 : randomGimmickIntervalIdx;
-                    initInterval--;
+                    int diff = level - previousLevel;
+                    previousLevel = level;
+                    PlayerLevelController.Instance.OnStressChanged.Invoke(diff);
                 }
-                
-                if (demoTimer >= randomGimmickInterval[randomGimmickIntervalIdx].x 
-                    && demoTimer < randomGimmickInterval[randomGimmickIntervalIdx].y)
-                {
-                    yield return new WaitForSeconds(initInterval);
-                    GimmickManager.Instance.PickDemoGimmick();
-                    Debug.Log("Interval : " + initInterval);
-                }
-                
+        
                 if (demoTimer >= totalTime || isDemoActive == false) yield break;
 
                 yield return null;

@@ -44,6 +44,7 @@ public class MirrorGimmick : Gimmick
         
         yield return new WaitUntil(() => !isDetected);
         monsterObj.SetActive(false);
+        Deactivate();
     }
 
     public override void Deactivate()

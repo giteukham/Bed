@@ -69,7 +69,7 @@ public class ClapGimcik : Gimmick
         // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
         // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +5);
         yield return new WaitForSeconds(1.3f);
-        LivingRoomLightSwitch.SwitchAction(true);   // 복도 불 켜기
+        //LivingRoomLightSwitch.SwitchAction(true);   // 복도 불 켜기
 
         yield return new WaitForSeconds(0.4f);
         // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +5);
@@ -79,7 +79,7 @@ public class ClapGimcik : Gimmick
         animator.Play("ClapOff");
 
         yield return new WaitForSeconds(0.4f);
-        LivingRoomLightSwitch.SwitchAction(false);  // 복도 불 끄기
+        //LivingRoomLightSwitch.SwitchAction(false);  // 복도 불 끄기
 
         yield return new WaitForSeconds(0.2f);
         Door.Set(0, 0.2f); // 방문 닫기

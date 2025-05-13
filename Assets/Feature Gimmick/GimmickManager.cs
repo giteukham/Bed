@@ -9,8 +9,8 @@ public class GimmickManager : MonoSingleton<GimmickManager>
 {
     [SerializeField] private List<Gimmick> AllGimicks;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
-
     public Gimmick CurrentGimmick { get; private set; } = null;
+    private Gimmick exGimmick = null;
 
     private void Awake()
     {
@@ -95,7 +95,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
 
         for(int j = 0; j < AllGimicks.Count; j++)
         {
-            if(AllGimicks[j].type == GimmickType.Human) continue;
+            if(AllGimicks[j].type == GimmickType.Human || AllGimicks[j] == exGimmick) continue;
 
             if(AllGimicks[j].ExclusionGimmickList != null) 
                     foreach (Gimmick exclusionGimmick in AllGimicks[j].ExclusionGimmickList) 
@@ -103,6 +103,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
 
             if(!AllGimicks[j].gameObject.activeSelf) AllGimicks[j].gameObject.SetActive(true);
             Debug.Log(AllGimicks[j].name + " Activated");
+            exGimmick = AllGimicks[j];
             AllGimicks[j].Activate();
 
             break;

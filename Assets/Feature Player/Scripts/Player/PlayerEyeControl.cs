@@ -138,6 +138,7 @@ public class PlayerEyeControl : IPlayerControl
         
         ChangeEyeState(PlayerEyeStateTypes.Open);
         currentValue = null;
+        targetValue = BLINK_VALUE_MIN;
     }
     
     public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);

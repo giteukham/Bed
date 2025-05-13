@@ -81,6 +81,7 @@ public class ParentsGimmick : MarkovGimmick
     
     private void Update()
     {
+        #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
         {
             ChangeMarkovState(Wait);
@@ -97,6 +98,7 @@ public class ParentsGimmick : MarkovGimmick
         {
             ChangeMarkovState(Near);
         }
+        #endif
     }
 
     private void Awake()
@@ -200,6 +202,9 @@ public class ParentsGimmick : MarkovGimmick
                 break;
             case MarkovGimmickData.MarkovGimmickType.Danger:
                 ChangeMarkovState(Danger);
+                break;
+            case MarkovGimmickData.MarkovGimmickType.Near:
+                ChangeMarkovState(Near);
                 break;
             default:
                 break;
@@ -346,6 +351,7 @@ public class ParentsGimmick : MarkovGimmick
                 StartCoroutine(GameManager.Instance.player.LookAt(dadHead, 0.2f)); // TODO: Ư�� ������Ʈ ���
                 GameManager.Instance.player.ForceOpenEye();
                 PlayerConstant.isParalysis = true;
+                PlayerConstant.stressLevel = 0;
                 yield return new WaitForSeconds(0.2f); // 대기
                 
                 breathSound.ToggleBreath(); // 숨 참음
