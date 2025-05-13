@@ -10,7 +10,7 @@ using Unity.VisualScripting;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
-public class NeighborGimmick : Gimmick, IMarkovGimmick
+public class NeighborGimmick : MarkovGimmick
 {
     #region Override Variables
     public string GimmickName { get; protected set; } = "Neighbor";
@@ -55,16 +55,14 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
     private MarkovChain chain = new MarkovChain();
     private Coroutine markovCoroutine = null;
     
-    public MarkovState CurrState { get; set; } = null;
-    public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
-    public bool IsOn { get; set; } = false;
+    protected override bool IsOn { get; set; } = false;
 
     private List<MarkovState> statesWithoutNear = new List<MarkovState>();
-    public MarkovState Wait { get; set; }       = new MarkovState("Wait");
-    public MarkovState Watch { get; set; }      = new MarkovState("Watch");
-    public MarkovState Cautious { get; set; }   = new MarkovState("Cautious");
-    public MarkovState Danger { get; set; }     = new MarkovState("Danger");
-    public MarkovState Near { get; set; }       = new MarkovState("Near");
+    public override MarkovState Wait { get; set; }       = new MarkovState("Wait");
+    public override MarkovState Watch { get; set; }      = new MarkovState("Watch");
+    public override MarkovState Cautious { get; set; }   = new MarkovState("Cautious");
+    public override MarkovState Danger { get; set; }     = new MarkovState("Danger");
+    public override MarkovState Near { get; set; }       = new MarkovState("Near");
     
     [SerializeField] private BreathSound breathSound;
     
@@ -201,12 +199,12 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         }
     }
 
-    public void ChangeRandomMarkovState()
+    public override void ChangeRandomMarkovState()
     {
         ChangeMarkovState(statesWithoutNear[Random.Range(0, statesWithoutNear.Count)]);
     }
 
-    public void ChangeMarkovState(MarkovState next)
+    public override void ChangeMarkovState(MarkovState next)
     {
         CurrState = next;
         
@@ -224,7 +222,7 @@ public class NeighborGimmick : Gimmick, IMarkovGimmick
         CurrState.Active();
     }
 
-    public void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
+    public override void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
     {
         switch (type)
         {

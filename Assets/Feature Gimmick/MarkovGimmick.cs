@@ -1,5 +1,6 @@
 
 using System;
+using AbstractGimmick;
 
 [Serializable]
 public class MarkovGimmickData
@@ -33,19 +34,20 @@ struct StateProbabilityData
     public int probabilityChangeValue;
 }
 
-public interface IMarkovGimmick
+public abstract class MarkovGimmick : Gimmick
 {
-    public MarkovState CurrState { get; set; }
+    public MarkovState CurrState { get; set; } = null;
     public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
-    public bool IsOn { get; set; }
     
-    public MarkovState Wait { get; set; }
-    public MarkovState Watch { get; set; }
-    public MarkovState Cautious { get; set; }
-    public MarkovState Danger { get; set; }
-    public MarkovState Near { get; set; }
+    protected abstract bool IsOn { get; set; }
     
-    void ChangeRandomMarkovState();
-    void ChangeMarkovState(MarkovState next);
-    void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type);
+    public abstract MarkovState Wait { get; set; }
+    public abstract MarkovState Watch { get; set; }
+    public abstract MarkovState Cautious { get; set; }
+    public abstract MarkovState Danger { get; set; }
+    public abstract MarkovState Near { get; set; }
+    
+    public abstract void ChangeRandomMarkovState();
+    public abstract void ChangeMarkovState(MarkovState next);
+    public abstract void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type);
 }

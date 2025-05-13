@@ -8,7 +8,6 @@ using UnityEngine;
 public class GimmickManager : MonoSingleton<GimmickManager>
 {
     [SerializeField] private List<Gimmick> AllGimicks;
-    [SerializeField] private List<IMarkovGimmick> AllMarkovGimmicks;
     [SerializeField] private Gimmick unrealGimmick, humanGimmick, objectGimmick;
 
     public Gimmick CurrentGimmick { get; private set; } = null;
@@ -128,7 +127,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
     {
         foreach (var gimmick in AllGimicks.ToList())
         {
-            if (gimmick is IMarkovGimmick markovGimmick)
+            if (gimmick is MarkovGimmick markovGimmick)
             {
                 markovGimmick.ChangeMarkovState(type);
             }

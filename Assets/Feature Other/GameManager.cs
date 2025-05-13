@@ -43,8 +43,8 @@ public class GameManager : MonoSingleton<GameManager>
     [Header("Reference Components for Debug")]
     public GameObject parentsGimmick;
     public GameObject neighborGimmick;
-    private IMarkovGimmick parentsGimmickScript;
-    private IMarkovGimmick neighborGimmickScript;
+    private MarkovGimmick parentsGimmickScript;
+    private MarkovGimmick neighborGimmickScript;
     #endregion
     
     #region Objects related Components
@@ -193,8 +193,8 @@ public class GameManager : MonoSingleton<GameManager>
             }
             if (debugTimeText.activeSelf) debugTimeText.SetActive(false);
             if (debugColiderImage.activeSelf) debugColiderImage.SetActive(false);
-            parentsGimmickScript = parentsGimmick.GetComponent<IMarkovGimmick>();
-            neighborGimmickScript = neighborGimmick.GetComponent<IMarkovGimmick>();
+            parentsGimmickScript = parentsGimmick.GetComponent<MarkovGimmick>();
+            neighborGimmickScript = neighborGimmick.GetComponent<MarkovGimmick>();
         #endif
     }
 
@@ -373,7 +373,7 @@ public class GameManager : MonoSingleton<GameManager>
 
         totalTime = demoGimmicks[demoGimmicks.Count - 1].activeSecTime + markovGimmickActiveTime;
         
-        IMarkovGimmick markovGimmick = null, exMarkovGimmick = null;
+        MarkovGimmick markovGimmick = null, exMarkovGimmick = null;
         Gimmick currGimmick = null, exGimmick = null;
 
         var demoTimer = 0f;
@@ -415,17 +415,17 @@ public class GameManager : MonoSingleton<GameManager>
                 Debug.Log("Random - " + currGimmick.name );
             }
             
-            markovGimmick = currGimmick as IMarkovGimmick;
-            exMarkovGimmick = exGimmick as IMarkovGimmick;
+            markovGimmick = currGimmick as MarkovGimmick;
+            exMarkovGimmick = exGimmick as MarkovGimmick;
             exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
-            markovGimmick?.ChangeMarkovState(markovGimmick?.Near);
+            markovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Near);
             // if(markovGimmick?.CurrGimmickType != MarkovGimmickData.MarkovGimmickType.Near)
             //     markovGimmick?.ChangeMarkovState(markovGimmick?.Near);
         }
         else
         {
-            var neighborGimmick = GimmickManager.Instance.GetGimmick("Neighbor") as IMarkovGimmick;
-            var parentsGimmick = GimmickManager.Instance.GetGimmick("Parents") as IMarkovGimmick;
+            var neighborGimmick = GimmickManager.Instance.GetGimmick("Neighbor") as MarkovGimmick;
+            var parentsGimmick = GimmickManager.Instance.GetGimmick("Parents") as MarkovGimmick;
 
             if (neighborGimmick.CurrGimmickType == MarkovGimmickData.MarkovGimmickType.Near)
                 parentsGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
@@ -475,8 +475,8 @@ public class GameManager : MonoSingleton<GameManager>
                         // Debug.Log("Random - " + currGimmick.name );
                     }
 
-                    markovGimmick = currGimmick as IMarkovGimmick;
-                    exMarkovGimmick = exGimmick as IMarkovGimmick;
+                    markovGimmick = currGimmick as MarkovGimmick;
+                    exMarkovGimmick = exGimmick as MarkovGimmick;
                     markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
                     exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
                     Debug.Log(currGimmick.name + " - " + demoGimmicks[idx].type);
