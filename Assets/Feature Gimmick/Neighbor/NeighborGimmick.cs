@@ -82,6 +82,7 @@ public class NeighborGimmick : MarkovGimmick
     
     private void Update()
     {
+        #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Equals))
         {
             stateTransitionProbability += 15;
@@ -109,6 +110,7 @@ public class NeighborGimmick : MarkovGimmick
         {
             ChangeMarkovState(Near);
         }
+        #endif
     }
 
     private void Awake()
