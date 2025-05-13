@@ -2,18 +2,18 @@
 using System;
 using AbstractGimmick;
 
+public enum MarkovGimmickType
+{
+    Wait,
+    Watch,
+    Cautious,
+    Danger,
+    Near
+}
+
 [Serializable]
 public class MarkovGimmickData
 {
-    public enum MarkovGimmickType
-    {
-        Wait,
-        Watch,
-        Cautious,
-        Danger,
-        Near
-    }
-
     public MarkovGimmickType type;
     public int activeSecTime;
 }
@@ -21,7 +21,7 @@ public class MarkovGimmickData
 [Serializable]
 struct StateProbabilityData
 {
-    public MarkovGimmickData.MarkovGimmickType type;
+    public MarkovGimmickType type;
         
     /// <summary>
     /// 잡음 임계값
@@ -37,7 +37,7 @@ struct StateProbabilityData
 public abstract class MarkovGimmick : Gimmick
 {
     public MarkovState CurrState { get; set; } = null;
-    public MarkovGimmickData.MarkovGimmickType CurrGimmickType { get; set; }
+    public MarkovGimmickType CurrGimmickType { get; set; }
     
     protected abstract bool IsOn { get; set; }
     
@@ -49,5 +49,5 @@ public abstract class MarkovGimmick : Gimmick
     
     public abstract void ChangeRandomMarkovState();
     public abstract void ChangeMarkovState(MarkovState next);
-    public abstract void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type);
+    public abstract void ChangeMarkovState(MarkovGimmickType type);
 }

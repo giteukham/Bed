@@ -190,20 +190,20 @@ public class ParentsGimmick : MarkovGimmick
         CurrState.Active();
     }
     
-    public override void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
+    public override void ChangeMarkovState(MarkovGimmickType type)
     {
         switch (type)
         {
-            case MarkovGimmickData.MarkovGimmickType.Wait:
+            case MarkovGimmickType.Wait:
                 ChangeMarkovState(Wait);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Watch:
+            case MarkovGimmickType.Watch:
                 ChangeMarkovState(Watch);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Danger:
+            case MarkovGimmickType.Danger:
                 ChangeMarkovState(Danger);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Near:
+            case MarkovGimmickType.Near:
                 ChangeMarkovState(Near);
                 break;
             default:

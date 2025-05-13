@@ -33,7 +33,7 @@ public class GameOverScreen : MonoBehaviour
     [SerializeField]
     private List<string> neighborTexts = new();
 
-    private Dictionary<GameObject, TMP_Text[]> textPositions = new();
+    private Dictionary<GameObject, TMP_Text[]> texts = new();
     private string[] splitTexts = new [] { string.Empty };                                                  // 일단 공백을 기준으로 텍스트를 나눔
 
     private void Awake()
@@ -43,26 +43,23 @@ public class GameOverScreen : MonoBehaviour
 
     private void Initialize()
     {
-        Assert.IsNotNull(dTextObject, "GameOverScreen의 dTextObject가 없습니다.");
-        Assert.IsNotNull(nTextObject, "GameOverScreen의 nTextObject가 없습니다.");
-
         if (dTextObject.activeSelf) dTextObject.SetActive(false);
         if (nTextObject.activeSelf) nTextObject.SetActive(false);
 
-        if (textPositions.Count > 0) textPositions.Clear(); 
-        textPositions.Add(dTextObject, new TMP_Text[]
+        if (texts.Count > 0) texts.Clear(); 
+        texts.Add(dTextObject, new TMP_Text[]
         {
             dTextObject.transform.GetChild(0).GetComponent<TMP_Text>(),       // parents position
             dTextObject.transform.GetChild(1).GetComponent<TMP_Text>(),       // neighbor position
         });
         
-        textPositions.Add(nTextObject, new TMP_Text[]
+        texts.Add(nTextObject, new TMP_Text[]
         {
             nTextObject.transform.GetChild(0).GetComponent<TMP_Text>(),
             nTextObject.transform.GetChild(1).GetComponent<TMP_Text>(),
         });
         
-        foreach (var textObject in textPositions)
+        foreach (var textObject in texts)
         {
             foreach (var child in textObject.Value)
             {
@@ -109,7 +106,6 @@ public class GameOverScreen : MonoBehaviour
         if (!string.IsNullOrEmpty(dTextChild.text))
         {
             dTextChild.text = "";
-            yield return new WaitForSeconds(1f);
         }
         yield return new DOTweenCYInstruction.WaitForCompletion(dTextChild.DOText(splitTexts[0], parentsTextSpeed));
     }
@@ -147,9 +143,8 @@ public class GameOverScreen : MonoBehaviour
         if (!string.IsNullOrEmpty(nTextChild.text))
         {
             nTextChild.text = "";
-            yield return new WaitForSeconds(1f);
         }
-        yield return new DOTweenCYInstruction.WaitForCompletion(nTextChild.DOText(splitTexts[0], parentsTextSpeed));
+        yield return new DOTweenCYInstruction.WaitForCompletion(nTextChild.DOText(splitTexts[1], parentsTextSpeed));
     }
     
     /// <summary>
@@ -163,16 +158,16 @@ public class GameOverScreen : MonoBehaviour
             {
                 var parentsText = parentsTexts[UnityEngine.Random.Range(0, parentsTexts.Count)];
                 splitTexts = parentsText.Split(' ');
-                dTextChild = textPositions[dTextObject][0];
-                nTextChild = textPositions[nTextObject][0];
+                dTextChild = texts[dTextObject][0];
+                nTextChild = texts[nTextObject][0];
                 break;
             }
             case "Neighbor":
             {
                 var neighborText = neighborTexts[UnityEngine.Random.Range(0, neighborTexts.Count)];
                 splitTexts = neighborText.Split(' ');
-                dTextChild = textPositions[dTextObject][1];
-                nTextChild = textPositions[nTextObject][1];                                 
+                dTextChild = texts[dTextObject][1];
+                nTextChild = texts[nTextObject][1];                                 
                 break;
             }
         }

@@ -420,9 +420,9 @@ public class GameManager : MonoSingleton<GameManager>
             
             markovGimmick = currGimmick as MarkovGimmick;
             exMarkovGimmick = exGimmick as MarkovGimmick;
-            exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
-            markovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Near);
-            // if(markovGimmick?.CurrGimmickType != MarkovGimmickData.MarkovGimmickType.Near)
+            exMarkovGimmick?.ChangeMarkovState(MarkovGimmickType.Wait);
+            markovGimmick?.ChangeMarkovState(MarkovGimmickType.Near);
+            // if(markovGimmick?.CurrGimmickType != MarkovGimmickType.Near)
             //     markovGimmick?.ChangeMarkovState(markovGimmick?.Near);
         }
         else
@@ -430,10 +430,10 @@ public class GameManager : MonoSingleton<GameManager>
             var neighborGimmick = GimmickManager.Instance.GetGimmick("Neighbor") as MarkovGimmick;
             var parentsGimmick = GimmickManager.Instance.GetGimmick("Parents") as MarkovGimmick;
 
-            if (neighborGimmick.CurrGimmickType == MarkovGimmickData.MarkovGimmickType.Near)
-                parentsGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
-            else if (parentsGimmick.CurrGimmickType == MarkovGimmickData.MarkovGimmickType.Near)
-                neighborGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
+            if (neighborGimmick.CurrGimmickType == MarkovGimmickType.Near)
+                parentsGimmick?.ChangeMarkovState(MarkovGimmickType.Wait);
+            else if (parentsGimmick.CurrGimmickType == MarkovGimmickType.Near)
+                neighborGimmick?.ChangeMarkovState(MarkovGimmickType.Wait);
         }
         
         
@@ -482,7 +482,8 @@ public class GameManager : MonoSingleton<GameManager>
                     exMarkovGimmick = exGimmick as MarkovGimmick;
                     GimmickManager.Instance.ExclusionGimmick(currGimmick);
                     markovGimmick?.ChangeMarkovState(demoGimmicks[idx].type);
-                    exMarkovGimmick?.ChangeMarkovState(MarkovGimmickData.MarkovGimmickType.Wait);
+                    exMarkovGimmick?.ChangeMarkovState(MarkovGimmickType.Wait);
+                    Debug.Log(currGimmick.name + " - " + demoGimmicks[idx].type);
                     activeSecTimesTmp.Add(demoGimmicks[idx].activeSecTime);
                     demoGimmicks[idx].activeSecTime = 0;
                     idx = idx < demoGimmicks.Count - 1 ? idx + 1 : idx;

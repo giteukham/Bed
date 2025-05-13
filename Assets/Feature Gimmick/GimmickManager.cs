@@ -129,7 +129,7 @@ public class GimmickManager : MonoSingleton<GimmickManager>
         return gimmick;
     }
 
-    public void ChangeAllMarkovGimmickState(MarkovGimmickData.MarkovGimmickType type)
+    public void ChangeAllMarkovGimmickState(MarkovGimmickType type)
     {
         foreach (var gimmick in AllGimicks.ToList())
         {

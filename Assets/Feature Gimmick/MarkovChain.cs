@@ -12,14 +12,14 @@ public class MarkovState
     
     private readonly string name;
     public string Name => name;
-    public MarkovGimmickData.MarkovGimmickType Type;
+    public MarkovGimmickType Type;
 
     public event StateActionHandler OnStateAction;
     
     public MarkovState(string name)
     {
         this.name = name;
-        this.Type = (MarkovGimmickData.MarkovGimmickType) Enum.Parse(typeof(MarkovGimmickData.MarkovGimmickType), name);
+        this.Type = (MarkovGimmickType) Enum.Parse(typeof(MarkovGimmickType), name);
     }
 
     public void Active()

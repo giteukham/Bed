@@ -82,35 +82,33 @@ public class NeighborGimmick : MarkovGimmick
     
     private void Update()
     {
-        #if UNITY_EDITOR
-            if (Input.GetKeyDown(KeyCode.Equals))
-            {
-                stateTransitionProbability += 15;
-                Debug.Log(stateTransitionProbability);
-            }
-            else if (Input.GetKeyDown(KeyCode.Minus))
-            {
-                stateTransitionProbability -= 15;
-                Debug.Log(stateTransitionProbability);
-            }
-            
-            if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
-            {
-                ChangeMarkovState(Wait);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
-            {
-                ChangeMarkovState(Watch);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
-            {
-                ChangeMarkovState(Danger);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
-            {
-                ChangeMarkovState(Near);
-            }
-        #endif
+        if (Input.GetKeyDown(KeyCode.Equals))
+        {
+            stateTransitionProbability += 15;
+            Debug.Log(stateTransitionProbability);
+        }
+        else if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            stateTransitionProbability -= 15;
+            Debug.Log(stateTransitionProbability);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
+        {
+            ChangeMarkovState(Wait);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
+        {
+            ChangeMarkovState(Watch);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
+        {
+            ChangeMarkovState(Danger);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            ChangeMarkovState(Near);
+        }
     }
 
     private void Awake()
@@ -224,23 +222,23 @@ public class NeighborGimmick : MarkovGimmick
         CurrState.Active();
     }
 
-    public override void ChangeMarkovState(MarkovGimmickData.MarkovGimmickType type)
+    public override void ChangeMarkovState(MarkovGimmickType type)
     {
         switch (type)
         {
-            case MarkovGimmickData.MarkovGimmickType.Wait:
+            case MarkovGimmickType.Wait:
                 ChangeMarkovState(Wait);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Watch:
+            case MarkovGimmickType.Watch:
                 ChangeMarkovState(Watch);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Cautious:
+            case MarkovGimmickType.Cautious:
                 ChangeMarkovState(Cautious);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Danger:
+            case MarkovGimmickType.Danger:
                 ChangeMarkovState(Danger);
                 break;
-            case MarkovGimmickData.MarkovGimmickType.Near:
+            case MarkovGimmickType.Near:
                 ChangeMarkovState(Near);
                 break;
             default:
@@ -417,7 +415,7 @@ public class NeighborGimmick : MarkovGimmick
                     ConeCollider.TriggeredObject.Equals(neighborHead))
                 {
                     // GameManager.Instance.StopDemoCoroutine();
-                    GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickData.MarkovGimmickType.Wait);
+                    GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickType.Wait);
 
                     yield break;
                 }
