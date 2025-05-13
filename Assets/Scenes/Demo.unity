@@ -11518,11 +11518,11 @@ PrefabInstance:
     - target: {fileID: 3372905682704160827, guid: 843188dba0224a746b5d2bd55bc28ece, type: 3}
       propertyPath: leftEar
       value: 
-      objectReference: {fileID: 1772105139}
+      objectReference: {fileID: 1173373121}
     - target: {fileID: 3372905682704160827, guid: 843188dba0224a746b5d2bd55bc28ece, type: 3}
       propertyPath: rightEar
       value: 
-      objectReference: {fileID: 1173373121}
+      objectReference: {fileID: 1772105139}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17997,7 +17997,7 @@ GameObject:
   - component: {fileID: 1173373123}
   - component: {fileID: 1173373122}
   m_Layer: 0
-  m_Name: RightEar
+  m_Name: LeftEar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24434,6 +24434,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5308632132293314185, guid: e1ef9606eb384eb4288e3bcb2e70f463, type: 3}
+      propertyPath: leftEar
+      value: 
+      objectReference: {fileID: 1173373121}
+    - target: {fileID: 5308632132293314185, guid: e1ef9606eb384eb4288e3bcb2e70f463, type: 3}
+      propertyPath: rightEar
+      value: 
+      objectReference: {fileID: 1772105139}
     - target: {fileID: 7760653347740452623, guid: e1ef9606eb384eb4288e3bcb2e70f463, type: 3}
       propertyPath: m_Name
       value: Mosquito
@@ -27077,6 +27085,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1746845256}
   m_CullTransparentMesh: 1
+--- !u!114 &1751141159 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5308632132293314185, guid: e1ef9606eb384eb4288e3bcb2e70f463, type: 3}
+  m_PrefabInstance: {fileID: 1594868410}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df39e555a604e844e9fc09c1ef53ea88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1771750547
 GameObject:
   m_ObjectHideFlags: 0
@@ -27223,7 +27242,7 @@ GameObject:
   - component: {fileID: 1772105142}
   - component: {fileID: 1772105141}
   m_Layer: 0
-  m_Name: LeftEar
+  m_Name: RightEar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27356,17 +27375,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3878936259713856763, guid: 43c9c663b618111488b850378c0d27da, type: 3}
   m_PrefabInstance: {fileID: 1777309656}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1777309658 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 762210794974242136, guid: 43c9c663b618111488b850378c0d27da, type: 3}
-  m_PrefabInstance: {fileID: 1777309656}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea5156ce413233046bb0828f7a899daa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1813326869
 GameObject:
   m_ObjectHideFlags: 0
@@ -34214,7 +34222,7 @@ MonoBehaviour:
     activeSecTime: 25
   - type: 1
     activeSecTime: 35
-  testGimmick: {fileID: 1777309658}
+  testGimmick: {fileID: 1751141159}
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0
