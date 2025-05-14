@@ -216,7 +216,7 @@ public class SaveManager : MonoSingleton<SaveManager>
             ResolutionWidth = PlayerPrefs.GetInt("ResolutionWidth", Screen.currentResolution.width),
             ResolutionHeight = PlayerPrefs.GetInt("ResolutionHeight", Screen.currentResolution.height),
             FrameRate = PlayerPrefs.GetInt("FrameRate", 60),
-            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 1) == 0,
+            IsWindowed = PlayerPrefs.GetInt("IsWindowed", 0) == 1,
             ScreenBrightness = PlayerPrefs.GetFloat("ScreenBrightness", 0f)
         };
     }
