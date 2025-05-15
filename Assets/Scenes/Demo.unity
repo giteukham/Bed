@@ -1406,11 +1406,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 14020084}
   m_CullTransparentMesh: 1
---- !u!1 &15123148 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 434197584149231104, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
-  m_PrefabInstance: {fileID: 640230416}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &22831732
 GameObject:
   m_ObjectHideFlags: 0
@@ -8458,7 +8453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   previewPlayer: {fileID: 1259580854}
-  mouseLeftClickIcon: {fileID: 1351656137}
+  mouseLeftClickIcon: {fileID: 0}
 --- !u!114 &486139346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10413,10 +10408,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gimmickIcon: {fileID: 5175849589471819702, guid: 1ca968058294bcb4a905d22dbd97a269, type: 3}
-  initGimmickIconList:
-  - {fileID: 2037237695}
-  - {fileID: 635305297}
-  - {fileID: 1401045998}
+  initGimmickIconList: []
   parentTransform: {fileID: 433979059}
   gimmickIconList: []
 --- !u!114 &614758156
@@ -10837,7 +10829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testObject: {fileID: 204664835221935306, guid: fbf3cee1f44fecf45b8de165f9ff5dbf, type: 3}
   isInitalBatch: 1
-  soundWave: {fileID: 226728827}
+  soundWave: {fileID: 0}
   fadeDuration: 0.1
   scaleDuration: 0.2
 --- !u!1 &635529637
@@ -10888,7 +10880,7 @@ MonoBehaviour:
   sourcePosition: {fileID: 105610751}
   sourceRotation: {fileID: 1732393635}
   breathTime: 2
-  timeToStop: 0.15
+  timeToStop: 0.2
 --- !u!1 &638792219
 GameObject:
   m_ObjectHideFlags: 0
@@ -12115,6 +12107,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6223202019192480214, guid: 0ee12fbaf377fef44a3c676f7132a040, type: 3}
   m_PrefabInstance: {fileID: 738944369}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &740930296 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3789245577109436201, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+  m_PrefabInstance: {fileID: 1554498596276130028}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &741490382
 GameObject:
   m_ObjectHideFlags: 0
@@ -12488,7 +12485,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivitySlider: {fileID: 208142704}
   sensitivityValue: {fileID: 1541557368}
-  sensitiveBar: {fileID: 1579148172}
+  sensitiveBar: {fileID: 0}
   VerticalSwitch: {fileID: 1393445006}
   HorizontalSwitch: {fileID: 1721294634}
   onImage: {fileID: 21300000, guid: 7cd1297fa84869342b3f00ec3a1ec497, type: 3}
@@ -16763,17 +16760,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5879737276141952866, guid: d12b78d9c487ee54385aeef130997b76, type: 3}
   m_PrefabInstance: {fileID: 1038262261}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1038262263 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1119296550951549053, guid: d12b78d9c487ee54385aeef130997b76, type: 3}
-  m_PrefabInstance: {fileID: 1038262261}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d78e0baa38522e140b46cbaa89c8cb14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1042503114
 GameObject:
   m_ObjectHideFlags: 0
@@ -17160,7 +17146,7 @@ MonoBehaviour:
   playerPos: {fileID: 105610751}
   previewPlayerPos: {fileID: 1259580852}
   meshesPos: {fileID: 370423254}
-  mainCamera: {fileID: 1732393634}
+  mainCamera: {fileID: 0}
 --- !u!1 &1082962422
 GameObject:
   m_ObjectHideFlags: 0
@@ -22016,7 +22002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testObject: {fileID: 204664835221935306, guid: fbf3cee1f44fecf45b8de165f9ff5dbf, type: 3}
   isInitalBatch: 1
-  soundWave: {fileID: 1290045778}
+  soundWave: {fileID: 0}
   fadeDuration: 0.1
   scaleDuration: 0.2
 --- !u!1001 &1410182978
@@ -24239,11 +24225,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1549513082}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1563547815 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3789245577109436201, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
-  m_PrefabInstance: {fileID: 1554498596276130028}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1579148170
 GameObject:
   m_ObjectHideFlags: 0
@@ -27316,6 +27297,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea5156ce413233046bb0828f7a899daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1796159400 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 434197584149231104, guid: 2e2fc25235db28044a0ca3c9cddaeabb, type: 3}
+  m_PrefabInstance: {fileID: 640230416}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1813326869
 GameObject:
   m_ObjectHideFlags: 0
@@ -28245,6 +28231,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901624158}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1915386992 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2541380769790803788, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
+  m_PrefabInstance: {fileID: 1554498596276130028}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1922796656
 GameObject:
   m_ObjectHideFlags: 0
@@ -28372,10 +28363,10 @@ MonoBehaviour:
   deadZoneSlider: {fileID: 411966170}
   backgroundTransform: {fileID: 1949738141}
   valueBarTransform: {fileID: 348274099}
-  fill: {fileID: 1123406887}
-  handle: {fileID: 878540786}
-  idleColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
-  activeColor: {r: 0.19607845, g: 0.19607845, b: 0.19607845, a: 1}
+  fill: {fileID: 0}
+  handle: {fileID: 0}
+  idleColor: {r: 0, g: 0, b: 0, a: 0}
+  activeColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!33 &1931144875
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -30413,9 +30404,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testObject: {fileID: 204664835221935306, guid: fbf3cee1f44fecf45b8de165f9ff5dbf, type: 3}
   isInitalBatch: 1
-  soundWave: {fileID: 1015928207}
-  fadeDuration: 0.06
-  scaleDuration: 0.16
+  soundWave: {fileID: 0}
+  fadeDuration: 0.1
+  scaleDuration: 0.2
 --- !u!224 &2037237701
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31443,6 +31434,67 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113926979}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &2136606618
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4800150475904618769, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_Name
+      value: PosterGimmick
+      objectReference: {fileID: 0}
+    - target: {fileID: 8183641644122452239, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
 --- !u!1 &2137946380
 GameObject:
   m_ObjectHideFlags: 0
@@ -33153,7 +33205,7 @@ MonoBehaviour:
   rightMid: {fileID: 1992462290}
   leftBottom: {fileID: 592390786}
   rightBottom: {fileID: 1012128496}
-  player: {fileID: 105610754}
+  player: {fileID: 0}
 --- !u!4 &1606262841469853510
 Transform:
   m_ObjectHideFlags: 0
@@ -33409,11 +33461,11 @@ MonoBehaviour:
     Path: event:/Gimmick SFX/PantRustle
   <gag>k__BackingField:
     Guid:
-      Data1: 1529977143
-      Data2: 1146640107
-      Data3: -950502233
-      Data4: 357621249
-    Path: event:/Gimmick SFX/NeigbhorGag
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   <hornyBreath>k__BackingField:
     Guid:
       Data1: 1495983981
@@ -33624,6 +33676,83 @@ MonoBehaviour:
       Data3: -421609577
       Data4: -91360597
     Path: event:/Gimmick SFX/DadStrangle
+  <scream1>k__BackingField:
+    Guid:
+      Data1: 1983485146
+      Data2: 1126149389
+      Data3: 175485871
+      Data4: -1551217485
+    Path: event:/Gimmick SFX/Scream1
+  <scream2>k__BackingField:
+    Guid:
+      Data1: 1872300852
+      Data2: 1109796545
+      Data3: -612204414
+      Data4: 285237541
+    Path: event:/Gimmick SFX/Scream2
+  <whip1>k__BackingField:
+    Guid:
+      Data1: -1773950241
+      Data2: 1121147363
+      Data3: 1659707016
+      Data4: 613350957
+    Path: event:/Gimmick SFX/Whip1
+  <whip2>k__BackingField:
+    Guid:
+      Data1: -1989118790
+      Data2: 1138956565
+      Data3: -1719879550
+      Data4: 1132482557
+    Path: event:/Gimmick SFX/Whip2
+  <windowBreak1>k__BackingField:
+    Guid:
+      Data1: -1991365142
+      Data2: 1273933330
+      Data3: 821583274
+      Data4: 493417980
+    Path: event:/Gimmick SFX/WindowBreak1
+  <windowBreak2>k__BackingField:
+    Guid:
+      Data1: -762076698
+      Data2: 1328021057
+      Data3: -1062998903
+      Data4: -1982761397
+    Path: event:/Gimmick SFX/WindowBreak2
+  <cry1>k__BackingField:
+    Guid:
+      Data1: 391563423
+      Data2: 1341480765
+      Data3: 1445278623
+      Data4: -1369938351
+    Path: event:/Gimmick SFX/Cry1
+  <cry2>k__BackingField:
+    Guid:
+      Data1: 1184971155
+      Data2: 1181214634
+      Data3: 1237547703
+      Data4: -74108918
+    Path: event:/Gimmick SFX/Cry2
+  <poster1>k__BackingField:
+    Guid:
+      Data1: 945511142
+      Data2: 1334116847
+      Data3: 1280460951
+      Data4: 1831719968
+    Path: event:/Gimmick SFX/Poster1
+  <poster2>k__BackingField:
+    Guid:
+      Data1: 1252083807
+      Data2: 1291057443
+      Data3: -1634112353
+      Data4: 1065117220
+    Path: event:/Gimmick SFX/Poster2
+  <poster3>k__BackingField:
+    Guid:
+      Data1: 2111818070
+      Data2: 1108418789
+      Data3: -1872209277
+      Data4: -2061132267
+    Path: event:/Gimmick SFX/Poster3
   <breathingInRoom>k__BackingField:
     Guid:
       Data1: 1062091195
@@ -33731,11 +33860,11 @@ MonoBehaviour:
     Path: event:/Gimmick SFX/Outside/Cat
   <clapOutside>k__BackingField:
     Guid:
-      Data1: -917091009
-      Data2: 1114835272
-      Data3: -763968344
-      Data4: -678441166
-    Path: event:/Gimmick SFX/Outside/Clap
+      Data1: -1832842744
+      Data2: 1125613889
+      Data3: 147655308
+      Data4: 451895025
+    Path: event:/Gimmick SFX/HandClap
   <dogBarkingOutside>k__BackingField:
     Guid:
       Data1: -738365715
@@ -34223,9 +34352,9 @@ MonoBehaviour:
   debugGimmickText: {fileID: 1746845256}
   mainCamera: {fileID: 1732393634}
   player: {fileID: 105610754}
-  parentsGimmick: {fileID: 1563547815}
-  neighborGimmick: {fileID: 15123148}
-  dad: {fileID: 4750164002904241433}
+  parentsGimmick: {fileID: 740930296}
+  neighborGimmick: {fileID: 1796159400}
+  dad: {fileID: 1915386992}
   isBlinkInit: 0
   timeManager: {fileID: 6399384627524625332}
   ready_CheckTime: 2.5
@@ -34238,33 +34367,17 @@ MonoBehaviour:
   door: {fileID: 984148487}
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
-  isDemo: 1
+  isDemo: 0
   isDemoActive: 0
   randomGimmickActiveTime: 20
   randomGimmickInterval:
-  - {x: 20, y: 35}
-  - {x: 35, y: 57}
-  - {x: 57, y: 55}
-  - {x: 55, y: 64}
+  - {x: 20, y: 40}
+  - {x: 40, y: 50}
+  - {x: 50, y: 58}
+  - {x: 58, y: 65}
   markovGimmickActiveTime: 30
-  demoGimmicks:
-  - type: 1
-    activeSecTime: 30
-  - type: 0
-    activeSecTime: 35
-  - type: 1
-    activeSecTime: 39
-  - type: 2
-    activeSecTime: 43
-  - type: 1
-    activeSecTime: 46
-  - type: 0
-    activeSecTime: 50
-  - type: 2
-    activeSecTime: 55
-  - type: 0
-    activeSecTime: 66
-  testGimmick: {fileID: 1038262263}
+  demoGimmicks: []
+  testGimmick: {fileID: 0}
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0
@@ -38518,3 +38631,4 @@ SceneRoots:
   - {fileID: 1554498596276130028}
   - {fileID: 179192906}
   - {fileID: 888200311}
+  - {fileID: 2136606618}

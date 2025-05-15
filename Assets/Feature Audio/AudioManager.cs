@@ -144,6 +144,27 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     [field: Header("Dad Strangle SFX")]
     [field: SerializeField] public EventReference dadStrangle {get; private set;}
+    
+    [field: Header("Screams SFX")]
+    [field: SerializeField] public EventReference scream1 {get; private set;}
+    [field: SerializeField] public EventReference scream2 {get; private set;}
+    
+    [field: Header("Whips SFX")]
+    [field: SerializeField] public EventReference whip1 {get; private set;}
+    [field: SerializeField] public EventReference whip2 {get; private set;}
+    
+    [field: Header("Window Break SFX")]
+    [field: SerializeField] public EventReference windowBreak1 {get; private set;}
+    [field: SerializeField] public EventReference windowBreak2 {get; private set;}
+    
+    [field: Header("Cry SFX")]
+    [field: SerializeField] public EventReference cry1 {get; private set;}
+    [field: SerializeField] public EventReference cry2 {get; private set;}
+    
+    [field: Header("Poster SFX")]
+    [field: SerializeField] public EventReference poster1 {get; private set;}
+    [field: SerializeField] public EventReference poster2 {get; private set;}
+    [field: SerializeField] public EventReference poster3 {get; private set;}
     #endregion
 
     #region Gimmick FMOD Events
@@ -416,5 +437,12 @@ public class AudioManager : MonoSingleton<AudioManager>
         }
         
         return 0;
+    }
+
+    public PLAYBACK_STATE GetPlaybackState(EventReference _eventRef)
+    {
+        EventInstance eventInstance = eventInstances[_eventRef];
+        eventInstance.getPlaybackState(out PLAYBACK_STATE playbackState);
+        return playbackState;
     }
 }
