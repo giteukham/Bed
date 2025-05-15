@@ -58,7 +58,7 @@ public class LogoScene : MonoBehaviour
 
         await UniTask.WhenAny(CloseBlink());
         RemoveLogo();
-        SceneManager.LoadScene("Demo");                     // TODO: 나중에 main 씬으로 바꿔야 함.
+        SceneManager.LoadScene("Main"); 
     }
 
     private void RemoveLogo()

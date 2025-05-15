@@ -164,7 +164,7 @@ public class ParentsGimmick : MarkovGimmick
         // 특정 상황에 상태 확률을 decision으로 지정
         stateTransitionDecisionValue = stateTransitionProbability;
 
-        if (GameManager.Instance.isDemo == false && IsOn == true)
+        if (IsOn == true)
         {
             ChangeStateProbability();
             ChangeStateProbabilitySeeingParents(Watch);
@@ -300,7 +300,6 @@ public class ParentsGimmick : MarkovGimmick
                 break;
 
             case var _ when state.Equals(Near):
-                GameManager.Instance.StopDemoCoroutine();
                 AudioManager.Instance.StopSound(AudioManager.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 AudioManager.Instance.StopSound(AudioManager.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);

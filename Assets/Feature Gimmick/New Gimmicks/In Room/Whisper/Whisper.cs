@@ -24,7 +24,7 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
 
     public override void UpdateProbability()
     {
-        if (GameManager.Instance.isDemo) probability = 100f;
+        probability = 100f;
     }
     
     public override void Activate()

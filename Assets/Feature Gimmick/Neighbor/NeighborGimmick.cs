@@ -193,7 +193,7 @@ public class NeighborGimmick : MarkovGimmick
         // 특정 상황에 상태 확률을 decision으로 지정
         stateTransitionDecisionValue = stateTransitionProbability;
 
-        if (GameManager.Instance.isDemo == false && IsOn == true)
+        if (IsOn == true)
         {
             ChangeStateProbability();
             ChangeStateProbabilitySeeingNeighbor(Watch);

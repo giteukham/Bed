@@ -14,7 +14,6 @@ public class FemaleLaughing : SoundOnlyGimmick
 
     public override void UpdateProbability()
     {
-        if (GameManager.Instance.isDemo) probability = 100f;
     }
 
     private void Start()

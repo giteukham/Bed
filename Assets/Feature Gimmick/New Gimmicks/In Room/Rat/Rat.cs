@@ -20,7 +20,6 @@ public class Rat : SoundOnlyGimmick
 
     public override void UpdateProbability()
     {
-        if (GameManager.Instance.isDemo) probability = 100f;
     }
 
     public override void Initialize() { }
