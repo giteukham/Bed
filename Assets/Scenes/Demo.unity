@@ -28231,11 +28231,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901624158}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1915386992 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2541380769790803788, guid: 514a867e383e31b42b28057efb27d06e, type: 3}
-  m_PrefabInstance: {fileID: 1554498596276130028}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1922796656
 GameObject:
   m_ObjectHideFlags: 0
@@ -31434,67 +31429,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113926979}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &2136606618
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484805753568969352, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4800150475904618769, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_Name
-      value: PosterGimmick
-      objectReference: {fileID: 0}
-    - target: {fileID: 8183641644122452239, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d382d0ce76d19ca42879312ceb35327c, type: 3}
 --- !u!1 &2137946380
 GameObject:
   m_ObjectHideFlags: 0
@@ -34354,7 +34288,7 @@ MonoBehaviour:
   player: {fileID: 105610754}
   parentsGimmick: {fileID: 740930296}
   neighborGimmick: {fileID: 1796159400}
-  dad: {fileID: 1915386992}
+  dad: {fileID: 4750164002904241433}
   isBlinkInit: 0
   timeManager: {fileID: 6399384627524625332}
   ready_CheckTime: 2.5
@@ -34367,7 +34301,7 @@ MonoBehaviour:
   door: {fileID: 984148487}
   tutorialTestEnable: 1
   bothClickToleranceTime: 0.1
-  isDemo: 0
+  isDemo: 1
   isDemoActive: 0
   randomGimmickActiveTime: 20
   randomGimmickInterval:
@@ -34375,8 +34309,10 @@ MonoBehaviour:
   - {x: 40, y: 50}
   - {x: 50, y: 58}
   - {x: 58, y: 65}
-  markovGimmickActiveTime: 30
-  demoGimmicks: []
+  markovGimmickActiveTime: 5
+  demoGimmicks:
+  - type: 2
+    activeSecTime: 6
   testGimmick: {fileID: 0}
 --- !u!4 &2999487501671821036
 Transform:
@@ -38631,4 +38567,3 @@ SceneRoots:
   - {fileID: 1554498596276130028}
   - {fileID: 179192906}
   - {fileID: 888200311}
-  - {fileID: 2136606618}

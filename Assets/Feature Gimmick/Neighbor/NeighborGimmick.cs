@@ -416,6 +416,7 @@ public class NeighborGimmick : MarkovGimmick
                     ConeCollider.TriggeredObject != null &&
                     ConeCollider.TriggeredObject.Equals(neighborHead))
                 {
+                    yield return new WaitForSeconds(Random.Range(0.3f, 0.8f));
                     // GameManager.Instance.StopDemoCoroutine();
                     GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickType.Wait);
 
