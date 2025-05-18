@@ -81,37 +81,37 @@ namespace Bed.Collider
             }
         }
 
-        private Vector3[] GetEpllipseCoordinate()
+        private Vector3[] GetEllipseCoordinate()
         {
-            Vector3[] epllipsePoints = new Vector3[epllipseSegments + 1];
-            Vector3 epllipsePoint = new Vector3(0f, 0f, distance);
+            Vector3[] ellipsePoints = new Vector3[epllipseSegments + 1];
+            Vector3 ellipsePoint = new Vector3(0f, 0f, distance);
             distance = distance < 1.0f ? 1.0f : distance;
             
-            epllipsePoints[0] = Vector3.zero;
+            ellipsePoints[0] = Vector3.zero;
             for (int i = 1; i < epllipseSegments; i++)
             {
                 float angle = ((float)i / (float)epllipseSegments) * 360 * Mathf.Deg2Rad;
                 float x = Mathf.Sin(angle) * horizontal;
                 float y = Mathf.Cos(angle) * vertical;
                 
-                epllipsePoint.x = x;
-                epllipsePoint.y = y;
-                epllipsePoints[i] = epllipsePoint;
+                ellipsePoint.x = x;
+                ellipsePoint.y = y;
+                ellipsePoints[i] = ellipsePoint;
             }
             
-            return epllipsePoints;
+            return ellipsePoints;
         }
         
         private Mesh CreateConeMesh()
         {
-            Vector3[] epllipsePoints = GetEpllipseCoordinate();
+            Vector3[] ellipsePoints = GetEllipseCoordinate();
             Mesh mesh = new Mesh();
             mesh.Clear();
             
             Vector3[] vertices = new Vector3[epllipseSegments + 1];
             for (int i = 0; i < epllipseSegments; i++)
             {
-                vertices[i] = epllipsePoints[i];
+                vertices[i] = ellipsePoints[i];
             }
             
             int[] triangles = new int[epllipseSegments * 3];

@@ -163,7 +163,7 @@ public class SaveManager : MonoSingleton<SaveManager>
 
     public string LoadLastPlayedTime()
     {
-        return PlayerPrefs.GetString("LastPlayedTime", "200001010000");
+        return PlayerPrefs.GetString("LastPlayedTime", "20000101000000");
     }
 
     public float LoadMasterVolume()

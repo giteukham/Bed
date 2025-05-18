@@ -49,7 +49,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
 
     private void Update()
     {
-        if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && GameManager.Instance.tutorialTestEnable)
+        if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && GameManager.Instance.isTutorialEnable)
         {
             time += Time.deltaTime;
             if (time >= ready_CheckTime)
@@ -61,7 +61,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
                 if (blinkTutorial.activeSelf) BlinkTutorial(false);
                 if (blinkTutorialCoroutine != null) StopCoroutine(blinkTutorialCoroutine);
                 if (cockroach.gameObject.activeSelf) cockroach.Exit();
-                GameManager.Instance.tutorialTestEnable = false;
+                GameManager.Instance.isTutorialEnable = false;
             }
         }
         else time = 0f;
@@ -133,7 +133,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
             if (PlayerConstant.isLeftState)
             {
                 LeftMoveTutorial(false);
-                GameManager.Instance.tutorialTestEnable = false;
+                GameManager.Instance.isTutorialEnable = false;
                 yield break;
             }
 
@@ -143,7 +143,7 @@ public class TutorialManager : MonoSingleton<TutorialManager>
 
     public bool CheckCockroachActive()
     {
-        if (GameManager.Instance.tutorialTestEnable) return isBlinkTutorialActivate;
+        if (GameManager.Instance.isTutorialEnable) return isBlinkTutorialActivate;
         else return !cockroach.gameObject.activeSelf;
     }
 

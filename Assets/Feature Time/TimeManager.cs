@@ -93,7 +93,7 @@ public class TimeManager : MonoSingleton<TimeManager>
             playTimeToMin ++; // 게임 시간 1분 증가
             GimmickManager.Instance.RedefineProbability(); // 기믹 확률 재정의
             realTimeCounter = 0;
-            SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmm"));
+            SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmmss"));
         }
 
         if (30 > playTimeToMin) // 30분 전

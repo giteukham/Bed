@@ -89,8 +89,7 @@ public class GameManager : MonoSingleton<GameManager>
     [Space(10f)]
     [SerializeField] private Door door;
     private GameState currentState;
-    private bool isTutorialEnable;
-    public bool tutorialTestEnable;
+    public bool isTutorialEnable;
     
     private float lastLeftClickTime = -1f;
     private float lastRightClickTime = -1f;
@@ -124,24 +123,15 @@ public class GameManager : MonoSingleton<GameManager>
         // if (SceneManager.GetActiveScene().name.Equals("Demo")) isDemo = true;
 
         //예전 마지막 플레이 시간 가져옴
-        DateTime ago = DateTime.ParseExact(SaveManager.Instance.LoadLastPlayedTime(), "yyyyMMddHHmm", CultureInfo.InvariantCulture);
+        DateTime ago = DateTime.ParseExact(SaveManager.Instance.LoadLastPlayedTime(), "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
         //현재 플레이 시간 가져옴
         DateTime now = DateTime.Now;
 
         //시간 비교
         TimeSpan timeDifference = now - ago;
-
+        
+        // isTutorialEnable = timeDifference.TotalMinute >= 1f;
         isTutorialEnable = timeDifference.TotalHours >= 48.0d;
-
-        //48시간 이후 접속 여부
-        if (isTutorialEnable == true)
-        {
-            //튜토리얼 실행 코드 작성
-        }
-        else
-        {
-
-        }
     }
 
     void Start()
@@ -231,7 +221,7 @@ public class GameManager : MonoSingleton<GameManager>
 
         UIManager.Instance.DeutActivate(true);
 
-        if (tutorialTestEnable) TutorialManager.Instance.EyeOpenTutorialStart();
+        if (isTutorialEnable) TutorialManager.Instance.EyeOpenTutorialStart();
         StartCoroutine(ReadyCheckCoroutine());
     }
 
@@ -248,7 +238,7 @@ public class GameManager : MonoSingleton<GameManager>
                 if (TutorialManager.Instance.CheckCockroachActive()) door.StartDoorKnock();
             } 
 
-            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && !tutorialTestEnable)
+            if (PlayerConstant.isLeftState && PlayerConstant.isEyeOpen && !isTutorialEnable)
             {
                 time += Time.deltaTime;
                 if (time >= ready_CheckTime)
@@ -302,9 +292,6 @@ public class GameManager : MonoSingleton<GameManager>
 
     IEnumerator GameOverCoroutine()
     {
-        // 테스트용
-        tutorialTestEnable = true;
-
         player.EyeControl(PlayerEyeStateTypes.Close);
         PlayerConstant.isShock = true;
         Invoke(nameof(DelayTurnToMiddle), 0.1f);
@@ -422,18 +409,11 @@ public class GameManager : MonoSingleton<GameManager>
         #endif
     }
     
-    protected override void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
         if (isBlinkInit) BlinkEffect.Blink = 1f;
-        else BlinkEffect.Blink = 0f;
-    }
-
-    public void GameEnd()
-    {
-        SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmm"));
-
-        //에디터에서는 코드 동작 안함
-        Debug.Log("게임 끝");
-        Application.Quit();
+        else BlinkEffect.Blink = 0.001f;
+        
+        SaveManager.Instance.SaveLastPlayedTime(DateTime.Now.ToString("yyyyMMddHHmmss"));
     }
 }
