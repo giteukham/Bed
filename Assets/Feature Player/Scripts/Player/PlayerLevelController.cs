@@ -7,12 +7,11 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
 {
     private Coroutine noiseLevelDecayRoutine, stressLevelDecayRoutine, noiseMonitorRoutine, headMoveMonitorRoutine;
     [HideInInspector]public UnityEvent<int> OnNoiseChanged, OnStressChanged = new UnityEvent<int>();
-    private float lowNoiseDuration = 0f;
     private int prevNoiseLevel, currentNoiseLevel;
 
     #region Level Related Values
     [SerializeField]private float stressLevel_ActivityDetectionTime;
-    [SerializeField]private float stressLevel_DecreaseLatency;
+    [SerializeField]private float stressLevel_DecreaseLatency;  
     [SerializeField]private float noiseLevel_ActivityDetectionTime;
     [SerializeField]private float noiseLevel_DecreaseLatency;
     [SerializeField]private float noiseStage_UpdateLatency;
@@ -57,27 +56,23 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
 
     private IEnumerator MonitorNoiseLevel()
     {
-        yield return new WaitForSeconds(noiseStage_UpdateLatency);
         while (true)
         {
+            yield return new WaitForSeconds(noiseStage_UpdateLatency);
             if (PlayerConstant.noiseLevel < 30)
-            {
                 PlayerConstant.noiseStage = Mathf.Clamp(PlayerConstant.noiseStage - 1, PlayerConstant.noiseStageMin, PlayerConstant.noiseStageMax);
-                yield return new WaitForSeconds(noiseStage_UpdateLatency);
-            }
             else
             {
                 currentNoiseLevel = PlayerConstant.noiseLevel;
                 if ((currentNoiseLevel / 10) - (prevNoiseLevel / 10) > 1) PlayerConstant.noiseStage = Mathf.Clamp(PlayerConstant.noiseStage + ((currentNoiseLevel / 10) - (prevNoiseLevel / 10)), PlayerConstant.noiseStageMin, PlayerConstant.noiseStageMax);
                 else PlayerConstant.noiseStage = Mathf.Clamp(PlayerConstant.noiseStage + 1, PlayerConstant.noiseStageMin, PlayerConstant.noiseStageMax);
-                
-                if (lowNoiseDuration != 0f) lowNoiseDuration = 0f;
                 prevNoiseLevel = PlayerConstant.noiseLevel;
-                yield return new WaitForSeconds(noiseStage_UpdateLatency);
             }
         }
     }
 
+    // 사용처
+    // Gimmicks
     public void AdjustStress(int amount)
     {
         PlayerConstant.stressLevel = Mathf.Clamp(PlayerConstant.stressLevel + amount, PlayerConstant.stressLevelMin, PlayerConstant.stressLevelMax);
@@ -102,6 +97,7 @@ public class PlayerLevelController : MonoSingleton<PlayerLevelController>
         }
     }
 
+    // 사용처
     // PlayerDirectionStates
     // PlayerEyeStates
     // Player

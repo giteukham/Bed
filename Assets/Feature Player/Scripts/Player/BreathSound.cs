@@ -47,7 +47,6 @@ public class BreathSound : MonoBehaviour
         breathSequence.InsertCallback(breathTime, ExhaleSound);
         breathSequence.OnUpdate(async () =>
         {
-            // Player 움직이는 상태였다가 안 움직이는 상태되면 다시 breathSequence 재생
             if (PlayerConstant.isMovingState)
             {
                 breathSequence.Pause();
@@ -91,7 +90,6 @@ public class BreathSound : MonoBehaviour
             AudioManager.Instance.StopSound(AudioManager.Instance.exhale, STOP_MODE.IMMEDIATE);
             breathSequence.Pause();
             DOTween.To(() => stopProgress, x => stopProgress = x, 1f, timeToStop);
-            //.OnPlay(() => ); // TOOD: 숨 참는 소리 추가해야 함
         }
         else
         {

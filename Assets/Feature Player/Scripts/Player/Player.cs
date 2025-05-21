@@ -53,6 +53,7 @@ public class Player : PlayerBase
     private PSXPostProcessEffect psxPostProcessEffect;
     private CinemachineBasicMultiChannelPerlin cameraNoise;
     public float pixelationFactor = 0.25f;
+    private Coroutine chromaticAberrationEffectCoroutine;
     #endregion
 
     #region Player Stats Updtae Variables
