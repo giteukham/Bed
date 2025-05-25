@@ -14,12 +14,6 @@ public class SoundSettings : MonoBehaviour
     FMOD.Studio.Bus gimmickBus;
     FMOD.Studio.Bus playerBus;
 
-    private void OnEnable()
-    {
-        masterVolumeSlider.onValueChanged.AddListener(delegate { SetMasterVolume();});
-        gimmickVolumeSlider.onValueChanged.AddListener(delegate { SetGimmickVolume();});
-        playerVolumeSlider.onValueChanged.AddListener(delegate { SetPlayerVolume();});
-    }
 
     private void SetMasterVolume()
     {
@@ -76,6 +70,10 @@ public class SoundSettings : MonoBehaviour
         masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
         gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");
         playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player SFX");
+
+        masterVolumeSlider.onValueChanged.AddListener(delegate { SetMasterVolume();});
+        gimmickVolumeSlider.onValueChanged.AddListener(delegate { SetGimmickVolume();});
+        playerVolumeSlider.onValueChanged.AddListener(delegate { SetPlayerVolume();});
 
         masterBus.setVolume(PlayerPrefs.GetFloat("MasterVolume", 1));
         gimmickBus.setVolume(PlayerPrefs.GetFloat("GimmickVolume", 1));
