@@ -11,7 +11,7 @@ enum MovingState
     Right
 }
 
-public class CatGimmick : Gimmick
+public class LoafCatGimmick : Gimmick
 {
     #region Override Variables
     [field: SerializeField] public override GimmickType type { get; protected set; }
@@ -48,7 +48,9 @@ public class CatGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        PlayerConstant.isRedemption = true;
+        PlayerConstant.isRedemption = true; // 몸 방향 전환 불가능 상태
+
+        // 10% 확률로 레어 애니메이션 재생생
         int chance = UnityEngine.Random.Range(0, 100);
         if (chance < 11)
             animator.Play("ChipiChipiChapaChapa");
@@ -58,6 +60,7 @@ public class CatGimmick : Gimmick
         checkMovingCoroutine ??= StartCoroutine(CheckMovingCoroutine());
         while (true)
         {
+            // 3번 이상 움직이면 몸 방향 전환 불가능 상태 해제, 애니메이션 재생, 기믹 끝
             if (moveCount >= 3)
             {
                 StopCoroutine(checkMovingCoroutine);
@@ -79,13 +82,14 @@ public class CatGimmick : Gimmick
         bool isMoving = false;
         while (true)
         {
-            
+            // 마우스가 왼쪽으로 움직일때 moveCount++ 및 마지막 움직임 상태 Left로 저장장
             if (MouseSettings.Instance.MouseHorizontalSpeed >= MouseSettings.Instance.TurnRightSpeed)
             {
                 movingState = MovingState.Left;
                 moveCount ++;
                 isMoving = true;
             }
+            // 마우스가 오른쪽으로 움직일때 moveCount++ 및 마지막 움직임 상태 Right로 저장
             else if(MouseSettings.Instance.MouseHorizontalSpeed <= MouseSettings.Instance.TurnLeftSpeed)
             {
                 movingState = MovingState.Right;

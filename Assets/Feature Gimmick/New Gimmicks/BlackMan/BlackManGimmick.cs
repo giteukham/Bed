@@ -17,6 +17,8 @@ public class BlackManGimmick : Gimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
+
+    [SerializeField]private float initYPos;
     public override void UpdateProbability()
     {
         probability = 100;
@@ -24,16 +26,14 @@ public class BlackManGimmick : Gimmick
 
     public override void Initialize()
     {
+        transform.position = new Vector3(transform.position.x, initYPos, transform.position.z);
     }
     
-    private void Start()
-    {
-        StartCoroutine(StartGimmick());
-    }
 
     public override void Activate()
     {
         base.Activate();
+        StartCoroutine(MainCode());
     }
 
     public override void Deactivate()
@@ -42,16 +42,19 @@ public class BlackManGimmick : Gimmick
         gameObject.SetActive(false);
     }
 
-    private IEnumerator StartGimmick()
+    private IEnumerator MainCode()
     {
-        const float endYPos = 1.5f;
-        var prevBlinkCount = PlayerConstant.EyeBlinkCAT;
+        const float endYPos = 1.4f;
+        int? prevBlinkCount = null;
         Coroutine stressLevelCoroutine = null;
         
         while (true)
         {
+            // 다 올라왔을때 BlinkCount값 저장
+            if (prevBlinkCount == null && transform.position.y >= endYPos) prevBlinkCount = PlayerConstant.EyeBlinkCAT;
+            
             // 다 올라오고 난 후 쳐다보면서 눈을 깜빡이면 파훼
-            if (transform.position.y >= endYPos &&
+            if (prevBlinkCount != null &&
                 isDetected == true &&
                 PlayerConstant.EyeBlinkCAT > prevBlinkCount)
             {

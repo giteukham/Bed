@@ -4,7 +4,7 @@ using AbstractGimmick;
 using FMODUnity;
 using UnityEngine;
 
-public class Cat : SoundOnlyGimmick
+public class CatCrying : SoundOnlyGimmick
 {
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
