@@ -89,6 +89,7 @@ public class ResolutionDropDowncontroller : FunctionControllerBase
                     break;
                 }
             }
+            OnSelectChanged?.Invoke();
         }
     }
 
@@ -107,6 +108,7 @@ public class ResolutionDropDowncontroller : FunctionControllerBase
                     break;
                 }
             }
+            OnSelectChanged?.Invoke();
         }
     }
     public void OnSelection()
