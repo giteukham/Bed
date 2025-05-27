@@ -296,7 +296,7 @@ public class NeighborGimmick : MarkovGimmick
                 if(hand.activeSelf)       hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
 
-                eyeCloseCheckCoroutine ??= StartCoroutine(ChangeNearWhenEyeClose());
+               eyeCloseCheckCoroutine ??= StartCoroutine(ChangeNearWhenEyeClose());
                 break;
 
             case var _ when state.Equals(Near):

@@ -17,7 +17,7 @@ public static class PlayerConstant
 
     // isShock : 움직임 관련 조작이 모두 안되고 배게 소리가 안들림림 (게임 오버후 초기화때 사용)
     // isParalysis : 움직임 관련 조작이 모두 안됨 (튜토리얼때 사용, 게임 오버 연출때 사용)
-    // isRedemption : 몸 움직임만 안됨 (게임 오버 연출때 사용)
+    // isRedemption : 몸 움직임만 안됨 (특정 기믹, 게임 오버 연출때 사용)
     // isPillowSound : 배게 소리 유무무
     public static bool isShock = false, isParalysis = false, isRedemption = false, isPillowSound = true;  
     public static bool isPlayerStop = false;

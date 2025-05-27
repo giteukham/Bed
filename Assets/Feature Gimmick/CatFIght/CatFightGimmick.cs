@@ -48,9 +48,7 @@ public class CatFightGimmick : Gimmick
 
     private IEnumerator MainCode()
     {
-        AudioManager.Instance.PlaySound(AudioManager.Instance.catFight, transform.position);
         yield return new WaitForSeconds(30);
-        //스트레스 데미지
         Deactivate();
     }
 

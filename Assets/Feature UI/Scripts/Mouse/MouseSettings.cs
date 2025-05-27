@@ -29,7 +29,14 @@ public class MouseSettings : MonoSingleton<MouseSettings>
     
     private const float mouseSpeedMultiplier = 500f;                                        // 마우스 감도 상수
     private float mouseSensitivity = 1f;
-    private float mouseMaxSpeed;                                                            // 마우스 최대 속도
+    
+    private float _mouseMaxSpeed;                                                            // 마우스 최대 속도
+    private float mouseMaxSpeed 
+    { 
+        get => _mouseMaxSpeed; 
+        set => _mouseMaxSpeed = Mathf.Clamp(value, 100, 1000); 
+    }
+
     private float mouseHorizontalSpeed, mouseVerticalSpeed;                                     
     private bool  isVerticalReverse, isHorizontalReverse;                                   // false는 정상, true는 반전
     private float deadZoneCurrentValue;                                                      // 현재 Deadzone 영역의 값
