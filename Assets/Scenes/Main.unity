@@ -20021,17 +20021,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b52ca22408f5a4048b197f926f0ab8cb, type: 3}
---- !u!114 &1356586522 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7661592992067735012, guid: b52ca22408f5a4048b197f926f0ab8cb, type: 3}
-  m_PrefabInstance: {fileID: 1356586521}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a704110b4e0e9a46b783700ea6ffe29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1359407140
 GameObject:
   m_ObjectHideFlags: 0
@@ -21812,6 +21801,63 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1462051843}
   m_Mesh: {fileID: 4300002, guid: abc00000000014307777343558716729, type: 3}
+--- !u!1001 &1467654729
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.795
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.79
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 8.365
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.38277552
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.08532413
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.91103286
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.12736538
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 9.599
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -133.165
+      objectReference: {fileID: 0}
+    - target: {fileID: 635898326280193075, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 14.866
+      objectReference: {fileID: 0}
+    - target: {fileID: 660907282093999650, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+      propertyPath: m_Name
+      value: ClapHand
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
 --- !u!1 &1473962073
 GameObject:
   m_ObjectHideFlags: 0
@@ -26319,6 +26365,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1813326869}
   m_Mesh: {fileID: 4300002, guid: abc00000000011159047177124688088, type: 3}
+--- !u!114 &1816553119 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8462490830524522451, guid: 68ff64930ea77674ab9f9e2b96f5f0bf, type: 3}
+  m_PrefabInstance: {fileID: 1467654729}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a40a1f4b1f5b249ac29d4851f1c1ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1817456766
 GameObject:
   m_ObjectHideFlags: 0
@@ -32973,6 +33030,7 @@ MonoBehaviour:
       Data3: -428047218
       Data4: -1633766913
     Path: event:/Player SFX/BlanketMoving
+  soundSettings: {fileID: 614758156}
 --- !u!1 &2188116144340496534
 GameObject:
   m_ObjectHideFlags: 0
@@ -33412,7 +33470,7 @@ MonoBehaviour:
   door: {fileID: 984148487}
   isTutorialEnable: 1
   bothClickToleranceTime: 0.1
-  testGimmick: {fileID: 1356586522}
+  testGimmick: {fileID: 1816553119}
 --- !u!4 &2999487501671821036
 Transform:
   m_ObjectHideFlags: 0
@@ -37741,3 +37799,4 @@ SceneRoots:
   - {fileID: 855007166}
   - {fileID: 8436350037644519341}
   - {fileID: 1356586521}
+  - {fileID: 1467654729}

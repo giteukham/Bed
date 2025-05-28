@@ -10,6 +10,41 @@ public class SoundSettings : MonoBehaviour
     [SerializeField] private Slider gimmickVolumeSlider;
     [SerializeField] private Slider playerVolumeSlider;
 
+    private float _masterVolume, _gimmickVolume, _playerVolume;
+
+    public float MasterVolume
+    {
+        get => _masterVolume;
+        set
+        {
+            _masterVolume = value;
+            masterVolumeSlider.value = value;
+            masterBus.setVolume(value);
+        }
+    }
+
+    public float GimmickVolume
+    {
+        get => _gimmickVolume;
+        set
+        {
+            _gimmickVolume = value;
+            gimmickVolumeSlider.value = value;
+            gimmickBus.setVolume(value);
+        }
+    }
+
+    public float PlayerVolume
+    {
+        get => _playerVolume;
+        set
+        {
+            _playerVolume = value;
+            playerVolumeSlider.value = value;
+            playerBus.setVolume(value);
+        }
+    }
+
     FMOD.Studio.Bus masterBus;
     FMOD.Studio.Bus gimmickBus;
     FMOD.Studio.Bus playerBus;
@@ -17,47 +52,47 @@ public class SoundSettings : MonoBehaviour
 
     private void SetMasterVolume()
     {
-        masterBus.setVolume(masterVolumeSlider.value);
+        MasterVolume = masterVolumeSlider.value;
     }
 
     private void SetGimmickVolume()
     {
-        gimmickBus.setVolume(gimmickVolumeSlider.value);
+        GimmickVolume = gimmickVolumeSlider.value;
     }
 
     private void SetPlayerVolume()
     {
-        playerBus.setVolume(playerVolumeSlider.value);
+        PlayerVolume = playerVolumeSlider.value;
     }
 
     public void UpMasterVolume()
     {
-        masterVolumeSlider.value += 0.1f;
+        MasterVolume += 0.1f;
     }
 
     public void DownMasterVolume()
     {
-        masterVolumeSlider.value -= 0.1f;
+        MasterVolume -= 0.1f;
     }
 
     public void UpGimmickVolume()
     {
-        gimmickVolumeSlider.value += 0.1f;
+        GimmickVolume += 0.1f;
     }
 
     public void DownGimmickVolume()
     {
-        gimmickVolumeSlider.value -= 0.1f;
+        GimmickVolume -= 0.1f;
     }
 
     public void UpPlayerVolume()
     {
-        playerVolumeSlider.value += 0.1f;
+        PlayerVolume += 0.1f;
     }
 
     public void DownPlayerVolume()
     {
-        playerVolumeSlider.value -= 0.1f;
+        PlayerVolume -= 0.1f;
     }
 
     private void OnDisable()
