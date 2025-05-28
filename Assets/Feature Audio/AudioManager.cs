@@ -259,6 +259,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     private Dictionary<EventReference, EventInstance> eventInstances = new();
 
     [SerializeField] SoundSettings soundSettings;
+    private Coroutine playMonitorCoroutine, playOneShotMonitorCoroutine;
     private FMOD.Studio.Bus _masterBus, _gimmickBus, _playerBus;
     public FMOD.Studio.Bus MasterBus
     {
@@ -303,9 +304,26 @@ public class AudioManager : MonoSingleton<AudioManager>
         eventInstances[_eventRef] = eventInstance;
         eventInstance.start();
 
-        StartCoroutine(MonitorPlayback(_eventRef));
+        if (playMonitorCoroutine != null) StopCoroutine(playMonitorCoroutine);
+        playMonitorCoroutine = StartCoroutine(MonitorPlayback(_eventRef));
     }
 
+    /// <summary>
+    /// 소리가 중복 재생 가능
+    /// </summary>
+    /// <param name="_eventRef"></param>
+    /// <param name="_pos"></param>
+    public void PlayOneShot(EventReference _eventRef, Vector3 _pos)
+    {
+        EventInstance eventInstance = RuntimeManager.CreateInstance(_eventRef);
+        eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
+        eventInstances[_eventRef] = eventInstance;
+        eventInstance.start();
+        
+        if (playOneShotMonitorCoroutine != null) StopCoroutine(playOneShotMonitorCoroutine);
+        playOneShotMonitorCoroutine = StartCoroutine(MonitorPlayback(_eventRef));
+    }
+    
     private IEnumerator MonitorPlayback(EventReference _eventRef)
     {
         EventInstance eventInstance = eventInstances[_eventRef];
@@ -319,20 +337,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 
-    /// <summary>
-    /// 소리가 중복 재생 가능능
-    /// </summary>
-    /// <param name="_eventRef"></param>
-    /// <param name="_pos"></param>
-    public void PlayOneShot(EventReference _eventRef, Vector3 _pos)
-    {
-        EventInstance eventInstance = RuntimeManager.CreateInstance(_eventRef);
-        eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
-        eventInstances[_eventRef] = eventInstance;
-        eventInstance.start();
-        
-        StartCoroutine(MonitorPlayback(_eventRef));
-    }
 
     /// <summary>
     /// 소리 위치 설정
