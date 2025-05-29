@@ -157,7 +157,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void Update()
     {
-        if (UIManager.Instance.isRightClikHeld == false && IsBothMouseClicked() ||  Input.GetKeyDown(KeyCode.Escape))
+        if ((UIManager.Instance.isRightClikHeld == false && IsBothMouseClicked() ||  Input.GetKeyDown(KeyCode.Escape)) &&
+            PlayerConstant.canPlayerStop)
         {
             if (PlayerConstant.isPlayerStop == true)
             {

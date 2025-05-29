@@ -21,6 +21,8 @@ public static class PlayerConstant
     // isPillowSound : 배게 소리 유무무
     public static bool isShock = false, isParalysis = false, isRedemption = false, isPillowSound = true;  
     public static bool isPlayerStop = false;
+    // true일 때 메뉴창 열닫을 수 있고 false일 땐 안됨
+    public static bool canPlayerStop = true;
     public static float pixelationFactor = 0.25f;
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)

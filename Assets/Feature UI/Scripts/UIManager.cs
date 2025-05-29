@@ -150,9 +150,27 @@ public class UIManager : MonoSingleton<UIManager>
         ShowScreen(SettingScreenType.MouseSettings);
     }
 
+    public void CloseSettingsScreen()
+    {
+        menuUI.SetActive(false);
+        ShowMenuScreen();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
     /// <summary>
-    /// 수정 날짜 : 2024-11-14 최무령
+    /// 메뉴 창이 열려있을 때 강제로 닫고 눈을 뜨게 하는 함수
     /// </summary>
+    public void ForceCloseSettingsScreen()
+    {
+        if (PlayerConstant.isPlayerStop == true && menuUI.activeSelf)
+        {
+            CloseSettingsScreen();
+            PlayerConstant.isPlayerStop = false;
+            player.ForceOpenEye();
+        }
+    }
+    
     public void ActivateUICanvas()
     {
         // if (isActivate)
