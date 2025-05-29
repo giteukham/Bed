@@ -38,7 +38,7 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.whisperInRoom;
+        soundEvent = AudioList.Instance.whisperInRoom;
     }
     
     private IEnumerator ActivateBreathing()

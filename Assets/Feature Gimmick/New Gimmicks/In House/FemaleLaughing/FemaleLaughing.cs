@@ -18,7 +18,7 @@ public class FemaleLaughing : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.femaleLaughingInHouse;
+        soundEvent = AudioList.Instance.femaleLaughingInHouse;
     }
 
     public override void Initialize() { }

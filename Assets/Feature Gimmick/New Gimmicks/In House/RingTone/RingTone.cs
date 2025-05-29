@@ -18,7 +18,7 @@ public class RingTone : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.ringToneInHouse;
+        soundEvent = AudioList.Instance.ringToneInHouse;
     }
 
     public override void Initialize() { }

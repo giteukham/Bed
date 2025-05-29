@@ -20,6 +20,6 @@ public class Ambulance : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.ambulanceOutside;
+        soundEvent = AudioList.Instance.ambulanceOutside;
     }
 }

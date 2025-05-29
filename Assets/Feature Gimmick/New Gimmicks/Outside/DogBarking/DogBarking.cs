@@ -19,6 +19,6 @@ public class DogBarking : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.dogBarkingOutside;
+        soundEvent = AudioList.Instance.dogBarkingOutside;
     }
 }

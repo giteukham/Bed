@@ -29,7 +29,7 @@ public class Breathing : SoundOnlyGimmick, IEarGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.breathingInRoom;
+        soundEvent = AudioList.Instance.breathingInRoom;
     }
 
     public override void Activate()

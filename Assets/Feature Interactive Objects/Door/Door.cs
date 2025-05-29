@@ -44,7 +44,7 @@ public class Door : MonoBehaviour
         {
             float randomNum = Random.Range(2.5f, 5f);
             yield return new WaitForSeconds(randomNum);
-            AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorKnock, Door.GetPosition());
+            AudioManager.Instance.PlayOneShot(AudioList.Instance.doorKnock, Door.GetPosition());
         }
     }
 
@@ -71,11 +71,11 @@ public class Door : MonoBehaviour
         {
             if(angle > 0 && prevAngle - 270f == 0f ) 
             {
-                if ( time < 0.6f ) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorOpen, GetPosition());
+                if ( time < 0.6f ) AudioManager.Instance.PlayOneShot(AudioList.Instance.doorOpen, GetPosition());
             }
 
-            if ( time < 0.6f ) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorCreak, GetPosition());
-            else AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorSlowOpen, GetPosition());
+            if ( time < 0.6f ) AudioManager.Instance.PlayOneShot(AudioList.Instance.doorCreak, GetPosition());
+            else AudioManager.Instance.PlayOneShot(AudioList.Instance.doorSlowOpen, GetPosition());
 
             while (elapsedTime < time)
             {
@@ -88,8 +88,8 @@ public class Door : MonoBehaviour
             if (angle == 0 )
             {
                 if (targetAngle - prevAngle <= 25 && 0.5f <= time)  
-                    AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorSlowClose, GetPosition());
-                else AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorClose, GetPosition());
+                    AudioManager.Instance.PlayOneShot(AudioList.Instance.doorSlowClose, GetPosition());
+                else AudioManager.Instance.PlayOneShot(AudioList.Instance.doorClose, GetPosition());
             }
 
             door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, targetAngle, door.transform.eulerAngles.z);
@@ -120,11 +120,11 @@ public class Door : MonoBehaviour
         {
             if(angle > 0 && prevAngle - 270f == 0f ) 
             {
-                if ( time < 0.6f ) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorOpen, GetPosition());
+                if ( time < 0.6f ) AudioManager.Instance.PlayOneShot(AudioList.Instance.doorOpen, GetPosition());
             }
 
-            if(time < 0.6f) AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorOpen, GetPosition());
-            else AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorSlowOpen, GetPosition());
+            if(time < 0.6f) AudioManager.Instance.PlayOneShot(AudioList.Instance.doorOpen, GetPosition());
+            else AudioManager.Instance.PlayOneShot(AudioList.Instance.doorSlowOpen, GetPosition());
 
             while (elapsedTime < time)
             {
@@ -172,8 +172,8 @@ public class Door : MonoBehaviour
             if (angle == 0 )
             {
                 if (targetAngle - prevAngle <= 25 && 0.5f <= time) 
-                    AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorSlowClose, GetPosition());
-                else AudioManager.Instance.PlayOneShot(AudioManager.Instance.doorClose, GetPosition());
+                    AudioManager.Instance.PlayOneShot(AudioList.Instance.doorSlowClose, GetPosition());
+                else AudioManager.Instance.PlayOneShot(AudioList.Instance.doorClose, GetPosition());
             }
 
             door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, targetAngle, door.transform.eulerAngles.z);

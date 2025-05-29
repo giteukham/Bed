@@ -18,7 +18,7 @@ public class BottleBreaking : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.bottleBreakingInHouse;
+        soundEvent = AudioList.Instance.bottleBreakingInHouse;
     }
 
     public override void Initialize() { }

@@ -20,6 +20,6 @@ public class Scream : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.screamOutside;
+        soundEvent = AudioList.Instance.screamOutside;
     }
 }

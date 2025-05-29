@@ -20,6 +20,6 @@ public class Clap : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.clapOutside;
+        soundEvent = AudioList.Instance.clapOutside;
     }
 }

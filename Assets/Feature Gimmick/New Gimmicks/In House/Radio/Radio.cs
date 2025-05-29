@@ -18,7 +18,7 @@ public class Radio : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.radioInHouse;
+        soundEvent = AudioList.Instance.radioInHouse;
     }
 
     public override void Initialize() { }

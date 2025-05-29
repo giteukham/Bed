@@ -20,6 +20,6 @@ public class BabyCrying : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.babyCryingOutside;
+        soundEvent = AudioList.Instance.babyCryingOutside;
     }
 }

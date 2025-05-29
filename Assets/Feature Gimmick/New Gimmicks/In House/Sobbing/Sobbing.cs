@@ -19,6 +19,6 @@ public class Sobbing : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.sobbingInHouse;
+        soundEvent = AudioList.Instance.sobbingInHouse;
     }
 }

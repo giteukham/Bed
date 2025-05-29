@@ -30,7 +30,7 @@ public class NewMosquito : SoundOnlyGimmick, IEarGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.mosquitoInRoom;
+        soundEvent = AudioList.Instance.mosquitoInRoom;
     }
 
     public override void Activate()
@@ -47,13 +47,13 @@ public class NewMosquito : SoundOnlyGimmick, IEarGimmick
         
         // SetParameter는 무조건 소리 재생 후에 호출 해야 적용됨
         if(PlayerConstant.isLeftState && !PlayerConstant.isRightState)
-            AudioManager.Instance.SetParameter(AudioManager.Instance.mosquitoInRoom, "isLeftState", 1);
+            AudioManager.Instance.SetParameter(AudioList.Instance.mosquitoInRoom, "isLeftState", 1);
         else if (PlayerConstant.isRightState && !PlayerConstant.isLeftState)
-            AudioManager.Instance.SetParameter(AudioManager.Instance.mosquitoInRoom, "isLeftState", 0);
+            AudioManager.Instance.SetParameter(AudioList.Instance.mosquitoInRoom, "isLeftState", 0);
         else if (!PlayerConstant.isLeftState && !PlayerConstant.isRightState)
         {   // 왼쪽 오른쪽도 아닌 정면을 볼땐 무작위로 재생
             int randomInt = UnityEngine.Random.Range(0, 2);
-            AudioManager.Instance.SetParameter(AudioManager.Instance.mosquitoInRoom, "isLeftState", randomInt);
+            AudioManager.Instance.SetParameter(AudioList.Instance.mosquitoInRoom, "isLeftState", randomInt);
         }
     }
     

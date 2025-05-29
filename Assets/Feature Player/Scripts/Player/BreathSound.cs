@@ -63,8 +63,8 @@ public class BreathSound : MonoBehaviour
         transform.position = new Vector3(breathSoundPosition.x, breathSoundPosition.y, breathSoundPosition.z);
         transform.rotation = sourceRotation.rotation;
 
-        AudioManager.Instance.SetPosition(AudioManager.Instance.inhale, transform.position);
-        AudioManager.Instance.SetPosition(AudioManager.Instance.exhale, transform.position);
+        AudioManager.Instance.SetPosition(AudioList.Instance.inhale, transform.position);
+        AudioManager.Instance.SetPosition(AudioList.Instance.exhale, transform.position);
         
         playerHeadAnimator.SetFloat("Breath Progress", breathProgress);
         playerHeadAnimator.SetFloat("Is Not Breathing", stopProgress);
@@ -72,12 +72,12 @@ public class BreathSound : MonoBehaviour
 
     public void InhaleSound()
     {
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.inhale, transform.position);
+        AudioManager.Instance.PlayOneShot(AudioList.Instance.inhale, transform.position);
     }
 
     public void ExhaleSound()
     {
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.exhale, transform.position);
+        AudioManager.Instance.PlayOneShot(AudioList.Instance.exhale, transform.position);
     }
 
     public void ToggleBreath()
@@ -86,8 +86,8 @@ public class BreathSound : MonoBehaviour
         
         if (breathSequence.IsPlaying())
         {
-            AudioManager.Instance.StopSound(AudioManager.Instance.inhale, STOP_MODE.IMMEDIATE);
-            AudioManager.Instance.StopSound(AudioManager.Instance.exhale, STOP_MODE.IMMEDIATE);
+            AudioManager.Instance.StopSound(AudioList.Instance.inhale, STOP_MODE.IMMEDIATE);
+            AudioManager.Instance.StopSound(AudioList.Instance.exhale, STOP_MODE.IMMEDIATE);
             breathSequence.Pause();
             DOTween.To(() => stopProgress, x => stopProgress = x, 1f, timeToStop);
         }

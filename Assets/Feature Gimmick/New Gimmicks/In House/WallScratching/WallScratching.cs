@@ -19,7 +19,7 @@ public class WallScratching : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.wallScratchingInHouse;
+        soundEvent = AudioList.Instance.wallScratchingInHouse;
     }
 }
 

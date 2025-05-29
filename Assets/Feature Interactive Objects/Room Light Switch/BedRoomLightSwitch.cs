@@ -47,7 +47,7 @@ public class BedRoomLightSwitch : MonoBehaviour
     {
         if (isOn == _isOn) return;
         isOn = _isOn;
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.switchOn, bedRoomlightSwitch.transform.position);
+        AudioManager.Instance.PlayOneShot(AudioList.Instance.switchOn, bedRoomlightSwitch.transform.position);
     }
 
     static public void SwitchActionNoSound(bool _isOn)

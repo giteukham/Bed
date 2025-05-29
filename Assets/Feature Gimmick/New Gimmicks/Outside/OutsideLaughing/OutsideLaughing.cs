@@ -20,6 +20,6 @@ public class OutsideLaughing : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.outsideLaughingOutside;
+        soundEvent = AudioList.Instance.outsideLaughingOutside;
     }
 }

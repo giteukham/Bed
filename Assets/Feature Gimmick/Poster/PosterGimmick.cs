@@ -77,19 +77,19 @@ public class PosterGimmick : Gimmick
         posters.SetActive(true);
 
         // State 1
-        if (await PlayPosterStage1(AudioManager.Instance.poster1, 1))              // Level 1. 포스터 1장 랜덤 소환 
+        if (await PlayPosterStage1(AudioList.Instance.poster1, 1))              // Level 1. 포스터 1장 랜덤 소환 
         {
             posterLevel = PosterLevel.Level1;
             goto Stage2; // 성공 시
         }
 
-        if (await PlayPosterStage1(AudioManager.Instance.poster2, 3))              // Level 2. 포스터 3장 랜덤 소환
+        if (await PlayPosterStage1(AudioList.Instance.poster2, 3))              // Level 2. 포스터 3장 랜덤 소환
         {
             posterLevel = PosterLevel.Level2;
             goto Stage2; // 성공 시
         }
 
-        await PlayPosterStage1(AudioManager.Instance.poster3, posters.transform.childCount);        // Level 3. 포스터 전체 소환
+        await PlayPosterStage1(AudioList.Instance.poster3, posters.transform.childCount);        // Level 3. 포스터 전체 소환
         posterLevel = PosterLevel.Level3;
         
         Stage2:
@@ -113,15 +113,15 @@ public class PosterGimmick : Gimmick
             }
         }
         
-        AudioManager.Instance.PlaySound(AudioManager.Instance.cry2, soundPos.position);
+        AudioManager.Instance.PlaySound(AudioList.Instance.cry2, soundPos.position);
 
         if (posterLevel == PosterLevel.Level1) goto Finish;
         
-        AudioManager.Instance.PlaySound(AudioManager.Instance.scream2, soundPos.position);
+        AudioManager.Instance.PlaySound(AudioList.Instance.scream2, soundPos.position);
         
         if (posterLevel == PosterLevel.Level2) goto Finish;
         
-        AudioManager.Instance.PlaySound(AudioManager.Instance.cry1, soundPos.position);
+        AudioManager.Instance.PlaySound(AudioList.Instance.cry1, soundPos.position);
 
         Finish:
         if (await PlayPosterStage2())

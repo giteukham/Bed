@@ -20,6 +20,6 @@ public class CatCrying : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.catOutside;
+        soundEvent = AudioList.Instance.catOutside;
     }
 }

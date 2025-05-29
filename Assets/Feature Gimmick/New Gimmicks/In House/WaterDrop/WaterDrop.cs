@@ -19,6 +19,6 @@ public class WaterDrop : SoundOnlyGimmick
     
     private void Start()
     {
-        soundEvent = AudioManager.Instance.waterDropInHouse;
+        soundEvent = AudioList.Instance.waterDropInHouse;
     }
 }

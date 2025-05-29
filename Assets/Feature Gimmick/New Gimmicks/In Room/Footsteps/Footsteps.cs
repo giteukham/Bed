@@ -27,7 +27,7 @@ public class Footsteps : SoundOnlyGimmick, IEarGimmick
     private void Start()
     {
         ceilingCollider = ceiling.GetComponent<Collider>();
-        soundEvent = AudioManager.Instance.footstepsInRoom;
+        soundEvent = AudioList.Instance.footstepsInRoom;
     }
 
     public override void Activate()

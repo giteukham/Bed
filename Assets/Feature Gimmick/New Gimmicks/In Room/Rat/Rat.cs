@@ -27,7 +27,7 @@ public class Rat : SoundOnlyGimmick
     private void Start()
     {
         floorCollider = floor.GetComponent<Collider>();
-        soundEvent = AudioManager.Instance.ratInRoom;
+        soundEvent = AudioList.Instance.ratInRoom;
     }
 
     public override void Activate()
