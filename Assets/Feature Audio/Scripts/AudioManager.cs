@@ -211,12 +211,25 @@ public class AudioManager : MonoSingleton<AudioManager>
     
 
     /// <summary>
-    /// 소리 위치 설정
+    /// 해당 Guid 인스턴스 위치 설정
     /// </summary>
     public void SetPosition(Guid id, Vector3 pos)
     {
         if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
         tracked.Instance.set3DAttributes(RuntimeUtils.To3DAttributes(pos));
+    }
+
+    /// <summary>
+    /// 해당하는 EventReference 참조 인스턴스 위치 설정
+    /// </summary>
+    public void SetPosition(string key, Vector3 pos)
+    {
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return;
+        for (int i = trackedList.Count - 1; i >= 0; i--)
+        {
+            TrackedSound tracked = trackedList[i];
+            tracked.Instance.set3DAttributes(RuntimeUtils.To3DAttributes(pos));
+        }
     }
 
     /// <summary>
@@ -234,9 +247,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// 해당하는 EventReference 참조 인스턴스 정지
     /// </summary>
     /// <param name="_mode">소리 끄는 모드 IMMEDIATE == 일반, ALLOWFADEOUT == 페이드 아웃</param>
-    public void StopSound(EventReference evt, FMOD.Studio.STOP_MODE _mode)
+    public void StopSound(string key, FMOD.Studio.STOP_MODE _mode)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return;
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
             TrackedSound tracked = trackedList[i];
@@ -281,9 +294,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 해당하는 EventReference 참조 인스턴스 유무
     /// </summary>
-    public void PauseSound(EventReference evt, bool isPause)
+    public void PauseSound(string key, bool isPause)
     {
-        if (!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        if (!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return;
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
             TrackedSound tracked = trackedList[i];
@@ -329,9 +342,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 해당하는 EventReference 참조 인스턴스 볼륨 조절
     /// </summary>
-    public void VolumeControl(EventReference evt, float volume)
+    public void VolumeControl(string key, float volume)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return;
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
             TrackedSound tracked = trackedList[i];
@@ -369,9 +382,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 해당하는 EventReference 참조 인스턴스 볼륨 값 가져오기
     /// </summary>
-    public float[] GetVolume(EventReference evt)
+    public float[] GetVolume(string key)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return default;
         float[] volumes = new float[trackedList.Count];
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
@@ -384,7 +397,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     }
 
     /// <summary>
-    /// 효과음 재생 중인지 체크
+    /// 해당 Guid 인스턴스 재생 중인지 체크
     /// </summary>
     public bool DuplicateCheck(Guid id)
     {
@@ -394,19 +407,25 @@ public class AudioManager : MonoSingleton<AudioManager>
         else return true;
     }
 
+    /// <summary>
+    /// 해당하는 EventReference가 재생 중인지 체크
+    /// </summary>
     public bool DuplicateCheck(string key)
     {
-        EventReference evt = audioLibrary.Get(key);
-        if (!activeSounds.ContainsKey(evt)) 
-            return false;
-        else return true;
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return false;
+        for (int i = trackedList.Count - 1; i >= 0; i--)
+        {
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            if (activeSounds.ContainsKey(tracked.EventRef))
+                return true;
+        }
+        return false;
     }
 
     /// <summary>
     /// 해당 Guid 인스턴스 파라미터 값 설정
     /// </summary>
-    /// <param name="paramName">파라미터 이름</param>
-    /// <param name="value">파라미터 값</param>
     public void SetEventParameter(Guid id, string paramName, float value)
     {
         if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
@@ -416,11 +435,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 해당하는 EventReference 참조 인스턴스 파라미터 값 설정
     /// </summary>
-    /// <param name="paramName">파라미터 이름</param>
-    /// <param name="value">파라미터 값</param>
-    public void SetEventParameter(EventReference evt, string paramName, float value)
+    public void SetEventParameter(string key, string paramName, float value)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return;
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
             TrackedSound tracked = trackedList[i];
@@ -432,8 +449,6 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 시스템 파라미터 값 설정
     /// </summary>
-    /// <param name="paramName"></param>
-    /// <param name="value"></param>
     public void SetSystemParameter(string paramName, float value)
     {
         FMODUnity.RuntimeManager.StudioSystem.setParameterByName(paramName, value);
@@ -442,7 +457,6 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 해당 Guid 인스턴스 파라미터 값 가져오기
     /// </summary>
-    /// <param name="paramName">파라미터 이름</param>
     public float GetParameter(Guid id, string paramName)
     {
         if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return default;
@@ -454,9 +468,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// 해당 Guid 인스턴스 파라미터 값 가져오기
     /// </summary>
     /// <param name="paramName">파라미터 이름</param>
-    public float[] GetParameter(EventReference evt, string paramName)
+    public float[] GetParameter(string key, string paramName)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return default;
         float[] values = new float[trackedList.Count];
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
@@ -471,7 +485,6 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 해당 Guid 인스턴스 길이 값 가져오기
     /// </summary>
-    /// <param name="_eventRef"></
     public float GetSoundLength(Guid id)
     {
         if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return default;
@@ -484,10 +497,10 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// 해당하는 EventReference 참조 인스턴스 길이 값 가져오기
     /// </summary>
     /// <param name="_eventRef"></
-    public int[] GetSoundLength(EventReference evt)
+    public int[] GetSoundLength(string key)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
-        int[] lengths = new int[activeSounds[evt].Count];
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return default;
+        int[] lengths = new int[trackedList.Count];
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
             TrackedSound tracked = trackedList[i];
@@ -516,10 +529,10 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// </summary>
     /// <param name="_eventRef"></param>
     /// <returns></returns>
-    public PLAYBACK_STATE[] GetPlaybackState(EventReference evt)
+    public PLAYBACK_STATE[] GetPlaybackState(string key)
     {
-        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
-        PLAYBACK_STATE[] states = new PLAYBACK_STATE[activeSounds[evt].Count];
+        if(!TryGetValidTrackedList(key, out List<TrackedSound> trackedList)) return default;
+        PLAYBACK_STATE[] states = new PLAYBACK_STATE[trackedList.Count];
         for (int i = trackedList.Count - 1; i >= 0; i--)
         {
             TrackedSound tracked = trackedList[i];
@@ -550,7 +563,21 @@ public class AudioManager : MonoSingleton<AudioManager>
     }
 
     /// <summary>
-    /// 해당 EventReference를 참조하는 TrackedSound 리스트를 가져오고, 유효한 경우 리스트를 반환
+    /// key에 해당하는 EventReference를 참조하는 TrackedSound 리스트를 가져오고, 유효한 경우 리스트를 반환
+    /// </summary>
+    private bool TryGetValidTrackedList(string key, out List<TrackedSound> list)
+    {
+        EventReference evt = audioLibrary.Get(key);
+        list = null;
+        if (!activeSounds.TryGetValue(evt, out list))
+        {
+            Debug.Log($"해당 '{evt}'를 참조한 인스턴스를 찾을 수 없습니다");
+            return false;
+        }
+        return true;
+    }
+    /// <summary>
+    /// 인자로 받은 EventReference를 참조하는 TrackedSound 리스트를 가져오고, 유효한 경우 리스트를 반환
     /// </summary>
     private bool TryGetValidTrackedList(EventReference evt, out List<TrackedSound> list)
     {
