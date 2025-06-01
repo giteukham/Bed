@@ -27,6 +27,7 @@ public class ParentsGimmick : MarkovGimmick
     public Transform dadPosition, momHeadPosition, dadWalkSoundPosition, dadWalkStartPosition, dadWalkEndPosition;
     private bool isDadAngry = false;
     private Animator animator;
+    private Guid momBreathGuid, dadBreathGuid, dadWalkGuid;
     
     [Range(0, 100)]
     private int moveProbability = 0;                // 초기값 0. 최댓값 100. moveChance보다 크면 움직임
@@ -233,8 +234,8 @@ public class ParentsGimmick : MarkovGimmick
         switch (state)
         {
             case var _ when state.Equals(Wait):
-                AudioManager.Instance.StopSound(AudioList.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                AudioManager.Instance.StopSound(AudioList.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( momBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(momBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
                 PlayAnimationWithoutDuplication(state.Name);
                 if (Door.GetAngle() > 0) Door.Close(0, 0.5f);
@@ -243,7 +244,7 @@ public class ParentsGimmick : MarkovGimmick
                 
             case var _ when state.Equals(Watch):
                 if (hand.activeSelf) hand.SetActive(false);
-                AudioManager.Instance.StopSound(AudioList.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 PlayRandomChildAnimation(state.Name, 3);
                 Door.Open(20, 0.6f);
                 checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(momHead, (isCollided) =>
@@ -255,8 +256,8 @@ public class ParentsGimmick : MarkovGimmick
             case var _ when state.Equals(Danger):
                 if(Danger.ActiveCount >= 4) ChangeMarkovState(Near);
 
-                AudioManager.Instance.StopSound(AudioList.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                AudioManager.Instance.StopSound(AudioList.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( momBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(momBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 PlayAnimationWithoutDuplication(Wait.Name);
@@ -266,17 +267,17 @@ public class ParentsGimmick : MarkovGimmick
                 dadWalkSoundPosition.position = dadWalkStartPosition.position;
 
                 float duration = 5f / (isDadAngry ? 1.5f : 1f);
-                // AudioManager.Instance.PlaySound(AudioList.Instance.dadWalk, dadWalkSoundPosition.position);
+                dadWalkGuid = AudioManager.Instance.PlayForce(AudioKeys.DadWalk, dadWalkSoundPosition.position);
 
                 if(Danger.ActiveCount >= 3) 
                 { 
                     isDadAngry = true; 
-                    AudioManager.Instance.SetEventParameter(AudioList.Instance.dadWalk, "DadAnger", 1f); 
+                    AudioManager.Instance.SetEventParameter(dadWalkGuid, "DadAnger", 1f); 
                 }
                 else 
                 { 
                     isDadAngry = false; 
-                    AudioManager.Instance.SetEventParameter(AudioList.Instance.dadWalk, "DadAnger", 0f); 
+                    AudioManager.Instance.SetEventParameter(dadWalkGuid, "DadAnger", 0f); 
                 }
                 if (moveTween != null && moveTween.IsActive()) moveTween.Kill();
 
@@ -286,7 +287,7 @@ public class ParentsGimmick : MarkovGimmick
                                         .OnComplete(() =>
                                         {
                                             if(dadWalkSoundSetPositionCoroutine != null) StopCoroutine(dadWalkSoundSetPositionCoroutine);
-                                            AudioManager.Instance.StopSound(AudioList.Instance.dadWalk, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                                            AudioManager.Instance.StopSound(dadWalkGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                                             dadWalkSoundPosition.position = dadWalkStartPosition.position;
                                             Door.Set(80, 0.3f);
                                         });
@@ -300,8 +301,8 @@ public class ParentsGimmick : MarkovGimmick
                 break;
 
             case var _ when state.Equals(Near):
-                AudioManager.Instance.StopSound(AudioList.Instance.momBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                AudioManager.Instance.StopSound(AudioList.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( momBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(momBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
                 
                 GimmickManager.Instance.DeactivateGimmicks(this);
@@ -312,8 +313,8 @@ public class ParentsGimmick : MarkovGimmick
                     yield return new WaitForSeconds(0.6f); 
                     isDadAngry = true; 
                     dadWalkSoundPosition.position = dadWalkStartPosition.position;
-                    // AudioManager.Instance.PlaySound(AudioList.Instance.dadWalk, dadWalkSoundPosition.position);
-                    AudioManager.Instance.SetEventParameter(AudioList.Instance.dadWalk, "DadAnger", 1f); 
+                    dadWalkGuid = AudioManager.Instance.PlayForce(AudioKeys.DadWalk, dadWalkSoundPosition.position);
+                    AudioManager.Instance.SetEventParameter(dadWalkGuid, "DadAnger", 1f); 
                     if (moveTween != null && moveTween.IsActive()) moveTween.Kill();
 
                     dadWalkSoundSetPositionCoroutine = StartCoroutine(dadWalkSoundSetPosition());
@@ -322,7 +323,7 @@ public class ParentsGimmick : MarkovGimmick
                                             .OnComplete(() =>
                                             {
                                                 if(dadWalkSoundSetPositionCoroutine != null) StopCoroutine(dadWalkSoundSetPositionCoroutine);
-                                                AudioManager.Instance.StopSound(AudioList.Instance.dadWalk, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                                                AudioManager.Instance.StopSound(dadWalkGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                                                 dadWalkSoundPosition.position = dadWalkStartPosition.position;
                                                 Door.Set(110f, 0.3f);
                                             });
@@ -355,18 +356,18 @@ public class ParentsGimmick : MarkovGimmick
                 
                 breathSound.ToggleBreath(); // 숨 참음
                 yield return new WaitForSeconds(2.5f); // 대기
-                AudioManager.Instance.StopSound(AudioList.Instance.dadBreath, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 
                 UIManager.Instance.ControlDText(true, "Parents"); // D text 활성화
                 PlayerConstant.isPillowSound = false;
-                // AudioManager.Instance.PlayForce(AudioList.Instance.parentsD, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
+                AudioManager.Instance.PlayForce(AudioKeys.Parents_D, this.transform.position); // 플레이어 몸이 정면을 보는 상태가 아니라면 정면을 보게 돌림 (소리 안들리게)
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
                 if (!hand.activeSelf) hand.SetActive(true); // �� Ȱ��ȭ
                 yield return new WaitForSeconds(2.5f); // ���
                 
                 UIManager.Instance.ControlDText(false, "Parents"); // D text 비활성화
-                // AudioManager.Instance.PlayForce(AudioList.Instance.dadStrangle, this.transform.position);
+                AudioManager.Instance.PlayForce(AudioKeys.DadStrangle, this.transform.position);
                 PlayerConstant.isParalysis = false;
                 PlayerConstant.isRedemption = true;
                 PlayerConstant.isPillowSound = true;
@@ -376,7 +377,7 @@ public class ParentsGimmick : MarkovGimmick
                 
                 PlayerConstant.isPillowSound = false;
                 UIManager.Instance.ControlNText(true, "Parents"); // n text 활성화
-                // AudioManager.Instance.PlayForce(AudioList.Instance.parentsN, this.transform.position);
+                AudioManager.Instance.PlayForce(AudioKeys.Parents_n, this.transform.position);
                 yield return new WaitForSeconds(1.5f); // 대기
                 
                 GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
@@ -518,31 +519,31 @@ public class ParentsGimmick : MarkovGimmick
 
     private void MomBreathSoundPlay()
     {
-        // if (!AudioManager.Instance.DuplicateCheck(AudioList.Instance.momBreath)) 
-            // AudioManager.Instance.PlaySound(AudioList.Instance.momBreath, momHeadPosition.position);
-        // AudioManager.Instance.SetPosition(AudioList.Instance.momBreath, momHeadPosition.position);
+        if (!AudioManager.Instance.DuplicateCheck(AudioKeys.MomBreath)) 
+            momBreathGuid = AudioManager.Instance.PlayForce(AudioKeys.MomBreath, momHeadPosition.position);
+        AudioManager.Instance.SetPosition(momBreathGuid, momHeadPosition.position);
     }
 
     private void DadBreathSoundPlay()
     {
         if (isDadAngry)
         {
-            // if (!AudioManager.Instance.DuplicateCheck(AudioList.Instance.dadBreath)) 
-            // AudioManager.Instance.PlaySound(AudioList.Instance.dadBreath, dadHead.transform.position);
-            // AudioManager.Instance.SetPosition(AudioList.Instance.dadBreath, dadHead.transform.position);
+            if (!AudioManager.Instance.DuplicateCheck(AudioKeys.DadBreath)) 
+            dadBreathGuid = AudioManager.Instance.PlayForce(AudioKeys.DadBreath, dadHead.transform.position);
+            AudioManager.Instance.SetPosition(dadBreathGuid, dadHead.transform.position);
         }
     }
 
-    // private void StrangleSoundPlay()
-    // {
-    //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.dadStrangle, this.transform.position);
-    // }
+    private void StrangleSoundPlay()
+    {
+        AudioManager.Instance.PlayForce(AudioKeys.DadStrangle, this.transform.position);
+    }
 
     private IEnumerator dadWalkSoundSetPosition()
     {
         while (true)
         {
-            // AudioManager.Instance.SetPosition(AudioList.Instance.dadWalk, dadWalkSoundPosition.position);
+            AudioManager.Instance.SetPosition(dadWalkGuid, dadWalkSoundPosition.position);
             yield return null;
         }
     }

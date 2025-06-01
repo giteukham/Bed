@@ -12,8 +12,9 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    protected override EventReference soundEvent { get; set; }
-    
+    protected override string eventKey { get; set; }
+    protected override Guid eventGuid { get; set; }
+
     [SerializeField]
     private Transform leftEar;
     
@@ -31,14 +32,14 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
     {
         base.Activate();
         StartCoroutine(ActivateBreathing());
-        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        eventGuid = AudioManager.Instance.PlayForce(eventKey, transform.position);
     }
     
     public override void Initialize() { }
 
     private void Start()
     {
-        soundEvent = AudioList.Instance.whisperInRoom;
+        eventKey = AudioKeys.WhisperInRoom;
     }
     
     private IEnumerator ActivateBreathing()
@@ -54,15 +55,15 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
             
             if (PlayerConstant.isLeftState)
             {
-                // AudioManager.Instance.SetPosition(soundEvent, rightEar.position);
+                AudioManager.Instance.SetPosition(eventGuid, rightEar.position);
             }
             else if (PlayerConstant.isRightState)
             {
-                // AudioManager.Instance.SetPosition(soundEvent, leftEar.position);
+                AudioManager.Instance.SetPosition(eventGuid, leftEar.position);
             }
             else if (PlayerConstant.isMiddleState)
             {
-                // AudioManager.Instance.SetPosition(soundEvent, random[randomInt].position);
+                AudioManager.Instance.SetPosition(eventGuid, random[randomInt].position);
             }
 
             yield return null;

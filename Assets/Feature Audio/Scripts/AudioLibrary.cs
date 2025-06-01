@@ -22,7 +22,7 @@ public class AudioLibrary : ScriptableObject
     }
 
 #if UNITY_EDITOR
-    public List<string> GetAllKeys()
+    public List<string> GetAllKeysEvents()
     {
         return Entries.Select(e => e.Key).ToList();
     }

@@ -5,12 +5,13 @@ using AbstractGimmick;
 using FMODUnity;
 using UnityEngine;
 
-public class NewMosquito : SoundOnlyGimmick, IEarGimmick
+public class Mosquito : SoundOnlyGimmick, IEarGimmick
 {
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    protected override EventReference soundEvent { get; set; }
+    protected override string eventKey { get; set; }
+    protected override Guid eventGuid { get; set; }
 
     [SerializeField]
     private Transform leftEar;
@@ -30,7 +31,7 @@ public class NewMosquito : SoundOnlyGimmick, IEarGimmick
     
     private void Start()
     {
-        soundEvent = AudioList.Instance.mosquitoInRoom;
+        eventKey = AudioKeys.MosquitoInRoom;
     }
 
     public override void Activate()
@@ -43,17 +44,17 @@ public class NewMosquito : SoundOnlyGimmick, IEarGimmick
 
     private void PlaySound()
     {
-        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        eventGuid = AudioManager.Instance.PlayForce(eventKey, transform.position);
         
         // SetParameter는 무조건 소리 재생 후에 호출 해야 적용됨
         if(PlayerConstant.isLeftState && !PlayerConstant.isRightState)
-            AudioManager.Instance.SetEventParameter(AudioList.Instance.mosquitoInRoom, "isLeftState", 1);
+            AudioManager.Instance.SetEventParameter(eventGuid, "isLeftState", 1);
         else if (PlayerConstant.isRightState && !PlayerConstant.isLeftState)
-            AudioManager.Instance.SetEventParameter(AudioList.Instance.mosquitoInRoom, "isLeftState", 0);
+            AudioManager.Instance.SetEventParameter(eventGuid, "isLeftState", 0);
         else if (!PlayerConstant.isLeftState && !PlayerConstant.isRightState)
         {   // 왼쪽 오른쪽도 아닌 정면을 볼땐 무작위로 재생
             int randomInt = UnityEngine.Random.Range(0, 2);
-            AudioManager.Instance.SetEventParameter(AudioList.Instance.mosquitoInRoom, "isLeftState", randomInt);
+            AudioManager.Instance.SetEventParameter(eventGuid, "isLeftState", randomInt);
         }
     }
     
@@ -70,15 +71,15 @@ public class NewMosquito : SoundOnlyGimmick, IEarGimmick
             
             if (PlayerConstant.isLeftState && !PlayerConstant.isRightState)
             {
-                // AudioManager.Instance.SetPosition(soundEvent, rightEar.position);
+                AudioManager.Instance.SetPosition(eventGuid, rightEar.position);
             }
             else if (PlayerConstant.isRightState && !PlayerConstant.isLeftState)
             {
-                // AudioManager.Instance.SetPosition(soundEvent, leftEar.position);
+                AudioManager.Instance.SetPosition(eventGuid, leftEar.position);
             }
             else if (!PlayerConstant.isLeftState && !PlayerConstant.isRightState)
             {
-                // AudioManager.Instance.SetPosition(soundEvent, random[randomInt].position);
+                AudioManager.Instance.SetPosition(eventGuid, random[randomInt].position);
             }
 
             yield return null;

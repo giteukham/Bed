@@ -77,19 +77,19 @@ public class PosterGimmick : Gimmick
         posters.SetActive(true);
 
         // State 1
-        if (await PlayPosterStage1(AudioList.Instance.poster1, 1))              // Level 1. 포스터 1장 랜덤 소환 
+        if (await PlayPosterStage1(AudioKeys.Poster1, 1))              // Level 1. 포스터 1장 랜덤 소환 
         {
             posterLevel = PosterLevel.Level1;
             goto Stage2; // 성공 시
         }
 
-        if (await PlayPosterStage1(AudioList.Instance.poster2, 3))              // Level 2. 포스터 3장 랜덤 소환
+        if (await PlayPosterStage1(AudioKeys.Poster2, 3))              // Level 2. 포스터 3장 랜덤 소환
         {
             posterLevel = PosterLevel.Level2;
             goto Stage2; // 성공 시
         }
 
-        await PlayPosterStage1(AudioList.Instance.poster3, posters.transform.childCount);        // Level 3. 포스터 전체 소환
+        await PlayPosterStage1(AudioKeys.Poster3, posters.transform.childCount);        // Level 3. 포스터 전체 소환
         posterLevel = PosterLevel.Level3;
         
         Stage2:
@@ -113,15 +113,15 @@ public class PosterGimmick : Gimmick
             }
         }
         
-        // AudioManager.Instance.PlaySound(AudioList.Instance.cry2, soundPos.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cry2, soundPos.position);
 
         if (posterLevel == PosterLevel.Level1) goto Finish;
         
-        // AudioManager.Instance.PlaySound(AudioList.Instance.scream2, soundPos.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Scream2, soundPos.position);
         
         if (posterLevel == PosterLevel.Level2) goto Finish;
         
-        // AudioManager.Instance.PlaySound(AudioList.Instance.cry1, soundPos.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cry1, soundPos.position);
 
         Finish:
         if (await PlayPosterStage2())
@@ -132,9 +132,9 @@ public class PosterGimmick : Gimmick
         }
     }
 
-    private async UniTask<bool> PlayPosterStage1(EventReference eventRef, int imageToActivateCount)
+    private async UniTask<bool> PlayPosterStage1(string key, int imageToActivateCount)
     {
-        // AudioManager.Instance.PlaySound(eventRef, soundPos.position);
+        Guid eventGuid = AudioManager.Instance.PlayForce(key, soundPos.position);
         
         List<int> inactiveIndices = new List<int>();
         for (int i = 0; i < posters.transform.childCount; i++)
@@ -158,18 +158,18 @@ public class PosterGimmick : Gimmick
             inactiveIndices.RemoveAt(randomIndex);
         }
         
-        // await UniTask.WaitWhile(() =>
-        // {
-        //     if (isDetected)
-        //     {
-        //         AudioManager.Instance.StopSound(eventRef, STOP_MODE.IMMEDIATE);
-        //         cts.Cancel();
-        //         return false;
-        //     }
+        await UniTask.WaitWhile(() =>
+        {
+            if (isDetected)
+            {
+                AudioManager.Instance.StopSound(eventGuid, STOP_MODE.IMMEDIATE);
+                cts.Cancel();
+                return false;
+            }
             
-        //     return AudioManager.Instance.GetPlaybackState(eventRef) == PLAYBACK_STATE.PLAYING ||
-        //            AudioManager.Instance.GetPlaybackState(eventRef) == PLAYBACK_STATE.STARTING;
-        // }, cancellationToken: cts.Token);
+            return AudioManager.Instance.GetPlaybackState(eventGuid) == PLAYBACK_STATE.PLAYING ||
+                   AudioManager.Instance.GetPlaybackState(eventGuid) == PLAYBACK_STATE.STARTING;
+        }, cancellationToken: cts.Token);
 
         return isDetected;
     }

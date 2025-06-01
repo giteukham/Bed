@@ -9,6 +9,7 @@ public static class AudioKeys
 	public const string WallScratchingInHouse = "WallScratchingInHouse";
 	public const string WaterDropInHouse = "WaterDropInHouse";
 	public const string BreathingInRoom = "BreathingInRoom";
+	public const string FootstepsInRoom = "FootstepsInRoom";
 	public const string MosquitoInRoom = "MosquitoInRoom";
 	public const string RatInRoom = "RatInRoom";
 	public const string WhisperInRoom = "WhisperInRoom";

@@ -168,7 +168,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public Guid PlayLooped(string key)
+    public Guid PlayLooped(string key, Vector3 pos)
     {
         EventReference evt = audioLibrary.Get(key);
         if (evt.IsNull) 
@@ -193,7 +193,7 @@ public class AudioManager : MonoSingleton<AudioManager>
 
         EventInstance instance = RuntimeManager.CreateInstance(evt);
         instance.start();
-
+        instance.set3DAttributes(RuntimeUtils.To3DAttributes(pos));
         Guid id = Guid.NewGuid();
 
         var tracked = new TrackedSound();
@@ -386,8 +386,17 @@ public class AudioManager : MonoSingleton<AudioManager>
     /// <summary>
     /// 효과음 재생 중인지 체크
     /// </summary>
-    public bool DuplicateCheck(EventReference evt)
+    public bool DuplicateCheck(Guid id)
     {
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return false;
+        if (!activeSounds.ContainsKey(tracked.EventRef)) 
+            return false;
+        else return true;
+    }
+
+    public bool DuplicateCheck(string key)
+    {
+        EventReference evt = audioLibrary.Get(key);
         if (!activeSounds.ContainsKey(evt)) 
             return false;
         else return true;

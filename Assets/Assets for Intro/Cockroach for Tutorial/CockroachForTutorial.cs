@@ -146,31 +146,31 @@ public class CockroachForTutorial : MonoBehaviour
 
     private void LeftTopScuttling()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.Cockroach, leftTop.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cockroach, leftTop.position);
     }
 
     private void RightTopScuttling()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.Cockroach, rightTop.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cockroach, rightTop.position);
     }
 
     private void LeftMidScuttling()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.Cockroach, leftMid.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cockroach, leftMid.position);
     }
 
     private void RightMidScuttling()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.Cockroach, rightMid.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cockroach, rightMid.position);
     }
 
     private void LeftBottomScuttling()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.Cockroach, leftBottom.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cockroach, leftBottom.position);
     }
 
     private void RightBottomScuttling()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.Cockroach, rightBottom.position);
+        AudioManager.Instance.PlayForce(AudioKeys.Cockroach, rightBottom.position);
     }
 }

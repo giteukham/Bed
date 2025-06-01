@@ -333,14 +333,14 @@ public class NeighborGimmick : MarkovGimmick
                 
                 UIManager.Instance.ControlDText(true, "Neighbor"); // D text 활성화
                 PlayerConstant.isPillowSound = false;
-                // AudioManager.Instance.PlayForce(AudioList.Instance.neighborD, this.transform.position);
+                AudioManager.Instance.PlayForce(AudioKeys.Neighbor_D, this.transform.position);
                 GameManager.Instance.player.DirectionControlNoSound(PlayerDirectionStateTypes.Middle);
                 PlayAnimationWithoutDuplication(Near.Name);
                 if(!hand.activeSelf) hand.SetActive(true); // 손 활성화
                 yield return new WaitForSeconds(2.5f); // 대기
                 
                 UIManager.Instance.ControlDText(false, "Neighbor"); // D text 비활성화
-                // AudioManager.Instance.PlayForce(AudioList.Instance.gag, this.transform.position);
+                AudioManager.Instance.PlayForce(AudioKeys.Gag, this.transform.position);
                 PlayerConstant.isParalysis = false; // 조작 가능하게 변경
                 PlayerConstant.isRedemption = true; // 몸을 못돌리는 상태로 변경
                 PlayerConstant.isPillowSound = true;
@@ -350,7 +350,7 @@ public class NeighborGimmick : MarkovGimmick
                 
                 PlayerConstant.isPillowSound = false;
                 UIManager.Instance.ControlNText(true, "Neighbor"); // n text 활성화
-                // AudioManager.Instance.PlayForce(AudioList.Instance.neighborN, this.transform.position);
+                AudioManager.Instance.PlayForce(AudioKeys.Neighbor_n, this.transform.position);
                 yield return new WaitForSeconds(1.5f); // 대기
                 
                 GameManager.Instance.SetState(GameState.GameOver); // 게임 오버 상태로 변경 (준비 상태로 초기화)
@@ -393,7 +393,6 @@ public class NeighborGimmick : MarkovGimmick
                     if (timer >= 0.5f)
                     {
                         GameManager.Instance.player.ForceOpenEye();
-                        // GameManager.Instance.StopDemoCoroutine();
                         ChangeMarkovState(Near);
                         eyeCloseCheckCoroutine = null;
                         yield break;
@@ -417,7 +416,6 @@ public class NeighborGimmick : MarkovGimmick
                     ConeCollider.TriggeredObject.Equals(neighborHead))
                 {
                     yield return new WaitForSeconds(Random.Range(0.3f, 0.8f));
-                    // GameManager.Instance.StopDemoCoroutine();
                     GimmickManager.Instance.ChangeAllMarkovGimmickState(MarkovGimmickType.Wait);
 
                     yield break;
@@ -507,19 +505,19 @@ public class NeighborGimmick : MarkovGimmick
 
     private void WindowOpenCloseSoundPlay()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.windowOpenClose, this.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.WindowOpenClose, this.transform.position);
     }
     private void RustleSoundPlay()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.pantRustle, this.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.PantRustle, this.transform.position);
     }
-    // private void GagSoundPlay()
-    // {
-    //     AudioManager.Instance.PlayOneShot(AudioManager.Instance.gag, this.transform.position);
-    // }
+    private void GagSoundPlay()
+    {
+        AudioManager.Instance.PlayForce(AudioKeys.Gag, this.transform.position);
+    }
     private void HornyBreathSoundPlay()
     {
-        // AudioManager.Instance.PlaySound(AudioList.Instance.hornyBreath, this.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.HornyBreath, this.transform.position);
     }
 
     public override void Initialize()

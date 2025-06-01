@@ -12,7 +12,8 @@ public class Rat : SoundOnlyGimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    protected override EventReference soundEvent { get; set; }
+    protected override string eventKey { get; set; }
+    protected override Guid eventGuid { get; set; }
 
     [SerializeField]
     private Transform floor;
@@ -27,7 +28,7 @@ public class Rat : SoundOnlyGimmick
     private void Start()
     {
         floorCollider = floor.GetComponent<Collider>();
-        soundEvent = AudioList.Instance.ratInRoom;
+        eventKey = AudioKeys.RatInRoom;
     }
 
     public override void Activate()
@@ -36,7 +37,7 @@ public class Rat : SoundOnlyGimmick
         var pos = GetRandomPosition(floorCollider.bounds.min, floorCollider.bounds.max);
         transform.position = new Vector3(pos.x, transform.position.y, pos.z);
         
-        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        AudioManager.Instance.PlayForce(eventKey, transform.position);
     }
     
     private Vector3 GetRandomPosition(Vector3 min, Vector3 max)

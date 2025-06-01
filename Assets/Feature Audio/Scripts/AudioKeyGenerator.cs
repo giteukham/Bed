@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using FMODUnity;
 
 public static class AudioKeyGenerator
 {
@@ -21,7 +22,7 @@ public static class AudioKeyGenerator
             return;
         }
 
-        List<string> keys = library.GetAllKeys().Distinct().ToList();   // AudioLibrary에서 모든 키 가져오기
+        List<string> keys = library.GetAllKeysEvents().ToList();   // AudioLibrary에서 모든 키 가져오기
         StringBuilder sb = new StringBuilder(); // StrngBuilder 사용
 
         // 클래스 작성 시작

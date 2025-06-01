@@ -25,6 +25,7 @@ public class BreathSound : MonoBehaviour
     private bool isBreathing = true;
     
     private Sequence breathSequence;
+    private Guid inahleGuid, exhaleGuid;
 
     private void Awake()
     {
@@ -63,8 +64,8 @@ public class BreathSound : MonoBehaviour
         transform.position = new Vector3(breathSoundPosition.x, breathSoundPosition.y, breathSoundPosition.z);
         transform.rotation = sourceRotation.rotation;
 
-        // AudioManager.Instance.SetPosition(AudioList.Instance.inhale, transform.position);
-        // AudioManager.Instance.SetPosition(AudioList.Instance.exhale, transform.position);
+        if (inahleGuid != Guid.Empty) AudioManager.Instance.SetPosition(inahleGuid, transform.position);
+        if (exhaleGuid != Guid.Empty) AudioManager.Instance.SetPosition(exhaleGuid, transform.position);
         
         playerHeadAnimator.SetFloat("Breath Progress", breathProgress);
         playerHeadAnimator.SetFloat("Is Not Breathing", stopProgress);
@@ -72,12 +73,12 @@ public class BreathSound : MonoBehaviour
 
     public void InhaleSound()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.inhale, transform.position);
+        inahleGuid = AudioManager.Instance.PlayForce(AudioKeys.Inhale, transform.position);
     }
 
     public void ExhaleSound()
     {
-        // AudioManager.Instance.PlayForce(AudioList.Instance.exhale, transform.position);
+        exhaleGuid = AudioManager.Instance.PlayForce(AudioKeys.Exhale, transform.position);
     }
 
     public void ToggleBreath()
@@ -86,8 +87,10 @@ public class BreathSound : MonoBehaviour
         
         if (breathSequence.IsPlaying())
         {
-            AudioManager.Instance.StopSound(AudioList.Instance.inhale, STOP_MODE.IMMEDIATE);
-            AudioManager.Instance.StopSound(AudioList.Instance.exhale, STOP_MODE.IMMEDIATE);
+            AudioManager.Instance.StopSound(inahleGuid, STOP_MODE.IMMEDIATE);
+            inahleGuid = Guid.Empty;
+            AudioManager.Instance.StopSound(exhaleGuid, STOP_MODE.IMMEDIATE);
+            exhaleGuid = Guid.Empty;
             breathSequence.Pause();
             DOTween.To(() => stopProgress, x => stopProgress = x, 1f, timeToStop);
         }
