@@ -20,7 +20,7 @@ public abstract class SoundOnlyGimmick : Gimmick
     public override void Activate()
     {
         base.Activate();
-        AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
         deactivateCoroutine = StartCoroutine(DeactivateSoundWhenFinished());
     }
     
@@ -38,7 +38,8 @@ public abstract class SoundOnlyGimmick : Gimmick
 
     private IEnumerator DeactivateSoundWhenFinished()
     {
-        yield return new WaitForSeconds(AudioManager.Instance.GetSoundLength(soundEvent));
+        // yield return new WaitForSeconds(AudioManager.Instance.GetSoundLength(soundEvent));
+        yield return null;
         Deactivate();
     }
 }

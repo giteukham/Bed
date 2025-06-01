@@ -31,7 +31,7 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
     {
         base.Activate();
         StartCoroutine(ActivateBreathing());
-        AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
     }
     
     public override void Initialize() { }
@@ -54,15 +54,15 @@ public class Whisper : SoundOnlyGimmick, IEarGimmick
             
             if (PlayerConstant.isLeftState)
             {
-                AudioManager.Instance.SetPosition(soundEvent, rightEar.position);
+                // AudioManager.Instance.SetPosition(soundEvent, rightEar.position);
             }
             else if (PlayerConstant.isRightState)
             {
-                AudioManager.Instance.SetPosition(soundEvent, leftEar.position);
+                // AudioManager.Instance.SetPosition(soundEvent, leftEar.position);
             }
             else if (PlayerConstant.isMiddleState)
             {
-                AudioManager.Instance.SetPosition(soundEvent, random[randomInt].position);
+                // AudioManager.Instance.SetPosition(soundEvent, random[randomInt].position);
             }
 
             yield return null;

@@ -100,7 +100,7 @@ public class Player : PlayerBase
         //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
-        AudioManager.Instance.PlaySound(AudioList.Instance.stressHal, transform.position);
+        // AudioManager.Instance.PlaySound(AudioList.Instance.stressHal, transform.position);
         StartCameraEffect();
         pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
@@ -304,7 +304,7 @@ public class Player : PlayerBase
     private void UpdateSFX()
     {
         // 위치 조정
-        AudioManager.Instance.SetPosition(AudioList.Instance.stressHal, transform.position);
+        // AudioManager.Instance.SetPosition(AudioList.Instance.stressHal, transform.position);
         
         // -------------------------------------머리 움직임 효과음
         pillowSound.PlaySound();
@@ -328,7 +328,7 @@ public class Player : PlayerBase
         }
 
         AudioManager.Instance.VolumeControl(AudioList.Instance.stressHal, currentStressSFXVolume);
-        AudioManager.Instance.SetParameter("StressLevel", PlayerConstant.stressLevel);
+        AudioManager.Instance.SetSystemParameter("StressLevel", PlayerConstant.stressLevel);
         // -------------------------------------게이지 효과음
     }
     

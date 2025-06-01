@@ -63,8 +63,8 @@ public class BreathSound : MonoBehaviour
         transform.position = new Vector3(breathSoundPosition.x, breathSoundPosition.y, breathSoundPosition.z);
         transform.rotation = sourceRotation.rotation;
 
-        AudioManager.Instance.SetPosition(AudioList.Instance.inhale, transform.position);
-        AudioManager.Instance.SetPosition(AudioList.Instance.exhale, transform.position);
+        // AudioManager.Instance.SetPosition(AudioList.Instance.inhale, transform.position);
+        // AudioManager.Instance.SetPosition(AudioList.Instance.exhale, transform.position);
         
         playerHeadAnimator.SetFloat("Breath Progress", breathProgress);
         playerHeadAnimator.SetFloat("Is Not Breathing", stopProgress);
@@ -72,12 +72,12 @@ public class BreathSound : MonoBehaviour
 
     public void InhaleSound()
     {
-        AudioManager.Instance.PlayOneShot(AudioList.Instance.inhale, transform.position);
+        // AudioManager.Instance.PlayForce(AudioList.Instance.inhale, transform.position);
     }
 
     public void ExhaleSound()
     {
-        AudioManager.Instance.PlayOneShot(AudioList.Instance.exhale, transform.position);
+        // AudioManager.Instance.PlayForce(AudioList.Instance.exhale, transform.position);
     }
 
     public void ToggleBreath()

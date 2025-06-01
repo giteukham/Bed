@@ -113,15 +113,15 @@ public class PosterGimmick : Gimmick
             }
         }
         
-        AudioManager.Instance.PlaySound(AudioList.Instance.cry2, soundPos.position);
+        // AudioManager.Instance.PlaySound(AudioList.Instance.cry2, soundPos.position);
 
         if (posterLevel == PosterLevel.Level1) goto Finish;
         
-        AudioManager.Instance.PlaySound(AudioList.Instance.scream2, soundPos.position);
+        // AudioManager.Instance.PlaySound(AudioList.Instance.scream2, soundPos.position);
         
         if (posterLevel == PosterLevel.Level2) goto Finish;
         
-        AudioManager.Instance.PlaySound(AudioList.Instance.cry1, soundPos.position);
+        // AudioManager.Instance.PlaySound(AudioList.Instance.cry1, soundPos.position);
 
         Finish:
         if (await PlayPosterStage2())
@@ -134,7 +134,7 @@ public class PosterGimmick : Gimmick
 
     private async UniTask<bool> PlayPosterStage1(EventReference eventRef, int imageToActivateCount)
     {
-        AudioManager.Instance.PlaySound(eventRef, soundPos.position);
+        // AudioManager.Instance.PlaySound(eventRef, soundPos.position);
         
         List<int> inactiveIndices = new List<int>();
         for (int i = 0; i < posters.transform.childCount; i++)
@@ -158,18 +158,18 @@ public class PosterGimmick : Gimmick
             inactiveIndices.RemoveAt(randomIndex);
         }
         
-        await UniTask.WaitWhile(() =>
-        {
-            if (isDetected)
-            {
-                AudioManager.Instance.StopSound(eventRef, STOP_MODE.IMMEDIATE);
-                cts.Cancel();
-                return false;
-            }
+        // await UniTask.WaitWhile(() =>
+        // {
+        //     if (isDetected)
+        //     {
+        //         AudioManager.Instance.StopSound(eventRef, STOP_MODE.IMMEDIATE);
+        //         cts.Cancel();
+        //         return false;
+        //     }
             
-            return AudioManager.Instance.GetPlaybackState(eventRef) == PLAYBACK_STATE.PLAYING ||
-                   AudioManager.Instance.GetPlaybackState(eventRef) == PLAYBACK_STATE.STARTING;
-        }, cancellationToken: cts.Token);
+        //     return AudioManager.Instance.GetPlaybackState(eventRef) == PLAYBACK_STATE.PLAYING ||
+        //            AudioManager.Instance.GetPlaybackState(eventRef) == PLAYBACK_STATE.STARTING;
+        // }, cancellationToken: cts.Token);
 
         return isDetected;
     }

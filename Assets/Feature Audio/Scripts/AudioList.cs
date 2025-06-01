@@ -6,24 +6,6 @@ using UnityEngine;
 public class AudioList : MonoSingleton<AudioList>
 {
     #region Other FMOD Events
-    [field: Header("Cat SFX")]
-    [field: SerializeField] public EventReference catMeow {get; private set;}
-
-    [field: Header("Radio SFX")]
-    [field: SerializeField] public EventReference radio { get; private set; }
-
-    [field: Header("EyeStart SFX")]
-    [field: SerializeField] public EventReference eyeStart { get; private set; }
-
-    [field: Header("EyeEnd SFX")]
-    [field: SerializeField] public EventReference eyeEnd { get; private set; }
-
-    [field: Header("Lag1 SFX")]
-    [field: SerializeField] public EventReference lag1 { get; private set; }
-
-    [field: Header("Lag2 SFX")]
-    [field: SerializeField] public EventReference lag2 { get; private set; }
-
     [field: Header("Light Switch On SFX")]
     [field: SerializeField] public EventReference switchOn {get; private set;}
     
@@ -53,21 +35,8 @@ public class AudioList : MonoSingleton<AudioList>
 
     [field: Header("Horny Breath SFX")]
     [field: SerializeField] public EventReference hornyBreath {get; private set;}
-
-    [field: Header("ToyWalk SFX")]
-    [field: SerializeField] public EventReference toyWalk { get; private set; }
-
     [field: Header("Knock SFX")]
     [field: SerializeField] public EventReference knock { get; private set; }
-
-    [field: Header("CogWheell SFX")]
-    [field: SerializeField] public EventReference cogWheel { get; private set; }
-
-    [field: Header("NeckSnap SFX")]
-    [field: SerializeField] public EventReference neckSnap { get; private set; }
-
-    [field: Header("Crows SFX")]
-    [field: SerializeField] public EventReference crows { get; private set; }
 
     [field: Header("WoodDrop1 SFX")]
     [field: SerializeField] public EventReference woodDrop1 { get; private set; }
@@ -75,26 +44,11 @@ public class AudioList : MonoSingleton<AudioList>
     [field: Header("WoodDrop2 SFX")]
     [field: SerializeField] public EventReference woodDrop2 { get; private set; }
 
-    [field: Header("DogBark SFX")]
-    [field: SerializeField] public EventReference dogBark { get; private set; }
-
-    [field: Header("DogWhine SFX")]
-    [field: SerializeField] public EventReference dogWhine { get; private set; }
-
-    [field: Header("Mosquito SFX")]
-    [field: SerializeField] public EventReference mosquito { get; private set; }
-
-    [field: Header("CatFight SFX")]
-    [field: SerializeField] public EventReference catFight { get; private set; }
-
     [field: Header("Chair1 SFX")]
     [field: SerializeField] public EventReference chair1 { get; private set; }
 
     [field: Header("Chair2 SFX")]
     [field: SerializeField] public EventReference chair2 { get; private set; }
-
-    [field: Header("Door Knock SFX")]
-    [field: SerializeField] public EventReference doorKnock { get; private set; }
 
     [field: Header("Clock Beep SFX")]
     [field: SerializeField] public EventReference clockBeep {get; private set;}

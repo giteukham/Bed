@@ -25,6 +25,6 @@ public class LivingRoomLightSwitch : MonoBehaviour
     {
         if (isOn == _isOn) return;
         isOn = _isOn;
-        AudioManager.Instance.PlayOneShot(AudioList.Instance.switchOn, livingRoomlightSwitch.transform.position);
+        // AudioManager.Instance.PlayForce(AudioList.Instance.switchOn, livingRoomlightSwitch.transform.position);
     }
 }

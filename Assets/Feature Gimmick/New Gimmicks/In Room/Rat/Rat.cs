@@ -36,7 +36,7 @@ public class Rat : SoundOnlyGimmick
         var pos = GetRandomPosition(floorCollider.bounds.min, floorCollider.bounds.max);
         transform.position = new Vector3(pos.x, transform.position.y, pos.z);
         
-        AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
     }
     
     private Vector3 GetRandomPosition(Vector3 min, Vector3 max)

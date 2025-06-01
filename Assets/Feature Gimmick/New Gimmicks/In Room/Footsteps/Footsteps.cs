@@ -36,7 +36,7 @@ public class Footsteps : SoundOnlyGimmick, IEarGimmick
         var pos = GetRandomPosition(ceilingCollider.bounds.min, ceilingCollider.bounds.max);
         transform.position = new Vector3(pos.x, transform.position.y, pos.z);
         
-        AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        // AudioManager.Instance.PlaySound(soundEvent, transform.position);
     }
 
     private Vector3 GetRandomPosition(Vector3 min, Vector3 max)

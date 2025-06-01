@@ -6,14 +6,37 @@ using FMODUnity;
 using Unity.VisualScripting;
 using FMOD.Studio;
 using UnityEngine.Assertions;
+using System.Linq;
+
+/// <summary>
+/// 하나의 사운드 인스턴스를 추적하기 위한 클래스
+/// - EventReference: 참조한 FMOD 이벤트
+/// - Guid: 식별용 ID Handle
+/// - Instance: FMOD EventInstance
+/// - MonitorCoroutine: 재생 상태 감시용 코루틴
+/// </summary>
+public class TrackedSound
+{
+    public EventReference EventRef;
+    public Guid Id;
+    public EventInstance Instance;
+    public Coroutine MonitorCoroutine;
+}
 
 public class AudioManager : MonoSingleton<AudioManager>
 {
-    // Key �̺�Ʈ ���� ��, Value �̺�Ʈ �ν��Ͻ�
-    private Dictionary<EventReference, EventInstance> eventInstances = new();
-    [SerializeField] private AudioLibrary audioLibrary;
+    [SerializeField] private AudioLibrary audioLibrary; // AudioEntry 목록을 갖는 ScriptableObject
+
+    // 현재 재생 중인 사운드들을 Key별로 저장
+    private readonly Dictionary<EventReference, List<TrackedSound>> activeSounds = new();
+
+    // 각 개별 사운드를 Guid로 빠르게 찾기 위해 Dictionary 사용
+    private readonly Dictionary<Guid, TrackedSound> guidToSound = new();
+
+    // TrackedSound 재사용을 위한 풀
+    private readonly Queue<TrackedSound> soundPool = new();
+
     [SerializeField] SoundSettings soundSettings;
-    private Coroutine playMonitorCoroutine, playOneShotMonitorCoroutine;
     private FMOD.Studio.Bus _masterBus, _gimmickBus, _playerBus;
     public FMOD.Studio.Bus MasterBus
     {
@@ -45,138 +68,288 @@ public class AudioManager : MonoSingleton<AudioManager>
         private set => _playerBus = value;
     }
 
-    /// <summary>
-    /// �Ҹ� ������ ������ ����
-    /// </summary>
-    public void PlaySound(EventReference _eventRef, Vector3 _pos)
+    void Awake()
     {
-        if (eventInstances.ContainsKey(_eventRef)) return;
+        for (int i = 0; i < 20; i++)
+            soundPool.Enqueue(new TrackedSound());
+    }
 
-        EventInstance eventInstance = RuntimeManager.CreateInstance(_eventRef);
-        eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
-        eventInstances[_eventRef] = eventInstance;
-        eventInstance.start();
+    private Guid InternalPlay(EventReference evt, Vector3 pos)
+    {
+        EventInstance instance = RuntimeManager.CreateInstance(evt);
+        instance.set3DAttributes(RuntimeUtils.To3DAttributes(pos));
+        instance.start();
 
-        if (playMonitorCoroutine != null) StopCoroutine(playMonitorCoroutine);
-        playMonitorCoroutine = StartCoroutine(MonitorPlayback(_eventRef));
+        Guid id = Guid.NewGuid();
+
+        var tracked = soundPool.Count > 0 ? soundPool.Dequeue() : new TrackedSound();
+        tracked.EventRef = evt;
+        tracked.Id = id;
+        tracked.Instance = instance;
+        tracked.MonitorCoroutine = StartCoroutine(MonitorSound(id));
+
+        if (!activeSounds.ContainsKey(evt))
+            activeSounds[evt] = new List<TrackedSound>();
+        activeSounds[evt].Add(tracked);
+        guidToSound[id] = tracked;
+
+        return id;
+    }
+    private IEnumerator MonitorSound(Guid id)
+    {
+        if (guidToSound.TryGetValue(id, out var tracked))
+        {
+            EventReference evt = tracked.EventRef;
+            EventInstance instance = tracked.Instance;
+
+            instance.getPlaybackState(out var state);
+            while (state != PLAYBACK_STATE.STOPPED)
+            {
+                yield return null;
+                instance.getPlaybackState(out state);
+            }
+
+            instance.release();
+            guidToSound.Remove(id);
+            if (activeSounds.ContainsKey(evt))
+                activeSounds[evt].RemoveAll(trackedSound => trackedSound.Id == id);
+            if (activeSounds[evt].Count == 0)
+                activeSounds.Remove(evt);
+
+            soundPool.Enqueue(InitializeTrackedSound(tracked));
+        }
     }
 
     /// <summary>
-    /// �Ҹ��� �ߺ� ��� ����
+    /// 재생 중이면 무시 (중복 방지)
     /// </summary>
-    /// <param name="_eventRef"></param>
-    /// <param name="_pos"></param>
-    public void PlayOneShot(EventReference _eventRef, Vector3 _pos)
+    public Guid Play(string key, Vector3 pos)
     {
-        EventInstance eventInstance = RuntimeManager.CreateInstance(_eventRef);
-        eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
-        eventInstances[_eventRef] = eventInstance;
-        eventInstance.start();
-        
-        if (playOneShotMonitorCoroutine != null) StopCoroutine(playOneShotMonitorCoroutine);
-        playOneShotMonitorCoroutine = StartCoroutine(MonitorPlayback(_eventRef));
+        EventReference evt = audioLibrary.Get(key);
+        if (evt.IsNull) 
+        {
+            Debug.LogWarning($"Audio Library에서 '{key}' 키를 찾을 수 없습니다");
+            return Guid.Empty;
+        }
+
+        // 이미 재생 중인 사운드가 있는지 확인
+        if (activeSounds.TryGetValue(evt, out var soundList))  
+        {
+            foreach (var s in soundList)
+            {
+                if (s.Instance.isValid())
+                {
+                    s.Instance.getPlaybackState(out var state);
+                    if (state != PLAYBACK_STATE.STOPPED)
+                        return Guid.Empty;
+                }
+            }
+        }
+        return InternalPlay(evt, pos);
+    }
+
+    /// <summary>
+    /// 무조건 재생 (중복 허용)
+    /// </summary>
+    public Guid PlayForce(string key, Vector3 pos)
+    {
+        EventReference evt = audioLibrary.Get(key);
+        if (evt.IsNull) 
+        {
+            Debug.LogWarning($"Audio Library에서 '{key}' 키를 찾을 수 없습니다");
+            return Guid.Empty;
+        }
+
+        return InternalPlay(evt, pos);
+    }
+
+    /// <summary>
+    /// 루프 오디오 재생 (풀에 넣지 않음)
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public Guid PlayLooped(string key)
+    {
+        EventReference evt = audioLibrary.Get(key);
+        if (evt.IsNull) 
+        {
+            Debug.LogWarning($"Audio Library에서 '{key}' 키를 찾을 수 없습니다");
+            return Guid.Empty;
+        }
+
+        // 이미 재생 중인 사운드가 있는지 확인
+        if (activeSounds.TryGetValue(evt, out var soundList))  
+        {
+            foreach (var s in soundList)
+            {
+                if (s.Instance.isValid())
+                {
+                    s.Instance.getPlaybackState(out var state);
+                    if (state != PLAYBACK_STATE.STOPPED)
+                        return Guid.Empty;
+                }
+            }
+        }
+
+        EventInstance instance = RuntimeManager.CreateInstance(evt);
+        instance.start();
+
+        Guid id = Guid.NewGuid();
+
+        var tracked = new TrackedSound();
+        tracked.EventRef = evt;
+        tracked.Id = id;
+        tracked.Instance = instance;
+        tracked.MonitorCoroutine = default;
+
+        if (!activeSounds.ContainsKey(evt))
+            activeSounds[evt] = new List<TrackedSound>();
+        activeSounds[evt].Add(tracked);
+        guidToSound[id] = tracked;
+        return id;
     }
     
-    private IEnumerator MonitorPlayback(EventReference _eventRef)
+
+    /// <summary>
+    /// 소리 위치 설정
+    /// </summary>
+    public void SetPosition(Guid id, Vector3 pos)
     {
-        EventInstance eventInstance = eventInstances[_eventRef];
-        PLAYBACK_STATE playbackState;
-        do
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
+        tracked.Instance.set3DAttributes(RuntimeUtils.To3DAttributes(pos));
+    }
+
+    /// <summary>
+    /// 해당 Guid 인스턴스 정지
+    /// </summary>
+    /// <param name="_mode">소리 끄는 모드 IMMEDIATE == 일반, ALLOWFADEOUT == 페이드 아웃</param>
+    public void StopSound(Guid id, FMOD.Studio.STOP_MODE _mode)
+    {
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
+        EventReference evt = tracked.EventRef;
+        RemoveTracked(tracked);
+    }
+
+    /// <summary>
+    /// 해당하는 EventReference 참조 인스턴스 정지
+    /// </summary>
+    /// <param name="_mode">소리 끄는 모드 IMMEDIATE == 일반, ALLOWFADEOUT == 페이드 아웃</param>
+    public void StopSound(EventReference evt, FMOD.Studio.STOP_MODE _mode)
+    {
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        for (int i = trackedList.Count - 1; i >= 0; i--)
         {
-            eventInstance.getPlaybackState(out playbackState);
-            yield return null;
-        }
-        while (playbackState != PLAYBACK_STATE.STOPPED);
-        StopSound(_eventRef, FMOD.Studio.STOP_MODE.IMMEDIATE);
-    }
-
-
-    /// <summary>
-    /// �Ҹ� ��ġ ����
-    /// </summary>
-    public void SetPosition(EventReference _eventRef, Vector3 _pos)
-    {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(_pos));
-    }
-
-    /// <summary>
-    /// �Ҹ� ����
-    /// </summary>
-    /// <param name="_mode">�Ҹ� ���� ��� IMMEDIATE == �Ϲ�, ALLOWFADEOUT == ���̵� �ƿ�</param>
-    public void StopSound(EventReference _eventRef, FMOD.Studio.STOP_MODE _mode)
-    {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
-        {
-            eventInstance.stop(_mode);
-            eventInstance.release();
-            eventInstances.Remove(_eventRef);
+            TrackedSound tracked = trackedList[i];
+            RemoveTracked(tracked);
         }
     }
 
     /// <summary>
-    /// ��� �Ҹ� �� ����
+    /// 모든 인스턴스 정지
     /// </summary>
-    /// /// <param name="_mode">�Ҹ� ���� ���, IMMEDIATE == �Ϲ�, ALLOWFADEOUT  == ���̵� �ƿ�</param>
+    /// /// <param name="_mode">소리 끄는 모드, IMMEDIATE == 일반, ALLOWFADEOUT  == 페이드 아웃</param>
     public void StopAllSounds(FMOD.Studio.STOP_MODE _mode)
     {
-        foreach (EventInstance eventInstance in eventInstances.Values)
+        if (activeSounds.Count == 0)
         {
-            eventInstance.stop(_mode);
-            eventInstance.release();
+            Debug.Log("현재 재생 중인 사운드 이벤트가 없습니다");
+            return;
         }
-        eventInstances.Clear();
+        var keys = activeSounds.Keys.ToList();
+        for (int i = keys.Count -1; i >= 0; i--)
+        {
+            var evt = keys[i];
+            if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) continue;
+            for (int j = trackedList.Count - 1; j >= 0; j--)
+            {
+                TrackedSound tracked = trackedList[j];
+                RemoveTracked(tracked);
+            }
+            activeSounds[evt].Clear();
+        }
     }
     
     /// <summary>
-    /// �Ҹ� �Ͻ�����
+    /// 해당 Guid 인스턴스 일시정지 유무
     /// </summary>
-    public void PauseSound(EventReference _eventRef)
+    public void PauseSound(Guid id, bool isPause)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setPaused(true);
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
+        tracked.Instance.setPaused(isPause);
     }
 
     /// <summary>
-    /// ��� �Ҹ� �Ͻ�����
+    /// 해당하는 EventReference 참조 인스턴스 유무
     /// </summary>
-    public void PauseAllSounds()
+    public void PauseSound(EventReference evt, bool isPause)
     {
-        foreach (EventInstance eventInstance in eventInstances.Values) eventInstance.setPaused(true);
+        if (!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        for (int i = trackedList.Count - 1; i >= 0; i--)
+        {
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.setPaused(isPause);
+        }
     }
 
     /// <summary>
-    /// �Ҹ� �簳
+    /// 모든 인스턴스 일시정지 유무
     /// </summary>
-    public void ResumeSound(EventReference _eventRef)
+    public void PauseAllSounds(bool isPause)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setPaused(false);
+        if (activeSounds.Count == 0)
+        {
+            Debug.Log("현재 재생 중인 사운드 이벤트가 없습니다");
+            return;
+        }
+
+        var keys = activeSounds.Keys.ToList();
+        for (int i = keys.Count -1; i >= 0; i--)
+        {
+            var evt = keys[i];
+            if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) continue;
+            for (int j = trackedList.Count - 1; j >= 0; j--)
+            {
+                TrackedSound tracked = trackedList[j];
+                if (!tracked.Instance.isValid()) continue;
+                tracked.Instance.setPaused(isPause);
+            }
+        }
     }
 
     /// <summary>
-    /// ��� �Ҹ� �簳
+    /// 해당 Guid 인스턴스 볼륨 조절
     /// </summary>
-    public void ResumeAllSounds()
+    public void VolumeControl(Guid id, float volume)
     {
-        foreach (EventInstance eventInstance in eventInstances.Values) eventInstance.setPaused(false);
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
+        tracked.Instance.setVolume(volume);
     }
 
     /// <summary>
-    /// ���� ����
+    /// 해당하는 EventReference 참조 인스턴스 볼륨 조절
     /// </summary>
-    public void VolumeControl(EventReference _eventRef, float _volume)
+    public void VolumeControl(EventReference evt, float volume)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setVolume(_volume);
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        for (int i = trackedList.Count - 1; i >= 0; i--)
+        {
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.setVolume(volume);
+        }
     }
 
     /// <summary>
-    /// ��� �Ҹ� ���� %�� ���߱�
+    /// 마스터 볼륨 % 조절
     /// </summary>
-    public void AllVolumeDown(float _volume)
+    public void AllVolumeDown(float volume)
     {   
-        MasterBus.setVolume(soundSettings.MasterVolume * _volume);
+        MasterBus.setVolume(soundSettings.MasterVolume * volume);
     }
 
     /// <summary>
-    /// ��� �Ҹ� ���� �ʱ�ȭ
+    /// 마스터 볼륨 기존 값으로 초기화
     /// </summary>
     public void AllVoumeInit()
     {
@@ -184,175 +357,231 @@ public class AudioManager : MonoSingleton<AudioManager>
     }
 
     /// <summary>
-    /// ���� �� ��������
+    /// 해당 Guid 인스턴스 볼륨 값 가져오기
     /// </summary>
-    public float GetVolume(EventReference _eventRef)
+    public float GetVolume(Guid id)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return default;
+        tracked.Instance.getVolume(out float volume);
+        return volume;
+    }
+
+    /// <summary>
+    /// 해당하는 EventReference 참조 인스턴스 볼륨 값 가져오기
+    /// </summary>
+    public float[] GetVolume(EventReference evt)
+    {
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
+        float[] volumes = new float[trackedList.Count];
+        for (int i = trackedList.Count - 1; i >= 0; i--)
         {
-            float volume;
-            eventInstance.getVolume(out volume);
-            return volume;
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.getVolume(out float volume);
+            volumes[i] = volume;
         }
-        return 0;
+        return volumes;
     }
 
     /// <summary>
-    /// ȿ���� �ߺ� üũ
+    /// 효과음 재생 중인지 체크
     /// </summary>
-    public bool DuplicateCheck(EventReference _eventRef)
+    public bool DuplicateCheck(EventReference evt)
     {
-        if (eventInstances.ContainsKey(_eventRef)) return true;
-        return false;
+        if (!activeSounds.ContainsKey(evt)) 
+            return false;
+        else return true;
     }
 
     /// <summary>
-    /// �̺�Ʈ �Ķ���� �� ����
+    /// 해당 Guid 인스턴스 파라미터 값 설정
     /// </summary>
-    /// <param name="_paramName">�Ķ���� �̸�</param>
-    /// <param name="_value">�Ķ���� ��</param>
-    public void SetParameter(EventReference _eventRef, string _paramName, float _value)
+    /// <param name="paramName">파라미터 이름</param>
+    /// <param name="value">파라미터 값</param>
+    public void SetEventParameter(Guid id, string paramName, float value)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance)) eventInstance.setParameterByName(_paramName, _value);
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return;
+        tracked.Instance.setParameterByName(paramName, value);
     }
 
     /// <summary>
-    /// �ý��� �Ķ���� �� ����
+    /// 해당하는 EventReference 참조 인스턴스 파라미터 값 설정
     /// </summary>
-    /// <param name="_paramName"></param>
-    /// <param name="_value"></param>
-    public void SetParameter(string _paramName, float _value)
+    /// <param name="paramName">파라미터 이름</param>
+    /// <param name="value">파라미터 값</param>
+    public void SetEventParameter(EventReference evt, string paramName, float value)
     {
-        FMODUnity.RuntimeManager.StudioSystem.setParameterByName(_paramName, _value);
-    }
-
-    /// <summary>
-    /// �Ķ���� �� ��������
-    /// </summary>
-    /// <param name="_paramName">�Ķ���� �̸�</param>
-    public float GetParameter(EventReference _eventRef, string _paramName)
-    {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return;
+        for (int i = trackedList.Count - 1; i >= 0; i--)
         {
-            float value;
-            eventInstance.getParameterByName(_paramName, out value);
-            return value;
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.setParameterByName(paramName, value);
         }
-        return 0;
+    }
+
+    /// <summary>
+    /// 시스템 파라미터 값 설정
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="value"></param>
+    public void SetSystemParameter(string paramName, float value)
+    {
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName(paramName, value);
+    }
+
+    /// <summary>
+    /// 해당 Guid 인스턴스 파라미터 값 가져오기
+    /// </summary>
+    /// <param name="paramName">파라미터 이름</param>
+    public float GetParameter(Guid id, string paramName)
+    {
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return default;
+        tracked.Instance.getParameterByName(paramName, out float value);
+        return value;
+    }
+
+    /// <summary>
+    /// 해당 Guid 인스턴스 파라미터 값 가져오기
+    /// </summary>
+    /// <param name="paramName">파라미터 이름</param>
+    public float[] GetParameter(EventReference evt, string paramName)
+    {
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
+        float[] values = new float[trackedList.Count];
+        for (int i = trackedList.Count - 1; i >= 0; i--)
+        {
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.getParameterByName(paramName, out float value);
+            values[i] = value;
+        }
+        return values;
     }
     
     /// <summary>
-    /// �Ҹ� ���� ��������
+    /// 해당 Guid 인스턴스 길이 값 가져오기
     /// </summary>
-    /// <param name="_eventRef"></param>
-    /// <returns></returns>
-    public float GetSoundLength(EventReference _eventRef)
+    /// <param name="_eventRef"></
+    public float GetSoundLength(Guid id)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
-        {
-            if (!eventInstance.isValid()) Debug.LogException(new Exception("EventInstance is not valid"));
-            
-            eventInstance.getDescription(out EventDescription eventDescription);
-            eventDescription.getLength(out int length);
-            return length / 1000f;
-        }
-        
-        return 0;
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return default;
+        tracked.Instance.getDescription(out EventDescription eventDescription);
+        eventDescription.getLength(out int length);
+        return length / 1000f;
     }
 
     /// <summary>
-    /// �Ҹ� ��� ���� ��������
+    /// 해당하는 EventReference 참조 인스턴스 길이 값 가져오기
+    /// </summary>
+    /// <param name="_eventRef"></
+    public int[] GetSoundLength(EventReference evt)
+    {
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
+        int[] lengths = new int[activeSounds[evt].Count];
+        for (int i = trackedList.Count - 1; i >= 0; i--)
+        {
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.getDescription(out EventDescription eventDescription);
+            eventDescription.getLength(out int length);
+            lengths[i] = length;
+        }
+        return lengths;
+    }
+
+    /// <summary>
+    /// 해당 Guid 인스턴스 재생 상태 가져오기
     /// </summary>
     /// <param name="_eventRef"></param>
     /// <returns></returns>
-    public PLAYBACK_STATE GetPlaybackState(EventReference _eventRef)
+    public PLAYBACK_STATE GetPlaybackState(Guid id)
     {
-        EventInstance eventInstance = eventInstances[_eventRef];
-        eventInstance.getPlaybackState(out PLAYBACK_STATE playbackState);
+        if(!TryGetValidTrackedSound(id, out TrackedSound tracked)) return default;
+        tracked.Instance.getPlaybackState(out PLAYBACK_STATE playbackState);
         return playbackState;
     }
 
     /// <summary>
-    /// �Ҹ� Ÿ�Ӷ��� ��ġ ��������
+    /// 해당하는 EventReference 참조 인스턴스 재생 상태 가져오기
     /// </summary>
     /// <param name="_eventRef"></param>
-    /// <param name="_time"></param>
-    public void GetTimeLinePosition(EventReference _eventRef, out int _time)
+    /// <returns></returns>
+    public PLAYBACK_STATE[] GetPlaybackState(EventReference evt)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
-            eventInstance.getTimelinePosition(out _time);
-        else _time = 0;
-    }
-
-    /// <summary>
-    /// �Ҹ� Ÿ�Ӷ��� ��ġ ���ϱ�
-    /// </summary>
-    /// <param name="_eventRef"></param>
-    /// <param name="_time"></param>
-    public void SetTimeLinePosition(EventReference _eventRef, int _time)
-    {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
-            eventInstance.setTimelinePosition(_time);
-    }
-
-    /// <summary>
-    /// ��� �Ҹ� Ÿ�Ӷ��� ��ġ ��������
-    /// </summary>
-    /// <param name="_timeDict"></param>
-    public void GetAllTimeLinePosition(out Dictionary<EventReference, int> _timeDict)
-    {
-        _timeDict = new Dictionary<EventReference, int>();
-        foreach (KeyValuePair<EventReference, EventInstance> kvp in eventInstances)
+        if(!TryGetValidTrackedList(evt, out List<TrackedSound> trackedList)) return default;
+        PLAYBACK_STATE[] states = new PLAYBACK_STATE[activeSounds[evt].Count];
+        for (int i = trackedList.Count - 1; i >= 0; i--)
         {
-            kvp.Value.getTimelinePosition(out int time);
-            _timeDict[kvp.Key] = time;
+            TrackedSound tracked = trackedList[i];
+            if (!tracked.Instance.isValid()) continue;
+            tracked.Instance.getPlaybackState(out PLAYBACK_STATE playbackState);
+            states[i] = playbackState;
         }
+        return states;
     }
 
     /// <summary>
-    /// ��� �Ҹ� Ÿ�Ӷ��� ��ġ ���ϱ�
+    /// 해당 Guid 인스턴스가 유효한지 확인하고, 유효한 경우 TrackedSound를 반환
     /// </summary>
-    /// <param name="_timeDict"></param>
-    /// <param name="_time"></param>
-    public void SetAllTimeLinePosition(Dictionary<EventReference, int> _timeDict, int _time)
+    private bool TryGetValidTrackedSound(Guid id, out TrackedSound tracked)
     {
-        foreach (KeyValuePair<EventReference, EventInstance> kvp in eventInstances)
+        tracked = null;
+        if (!guidToSound.TryGetValue(id, out tracked))
         {
-            if (_timeDict.TryGetValue(kvp.Key, out int time))
-            {
-                kvp.Value.setTimelinePosition(time + _time);
-            }
-            else
-            {
-                kvp.Value.setTimelinePosition(time + _time);
-            }
+            Debug.Log($"해당 '{id}' ID를 가진 인스턴스를 찾을 수 없습니다");
+            return false;
         }
+        if (!tracked.Instance.isValid())
+        {
+            Debug.Log($"해당 '{id}' ID를 가진 인스턴스가 유효하지 않습니다");
+            return false;
+        }
+        return true;
     }
 
     /// <summary>
-    /// ��� �Ҹ� Ÿ�Ӷ��� ��ġ �ǰ���
+    /// 해당 EventReference를 참조하는 TrackedSound 리스트를 가져오고, 유효한 경우 리스트를 반환
     /// </summary>
-    /// <param name="_time"></param>
-    public void RewindAllSounds(int _time)
+    private bool TryGetValidTrackedList(EventReference evt, out List<TrackedSound> list)
     {
-        foreach (EventInstance eventInstance in eventInstances.Values)
+        list = null;
+        if (!activeSounds.TryGetValue(evt, out list))
         {
-            eventInstance.getTimelinePosition(out int time);
-            eventInstance.setTimelinePosition(Math.Max(time + _time, 0));
+            Debug.Log($"해당 '{evt}'를 참조한 인스턴스를 찾을 수 없습니다");
+            return false;
         }
+        return true;
     }
 
     /// <summary>
-    /// �Ҹ� Ÿ�Ӷ��� ��ġ �ǰ���
+    /// 인스턴스를 정리하고 풀에 반환, 요소가 없으면 activeSounds에서 제거
     /// </summary>
-    /// <param name="_eventRef"></param>
-    /// <param name="_time"></param>
-    public void RewindSound(EventReference _eventRef, int _time)
+    private void RemoveTracked(TrackedSound tracked)
     {
-        if (eventInstances.TryGetValue(_eventRef, out EventInstance eventInstance))
-        {
-            eventInstance.getTimelinePosition(out int time);
-            eventInstance.setTimelinePosition(Math.Max(time + _time, 0));
-        }
+        if (!tracked.Instance.isValid()) return;
+
+        tracked.Instance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        tracked.Instance.release();
+        guidToSound.Remove(tracked.Id);
+
+        if (activeSounds.TryGetValue(tracked.EventRef, out var list))
+            list.RemoveAll(t => t.Id == tracked.Id);
+        if (activeSounds[tracked.EventRef].Count == 0)
+            activeSounds.Remove(tracked.EventRef);
+        soundPool.Enqueue(InitializeTrackedSound(tracked));
+    }
+
+    /// <summary>
+    /// TrackedSound 초기화
+    /// </summary>
+    public TrackedSound InitializeTrackedSound(TrackedSound tracked)
+    {
+        tracked.EventRef = default;
+        tracked.Instance = default;
+        tracked.MonitorCoroutine = null;
+        tracked.Id = Guid.Empty;
+
+        return tracked;
     }
 }

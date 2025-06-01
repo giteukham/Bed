@@ -12,13 +12,13 @@ public class PillowSound : MonoBehaviour
 
     private void Start()
     {
-        AudioManager.Instance.PlaySound(AudioList.Instance.headMove, transform.position);
+        // AudioManager.Instance.PlaySound(AudioList.Instance.headMove, transform.position);
     }
 
     private void Update()
     {
         pillowSoundPosition.transform.localPosition = new Vector3(playerPosition.transform.localPosition.x, pillowSoundPosition.transform.localPosition.y, pillowSoundPosition.transform.localPosition.z);
-        AudioManager.Instance.SetPosition(AudioList.Instance.headMove, pillowSoundPosition.transform.localPosition);
+        // AudioManager.Instance.SetPosition(AudioList.Instance.headMove, pillowSoundPosition.transform.localPosition);
         
         if (PlayerConstant.isRightState || PlayerConstant.isLeftState) HeadMoveLowpassSet(false);
         else HeadMoveLowpassSet(true);
@@ -31,15 +31,15 @@ public class PillowSound : MonoBehaviour
 
     public void PlaySound()
     {
-        if ((PlayerConstant.headMoveSpeed > 0f || PlayerConstant.isMovingState) &&
-            AudioManager.Instance.GetVolume(AudioList.Instance.headMove) < 1.0f)
-        {
-            HeadMoveVolume(true);
-        }
-        else if (AudioManager.Instance.GetVolume(AudioList.Instance.headMove) > 0.0f)
-        {
-            HeadMoveVolume(false);
-        }
+        // if ((PlayerConstant.headMoveSpeed > 0f || PlayerConstant.isMovingState) &&
+        //     AudioManager.Instance.GetVolume(AudioList.Instance.headMove) < 1.0f)
+        // {
+        //     HeadMoveVolume(true);
+        // }
+        // else if (AudioManager.Instance.GetVolume(AudioList.Instance.headMove) > 0.0f)
+        // {
+        //     HeadMoveVolume(false);
+        // }
     }
 
     private void HeadMoveVolume(bool isUp)
@@ -50,11 +50,11 @@ public class PillowSound : MonoBehaviour
     
     IEnumerator headMoveVolumeSet(bool isUp)
     {
-        float volume = AudioManager.Instance.GetVolume(AudioList.Instance.headMove);
+        float volume = 0f;//AudioManager.Instance.GetVolume(AudioList.Instance.headMove);
         
         if(isUp)
         {
-            AudioManager.Instance.ResumeSound(AudioList.Instance.headMove);
+            // AudioManager.Instance.ResumeSound(AudioList.Instance.headMove);
             while(volume < 1.0f)
             {
                 volume += 0.1f;
@@ -73,7 +73,7 @@ public class PillowSound : MonoBehaviour
                 AudioManager.Instance.VolumeControl(AudioList.Instance.headMove, volume);
                 yield return new WaitForSeconds(0.1f);
             }
-            AudioManager.Instance.PauseSound(AudioList.Instance.headMove);
+            // AudioManager.Instance.PauseSound(AudioList.Instance.headMove);
             headMoveVolumeSetCoroutine = null;
         }
     }
@@ -86,14 +86,14 @@ public class PillowSound : MonoBehaviour
 
     IEnumerator headMoveLowpassSet(bool isUp)
     {
-        float paramValue = AudioManager.Instance.GetParameter(AudioList.Instance.headMove, "Lowpass");
+        float paramValue = 0f;// AudioManager.Instance.GetParameter(AudioList.Instance.headMove, "Lowpass");
         
         if(isUp)
         {
             while(paramValue < 1f)
             {
                 paramValue += 0.1f;
-                AudioManager.Instance.SetParameter(AudioList.Instance.headMove, "Lowpass", paramValue);
+                AudioManager.Instance.SetEventParameter(AudioList.Instance.headMove, "Lowpass", paramValue);
                 yield return new WaitForSeconds(0.15f);
             }
             headMoveLowpassSetCoroutine = null;
@@ -103,7 +103,7 @@ public class PillowSound : MonoBehaviour
             while(paramValue > 0f)
             {
                 paramValue -= 0.1f;
-                AudioManager.Instance.SetParameter(AudioList.Instance.headMove, "Lowpass", paramValue);
+                AudioManager.Instance.SetEventParameter(AudioList.Instance.headMove, "Lowpass", paramValue);
                 yield return new WaitForSeconds(0.15f);
             }
             headMoveLowpassSetCoroutine = null;
@@ -118,14 +118,14 @@ public class PillowSound : MonoBehaviour
 
     IEnumerator headMoveCompressorSet(bool isUp)
     {
-        float paramValue = AudioManager.Instance.GetParameter(AudioList.Instance.headMove, "Compressor");
+        float paramValue = 0f;//AudioManager.Instance.GetParameter(AudioList.Instance.headMove, "Compressor");
         
         if(isUp)
         {
             while(paramValue < 1f)
             {
                 paramValue += 0.1f;
-                AudioManager.Instance.SetParameter(AudioList.Instance.headMove, "Compressor", paramValue);
+                AudioManager.Instance.SetEventParameter(AudioList.Instance.headMove, "Compressor", paramValue);
                 yield return new WaitForSeconds(0.025f);
             }
             headMoveCompressorSetCoroutine = null;
@@ -135,7 +135,7 @@ public class PillowSound : MonoBehaviour
             while(paramValue > 0f)
             {
                 paramValue -= 0.1f;
-                AudioManager.Instance.SetParameter(AudioList.Instance.headMove, "Compressor", paramValue);
+                AudioManager.Instance.SetEventParameter(AudioList.Instance.headMove, "Compressor", paramValue);
                 yield return new WaitForSeconds(0.025f);
             }
             headMoveCompressorSetCoroutine = null;

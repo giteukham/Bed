@@ -50,17 +50,15 @@ public class CoverGimcik : Gimmick
     private IEnumerator MainCode()
     {
         yield return new WaitForSeconds(1);
-        AudioManager.Instance.PlaySound(AudioList.Instance.handCover, this.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.HandCover, this.transform.position);
         animator.Play("CoverEye");
 
         yield return new WaitForSeconds(0.16f);
-        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
-        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +10);
 
-        AudioManager.Instance.PlaySound(AudioList.Instance.roughBreath, this.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.RoughBreath, this.transform.position);
 
         yield return new WaitForSeconds(2.68f);
-        AudioManager.Instance.PlaySound(AudioList.Instance.handCoverOff, this.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.HandCoverOff, this.transform.position);
 
         yield return new WaitForSeconds(0.3f);
         animator.Play("CoverOffEye");
