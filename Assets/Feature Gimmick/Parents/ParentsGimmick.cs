@@ -250,10 +250,10 @@ public class ParentsGimmick : MarkovGimmick
                 changeStateWithBlinkValueCoroutine ??= StartCoroutine(ChangeStateWithCheckingBlink(Danger, 1.5f));
                 changeStateWithCollisionCoroutine ??= StartCoroutine(ChangeStateWithHeadCollision(momHead, Danger, 0.92f, 1.5f));
                 
-                checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(momHead, (isCollided) =>
-                {
-                    ChangeMarkovState(Danger);
-                }));
+                // checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(momHead, (isCollided) =>
+                // {
+                //     ChangeMarkovState(Danger);
+                // }));
                 break;
 
             case var _ when state.Equals(Danger):
@@ -300,10 +300,10 @@ public class ParentsGimmick : MarkovGimmick
                 yield return new DOTweenCYInstruction.WaitForCompletion(moveTween);
                 yield return new WaitForSeconds(0.4f);
                 PlayAnimationWithoutDuplication(Danger.Name);
-                checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(dadHead, (isCollided) =>
-                {
-                    ChangeMarkovState(Near);
-                }));
+                // checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(dadHead, (isCollided) =>
+                // {
+                //     ChangeMarkovState(Near);
+                // }));
                 break;
 
             case var _ when state.Equals(Near):
@@ -446,6 +446,7 @@ public class ParentsGimmick : MarkovGimmick
                 return elapsedTime < timeThreshold;
             });
             ChangeMarkovState(next);
+            Debug.Log($"ChangeStateWithHeadCollision");
         }
 
         IEnumerator ChangeStateWithCheckingBlink(MarkovState next, float timeThreshold)
@@ -462,6 +463,7 @@ public class ParentsGimmick : MarkovGimmick
                 return elapsedTime < timeThreshold;
             });
             ChangeMarkovState(next);
+            Debug.Log("ChangeStateWithCheckingBlink");
         }
     }
     
