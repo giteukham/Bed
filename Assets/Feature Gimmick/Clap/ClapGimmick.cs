@@ -35,11 +35,7 @@ public class ClapGimcik : Gimmick
     private void ClapSoundPlay()
     {
         // 박수 소리는 애니메이션 이벤트로 실행
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.handClap, this.transform.position);
-
-        // 테스트로 방 불도 켜지고 꺼지게
-        // if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
-        // else BedRoomLightSwitch.SwitchAction(true);
+        AudioManager.Instance.PlayForce(AudioKeys.HandClap, this.transform.position);
     }
 
     public override void Activate()
@@ -66,20 +62,15 @@ public class ClapGimcik : Gimmick
     private IEnumerator MainCode()
     {
         Door.Set(45, 0.7f); // 방문 열기
-        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.Stress, +5);
-        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +5);
         yield return new WaitForSeconds(1.3f);
-        //LivingRoomLightSwitch.SwitchAction(true);   // 복도 불 켜기
 
         yield return new WaitForSeconds(0.4f);
-        // GaugeController.Instance.SetGuage(GaugeController.GaugeTypes.noise, +5);
         animator.Play("Clapping");
 
         yield return new WaitForSeconds(1.5f);
         animator.Play("ClapOff");
 
         yield return new WaitForSeconds(0.4f);
-        //LivingRoomLightSwitch.SwitchAction(false);  // 복도 불 끄기
 
         yield return new WaitForSeconds(0.2f);
         Door.Set(0, 0.2f); // 방문 닫기

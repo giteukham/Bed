@@ -9,8 +9,9 @@ using STOP_MODE = FMOD.Studio.STOP_MODE;
 
 public abstract class SoundOnlyGimmick : Gimmick
 {
-    protected abstract EventReference soundEvent { get; set; }
-    
+    protected abstract string eventKey { get; set; }
+    protected abstract Guid eventGuid { get; set; }
+
     private Coroutine deactivateCoroutine;
 
     public abstract override void UpdateProbability();
@@ -20,14 +21,14 @@ public abstract class SoundOnlyGimmick : Gimmick
     public override void Activate()
     {
         base.Activate();
-        AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        eventGuid = AudioManager.Instance.PlayForce(eventKey, transform.position);
         deactivateCoroutine = StartCoroutine(DeactivateSoundWhenFinished());
     }
     
     public override void Deactivate()
     {
         base.Deactivate();
-        AudioManager.Instance.StopSound(soundEvent, STOP_MODE.IMMEDIATE);
+        AudioManager.Instance.StopSound(eventGuid, STOP_MODE.IMMEDIATE);
         
         if (deactivateCoroutine != null)
         {
@@ -38,7 +39,8 @@ public abstract class SoundOnlyGimmick : Gimmick
 
     private IEnumerator DeactivateSoundWhenFinished()
     {
-        yield return new WaitForSeconds(AudioManager.Instance.GetSoundLength(soundEvent));
+        yield return new WaitForSeconds(AudioManager.Instance.GetSoundLength(eventGuid));
+        yield return null;
         Deactivate();
     }
 }

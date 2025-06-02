@@ -10,7 +10,8 @@ public class RingTone : SoundOnlyGimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    protected override EventReference soundEvent { get; set; }
+    protected override string eventKey { get; set; }
+    protected override Guid eventGuid { get; set; }
 
     public override void UpdateProbability()
     {
@@ -18,7 +19,7 @@ public class RingTone : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.ringToneInHouse;
+        eventKey = AudioKeys.RingToneInHouse;
     }
 
     public override void Initialize() { }

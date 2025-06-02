@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using AbstractGimmick;
@@ -9,7 +10,8 @@ public class DogBarking : SoundOnlyGimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    protected override EventReference soundEvent { get; set; }
+    protected override string eventKey { get; set; }
+    protected override Guid eventGuid { get; set; }
 
     public override void UpdateProbability()
     {
@@ -19,6 +21,6 @@ public class DogBarking : SoundOnlyGimmick
 
     private void Start()
     {
-        soundEvent = AudioManager.Instance.dogBarkingOutside;
+        eventKey = AudioKeys.DogBarkingOutside;
     }
 }

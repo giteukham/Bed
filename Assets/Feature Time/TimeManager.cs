@@ -52,7 +52,7 @@ public class TimeManager : MonoSingleton<TimeManager>
         skyboxMaterial.SetFloat("_Exposure", 0.9f);
         RenderSettings.ambientSkyColor = startSkyColor;
         RenderSettings.ambientEquatorColor = startEquatorColor;
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.clockBeep, timeText.gameObject.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.ClockBeep, timeText.gameObject.transform.position);
 
         realTimeCounter = 0;
         gimmickPickTimeCounter = 0;

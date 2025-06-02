@@ -27,7 +27,7 @@ public class PlayerAnimation : MonoBehaviour
     {
         playerAnimator.SetTrigger(triggerName);
         blanketAnimator.SetTrigger(triggerName);
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.blanketMoving, blanketPosition);
+        AudioManager.Instance.PlayForce(AudioKeys.BlanketMoving, blanketPosition);
         PlayerConstant.BodyMovementCAT++;
         PlayerConstant.BodyMovementLAT++;
     }

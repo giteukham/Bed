@@ -12,7 +12,8 @@ public class Footsteps : SoundOnlyGimmick, IEarGimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    protected override EventReference soundEvent { get; set; }
+    protected override string eventKey { get; set; }
+    protected override Guid eventGuid { get; set; }
 
     [SerializeField]
     private Transform ceiling;
@@ -27,7 +28,7 @@ public class Footsteps : SoundOnlyGimmick, IEarGimmick
     private void Start()
     {
         ceilingCollider = ceiling.GetComponent<Collider>();
-        soundEvent = AudioManager.Instance.footstepsInRoom;
+        eventKey = AudioKeys.FootstepsInRoom;
     }
 
     public override void Activate()
@@ -36,7 +37,7 @@ public class Footsteps : SoundOnlyGimmick, IEarGimmick
         var pos = GetRandomPosition(ceilingCollider.bounds.min, ceilingCollider.bounds.max);
         transform.position = new Vector3(pos.x, transform.position.y, pos.z);
         
-        AudioManager.Instance.PlaySound(soundEvent, transform.position);
+        AudioManager.Instance.PlayForce(eventKey, transform.position);
     }
 
     private Vector3 GetRandomPosition(Vector3 min, Vector3 max)

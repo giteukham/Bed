@@ -81,6 +81,7 @@ public class Player : PlayerBase
     
     #region Sound Effect Variables
     private float currentStressSFXVolume, currentHeadMoveSFXVolume;
+    private Guid eventGuid;
     #endregion
 
     private void Start()
@@ -100,7 +101,7 @@ public class Player : PlayerBase
         //cameraNoise = playerCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         // Sound Play
-        AudioManager.Instance.PlaySound(AudioManager.Instance.stressHal, transform.position);
+        eventGuid = AudioManager.Instance.PlayLooped(AudioKeys.StressHal, transform.position);
         StartCameraEffect();
         pixelationFactor = SaveManager.Instance.LoadPixelationFactor();
     }
@@ -304,7 +305,7 @@ public class Player : PlayerBase
     private void UpdateSFX()
     {
         // 위치 조정
-        AudioManager.Instance.SetPosition(AudioManager.Instance.stressHal, transform.position);
+        AudioManager.Instance.SetPosition(eventGuid, transform.position);
         
         // -------------------------------------머리 움직임 효과음
         pillowSound.PlaySound();
@@ -327,8 +328,8 @@ public class Player : PlayerBase
             currentStressSFXVolume = Mathf.Min(currentStressSFXVolume, targetStressSFXVolume);
         }
 
-        AudioManager.Instance.VolumeControl(AudioManager.Instance.stressHal, currentStressSFXVolume);
-        AudioManager.Instance.SetParameter("StressLevel", PlayerConstant.stressLevel);
+        AudioManager.Instance.VolumeControl(eventGuid, currentStressSFXVolume);
+        AudioManager.Instance.SetSystemParameter("StressLevel", PlayerConstant.stressLevel);
         // -------------------------------------게이지 효과음
     }
     

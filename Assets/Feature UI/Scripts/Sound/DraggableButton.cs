@@ -99,7 +99,7 @@ public class DraggableButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         sequence = DOTween.Sequence();
         soundWave.transform.localScale = Vector3.zero;
 
-        AudioManager.Instance.PlayOneShot(AudioManager.Instance.handClap, testObjectInstance.transform.position);
+        AudioManager.Instance.PlayForce(AudioKeys.HandClap, testObjectInstance.transform.position);
         sequence.Append(soundWave.DOFade(0.05f, fadeDuration));
         sequence.Join(soundWave.transform.DOScale(new Vector3(1.3f, 1.3f, 1f), scaleDuration).SetLoops(1, LoopType.Incremental));
         sequence.Append(soundWave.DOFade(0f, fadeDuration));
