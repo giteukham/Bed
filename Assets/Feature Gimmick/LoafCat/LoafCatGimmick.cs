@@ -63,7 +63,7 @@ public class LoafCatGimmick : Gimmick
             // 3번 이상 움직이면 몸 방향 전환 불가능 상태 해제, 애니메이션 재생, 기믹 끝
             if (moveCount >= 3)
             {
-                StopCoroutine(checkMovingCoroutine);
+                if (checkMovingCoroutine != null) StopCoroutine(checkMovingCoroutine);
                 checkMovingCoroutine = null;
                 PlayerConstant.isRedemption = false;
                 if(movingState == MovingState.Left)

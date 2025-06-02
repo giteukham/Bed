@@ -56,6 +56,7 @@ public class MonitorGimmick : Gimmick
     public override void Activate()
     {
         base.Activate();
+        gimmickCoroutine = StartCoroutine(StartGimmick());
     }
 
     public override void Deactivate()
@@ -141,10 +142,10 @@ public class MonitorGimmick : Gimmick
             }
 
             // 쳐다보는 시간이 lookingTimeForSticksOutHand 초 이상일 경우 while 정지
-            if (elapsedLook >= lookingTimeForSticksOutHand)
-            {
-                break;
-            }
+            // if (elapsedLook >= lookingTimeForSticksOutHand)
+            // {
+            //     break;
+            // }
 
             // 왼쪽을 보거나 안 쳐다보는 시간 n초 후 파훼
             if (PlayerConstant.isLeftState || elapsedNotLookForClear >= notLookForClear)
