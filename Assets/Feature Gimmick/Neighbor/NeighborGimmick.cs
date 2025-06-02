@@ -197,7 +197,6 @@ public class NeighborGimmick : MarkovGimmick
         {
             ChangeStateProbability();
             ChangeStateProbabilitySeeingNeighbor(Watch);
-            Debug.Log("Neighbor State Probability " + stateTransitionProbability);
         }
     }
 

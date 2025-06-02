@@ -76,26 +76,26 @@ public class ParentsGimmick : MarkovGimmick
     [Tooltip("눈 쳐다볼 때 감소하는 상태 확률. Threshold는 안 씀.")]
     private List<StateProbabilityData> stateProbabilitiesLookEye = new();
     
-    private Coroutine dadWalkSoundSetPositionCoroutine = null, checkHeadCollisionCoroutine = null;
+    private Coroutine dadWalkSoundSetPositionCoroutine = null, checkHeadCollisionCoroutine = null, changeStateWithCollisionCoroutine = null, changeStateWithBlinkValueCoroutine = null;
     private Tween moveTween;
     #endregion
     
     private void Update()
     {
         #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.Alpha1) && probability == 100)
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeMarkovState(Wait);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && probability == 100)
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             ChangeMarkovState(Watch);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && probability == 100)
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             ChangeMarkovState(Danger);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && probability == 100)
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             ChangeMarkovState(Near);
         }
@@ -169,7 +169,6 @@ public class ParentsGimmick : MarkovGimmick
         {
             ChangeStateProbability();
             ChangeStateProbabilitySeeingParents(Watch);
-            Debug.Log("Parents State Probability " + stateTransitionProbability);
         }
     }
 
@@ -182,11 +181,11 @@ public class ParentsGimmick : MarkovGimmick
     public override void ChangeMarkovState(MarkovState next)
     {
         CurrState = next;
-        if (checkHeadCollisionCoroutine != null) 
-        {
-            StopCoroutine(checkHeadCollisionCoroutine);
-            checkHeadCollisionCoroutine = null;
-        }
+        Debug.Log("Next : " + next.Name);
+        StopCoroutineWithNull(ref checkHeadCollisionCoroutine);
+        StopCoroutineWithNull(ref changeStateWithCollisionCoroutine);
+        StopCoroutineWithNull(ref changeStateWithBlinkValueCoroutine);
+            
         CurrState.ActiveCount++;
         CurrState.Active();
     }
@@ -247,6 +246,10 @@ public class ParentsGimmick : MarkovGimmick
                 if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 PlayRandomChildAnimation(state.Name, 3);
                 Door.Open(20, 0.6f);
+
+                changeStateWithBlinkValueCoroutine ??= StartCoroutine(ChangeStateWithCheckingBlink(Danger, 1.5f));
+                changeStateWithCollisionCoroutine ??= StartCoroutine(ChangeStateWithHeadCollision(momHead, Danger, 0.92f, 1.5f));
+                
                 checkHeadCollisionCoroutine ??= StartCoroutine(CheckHeadCollision(momHead, (isCollided) =>
                 {
                     ChangeMarkovState(Danger);
@@ -259,6 +262,9 @@ public class ParentsGimmick : MarkovGimmick
                 if ( momBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(momBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if ( dadBreathGuid != Guid.Empty ) AudioManager.Instance.StopSound(dadBreathGuid, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 if (hand.activeSelf) hand.SetActive(false);
+                
+                changeStateWithBlinkValueCoroutine ??= StartCoroutine(ChangeStateWithCheckingBlink(Near, 0.5f));
+                changeStateWithCollisionCoroutine ??= StartCoroutine(ChangeStateWithHeadCollision(dadHead, Near, 0.98f, 1f));
                 
                 PlayAnimationWithoutDuplication(Wait.Name);
                 if (Door.GetAngle() > 0) Door.Close(0, 0.4f);
@@ -404,7 +410,6 @@ public class ParentsGimmick : MarkovGimmick
         {
             CurrState = chain.TransitionNextState(CurrState);
         }
-        
         Debug.Log("Next State: " + CurrState.Name + " Active Count : " + CurrState.ActiveCount);
         yield break;
         
@@ -414,17 +419,49 @@ public class ParentsGimmick : MarkovGimmick
             while (!isCollided)
             {
                 if (BlinkEffect.Blink <= 0.85f && 
-                    ConeCollider.TriggeredObject != null &&
+                    ConeCollider.TriggeredObject &&
                     ConeCollider.TriggeredObject.Equals(targetObject))
                 {
                     callback(!isCollided);
-                    Debug.Log("Collision Detected with " + targetObject.name);
                     isCollided = true;
                     yield break;
                 }
         
                 yield return null;
             }
+        }
+
+        IEnumerator ChangeStateWithHeadCollision(GameObject targetObject, MarkovState next, float blinkThreshold, float timeThreshold)
+        {
+            var elapsedTime = 0f;
+
+            yield return new WaitWhile(() =>
+            {
+                if (ConeCollider.TriggeredObject &&
+                    ConeCollider.TriggeredObject.Equals(targetObject) && BlinkEffect.Blink <= blinkThreshold)
+                {
+                    elapsedTime += Time.deltaTime;
+                }
+
+                return elapsedTime < timeThreshold;
+            });
+            ChangeMarkovState(next);
+        }
+
+        IEnumerator ChangeStateWithCheckingBlink(MarkovState next, float timeThreshold)
+        {
+            var elapsedTime = 0f;
+            
+            yield return new WaitWhile(() =>
+            {
+                if ((PlayerConstant.isLeftState || PlayerConstant.isMiddleState) && BlinkEffect.Blink <= 0.85f)
+                {
+                    elapsedTime += Time.deltaTime;
+                }
+
+                return elapsedTime < timeThreshold;
+            });
+            ChangeMarkovState(next);
         }
     }
     
@@ -468,6 +505,15 @@ public class ParentsGimmick : MarkovGimmick
     }
 
     bool IsLoud(int noise) => PlayerConstant.noiseLevel >= noise;
+
+    private void StopCoroutineWithNull(ref Coroutine coroutine)
+    {
+        if (coroutine != null) 
+        {
+            StopCoroutine(coroutine);
+            coroutine = null;
+        }
+    }
     
     /// <summary>
     /// 이웃을 보고 있으면 매개변수 상태 별로 값이 다르게 다음 상태 확률을 증감하는 코루틴
