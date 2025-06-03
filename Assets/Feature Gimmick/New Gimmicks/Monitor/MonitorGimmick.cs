@@ -46,19 +46,18 @@ public class MonitorGimmick : Gimmick
     {
         monitorScreen.SetActive(false);
         monitorMan.SetActive(false);
+        monitor.SetActive(true);
     }
 
     public override void Activate()
     {
         base.Activate();
-        gimmickCoroutine = StartCoroutine(StartGimmick());
+        StartCoroutine(StartGimmick());
     }
 
     public override void Deactivate()
     {
         base.Deactivate();
-        StopCoroutine(gimmickCoroutine);
-        gimmickCoroutine = null;
         gameObject.SetActive(false);
     }
 
@@ -66,25 +65,25 @@ public class MonitorGimmick : Gimmick
     {
         // 오른쪽 볼 때 경과 시간
         var elapsedLookRight = 0f;
-        while (true)
-        {
-            // 오른쪽을 바라보는 시간이 n초 이상이거나 오른쪽으로 몸 돈 상태면 모니터 On
-            if (elapsedLookRight >= lookRightTimeForMonitor || PlayerConstant.isRightState)
-            {
-                break;
-            }
+        // while (true)
+        // {
+        //     // 오른쪽을 바라보는 시간이 n초 이상이거나 오른쪽으로 몸 돈 상태면 모니터 On
+        //     if (elapsedLookRight >= lookRightTimeForMonitor || PlayerConstant.isRightState)
+        //     {
+        //         break;
+        //     }
             
-            if (PlayerConstant.isRightFrontLook)
-            {
-                elapsedLookRight += Time.deltaTime;
-            }
-            else
-            {
-                elapsedLookRight = 0f;
-            }
+        //     if (PlayerConstant.isRightFrontLook)
+        //     {
+        //         elapsedLookRight += Time.deltaTime;
+        //     }
+        //     else
+        //     {
+        //         elapsedLookRight = 0f;
+        //     }
            
-            yield return null;
-        }
+        //     yield return null;
+        // }
         monitorScreen.SetActive(true);
         
         // 눈 감은 횟수 기록용
@@ -143,11 +142,11 @@ public class MonitorGimmick : Gimmick
             // }
 
             // 왼쪽을 보거나 안 쳐다보는 시간 n초 후 파훼
-            if (PlayerConstant.isLeftState || elapsedNotLookForClear >= notLookForClear)
-            {
-                Deactivate();
-                yield break;
-            }
+            // if (PlayerConstant.isLeftState || elapsedNotLookForClear >= notLookForClear)
+            // {
+            //     Deactivate();
+            //     yield break;
+            // }
 
             yield return null;
         }
