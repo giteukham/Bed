@@ -6,7 +6,11 @@ using AbstractGimmick;
 using Assets;
 using UnityEngine;
 using UnityEngine.Serialization;
+using DG.Tweening;
 using ConeCollider = Bed.Collider.ConeCollider;
+using Unity.VisualScripting;
+using Sequence = DG.Tweening.Sequence;
+using UnityEngine.UI;
 
 public class MonitorGimmick : Gimmick
 {
@@ -24,12 +28,18 @@ public class MonitorGimmick : Gimmick
 
     [SerializeField]
     private GameObject blackScreen;
+    [SerializeField]
+    private Transform monitorManArm, mirrorArm, monitorManArmHand, mirrorArmHand;
+    [SerializeField]
+    private GameObject monitorManArmInitPosition, mirrorArmInitPosition, monitorManArmTargetPosition, mirrorArmTargetPosition; 
 
     [SerializeField]
     [Tooltip("팔 나오기 위해 모니터맨을 보는 시간")]
     private float lookingThresholdTime = 8f;
 
-    private Coroutine gimmickCoroutine;
+    [SerializeField]
+    [Tooltip("팔이 뻗쳐 나오는 시간")]
+    private float armStretchTime = 0.3f;
 
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
@@ -43,9 +53,9 @@ public class MonitorGimmick : Gimmick
     public override void Initialize()
     {
         blackScreen.SetActive(false);
-        monitorScreen.SetActive(false);
-        monitorMan.SetActive(false);
-        monitor.SetActive(true);
+        
+        AudioManager.Instance.AllVoumeInit();
+        blackScreen.GetComponent<RawImage>().DOColor(Color.white, 0f);
     }
 
     public override void Activate()
@@ -58,12 +68,13 @@ public class MonitorGimmick : Gimmick
     {
         base.Deactivate();
         gameObject.SetActive(false);
+        
     }
 
     private IEnumerator StartGimmick()
     {
         monitorScreen.SetActive(true);
-        
+
         // 눈 감은 횟수 기록용
         var prevBlinkCount = PlayerConstant.EyeBlinkCAT;
         while (true)
@@ -118,6 +129,7 @@ public class MonitorGimmick : Gimmick
 
             if (PlayerConstant.isLeftState)
             {
+                yield return new WaitForSeconds(0.4f);
                 onMirrorArm = true;
                 break;
             }
@@ -127,13 +139,51 @@ public class MonitorGimmick : Gimmick
 
         if (onMonitorManArm == true)
         {
-            Debug.Log("Monitor Man Arm");
+            Quaternion originalRotation = monitorManArmHand.rotation;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(monitorManArm.DOMove(monitorManArmTargetPosition.transform.position, armStretchTime))
+            .Join(monitorManArmHand.DOShakeRotation(armStretchTime, strength: 10f, vibrato: 30, randomness: 90, fadeOut: false))
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                StartCoroutine(BlackOutCoroutine());
+                monitorManArm.position = monitorManArmInitPosition.transform.position;
+                monitorManArmHand.rotation = originalRotation;
+            });
         }
         else if (onMirrorArm == true)
         {
-            Debug.Log("Mirror Arm");
+            Quaternion originalRotation = mirrorArmHand.rotation;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mirrorArm.DOMove(mirrorArmTargetPosition.transform.position, armStretchTime))
+            .Join(mirrorArmHand.DOShakeRotation(armStretchTime, strength: 10f, vibrato: 30, randomness: 90, fadeOut: false))
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                StartCoroutine(BlackOutCoroutine());
+                mirrorArm.position = mirrorArmInitPosition.transform.position;
+                mirrorArmHand.rotation = originalRotation;
+            });
         }
-        yield return new WaitForSeconds(0.5f);
+    }
+
+    private IEnumerator BlackOutCoroutine()
+    {
         blackScreen.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        blackScreen.GetComponent<RawImage>().DOColor(Color.black, 0.07f);
+        AudioManager.Instance.AllVolumeDown(0);
+        monitorScreen.SetActive(false);
+        monitorMan.SetActive(false);
+        monitor.SetActive(true);
+        
+        yield return new WaitForSeconds(4f);
+
+        blackScreen.SetActive(false);
+        AudioManager.Instance.AllVoumeInit();
+        
+        Deactivate();
     }
 }

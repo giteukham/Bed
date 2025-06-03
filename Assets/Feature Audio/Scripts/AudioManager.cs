@@ -42,7 +42,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         get
         {
-            if (!_masterBus.isValid()) _masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
+            _masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
             return _masterBus;
         }
         private set => _masterBus = value;
@@ -52,7 +52,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         get
         {
-            if (!_gimmickBus.isValid()) _gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick");
+            _gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick");
             return _gimmickBus;
         }
         private set => _gimmickBus = value;
@@ -62,7 +62,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         get
         {
-            if (!_playerBus.isValid()) _playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player");
+            _playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player");
             return _playerBus;
         }
         private set => _playerBus = value;

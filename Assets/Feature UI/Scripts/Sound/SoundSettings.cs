@@ -117,6 +117,7 @@ public class SoundSettings : MonoBehaviour
         masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 1);
         gimmickVolumeSlider.value = PlayerPrefs.GetFloat("GimmickVolume", 1);
         playerVolumeSlider.value = PlayerPrefs.GetFloat("PlayerVolume", 1);
+        Debug.Log("ㅁㄴㅇㄹ");
     }
 
     private void SaveSettings()
