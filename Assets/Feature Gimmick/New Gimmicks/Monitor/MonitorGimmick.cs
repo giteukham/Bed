@@ -20,16 +20,14 @@ public class MonitorGimmick : Gimmick
     private GameObject monitorMan;
 
     [SerializeField]
-    [Tooltip("모니터 켜지기 위해 오른쪽 바라봐야 하는 시간")]
-    private float lookRightTimeForMonitor = 5f;
+    private GameObject mirror;
 
     [SerializeField]
-    [Tooltip("파훼를 위해 안 쳐다봐야 하는 시간")]
-    private float notLookForClear = 5f;
+    private GameObject blackScreen;
 
     [SerializeField]
-    [Tooltip("모니터 맨을 n초 이상 쳐다보면 손 튀어나오는 시간")]
-    private float lookingTimeForSticksOutHand = 5f;
+    [Tooltip("팔 나오기 위해 모니터맨을 보는 시간")]
+    private float lookingThresholdTime = 8f;
 
     private Coroutine gimmickCoroutine;
 
@@ -44,6 +42,7 @@ public class MonitorGimmick : Gimmick
 
     public override void Initialize()
     {
+        blackScreen.SetActive(false);
         monitorScreen.SetActive(false);
         monitorMan.SetActive(false);
         monitor.SetActive(true);
@@ -63,27 +62,6 @@ public class MonitorGimmick : Gimmick
 
     private IEnumerator StartGimmick()
     {
-        // 오른쪽 볼 때 경과 시간
-        var elapsedLookRight = 0f;
-        // while (true)
-        // {
-        //     // 오른쪽을 바라보는 시간이 n초 이상이거나 오른쪽으로 몸 돈 상태면 모니터 On
-        //     if (elapsedLookRight >= lookRightTimeForMonitor || PlayerConstant.isRightState)
-        //     {
-        //         break;
-        //     }
-            
-        //     if (PlayerConstant.isRightFrontLook)
-        //     {
-        //         elapsedLookRight += Time.deltaTime;
-        //     }
-        //     else
-        //     {
-        //         elapsedLookRight = 0f;
-        //     }
-           
-        //     yield return null;
-        // }
         monitorScreen.SetActive(true);
         
         // 눈 감은 횟수 기록용
@@ -113,12 +91,10 @@ public class MonitorGimmick : Gimmick
         monitor.SetActive(false);
         monitorScreen.SetActive(false);
         monitorMan.SetActive(true);
-
-        // Monitor Man 안 쳐다볼 경우 경과 시간
-        var elapsedNotLookForClear = 0f;
         
         // Monitor Man 쳐다볼 경우 경과 시간
-        var elapsedLook = 0f;
+        var elapsedTimeLook = 0f;
+        bool onMonitorManArm = false, onMirrorArm = false;
         
         while (true)
         {
@@ -126,31 +102,38 @@ public class MonitorGimmick : Gimmick
             if (!ConeCollider.TriggeredObject ||
                 !ConeCollider.TriggeredObject.Equals(monitorMan))
             {
-                elapsedLook = 0f;
-                elapsedNotLookForClear += Time.deltaTime;
+                elapsedTimeLook = 0f;
             }
-            else if (ConeCollider.TriggeredObject && ConeCollider.TriggeredObject.Equals(monitorMan))
+            else if (ConeCollider.TriggeredObject && 
+                     ConeCollider.TriggeredObject.Equals(monitorMan))
             {
-                elapsedNotLookForClear = 0f;
-                elapsedLook += Time.deltaTime;
+                elapsedTimeLook += Time.deltaTime;
             }
 
-            // 쳐다보는 시간이 lookingTimeForSticksOutHand 초 이상일 경우 while 정지
-            // if (elapsedLook >= lookingTimeForSticksOutHand)
-            // {
-            //     break;
-            // }
+            if (elapsedTimeLook >= lookingThresholdTime)
+            {
+                onMonitorManArm = true;
+                break;
+            }
 
-            // 왼쪽을 보거나 안 쳐다보는 시간 n초 후 파훼
-            // if (PlayerConstant.isLeftState || elapsedNotLookForClear >= notLookForClear)
-            // {
-            //     Deactivate();
-            //     yield break;
-            // }
+            if (PlayerConstant.isLeftState)
+            {
+                onMirrorArm = true;
+                break;
+            }
 
             yield return null;
         }
-        
-        // 손 튀어나오는 기믹 추가
+
+        if (onMonitorManArm == true)
+        {
+            Debug.Log("Monitor Man Arm");
+        }
+        else if (onMirrorArm == true)
+        {
+            Debug.Log("Mirror Arm");
+        }
+        yield return new WaitForSeconds(0.5f);
+        blackScreen.SetActive(true);
     }
 }
