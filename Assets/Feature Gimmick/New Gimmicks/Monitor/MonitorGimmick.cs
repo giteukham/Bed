@@ -42,11 +42,6 @@ public class MonitorGimmick : Gimmick
         probability = 100;
     }
 
-    private void Start()
-    {
-        gimmickCoroutine = StartCoroutine(StartGimmick());
-    }
-
     public override void Initialize()
     {
         monitorScreen.SetActive(false);

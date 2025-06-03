@@ -28207,10 +28207,9 @@ GameObject:
   - component: {fileID: 1878931519}
   - component: {fileID: 1878931522}
   - component: {fileID: 1878931521}
-  - component: {fileID: 1878931520}
   m_Layer: 10
   m_Name: Monitor Screen
-  m_TagString: Gimmick
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28230,27 +28229,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1806431597}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -90}
---- !u!65 &1878931520
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878931518}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 9.999999, y: 0.00000007579054, z: 10.000002}
-  m_Center: {x: 0, y: 0.0000009536743, z: 0}
 --- !u!23 &1878931521
 MeshRenderer:
   m_ObjectHideFlags: 0
