@@ -31,7 +31,7 @@ public class MonitorGimmick : Gimmick
     [SerializeField]
     private Transform monitorManArm, mirrorArm, monitorManArmHand, mirrorArmHand;
     [SerializeField]
-    private GameObject monitorManArmInitPosition, mirrorArmInitPosition, monitorManArmTargetPosition, mirrorArmTargetPosition; 
+    private GameObject monitorManArmInitPosition, mirrorArmInitPosition, armTargetPosition; 
 
     [SerializeField]
     [Tooltip("팔 나오기 위해 모니터맨을 보는 시간")]
@@ -74,7 +74,9 @@ public class MonitorGimmick : Gimmick
     private IEnumerator StartGimmick()
     {
         monitorScreen.SetActive(true);
-
+        monitorMan.SetActive(false);
+        monitor.SetActive(true);
+        
         // 눈 감은 횟수 기록용
         var prevBlinkCount = PlayerConstant.EyeBlinkCAT;
         while (true)
@@ -142,7 +144,7 @@ public class MonitorGimmick : Gimmick
             Quaternion originalRotation = monitorManArmHand.rotation;
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(monitorManArm.DOMove(monitorManArmTargetPosition.transform.position, armStretchTime))
+            seq.Append(monitorManArm.DOMove(armTargetPosition.transform.position, armStretchTime))
             .Join(monitorManArmHand.DOShakeRotation(armStretchTime, strength: 10f, vibrato: 30, randomness: 90, fadeOut: false))
             .SetEase(Ease.Linear)
             .OnComplete(() =>
@@ -157,7 +159,7 @@ public class MonitorGimmick : Gimmick
             Quaternion originalRotation = mirrorArmHand.rotation;
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(mirrorArm.DOMove(mirrorArmTargetPosition.transform.position, armStretchTime))
+            seq.Append(mirrorArm.DOMove(armTargetPosition.transform.position, armStretchTime))
             .Join(mirrorArmHand.DOShakeRotation(armStretchTime, strength: 10f, vibrato: 30, randomness: 90, fadeOut: false))
             .SetEase(Ease.Linear)
             .OnComplete(() =>
