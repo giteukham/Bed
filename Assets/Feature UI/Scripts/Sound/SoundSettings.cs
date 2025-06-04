@@ -19,7 +19,7 @@ public class SoundSettings : MonoBehaviour
         {
             _masterVolume = value;
             masterVolumeSlider.value = value;
-            masterBus.setVolume(value);
+            AudioManager.Instance.MasterBus.setVolume(value);
         }
     }
 
@@ -30,7 +30,7 @@ public class SoundSettings : MonoBehaviour
         {
             _gimmickVolume = value;
             gimmickVolumeSlider.value = value;
-            gimmickBus.setVolume(value);
+            AudioManager.Instance.GimmickBus.setVolume(value);
         }
     }
 
@@ -41,13 +41,9 @@ public class SoundSettings : MonoBehaviour
         {
             _playerVolume = value;
             playerVolumeSlider.value = value;
-            playerBus.setVolume(value);
+            AudioManager.Instance.PlayerBus.setVolume(value);
         }
     }
-
-    FMOD.Studio.Bus masterBus;
-    FMOD.Studio.Bus gimmickBus;
-    FMOD.Studio.Bus playerBus;
 
 
     private void SetMasterVolume()
@@ -102,17 +98,13 @@ public class SoundSettings : MonoBehaviour
 
     public void InitSoundSettings()
     {
-        masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
-        gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");
-        playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player SFX");
-
         masterVolumeSlider.onValueChanged.AddListener(delegate { SetMasterVolume();});
         gimmickVolumeSlider.onValueChanged.AddListener(delegate { SetGimmickVolume();});
         playerVolumeSlider.onValueChanged.AddListener(delegate { SetPlayerVolume();});
 
-        masterBus.setVolume(PlayerPrefs.GetFloat("MasterVolume", 1));
-        gimmickBus.setVolume(PlayerPrefs.GetFloat("GimmickVolume", 1));
-        playerBus.setVolume(PlayerPrefs.GetFloat("PlayerVolume", 1));
+        MasterVolume = PlayerPrefs.GetFloat("MasterVolume", 1);
+        GimmickVolume = PlayerPrefs.GetFloat("GimmickVolume", 1);
+        PlayerVolume = PlayerPrefs.GetFloat("PlayerVolume", 1);
         
         masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 1);
         gimmickVolumeSlider.value = PlayerPrefs.GetFloat("GimmickVolume", 1);

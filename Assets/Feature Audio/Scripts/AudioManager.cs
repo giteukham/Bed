@@ -42,7 +42,6 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         get
         {
-            _masterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
             return _masterBus;
         }
         private set => _masterBus = value;
@@ -52,7 +51,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         get
         {
-            _gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick");
+            // _gimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick");
             return _gimmickBus;
         }
         private set => _gimmickBus = value;
@@ -62,7 +61,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         get
         {
-            _playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player");
+            // _playerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player");
             return _playerBus;
         }
         private set => _playerBus = value;
@@ -70,6 +69,10 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     void Awake()
     {
+        MasterBus = FMODUnity.RuntimeManager.GetBus("bus:/");
+        GimmickBus = FMODUnity.RuntimeManager.GetBus("bus:/Gimmick SFX");
+        PlayerBus = FMODUnity.RuntimeManager.GetBus("bus:/Player SFX");
+
         for (int i = 0; i < 20; i++)
             soundPool.Enqueue(new TrackedSound());
     }

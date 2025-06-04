@@ -97,9 +97,6 @@ public class GameManager : MonoSingleton<GameManager>
 
     [Tooltip("동시 클릭 허용 시간")]
     public float bothClickToleranceTime;
-    
-    [Header("데모")]
-    // 데모 씬 전용. 데모 씬은 반드시 이름이 Demo여야 함.
 
     public Gimmick testGimmick;
     
@@ -158,7 +155,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void Update()
     {
         if ((UIManager.Instance.isRightClikHeld == false && IsBothMouseClicked() ||  Input.GetKeyDown(KeyCode.Escape)) &&
-            PlayerConstant.canPlayerStop)
+            PlayerConstant.canOpenMenu)
         {
             if (PlayerConstant.isPlayerStop == true)
             {
@@ -171,18 +168,18 @@ public class GameManager : MonoSingleton<GameManager>
                 //UIManager.Instance.ActivateUICanvas(true);
             }
         }
+        if (Input.GetKeyDown(KeyCode.Q) && !Input.GetKey(KeyCode.LeftShift))
+        {
+            testGimmick.gameObject.SetActive(true);
+            testGimmick.Activate();
+        }
+        if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftShift))
+        {
+            testGimmick.Deactivate();
+        }
         #if UNITY_EDITOR
             DebugFunctions();
 
-            if (Input.GetKeyDown(KeyCode.Q) && !Input.GetKey(KeyCode.LeftShift))
-            {
-                testGimmick.gameObject.SetActive(true);
-                testGimmick.Activate();
-            }
-            if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftShift))
-            {
-                testGimmick.Deactivate();
-            }
         #endif
     }
 

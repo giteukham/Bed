@@ -11,6 +11,8 @@ using ConeCollider = Bed.Collider.ConeCollider;
 using Unity.VisualScripting;
 using Sequence = DG.Tweening.Sequence;
 using UnityEngine.UI;
+using Screen = UnityEngine.Screen;
+using Cursor = UnityEngine.Cursor;
 
 public class MonitorGimmick : Gimmick
 {
@@ -173,17 +175,38 @@ public class MonitorGimmick : Gimmick
 
     private IEnumerator BlackOutCoroutine()
     {
+        PlayerConstant.canOpenMenu = false;
+        PlayerConstant.isParalysis = true;
+        FullScreenMode mode = Screen.fullScreenMode;
+        if (mode == FullScreenMode.Windowed)
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        bool isCursorVisible = Cursor.visible;
+        if (isCursorVisible)
+            Cursor.visible = false;
+
         blackScreen.SetActive(true);
         yield return new WaitForSeconds(0.05f);
-        blackScreen.GetComponent<RawImage>().DOColor(Color.black, 0.07f);
+        blackScreen.GetComponent<RawImage>().DOColor(Color.black, 0.05f);
         AudioManager.Instance.AllVolumeDown(0);
         monitorScreen.SetActive(false);
         monitorMan.SetActive(false);
         monitor.SetActive(true);
-        
-        yield return new WaitForSeconds(4f);
 
+        float timer = 0f;
+        while (timer < 4f)
+        {
+            if (isCursorVisible)
+                Cursor.visible = false;
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        PlayerConstant.canOpenMenu = true;
+        PlayerConstant.isParalysis = false;
         blackScreen.SetActive(false);
+        if (mode == FullScreenMode.Windowed)
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+        Cursor.visible = isCursorVisible;
         AudioManager.Instance.AllVoumeInit();
         
         Deactivate();
