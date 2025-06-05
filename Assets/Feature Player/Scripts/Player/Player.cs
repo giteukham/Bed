@@ -367,6 +367,11 @@ public class Player : PlayerBase
         playerEyeControl.ForceOpenEye();
     }
 
+    public void ForceSetEyeValue(float value)
+    {
+        playerEyeControl.SetBlinkValue(value);
+    }
+    
     private float[] GetLookAtValue(GameObject target)
     {
         var direction = (target.transform.position - transform.position).normalized;

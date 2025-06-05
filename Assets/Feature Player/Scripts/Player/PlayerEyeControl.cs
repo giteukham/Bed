@@ -48,15 +48,14 @@ public class PlayerEyeControl : IPlayerControl
     
     private void OnBlink()
     {
-        Debug.Log(playerEyeStateMachine + " " + PlayerConstant.isParalysis);
         if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Close]) 
-            || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isParalysis) return;
+            || playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isParalysis || PlayerConstant.isEyeParalysis) return;
         playerEyeStateMachine.ChangeState(eyeStates[PlayerEyeStateTypes.Blink]);
     }
 
     private async void OnEyelidMove(int mouseScrollValue)
     {
-        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isShock || PlayerConstant.isParalysis) return;
+        if (playerEyeStateMachine.IsCurrentState(eyeStates[PlayerEyeStateTypes.Blink]) || PlayerConstant.isShock || PlayerConstant.isParalysis || PlayerConstant.isEyeParalysis) return;
 
         if (currentValue == null) currentValue = BlinkEffect.Blink;
 
@@ -139,6 +138,17 @@ public class PlayerEyeControl : IPlayerControl
         ChangeEyeState(PlayerEyeStateTypes.Open);
         currentValue = null;
         targetValue = BLINK_VALUE_MIN;
+    }
+
+    public void SetBlinkValue(float value)
+    {
+        if (value < BLINK_VALUE_MIN) value = BLINK_VALUE_MIN;
+        if (value > BLINK_VALUE_MAX) value = BLINK_VALUE_MAX;
+
+        BlinkEffect.Blink = value;
+        currentValue = value;
+        targetValue = value;
+        UpdateEyeState();
     }
     
     public void ChangeEyeState(PlayerEyeStateTypes stateType) => playerEyeStateMachine.ChangeState(eyeStates[stateType]);

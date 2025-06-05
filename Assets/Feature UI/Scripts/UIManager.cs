@@ -167,7 +167,6 @@ public class UIManager : MonoSingleton<UIManager>
         {
             CloseSettingsScreen();
             PlayerConstant.isPlayerStop = false;
-            player.ForceOpenEye();
         }
     }
     

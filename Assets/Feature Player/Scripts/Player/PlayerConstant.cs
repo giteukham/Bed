@@ -15,11 +15,12 @@ public static class PlayerConstant
     public static bool isLeftState, isRightState, isMiddleState, isMovingState;
     public static bool isLeftLook, isLeftFrontLook, isFrontLook, isRightFrontLook, isRightLook, isUpLook, isDownLook;
 
-    // isShock : 움직임 관련 조작이 모두 안되고 배게 소리가 안들림림 (게임 오버후 초기화때 사용)
-    // isParalysis : 움직임 관련 조작이 모두 안됨 (튜토리얼때 사용, 게임 오버 연출때 사용)
+    // isShock : 움직임 관련 조작이 모두 안되고 배게 소리가 안들림 (게임 오버후 초기화때 사용)
+    // isParalysis : 움직임 관련 조작이 모두 안됨 (튜토리얼, 기믹, 게임 오버 연출때 사용)
     // isRedemption : 몸 움직임만 안됨 (특정 기믹, 게임 오버 연출때 사용)
     // isPillowSound : 배게 소리 유무무
-    public static bool isShock = false, isParalysis = false, isRedemption = false, isPillowSound = true;  
+    // isEyeParalysis : 눈 조작이 안됨
+    public static bool isShock = false, isParalysis = false, isRedemption = false, isPillowSound = true, isEyeParalysis = false;  
     public static bool isPlayerStop = false;
     // true일 때 메뉴창 열닫을 수 있고 false일 땐 안됨
     public static bool canOpenMenu = true;
