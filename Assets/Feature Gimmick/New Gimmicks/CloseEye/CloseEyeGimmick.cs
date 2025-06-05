@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AbstractGimmick;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -22,6 +23,8 @@ public class CloseEyeGimmick : Gimmick
     [SerializeField]
     private Camera playerCam;
     
+    private Coroutine gimmickCoroutine;
+    
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
@@ -29,12 +32,12 @@ public class CloseEyeGimmick : Gimmick
     {
     }
 
-    private void Awake()
+    public override void Initialize()
     {
-        faceList.ForEach((x) => x.faceImage.gameObject.SetActive(false));
+        
     }
 
-    public override void Initialize()
+    private void Awake()
     {
         faceList.ForEach((x) => x.faceImage.gameObject.SetActive(false));
     }
@@ -42,12 +45,20 @@ public class CloseEyeGimmick : Gimmick
     public override void Activate()
     {
         base.Activate();
-        StartCoroutine(StartGimmick());
+        if (gimmickCoroutine != null)
+        {
+            StopCoroutine(gimmickCoroutine);
+            gimmickCoroutine = null;
+        }
+        
+        faceList.ForEach((x) => x.faceImage.gameObject.SetActive(false));
+        gimmickCoroutine = StartCoroutine(StartGimmick());
     }
 
     public override void Deactivate()
     {
         base.Deactivate();
+        faceList.ForEach((x) => x.faceImage.gameObject.SetActive(false));
     }
 
     private IEnumerator StartGimmick()
@@ -62,13 +73,12 @@ public class CloseEyeGimmick : Gimmick
         // 랜덤 이미지
         var randomData = faceList[(int) Random.Range(0f, faceList.Count)];
         var randomImage = randomData.faceImage;
-        
-        // 랜덤 Viewport 위치
-        var randomOriginRange = Random.Range(0.2f, 0.8f);
 
         // 화면 안쪽에 랜덤 한 위치
         randomImage.transform.position =
-            playerCam.ViewportToScreenPoint(new Vector3(randomOriginRange, randomOriginRange, 10f));
+            playerCam.ViewportToScreenPoint(new Vector3(Random.Range(0.2f, 0.8f), Random.Range(0.2f, 0.8f), 10f));
+        randomImage.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(-30f, 30f));
+        randomImage.transform.DOShakePosition(999f, 7f, 100);
         randomImage.gameObject.SetActive(true);
         
         while (true)
