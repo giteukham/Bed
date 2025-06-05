@@ -77,8 +77,8 @@ public class CloseEyeGimmick : Gimmick
         // 화면 안쪽에 랜덤 한 위치
         randomImage.transform.position =
             playerCam.ViewportToScreenPoint(new Vector3(Random.Range(0.2f, 0.8f), Random.Range(0.2f, 0.8f), 10f));
-        randomImage.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(-30f, 30f));
-        randomImage.transform.DOShakePosition(999f, 7f, 100);
+        randomImage.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(-10f, 10f));
+        randomImage.transform.DOShakePosition(9999f, 7f, 100, 5f);
         randomImage.gameObject.SetActive(true);
         
         while (true)
