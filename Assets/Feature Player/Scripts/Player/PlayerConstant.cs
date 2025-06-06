@@ -20,7 +20,8 @@ public static class PlayerConstant
     // isRedemption : 몸 움직임만 안됨 (특정 기믹, 게임 오버 연출때 사용)
     // isPillowSound : 배게 소리 유무무
     // isEyeParalysis : 눈 조작이 안됨
-    public static bool isShock = false, isParalysis = false, isRedemption = false, isPillowSound = true, isEyeParalysis = false;  
+    // isMouseMoveParalysis : 마우스 움직임 제한
+    public static bool isShock = false, isParalysis = false, isRedemption = false, isPillowSound = true, isEyeParalysis = false, isMouseMoveParalysis = false;
     public static bool isPlayerStop = false;
     // true일 때 메뉴창 열닫을 수 있고 false일 땐 안됨
     public static bool canOpenMenu = true;
@@ -28,6 +29,17 @@ public static class PlayerConstant
 
     // CAT: Cumulative Action Time (누적 행동 시간, 게임 플레이 동안 누적 기록)
     // LAT: Last Action Time (최근 행동 시간, 가장 최근 기믹이 시작때 부터 끝날때 까지 기록)
+
+    
+    /// <summary>
+    /// Right State 일 때 Rotation 절대 값
+    /// </summary>
+    public static Vector3 RightRotation = new Vector3(2.303f, -99.766f, -15.047f);
+    
+    /// <summary>
+    /// Left State 일 때 몸 Rotation 절대 값
+    /// </summary>
+    public static Vector3 LeftRotation = new Vector3(-5.005f, -268.37f, 14.139f);
  
     /// <summary>
     /// 눈을 얼마나 감았는지 (누적)

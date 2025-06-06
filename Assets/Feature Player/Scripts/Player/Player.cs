@@ -6,6 +6,7 @@ using UnityEngine.Rendering.PostProcessing;
 using Bed.Collider;
 using PSXShaderKit;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 
 public enum PlayerDirectionStateTypes
@@ -416,10 +417,12 @@ public class Player : PlayerBase
         
         while (true)
         {
-            if (timer > duration) yield break;
+            if (timer > duration)
+            {
+                yield break;
+            }
             
             timer += Time.deltaTime;
-            
             horizontalRecentering.DoRecentering(ref povCamera.m_HorizontalAxis, 0f, horizontal);
             verticalRecentering.DoRecentering(ref povCamera.m_VerticalAxis, 0f, vertical);
             
