@@ -49,14 +49,14 @@ public class BedRoomLightSwitch : MonoBehaviour
         offSwitch.SetActive(!isOn);
     }
 
-    static public void turnOnRoomLight(bool _isOn)
+    static public void Action(bool _isOn)
     {
         if (isOn == _isOn) return;
         isOn = _isOn;
         AudioManager.Instance.PlayForce(AudioKeys.SwitchOn, bedRoomlightSwitch.transform.position);
     }
 
-    static public void turnOnRoomLightNoSound(bool _isOn)
+    static public void ActionNoSound(bool _isOn)
     {
         if (isOn == _isOn) return;
         isOn = _isOn;

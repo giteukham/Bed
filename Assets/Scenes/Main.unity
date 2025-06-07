@@ -5417,6 +5417,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b49a36a99379174d9b77e294b827e5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openedDrawer: {fileID: 8095998911688044759}
+  closedDrawer: {fileID: 1262200946}
 --- !u!1 &253067403
 GameObject:
   m_ObjectHideFlags: 0
@@ -18435,7 +18437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1262200947
 Transform:
   m_ObjectHideFlags: 0
@@ -37056,7 +37058,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &8120905272951290885
 GameObject:
   m_ObjectHideFlags: 0

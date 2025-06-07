@@ -21,7 +21,7 @@ public class LivingRoomLightSwitch : MonoBehaviour
         roomLight.SetActive(isOn);
     }
 
-    static public void SwitchAction(bool _isOn)
+    static public void Action(bool _isOn)
     {
         if (isOn == _isOn) return;
         isOn = _isOn;

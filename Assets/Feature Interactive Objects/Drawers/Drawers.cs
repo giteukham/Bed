@@ -18,14 +18,14 @@ public class Drawers : MonoBehaviour
         closedDrawer.SetActive(!isOpen);
     }
 
-    static public void openDrawer(bool _isOpen)
+    static public void Open(bool _isOpen)
     {
         if (isOpen == _isOpen) return;
         isOpen = _isOpen;
         // 서랍 소리
     }
 
-    static public void openDrawerNoSound(bool _isOpen)
+    static public void OpenNoSound(bool _isOpen)
     {
         if (isOpen == _isOpen) return;
         isOpen = _isOpen;
