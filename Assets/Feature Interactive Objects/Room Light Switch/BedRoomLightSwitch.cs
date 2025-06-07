@@ -19,40 +19,47 @@ public class BedRoomLightSwitch : MonoBehaviour
         cellingLampMaterial = cellingLamp.GetComponent<Renderer>().material;
     }
 
-    void Start()
+    private void Start()
     {
         isOn = true;
     }
 
-    void Update()
+    private void Update()
+    {
+        UpdateMaterial();
+        UpdateActiveState();
+    }
+
+    private void UpdateMaterial()
     {
         if(isOn)
         {
-            Vector3 currentRotation = transform.eulerAngles;
-            currentRotation.x = 0;
-            cellingLampMaterial.SetColor("_EmissionColor", new Color32(255, 255, 255, 255));
+            cellingLampMaterial.SetColor("_EmissionColor", Color.white);
         }
         else
         {
-            Vector3 currentRotation = transform.eulerAngles;
-            currentRotation.x = 180;
-            cellingLampMaterial.SetColor("_EmissionColor", new Color32(0, 0, 0, 0));
+            cellingLampMaterial.SetColor("_EmissionColor", Color.black);
         }
+    }
+
+    private void UpdateActiveState()
+    {
         roomLight.SetActive(isOn);
         onSwitch.SetActive(isOn);
         offSwitch.SetActive(!isOn);
     }
 
-    static public void SwitchAction(bool _isOn)
+    static public void turnOnRoomLight(bool _isOn)
     {
         if (isOn == _isOn) return;
         isOn = _isOn;
         AudioManager.Instance.PlayForce(AudioKeys.SwitchOn, bedRoomlightSwitch.transform.position);
     }
 
-    static public void SwitchActionNoSound(bool _isOn)
+    static public void turnOnRoomLightNoSound(bool _isOn)
     {
         if (isOn == _isOn) return;
         isOn = _isOn;
     }
+    
 }

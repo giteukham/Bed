@@ -207,7 +207,7 @@ public class GameManager : MonoSingleton<GameManager>
     
     private void Prepartion()
     {
-        BedRoomLightSwitch.SwitchActionNoSound(true);
+        BedRoomLightSwitch.turnOnRoomLightNoSound(true);
         LivingRoomLightSwitch.SwitchAction(true);
         player.EyeControl(PlayerEyeStateTypes.Close);
         timeManager.gameObject.SetActive(false);
@@ -269,7 +269,7 @@ public class GameManager : MonoSingleton<GameManager>
         float randomNum = UnityEngine.Random.Range(5f, 8f);
         yield return new WaitForSeconds(randomNum);
 
-        BedRoomLightSwitch.SwitchAction(false);
+        BedRoomLightSwitch.turnOnRoomLight(false);
         yield return new WaitForSeconds(mother_Leave_BeforeDelayTime);
         motherAnimator.SetTrigger("Leave");
         yield return new WaitForSeconds(door_Close_BeforeDelayTime);
@@ -339,8 +339,8 @@ public class GameManager : MonoSingleton<GameManager>
         
         if (Input.GetKeyDown(KeyCode.B)) 
         {
-            if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.SwitchAction(false);
-            else BedRoomLightSwitch.SwitchAction(true);
+            if(BedRoomLightSwitch.isOn) BedRoomLightSwitch.turnOnRoomLight(false);
+            else BedRoomLightSwitch.turnOnRoomLight(true);
         }
 
         if (Input.GetKeyDown(KeyCode.BackQuote) && !Input.GetKey(KeyCode.LeftShift))
