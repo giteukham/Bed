@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AbstractGimmick;
 using Assets;
+using DG.Tweening;
 using UnityEngine;
 using ConeCollider = Bed.Collider.ConeCollider;
 
@@ -18,13 +19,24 @@ public class DrawerGimmick : Gimmick
     [SerializeField]
     private GameObject mom;
 
-    private Coroutine gimmickCoroutine;
+    private Coroutine gimmickCoroutine, shakeHeadCoroutine;
     private bool isWatching = false;
+    
+    [SerializeField]
+    [Tooltip("초기 흔들림 강도")]
+    private float shakeInitStrength = 30f;
+
+    [SerializeField]
+    [Tooltip("5초 후 Shake 강도 증가량")]
+    private float shakeStrengthIncreaseValue = 1f;
+
+    [SerializeField]
+    [Tooltip("좌우로 흔들리는 범위")]
+    private float shakeRange = 0.005f;
 
     private void Awake()
     {
-        openedDrawers.SetActive(false);
-        closedDrawers.SetActive(true);
+        Drawers.isOpen = false;
         mom.SetActive(false);
     }
 
@@ -34,8 +46,7 @@ public class DrawerGimmick : Gimmick
 
     public override void Initialize()
     {
-        openedDrawers.SetActive(false);
-        closedDrawers.SetActive(true);
+        Drawers.isOpen = false;
         mom.SetActive(false);
     }
 
@@ -48,13 +59,18 @@ public class DrawerGimmick : Gimmick
             gimmickCoroutine = null;
         }
 
+        if (shakeHeadCoroutine != null)
+        {
+            StopCoroutine(shakeHeadCoroutine);
+            shakeHeadCoroutine = null;
+        }
+
         gimmickCoroutine = StartCoroutine(StartGimmick());
     }
 
     public override void Deactivate()
     {
         base.Deactivate();
-        PlayerConstant.isMouseMoveParalysis = false;
         PlayerConstant.isRedemption = false;
         isWatching = false;
     }
@@ -70,34 +86,36 @@ public class DrawerGimmick : Gimmick
             PlayerConstant.isLeftFrontLook);
         
         mom.SetActive(true);
-        openedDrawers.SetActive(true);
-        closedDrawers.SetActive(false);
+        Drawers.isOpen = true;
 
-        var timer = 0f;
-        var prevBlinkCount = PlayerConstant.EyeBlinkCAT;
+        var headMoveSpeedOverDuration = 0f;
+        var shakeDuration = 0f;
         
         while (true)
         {
-            // mom 쳐다보면 5초 간 시선 고정
             if (ConeCollider.TriggeredObject &&
                 ConeCollider.TriggeredObject.Equals(mom) &&
                 isWatching == false)
             {
+                shakeHeadCoroutine = StartCoroutine(ShakeMomHead(999f));
                 isWatching = true;
-                PlayerConstant.isMouseMoveParalysis = true;
                 PlayerConstant.isRedemption = true;
             }
 
-            if (isWatching)
+            shakeDuration += Time.deltaTime;
+            if (shakeDuration >= 5f)
             {
-                timer += Time.deltaTime;
+                shakeInitStrength += Time.deltaTime * shakeStrengthIncreaseValue;
             }
 
-            // 쳐다보는 시간이 5초를 넘거나
-            // 쳐다보면서 눈을 감거나
+            if (isWatching && PlayerConstant.headMoveSpeed >= 10f)
+            {
+                headMoveSpeedOverDuration += Time.deltaTime;
+            }
+
+            // HeadMoveSpeed가 10 이상 인 시간이 10초 이상이거나
             // 닫히는 소리가 들리면 파훼
-            if (timer >= 5f ||
-                (isWatching && (!PlayerConstant.isEyeOpen || PlayerConstant.EyeBlinkCAT != prevBlinkCount))) 
+            if (headMoveSpeedOverDuration >= 1f) 
                 //|| AudioManager.Instance.DuplicateCheck(""))
             {
                 Deactivate();
@@ -106,5 +124,24 @@ public class DrawerGimmick : Gimmick
 
             yield return null;
         }
+    }
+
+    private IEnumerator ShakeMomHead(float duration)
+    {
+        var timer = 0f;
+        while (true)
+        {
+            if (timer >= duration)
+            {
+                yield break;
+            }
+            timer += Time.deltaTime;
+            
+            // 좌우로 흔들리는 강도
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + shakeRange * Mathf.Sin(Time.time * shakeInitStrength));
+
+            yield return null;
+        }
+
     }
 }

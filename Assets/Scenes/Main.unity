@@ -6833,6 +6833,7 @@ GameObject:
   m_Component:
   - component: {fileID: 398507007}
   - component: {fileID: 398507008}
+  - component: {fileID: 398507009}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -6877,6 +6878,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &398507009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398507006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6cf584e15a745b468c0d49ad8baba0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHead: {fileID: 0}
 --- !u!1 &406590842
 GameObject:
   m_ObjectHideFlags: 0
@@ -14937,7 +14951,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 984148485}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
+  m_LocalRotation: {x: -0, y: 0.8234825, z: -0, w: -0.5673416}
   m_LocalPosition: {x: 5.23, y: 1.608, z: 5.09}
   m_LocalScale: {x: -1, y: 1.01, z: -1}
   m_ConstrainProportionsScale: 0
@@ -37242,6 +37256,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1791941164}
     - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
+      propertyPath: shakeRange
+      value: 0.003
+      objectReference: {fileID: 0}
+    - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
       propertyPath: closedDrawers
       value: 
       objectReference: {fileID: 1262200946}
@@ -37249,6 +37267,10 @@ PrefabInstance:
       propertyPath: openedDrawers
       value: 
       objectReference: {fileID: 8095998911688044759}
+    - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
+      propertyPath: shakeInitStrength
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 6619294330084356103, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
       propertyPath: m_IsActive
       value: 1
