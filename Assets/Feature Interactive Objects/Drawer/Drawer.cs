@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Drawers : MonoBehaviour
+public class Drawer : MonoBehaviour
 {
     [SerializeField] private GameObject openedDrawer, closedDrawer;
     static public bool isOpen = false;
+    static private Vector3 drawerPosition;
 
     void Start()
     {
         isOpen = false;
+        drawerPosition = transform.position;
     }
 
     void Update()
@@ -22,7 +24,10 @@ public class Drawers : MonoBehaviour
     {
         if (isOpen == _isOpen) return;
         isOpen = _isOpen;
-        // 서랍 소리
+        if(isOpen)
+            AudioManager.Instance.PlayForce(AudioKeys.DrawerOpen, drawerPosition);
+        else
+            AudioManager.Instance.PlayForce(AudioKeys.DrawerClose, drawerPosition);
     }
 
     static public void OpenNoSound(bool _isOpen)

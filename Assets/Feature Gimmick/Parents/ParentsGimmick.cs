@@ -83,19 +83,19 @@ public class ParentsGimmick : MarkovGimmick
     private void Update()
     {
         #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (probability == 100 && Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeMarkovState(Wait);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (probability == 100 && Input.GetKeyDown(KeyCode.Alpha2))
         {
             ChangeMarkovState(Watch);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (probability == 100 && Input.GetKeyDown(KeyCode.Alpha3))
         {
             ChangeMarkovState(Danger);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        else if (probability == 100 && Input.GetKeyDown(KeyCode.Alpha4))
         {
             ChangeMarkovState(Near);
         }

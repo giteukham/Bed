@@ -92,8 +92,14 @@
 		<property name="length">
 			<value>0.65306122448979587</value>
 		</property>
+		<property name="volume">
+			<value>3.5</value>
+		</property>
 		<relationship name="modulators">
 			<destination>{9188f829-f232-4153-a99d-a445d5bae177}</destination>
+		</relationship>
+		<relationship name="fadeInCurve">
+			<destination>{25b8b7ee-0e8b-4e56-a7fa-63d6944d113a}</destination>
 		</relationship>
 		<relationship name="fadeOutCurve">
 			<destination>{dcf0db97-72e0-4bd8-ae92-66655d0e85be}</destination>
@@ -105,7 +111,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{8d8287d4-47d5-4c75-bf4a-013d055208da}">
 		<property name="volume">
-			<value>-8.5</value>
+			<value>4</value>
 		</property>
 		<property name="name">
 			<value>Audio 2</value>
@@ -143,6 +149,14 @@
 			<value>4</value>
 		</property>
 	</object>
+	<object class="FadeCurve" id="{25b8b7ee-0e8b-4e56-a7fa-63d6944d113a}">
+		<relationship name="startPoint">
+			<destination>{49d01bd8-97fc-4f46-b180-4f495f4b32d7}</destination>
+		</relationship>
+		<relationship name="endPoint">
+			<destination>{a1cef926-e0a7-4fa4-9741-dd980a4a76c5}</destination>
+		</relationship>
+	</object>
 	<object class="FadeCurve" id="{dcf0db97-72e0-4bd8-ae92-66655d0e85be}">
 		<relationship name="startPoint">
 			<destination>{7d728494-4b28-4e5b-a525-3b719b02edfe}</destination>
@@ -178,6 +192,25 @@
 	<object class="MixerBusFader" id="{e8f44eae-2f50-4d29-8e72-81ffc4cf3497}" />
 	<object class="SpatialiserEffect" id="{7814bb51-6c1a-4902-85e7-596bb68335c7}">
 		<property name="distanceRolloffType">
+			<value>1</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{49d01bd8-97fc-4f46-b180-4f495f4b32d7}">
+		<property name="position">
+			<value>0</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+		<property name="curveShape">
+			<value>0.276163399</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{a1cef926-e0a7-4fa4-9741-dd980a4a76c5}">
+		<property name="position">
+			<value>0.095000000000000001</value>
+		</property>
+		<property name="value">
 			<value>1</value>
 		</property>
 	</object>

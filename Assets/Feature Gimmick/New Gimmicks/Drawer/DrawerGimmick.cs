@@ -11,9 +11,6 @@ public class DrawerGimmick : Gimmick
     public override GimmickType type { get; protected set; }
     public override float probability { get; set; }
     public override List<Gimmick> ExclusionGimmickList { get; set; }
-    
-    [SerializeField]
-    private GameObject openedDrawers, closedDrawers;
 
     [SerializeField]
     private GameObject mom;
@@ -23,8 +20,6 @@ public class DrawerGimmick : Gimmick
 
     private void Awake()
     {
-        openedDrawers.SetActive(false);
-        closedDrawers.SetActive(true);
         mom.SetActive(false);
     }
 
@@ -34,8 +29,7 @@ public class DrawerGimmick : Gimmick
 
     public override void Initialize()
     {
-        openedDrawers.SetActive(false);
-        closedDrawers.SetActive(true);
+        Drawer.Open(false);
         mom.SetActive(false);
     }
 
@@ -69,9 +63,8 @@ public class DrawerGimmick : Gimmick
             PlayerConstant.isLeftState || 
             PlayerConstant.isLeftFrontLook);
         
+        Drawer.Open(true);
         mom.SetActive(true);
-        openedDrawers.SetActive(true);
-        closedDrawers.SetActive(false);
 
         var timer = 0f;
         var prevBlinkCount = PlayerConstant.EyeBlinkCAT;

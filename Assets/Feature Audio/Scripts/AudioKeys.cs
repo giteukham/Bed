@@ -67,4 +67,6 @@ public static class AudioKeys
 	public const string HeadMove = "HeadMove";
 	public const string Inhale = "Inhale";
 	public const string StressHal = "StressHal";
+	public const string DrawerClose = "DrawerClose";
+	public const string DrawerOpen = "DrawerOpen";
 }
