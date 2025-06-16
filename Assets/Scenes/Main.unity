@@ -6890,7 +6890,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6cf584e15a745b468c0d49ad8baba0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHead: {fileID: 0}
 --- !u!1 &406590842
 GameObject:
   m_ObjectHideFlags: 0
@@ -7673,6 +7672,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 450388504}
   m_CullTransparentMesh: 1
+--- !u!4 &455495658 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 139844054929215764, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
+  m_PrefabInstance: {fileID: 8275349787373063941}
+  m_PrefabAsset: {fileID: 0}
 --- !u!33 &459168817
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -37237,7 +37241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1340169741024830153, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1340169741024830153, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
       propertyPath: m_TagString
@@ -37256,8 +37260,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1791941164}
     - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
+      propertyPath: head
+      value: 
+      objectReference: {fileID: 455495658}
+    - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
+      propertyPath: turnAngle
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
       propertyPath: shakeRange
       value: 0.003
+      objectReference: {fileID: 0}
+    - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
+      propertyPath: turnDuration
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 4045051636125626741, guid: 742b8b193d703134c9d805cfecf9ec3d, type: 3}
       propertyPath: closedDrawers

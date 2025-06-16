@@ -5,6 +5,7 @@ using AbstractGimmick;
 using Assets;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 using ConeCollider = Bed.Collider.ConeCollider;
 
 public class DrawerGimmick : Gimmick
@@ -16,21 +17,27 @@ public class DrawerGimmick : Gimmick
     [SerializeField]
     private GameObject mom;
 
+    [SerializeField]
+    private Transform head;
+
+    [SerializeField]
+    [Tooltip("머리를 좌우로 돌리는 최대 각도")]
+    private float turnMaxAngle = 20f;
+
+    [SerializeField]
+    [Tooltip("머리를 좌우로 돌리는 시간")]
+    private float turnDuration = 0.05f;
+
     private Coroutine gimmickCoroutine, shakeHeadCoroutine;
+    private Coroutine headMovementCoroutine;
     private bool isWatching = false;
+    private float turnAngleValue = 0f;
+
+    /// <summary>
+    /// 쳐다보고 2초 안에 파훼하면 페널티 없음
+    /// </summary>
+    private bool hasPanalty = false;
     
-    [SerializeField]
-    [Tooltip("초기 흔들림 강도")]
-    private float shakeInitStrength = 30f;
-
-    [SerializeField]
-    [Tooltip("5초 후 Shake 강도 증가량")]
-    private float shakeStrengthIncreaseValue = 1f;
-
-    [SerializeField]
-    [Tooltip("좌우로 흔들리는 범위")]
-    private float shakeRange = 0.005f;
-
     private void Awake()
     {
         mom.SetActive(false);
@@ -93,23 +100,17 @@ public class DrawerGimmick : Gimmick
                 ConeCollider.TriggeredObject.Equals(mom) &&
                 isWatching == false)
             {
-                shakeHeadCoroutine = StartCoroutine(ShakeMomHead(999f));
+                TurnSideToSideMomHead();
                 isWatching = true;
                 PlayerConstant.isRedemption = true;
             }
-
-            shakeDuration += Time.deltaTime;
-            if (shakeDuration >= 5f)
-            {
-                shakeInitStrength += Time.deltaTime * shakeStrengthIncreaseValue;
-            }
-
+            
             if (isWatching && PlayerConstant.headMoveSpeed >= 10f)
             {
                 headMoveSpeedOverDuration += Time.deltaTime;
             }
 
-            // HeadMoveSpeed가 10 이상 인 시간이 10초 이상이거나
+            // HeadMoveSpeed가 10 이상 인 시간이 1초 이상이거나
             // 닫히는 소리가 들리면 파훼
             if (headMoveSpeedOverDuration >= 1f) 
                 //|| AudioManager.Instance.DuplicateCheck(""))
@@ -122,22 +123,45 @@ public class DrawerGimmick : Gimmick
         }
     }
 
-    private IEnumerator ShakeMomHead(float duration)
+    private void TurnSideToSideMomHead()
     {
-        var timer = 0f;
-        while (true)
+        if (headMovementCoroutine != null)
         {
-            if (timer >= duration)
-            {
-                yield break;
-            }
-            timer += Time.deltaTime;
-            
-            // 좌우로 흔들리는 강도
-            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + shakeRange * Mathf.Sin(Time.time * shakeInitStrength));
-
-            yield return null;
+            StopCoroutine(headMovementCoroutine);
         }
 
+        DOTween.To(() => turnAngleValue, x => turnAngleValue = x, turnMaxAngle, 10f)
+            .SetDelay(2f)
+            .OnPlay(() => hasPanalty = true); 
+        
+        headMovementCoroutine = StartCoroutine(HeadMovementLoop());
+    }
+
+    private IEnumerator HeadMovementLoop()
+    {
+        while (true)
+        {
+            var headY = head.localRotation.y;
+            var headX = head.localRotation.x;
+            
+            var left = new Vector3(headX, headY - turnAngleValue, head.localRotation.z);
+            var right = new Vector3(headX, headY + turnAngleValue, head.localRotation.z);
+            var up = new Vector3(headX + turnAngleValue, headY, head.localRotation.z);
+            var down = new Vector3(headX - turnAngleValue, headY, head.localRotation.z);
+        
+            yield return head.DOLocalRotate(left, turnDuration).WaitForCompletion();
+            yield return head.DOLocalRotate(right, turnDuration).WaitForCompletion();
+            yield return head.DOLocalRotate(up, turnDuration).WaitForCompletion();
+            yield return head.DOLocalRotate(down, turnDuration).WaitForCompletion();
+        }
+    }
+
+    private void StopHeadMovement()
+    {
+        if (headMovementCoroutine != null)
+        {
+            StopCoroutine(headMovementCoroutine);
+            headMovementCoroutine = null;
+        }
     }
 }
